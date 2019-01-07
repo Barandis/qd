@@ -10,7 +10,7 @@ license = "MIT"
 
 [features]
 default = []
+no_fma = []
 
 [dependencies]
-fma = { path = "fma", optional = true }
 fpu = { path = "fpu", optional = true }

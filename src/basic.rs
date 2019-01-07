@@ -3,9 +3,16 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+#[cfg(no_fma)]
 const SPLIT_FACTOR: f64 = 134217729.0;                  // = 2^27 + 1
+
+#[cfg(no_fma)]
 const SPLIT_THRESHOLD: f64 = 6.69692879491417e+299;     // = 2^996
+
+#[cfg(no_fma)]
 const SPLIT_SHIFT_DOWN: f64 = 3.7252902984619140625e-9; // = 2^-28
+
+#[cfg(no_fma)]
 const SPLIT_SHIFT_UP: f64 = 268435456.0;                // = 2^28
 
 #[inline]
@@ -37,7 +44,7 @@ pub fn two_diff(a: f64, b: f64) -> (f64, f64) {
     (s, e)
 }
 
-#[cfg(not(fma))]
+#[cfg(no_fma)]
 #[inline]
 fn split(a: f64) -> (f64, f64) {
     if a > SPLIT_THRESHOLD || a < -SPLIT_THRESHOLD {
@@ -54,15 +61,15 @@ fn split(a: f64) -> (f64, f64) {
     }
 }
 
-#[cfg(fma)]
+#[cfg(not(no_fma))]
 #[inline]
 pub fn two_prod(a: f64, b: f64) -> (f64, f64) {
     let p = a * b;
-    let e = fma::fma(a, b, -p);
+    let e = a.mul_add(b, -p);
     (p, e)
 }
 
-#[cfg(not(fma))]
+#[cfg(no_fma)]
 #[inline]
 pub fn two_prod(a: f64, b: f64) -> (f64, f64) {
     let p = a * b;
@@ -72,15 +79,15 @@ pub fn two_prod(a: f64, b: f64) -> (f64, f64) {
     (p, e)
 }
 
-#[cfg(fma)]
+#[cfg(not(no_fma))]
 #[inline]
 pub fn two_square(a: f64) -> (f64, f64) {
     let p = a * a;
-    let e = fma::fma(a, a, -p);
+    let e = a.mul_add(a, -p);
     (p, e)
 }
 
-#[cfg(not(fma))]
+#[cfg(no_fma)]
 #[inline]
 pub fn two_square(a: f64) -> (f64, f64) {
     let p = a * a;
