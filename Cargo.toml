@@ -13,4 +13,3 @@ default = []
 no_fma = []
 
 [dependencies]
-fpu = { path = "fpu", optional = true }
