@@ -3,6 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+use crate::basic::quick_two_sum;
 use std::f64;
 
 mod algebraic;
@@ -15,8 +16,55 @@ mod parsing;
 mod transcendental;
 mod trigonometric;
 
+/// A 128-bit floating-point number implemented as the unevaluated sum of two 64-bit floating-point
+/// numbers.
+///
+/// There are several ways to create a new `DoubleDouble`: the [`new`](#method.new) or
+/// [`norm`](#method.norm) functions, the various `From` implementations, the `FromStr`
+/// implementation, or one of the mathematical `from_xxx` functions. See the [module-level
+/// documentation](index.html) for more information.
 #[derive(Clone, Copy, Debug)]
 pub struct DoubleDouble(f64, f64);
+
+impl DoubleDouble {
+    /// Creates a `DoubleDouble` with the two arguments as the internal components.
+    ///
+    /// This function is only useful in the simplest of cases, as it does not do normalization and
+    /// therefore does not account for floating-point error in the first component (meaning the user
+    /// has to). One of its primary functions is declaration of `DoubleDouble` constants that have
+    /// been pre-computed.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::DoubleDouble;
+    ///
+    /// let dd = DoubleDouble::new(0.0, 0.0);
+    /// assert!(dd == 0.0);
+    /// ```
+    pub fn new(a: f64, b: f64) -> DoubleDouble {
+        DoubleDouble(a, b)
+    }
+
+    /// Creates a `DoubleDouble` by normalizing the sum of two arguments.
+    ///
+    /// This is a quick and efficient function, but it carries the restriction that the absolute
+    /// value of `a` must be greater than or equal to the absolute value of `b`. If that cannot be
+    /// guaranteed, it would be better to use the slightly slower but more robust
+    /// [`from_add`](#method.from_add) instead.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::DoubleDouble;
+    ///
+    /// let dd = DoubleDouble::norm(2.0, 1.0);
+    /// assert!(dd == 3.0);
+    /// ```
+    pub fn norm(a: f64, b: f64) -> DoubleDouble {
+        DoubleDouble::from(quick_two_sum(a, b))
+    }
+}
 
 // #region Constants
 

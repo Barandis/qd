@@ -26,7 +26,7 @@ const SPLIT_FACTOR: f64 = 134217729.0;                  // = 2^27 + 1
 ///
 /// If the absolute value of the value being split exceeds this, the number is reduced before
 /// processing and then increased by the same factor after processing. This increases accuracy in
-/// very large (and small) numbers where accuracy is naturally lessened in floating point numbers.
+/// very large (and small) numbers where accuracy is naturally lessened in floating-point numbers.
 ///
 /// This value is 2<sup>996</sup>, which is the highest power of two that is less than
 /// 10<sup>300</sup>.
@@ -47,7 +47,7 @@ const SPLIT_SHIFT_UP: f64 = 268435456.0;                // = 2^28
 
 /// Calculates fl(a + b) and err(a + b).
 ///
-/// This calculation performs 3 floating point operations. This is more efficient than
+/// This calculation performs 3 floating-point operations. This is more efficient than
 /// [`two_sum`](#fn.two_sum) but carries the restriction that |a| >= |b|, which
 /// [`two_sum`](#fn.two_sum) does not.
 #[inline]
@@ -66,7 +66,7 @@ pub fn quick_two_sum(a: f64, b: f64) -> (f64, f64) {
 
 /// Calculates fl(a + b) and err(a + b).
 ///
-/// This calculation performs 6 floating point operations. It is less efficient than
+/// This calculation performs 6 floating-point operations. It is less efficient than
 /// [`quick_two_sum`](#fn.quick_two_sum) but it carries no restrictions on its input values.
 #[inline]
 pub fn two_sum(a: f64, b: f64) -> (f64, f64) {
@@ -78,7 +78,7 @@ pub fn two_sum(a: f64, b: f64) -> (f64, f64) {
 
 /// Calculates fl(a - b) and err(a - b).
 ///
-/// This calculation performs 6 floating point operations.
+/// This calculation performs 6 floating-point operations.
 pub fn two_diff(a: f64, b: f64) -> (f64, f64) {
     let s = a - b;
     let v = s - a;
@@ -89,9 +89,9 @@ pub fn two_diff(a: f64, b: f64) -> (f64, f64) {
 /// Splits a number into equal-length high and low components.
 ///
 /// This is a helper function for use in multiplication functions when FMA is not enabled (i.e.,
-/// when the `no_fma` feature is enabled). It performs 4 floating point operations, unless the
+/// when the `no_fma` feature is enabled). It performs 4 floating-point operations, unless the
 /// number's absolute value is greater than [`SPLIT_THRESHOLD`](constant.SPLIT_THRESHOLD.html). In
-/// this case it performs 7 floating point operations to increase precision in the large number.
+/// this case it performs 7 floating-point operations to increase precision in the large number.
 #[cfg(no_fma)]
 #[inline]
 fn split(a: f64) -> (f64, f64) {
@@ -111,7 +111,7 @@ fn split(a: f64) -> (f64, f64) {
 
 /// Calculates fl(a * b) and err(a * b).
 ///
-/// This implementation uses FMA and requires 2 floating point operations because of it. If FMA is
+/// This implementation uses FMA and requires 2 floating-point operations because of it. If FMA is
 /// not available but the `no_fma` feature is not enabled, it will use considerably more operations.
 #[cfg(not(no_fma))]
 #[inline]
@@ -123,8 +123,8 @@ pub fn two_prod(a: f64, b: f64) -> (f64, f64) {
 
 /// Calculates fl(a * b) and err(a * b).
 ///
-/// This implementation does not use FMA and consequently requires at least 17 floating point
-/// operations. If the arguments are particularly large, it can require as many as 23 floating point
+/// This implementation does not use FMA and consequently requires at least 17 floating-point
+/// operations. If the arguments are particularly large, it can require as many as 23 floating-point
 /// operations.
 #[cfg(no_fma)]
 #[inline]
@@ -138,7 +138,7 @@ pub fn two_prod(a: f64, b: f64) -> (f64, f64) {
 
 /// Calculates fl(a * a) and err(a * a).
 ///
-/// This implementation uses FMA and therefore requires 2 floating point instructions, the same as
+/// This implementation uses FMA and therefore requires 2 floating-point instructions, the same as
 /// for multiplication. If FMA is not available but the `no_fma` feature is not enabled, it will use
 /// considerably more operations.
 #[cfg(not(no_fma))]
@@ -153,7 +153,7 @@ pub fn two_square(a: f64) -> (f64, f64) {
 ///
 /// This implementation does not use FMA but takes advantage of optimizations that can be made in
 /// multiplication due to the multiplied numbers being the same. It therefore only uses a minimum of
-/// 12 floating point operations, though with a very large argument it can be 15.
+/// 12 floating-point operations, though with a very large argument it can be 15.
 #[cfg(no_fma)]
 #[inline]
 pub fn two_square(a: f64) -> (f64, f64) {

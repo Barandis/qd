@@ -30,23 +30,6 @@ impl DoubleDouble {
         DoubleDouble::from(two_sum(a, b))
     }
 
-    /// Creates a new `DoubleDouble` by summing two numbers and normalizing them.
-    ///
-    /// This is a higher-performance, more limited form of [`from_add`](#method.from_add). It is
-    /// only guaranteed to work if `|a| >= |b|`.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use qd::DoubleDouble;
-    ///
-    /// let dd = DoubleDouble::norm(2.0, 1.0);
-    /// assert!(dd == 3.0);
-    /// ```
-    pub fn norm(a: f64, b: f64) -> DoubleDouble {
-        DoubleDouble::from(quick_two_sum(a, b))
-    }
-
     #[inline]
     fn add_double(self, other: DoubleDouble) -> (f64, f64) {
         let (s0, e0) = two_sum(self.0, other.0);
