@@ -20,7 +20,7 @@ impl DoubleDouble {
     }
 
     #[inline]
-    fn accurate_add_double(self, other: DoubleDouble) -> (f64, f64) {
+    fn add_double(self, other: DoubleDouble) -> (f64, f64) {
         let (s0, e0) = two_sum(self.0, other.0);
         let (s1, e1) = two_sum(self.1, other.1);
         let (s2, e2) = quick_two_sum(s0, s1 + e0);
@@ -28,25 +28,9 @@ impl DoubleDouble {
     }
 
     #[inline]
-    fn fast_add_double(self, other: DoubleDouble) -> (f64, f64) {
-        let (s, e) = two_sum(self.0, other.0);
-        quick_two_sum(s, e + self.1 + other.1)
-    }
-
-    #[inline]
     fn add_f64(self, other: f64) -> (f64, f64) {
         let (s, e) = two_sum(self.0, other);
         quick_two_sum(s, e + self.1)
-    }
-
-    #[inline]
-    pub fn accurate_add(self, other: DoubleDouble) -> DoubleDouble {
-        DoubleDouble::from(self.accurate_add_double(other))
-    }
-
-    #[inline]
-    pub fn fast_add(self, other: DoubleDouble) -> DoubleDouble {
-        DoubleDouble::from(self.fast_add_double(other))
     }
 }
 
@@ -55,11 +39,7 @@ impl Add for DoubleDouble {
 
     #[inline]
     fn add(self, other: DoubleDouble) -> DoubleDouble {
-        if cfg!(fast_arithmetic) {
-            self.fast_add(other)
-        } else {
-            self.accurate_add(other)
-        }
+        DoubleDouble::from(self.add_double(other))
     }
 }
 
@@ -84,11 +64,7 @@ impl Add<DoubleDouble> for f64 {
 impl AddAssign for DoubleDouble {
     #[inline]
     fn add_assign(&mut self, other: DoubleDouble) {
-        let (a, b) = if cfg!(fast_arithmetic) {
-            self.fast_add_double(other)
-        } else {
-            self.accurate_add_double(other)
-        };
+        let (a, b) = self.add_double(other);
         self.0 = a;
         self.1 = b;
     }
@@ -113,7 +89,7 @@ impl DoubleDouble {
     }
 
     #[inline]
-    fn accurate_sub_double(self, other: DoubleDouble) -> (f64, f64) {
+    fn sub_double(self, other: DoubleDouble) -> (f64, f64) {
         let (s0, e0) = two_diff(self.0, other.0);
         let (s1, e1) = two_diff(self.1, other.1);
         let (s2, e2) = quick_two_sum(s0, s1 + e0);
@@ -121,25 +97,9 @@ impl DoubleDouble {
     }
 
     #[inline]
-    fn fast_sub_double(self, other: DoubleDouble) -> (f64, f64) {
-        let (s, e) = two_diff(self.0, other.0);
-        quick_two_sum(s, e + self.1 + other.1)
-    }
-
-    #[inline]
     fn sub_f64(self, other: f64) -> (f64, f64) {
         let (s, e) = two_diff(self.0, other);
         quick_two_sum(s, e + self.1)
-    }
-
-    #[inline]
-    pub fn accurate_sub(self, other: DoubleDouble) -> DoubleDouble {
-        DoubleDouble::from(self.accurate_sub_double(other))
-    }
-
-    #[inline]
-    pub fn fast_sub(self, other: DoubleDouble) -> DoubleDouble {
-        DoubleDouble::from(self.fast_sub_double(other))
     }
 }
 
@@ -148,11 +108,7 @@ impl Sub for DoubleDouble {
 
     #[inline]
     fn sub(self, other: DoubleDouble) -> DoubleDouble {
-        if cfg!(fast_arithmetic) {
-            self.fast_sub(other)
-        } else {
-            self.accurate_sub(other)
-        }
+        DoubleDouble::from(self.sub_double(other))
     }
 }
 
@@ -178,11 +134,7 @@ impl Sub<DoubleDouble> for f64 {
 impl SubAssign for DoubleDouble {
     #[inline]
     fn sub_assign(&mut self, other: DoubleDouble) {
-        let (a, b) = if cfg!(fast_arithmetic) {
-            self.fast_sub_double(other)
-        } else {
-            self.accurate_sub_double(other)
-        };
+        let (a, b) = self.sub_double(other);
         self.0 = a;
         self.1 = b;
     }
@@ -298,7 +250,7 @@ impl DoubleDouble {
     }
 
     #[inline]
-    pub fn accurate_div(self, other: DoubleDouble) -> DoubleDouble {
+    pub fn div_double(self, other: DoubleDouble) -> DoubleDouble {
         if other == 0.0 {
             if self == 0.0 {
                 DoubleDouble::NAN
@@ -316,27 +268,6 @@ impl DoubleDouble {
 
             let q3 = r.0 / other.0;
             DoubleDouble::from(quick_two_sum(q1, q2)) + q3
-        }
-    }
-
-    #[inline]
-    pub fn fast_div(self, other: DoubleDouble) -> DoubleDouble {
-        if other == 0.0 {
-            if self == 0.0 {
-                DoubleDouble::NAN
-            } else if self.is_sign_negative() {
-                DoubleDouble::NEG_INFINITY
-            } else {
-                DoubleDouble::INFINITY
-            }
-        } else {
-            let q1 = self.0 / other.0;
-
-            let r = other * q1;
-            let (s1, s2) = two_diff(self.0, r.0);
-
-            let q2 = (s1 + s2 - r.1 + self.1) / other.0;
-            DoubleDouble::from(quick_two_sum(q1, q2))
         }
     }
 
@@ -372,11 +303,7 @@ impl Div for DoubleDouble {
 
     #[inline]
     fn div(self, other: DoubleDouble) -> DoubleDouble {
-        if cfg!(fast_arithmetic) {
-            self.fast_div(other)
-        } else {
-            self.accurate_div(other)
-        }
+        self.div_double(other)
     }
 }
 

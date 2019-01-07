@@ -10,7 +10,6 @@ license = "MIT"
 
 [features]
 default = []
-fast_arithmetic = []
 
 [dependencies]
 fma = { path = "fma", optional = true }
