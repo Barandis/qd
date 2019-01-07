@@ -28,6 +28,16 @@ impl FromStr for DoubleDouble {
             });
         }
 
+        if s.to_ascii_lowercase() == "nan" {
+            return Ok(DoubleDouble::NAN);
+        }
+        if s.to_ascii_lowercase() == "inf" {
+            return Ok(DoubleDouble::INFINITY);
+        }
+        if s.to_ascii_lowercase() == "-inf" {
+            return Ok(DoubleDouble::NEG_INFINITY);
+        }
+
         for (index, ch) in s.chars().enumerate() {
             match ch.to_digit(10) {
                 Some(d) => {
