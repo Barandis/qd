@@ -163,7 +163,7 @@ impl DoubleDouble {
         }
 
         // Correct out of range digits
-        for i in (0..(digits - 1)).rev() {
+        for i in (1..digits).rev() {
             if s[i] < 0 {
                 s[i - 1] -= 1;
                 s[i] += 10;
