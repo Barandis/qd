@@ -29,6 +29,7 @@ const INV_FACT: [DoubleDouble; 15] = [
 
 /// Helper function that efficiently multiplies a DoubleDouble by a power of 2. This is -much-
 /// faster than regular multiplication but only works with powers of 2.
+#[inline]
 fn mul_pwr2(a: DoubleDouble, b: f64) -> DoubleDouble {
     DoubleDouble(a.0 * b, a.1 * b)
 }
