@@ -113,7 +113,6 @@ impl DoubleDouble {
     /// // so we check to see that the numbers are very close rather than equal
     /// assert!((dd.sqrt() - DoubleDouble::SQRT_2).abs() < DoubleDouble::EPSILON);
     /// ```
-    #[inline]
     pub fn sqrt(self) -> DoubleDouble {
         if self == 0.0 {
             DoubleDouble::from(0.0)
