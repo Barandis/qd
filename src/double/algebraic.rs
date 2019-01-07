@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-/use crate::basic::*;
+use crate::basic::*;
 use crate::double::DoubleDouble;
 use std::f64;
 
