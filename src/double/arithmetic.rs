@@ -32,8 +32,8 @@ impl DoubleDouble {
 
     /// Creates a new `DoubleDouble` by summing two numbers and normalizing them.
     ///
-    /// This is a higher-performance, more limited form of [from_add](#method.from_add). It is only
-    /// guaranteed to work if |a| >= |b|.
+    /// This is a higher-performance, more limited form of [`from_add`](#method.from_add). It is
+    /// only guaranteed to work if `|a| >= |b|`.
     ///
     /// # Examples
     ///
@@ -308,7 +308,7 @@ impl DoubleDouble {
     }
 
     #[inline]
-    pub fn div_double(self, other: DoubleDouble) -> DoubleDouble {
+    fn div_double(self, other: DoubleDouble) -> DoubleDouble {
         if other == 0.0 {
             if self == 0.0 {
                 DoubleDouble::NAN
@@ -350,6 +350,16 @@ impl DoubleDouble {
         }
     }
 
+    /// Calculates the reciprocal of `self`, returning it as a new `DoubleDouble`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::DoubleDouble;
+    ///
+    /// let r = DoubleDouble::from(2.0).recip();
+    /// assert!(r == 0.5);
+    /// ```
     #[inline]
     pub fn recip(self) -> DoubleDouble {
         1.0 / self
