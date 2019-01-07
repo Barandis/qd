@@ -22,7 +22,7 @@ impl DoubleDouble {
         let hi = self.0.floor();
 
         if hi == self.0 {
-            DoubleDouble::normalize(hi, self.1.floor())
+            DoubleDouble::norm(hi, self.1.floor())
         } else {
             DoubleDouble(hi, 0.0)
         }
@@ -33,7 +33,7 @@ impl DoubleDouble {
         let hi = self.0.ceil();
 
         if hi == self.0 {
-            DoubleDouble::normalize(hi, self.1.ceil())
+            DoubleDouble::norm(hi, self.1.ceil())
         } else {
             DoubleDouble(hi, 0.0)
         }

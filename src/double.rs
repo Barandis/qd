@@ -169,4 +169,9 @@ mod tests {
     fn test_format() {
         println!("{}", format!("{:e}", DoubleDouble::PI * 2.0));
     }
+
+    #[test]
+    fn test_norm() {
+        println!("{:?}", DoubleDouble::norm(1.0, 2.0));
+    }
 }

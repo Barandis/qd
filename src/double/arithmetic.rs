@@ -11,11 +11,39 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssi
 // #region Addition
 
 impl DoubleDouble {
+    /// Creates a new `DoubleDouble` representing the sum of two numbers.
+    ///
+    /// This acts differently from the basic `DoubleDouble(a, b)` constructor in that the internal
+    /// values are completely normalized by this function. This is only relevant if no other
+    /// operation is done on the number afterwards, as all mathematical ops in this library
+    /// normalize their values.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::DoubleDouble;
+    ///
+    /// let dd = DoubleDouble::from_add(1.0, 2.0);
+    /// assert!(dd == 3.0);
+    /// ```
     pub fn from_add(a: f64, b: f64) -> DoubleDouble {
         DoubleDouble::from(two_sum(a, b))
     }
 
-    pub fn normalize(a: f64, b: f64) -> DoubleDouble {
+    /// Creates a new `DoubleDouble` by summing two numbers and normalizing them.
+    ///
+    /// This is a higher-performance, more limited form of [from_add](#method.from_add). It is only
+    /// guaranteed to work if |a| >= |b|.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::DoubleDouble;
+    ///
+    /// let dd = DoubleDouble::norm(2.0, 1.0);
+    /// assert!(dd == 3.0);
+    /// ```
+    pub fn norm(a: f64, b: f64) -> DoubleDouble {
         DoubleDouble::from(quick_two_sum(a, b))
     }
 
@@ -84,6 +112,16 @@ impl AddAssign<f64> for DoubleDouble {
 // #region Subtraction
 
 impl DoubleDouble {
+    /// Creates a new `DoubleDouble` representing the difference of two numbers.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::DoubleDouble;
+    ///
+    /// let dd = DoubleDouble::from_sub(1.0, 2.0);
+    /// assert!(dd == -1.0);
+    /// ```
     pub fn from_sub(a: f64, b: f64) -> DoubleDouble {
         DoubleDouble::from(two_diff(a, b))
     }
@@ -162,6 +200,16 @@ impl Neg for DoubleDouble {
 // #region Multiplication
 
 impl DoubleDouble {
+    /// Creates a new `DoubleDouble` representing the product of two numbers.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::DoubleDouble;
+    ///
+    /// let dd = DoubleDouble::from_mul(1.0, 2.0);
+    /// assert!(dd == 2.0);
+    /// ```
     pub fn from_mul(a: f64, b: f64) -> DoubleDouble {
         DoubleDouble::from(two_prod(a, b))
     }
@@ -229,6 +277,16 @@ impl MulAssign<f64> for DoubleDouble {
 // #region Division
 
 impl DoubleDouble {
+    /// Creates a new `DoubleDouble` representing the quotient of two numbers.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::DoubleDouble;
+    ///
+    /// let dd = DoubleDouble::from_div(1.0, 2.0);
+    /// assert!(dd == 0.5);
+    /// ```
     pub fn from_div(a: f64, b: f64) -> DoubleDouble {
         if b == 0.0 {
             if a == 0.0 {
