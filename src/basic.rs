@@ -15,12 +15,12 @@ pub fn quick_two_sum(a: f64, b: f64) -> (f64, f64) {
     (s, e)
 }
 
-#[inline]
-pub fn quick_two_diff(a: f64, b: f64) -> (f64, f64) {
-    let s = a - b;
-    let e = (a - s) - b;
-    (s, e)
-}
+// #[inline]
+// pub fn quick_two_diff(a: f64, b: f64) -> (f64, f64) {
+//     let s = a - b;
+//     let e = (a - s) - b;
+//     (s, e)
+// }
 
 #[inline]
 pub fn two_sum(a: f64, b: f64) -> (f64, f64) {
