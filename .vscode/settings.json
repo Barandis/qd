@@ -1,0 +1,4 @@
+{
+  "rust-client.channel": "nightly",
+  "markdown.extension.toc.githubCompatibility": true
+}

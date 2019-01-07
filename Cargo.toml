@@ -1,0 +1,17 @@
+[package]
+name = "qd"
+version = "0.1.0-alpha"
+authors = ["Thomas Otterson <barandis1729@gmail.com>"]
+edition = "2018"
+description = "High-precision double-double and quad-double floating point number library"
+repository = "https://github.com/Barandis/qd"
+keywords = ["double", "quad", "double-double", "quad-double", "floating-point"]
+license = "MIT"
+
+[features]
+default = []
+fast_arithmetic = []
+
+[dependencies]
+fma = { path = "fma", optional = true }
+fpu = { path = "fpu", optional = true }
