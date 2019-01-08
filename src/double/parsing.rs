@@ -160,27 +160,27 @@ fn calculate_exponent(r: &mut DoubleDouble) -> i32 {
 // is complete.
 #[inline]
 fn extract_digits(r: &mut DoubleDouble, precision: usize) -> Vec<i32> {
-    let mut s = Vec::with_capacity(precision);
+    let mut digits = Vec::with_capacity(precision);
     for _ in 0..precision {
         let digit = r.0 as i32;
         *r -= digit as f64;
         *r *= 10.0;
-        s.push(digit);
+        digits.push(digit);
     }
-    s
+    digits
 }
 
 // Adjusts the range of integers in the supplied vector from [9, -9] to [0, 9]. (This function will
 // handle 'digits' up to 19, but I don't believe in this application that they're ever over 9.)
 #[inline]
-fn correct_range(s: &mut Vec<i32>) {
-    for i in (1..s.len()).rev() {
-        if s[i] < 0 {
-            s[i - 1] -= 1;
-            s[i] += 10;
-        } else if s[i] > 9 {
-            s[i - 1] += 1;
-            s[i] -= 10;
+fn correct_range(digits: &mut Vec<i32>) {
+    for i in (1..digits.len()).rev() {
+        if digits[i] < 0 {
+            digits[i - 1] -= 1;
+            digits[i] += 10;
+        } else if digits[i] > 9 {
+            digits[i - 1] += 1;
+            digits[i] -= 10;
         }
     }
 }
@@ -190,24 +190,24 @@ fn correct_range(s: &mut Vec<i32>) {
 // propagated as far as it needs to, adjusting the exponent if the carry goes all the way to the
 // first digit.
 #[inline]
-fn round_vec(s: &mut Vec<i32>, exp: &mut i32) {
-    let len = s.len();
-    if s[len - 1] > 5 || s[len - 1] == 5 && s[len - 2] % 2 == 1 {
-        s[len - 2] += 1;
+fn round_vec(digits: &mut Vec<i32>, exp: &mut i32) {
+    let len = digits.len();
+    if digits[len - 1] > 5 || digits[len - 1] == 5 && digits[len - 2] % 2 == 1 {
+        digits[len - 2] += 1;
         let mut i = len - 2;
-        while i > 0 && s[i] > 9 {
-            s[i] -= 10;
-            s[i - 1] += 1;
+        while i > 0 && digits[i] > 9 {
+            digits[i] -= 10;
+            digits[i - 1] += 1;
             i -= 1;
         }
     }
 
     // If the first digit requires carry, insert one more digit to turn 9 into 10
     // and adjust the exponent
-    if s[0] > 9 {
+    if digits[0] > 9 {
         *exp += 1;
-        s[0] = 0;
-        s.insert(0, 1);
+        digits[0] = 0;
+        digits.insert(0, 1);
     }
 }
 
@@ -235,6 +235,148 @@ fn to_digits(r: &DoubleDouble, precision: usize) -> (Vec<i32>, i32) {
     (digits, exp)
 }
 
+#[inline]
+fn char_from_digit(digit: &i32) -> char {
+    char::from_digit(*digit as u32, 10).unwrap()
+}
+
+#[inline]
+fn push_zero(chars: &mut Vec<char>, precision: usize) {
+    chars.push('0');
+    if precision > 0 {
+        chars.push('.');
+        for _ in 0..precision {
+            chars.push('0');
+        }
+    }
+}
+
+#[inline]
+fn push_leading_zeros(chars: &mut Vec<char>, precision: usize) {
+    chars.push('0');
+    if precision > 0 {
+        chars.push('.');
+        for _ in 0..precision {
+            chars.push('0');
+        }
+    }
+}
+
+#[inline]
+fn push_fixed_digits(chars: &mut Vec<char>, digits: &Vec<i32>, exp: i32, precision: usize) {
+    let offset = exp + 1;
+    if offset > 0 {
+        let offset = offset as usize;
+        for digit in &digits[..offset] {
+            chars.push(char_from_digit(digit));
+        }
+        if precision > 0 {
+            chars.push('.');
+            for digit in &digits[offset..precision] {
+                chars.push(char_from_digit(digit));
+            }
+        }
+    } else {
+        chars.push('0');
+        chars.push('.');
+        if offset < 0 {
+            for _ in 0..-offset {
+                chars.push('0');
+            }
+        }
+        for digit in &digits[..precision] {
+            chars.push(char_from_digit(digit));
+        }
+    }
+}
+
+#[inline]
+fn push_exp_digits(chars: &mut Vec<char>, digits: &Vec<i32>, precision: usize) {
+    chars.push(char_from_digit(&digits[0]));
+    if precision > 0 {
+        chars.push('.');
+    }
+    for digit in &digits[1..precision] {
+        chars.push(char_from_digit(digit));
+    }
+}
+
+#[inline]
+fn improper_offset_fix(chars: &mut Vec<char>, target_value: f64) {
+    let current_value: f64 = chars
+        .clone()
+        .into_iter()
+        .collect::<String>()
+        .parse()
+        .unwrap();
+    if (current_value / target_value).abs() > 3.0 {
+        let index = chars.clone().into_iter().position(|c| c == '.').unwrap();
+        let t = chars[index - 1];
+        chars[index - 1] = '.';
+        chars[index] = t;
+    }
+}
+
+#[inline]
+fn drop_trailing_zeros(chars: &mut Vec<char>) {
+    if chars.contains(&'.') {
+        if let Some(index) = chars.clone().into_iter().rposition(|c| c != '0') {
+            // Drop the decimal point itself if everything after it is a zero
+            let new_length = match chars[index] {
+                '.' => index,
+                _ => index + 1,
+            };
+            chars.truncate(new_length);
+        }
+    }
+}
+
+#[inline]
+fn push_exponent(chars: &mut Vec<char>, marker: char, exp: i32) {
+    chars.push(marker);
+    chars.append(&mut exp.to_string().chars().collect());
+}
+
+#[inline]
+fn align_and_fill(chars: &mut Vec<char>, formatter: &mut fmt::Formatter, width: usize, sign: bool) {
+    let delta = width - chars.len();
+    let fill = formatter.fill();
+    match formatter.align() {
+        Some(fmt::Alignment::Left) => {
+            for _ in 0..delta {
+                chars.push(fill);
+            }
+        }
+        Some(fmt::Alignment::Right) => {
+            for _ in 0..delta {
+                chars.insert(0, fill);
+            }
+        }
+        Some(fmt::Alignment::Center) => {
+            let left_delta = delta / 2;
+            let right_delta = delta - left_delta;
+            for _ in 0..left_delta {
+                chars.insert(0, fill);
+            }
+            for _ in 0..right_delta {
+                chars.push(fill);
+            }
+        }
+        None => {
+            if formatter.sign_aware_zero_pad() {
+                let index = if sign { 1 } else { 0 };
+                for _ in 0..delta {
+                    chars.insert(index, '0');
+                }
+            } else {
+                for _ in 0..delta {
+                    chars.insert(0, fill);
+                }
+            }
+        }
+    }
+}
+
 impl DoubleDouble {
     fn format(&self, f: &mut fmt::Formatter, mode: Mode) -> String {
         let mut result = Vec::new();
@@ -259,13 +401,7 @@ impl DoubleDouble {
             if self.is_infinite() {
                 result.append(&mut "inf".chars().collect());
             } else if *self == 0.0 {
-                result.push('0');
-                if precision > 0 {
-                    result.push('.');
-                    for _ in 0..precision {
-                        result.push('0');
-                    }
-                }
+                push_zero(&mut result, precision);
             } else {
                 let width = precision as i32
                     + match mode {
@@ -284,13 +420,7 @@ impl DoubleDouble {
                 }
 
                 if mode == Mode::Fixed && width < 0 {
-                    result.push('0');
-                    if precision > 0 {
-                        result.push('.');
-                        for _ in 0..precision {
-                            result.push('0');
-                        }
-                    }
+                    push_leading_zeros(&mut result, precision);
                 } else {
                     let (digits, e) = match mode {
                         // These casts are safe because we handled width < 0 above
@@ -299,41 +429,12 @@ impl DoubleDouble {
                     };
                     exp = e;
 
-                    let offset = e + 1;
                     match mode {
                         Mode::Fixed => {
-                            if offset > 0 {
-                                let offset = offset as usize;
-                                for digit in &digits[..offset] {
-                                    result.push(char::from_digit(*digit as u32, 10).unwrap());
-                                }
-                                if precision > 0 {
-                                    result.push('.');
-                                    for digit in &digits[offset..precision] {
-                                        result.push(char::from_digit(*digit as u32, 10).unwrap());
-                                    }
-                                }
-                            } else {
-                                result.push('0');
-                                result.push('.');
-                                if offset < 0 {
-                                    for _ in 0..-offset {
-                                        result.push('0');
-                                    }
-                                }
-                                for digit in &digits[..precision] {
-                                    result.push(char::from_digit(*digit as u32, 10).unwrap());
-                                }
-                            }
+                            push_fixed_digits(&mut result, &digits, exp, precision);
                         }
                         _ => {
-                            result.push(char::from_digit(digits[0] as u32, 10).unwrap());
-                            if precision > 0 {
-                                result.push('.');
-                            }
-                            for digit in &digits[1..precision] {
-                                result.push(char::from_digit(*digit as u32, 10).unwrap());
-                            }
+                            push_exp_digits(&mut result, &digits, precision);
                         }
                     }
                 }
@@ -343,80 +444,25 @@ impl DoubleDouble {
             // This affects values of 10^x - 1 for x > 28, causing them to put the point in the
             // wrong place.
             if mode == Mode::Fixed && precision > 0 {
-                let from_string: f64 = result
-                    .clone()
-                    .into_iter()
-                    .collect::<String>()
-                    .parse()
-                    .unwrap();
-                if (from_string / self.0).abs() > 3.0 {
-                    let index = result.clone().into_iter().position(|c| c == '.').unwrap();
-                    let t = result[index - 1];
-                    result[index - 1] = '.';
-                    result[index] = t;
-                }
+                improper_offset_fix(&mut result, self.0);
             }
 
             // If no precision was specified and there is a decimal point, drop all trailing zeroes
             // after the decimal point.
             if let None = f.precision() {
-                if result.contains(&'.') {
-                    if let Some(index) = result.clone().into_iter().rposition(|c| c != '0') {
-                        // Drop the decimal point itself if everything after it is a zero
-                        let new_length = match result[index] {
-                            '.' => index,
-                            _ => index + 1,
-                        };
-                        result.truncate(new_length);
-                    }
-                }
+                drop_trailing_zeros(&mut result);
             }
 
             if mode != Mode::Fixed && !self.is_infinite() {
-                result.push(if mode == Mode::Upper { 'E' } else { 'e' });
-                result.append(&mut exp.to_string().chars().collect());
+                let marker = if mode == Mode::Upper { 'E' } else { 'e' };
+                push_exponent(&mut result, marker, exp);
             }
         }
 
         let len = result.len();
         if let Some(width) = f.width() {
             if len < width {
-                let delta = width - len;
-                let fill = f.fill();
-                match f.align() {
-                    Some(fmt::Alignment::Left) => {
-                        for _ in 0..delta {
-                            result.push(fill);
-                        }
-                    }
-                    Some(fmt::Alignment::Right) => {
-                        for _ in 0..delta {
-                            result.insert(0, fill);
-                        }
-                    }
-                    Some(fmt::Alignment::Center) => {
-                        let left_delta = delta / 2;
-                        let right_delta = delta - left_delta;
-                        for _ in 0..left_delta {
-                            result.insert(0, fill);
-                        }
-                        for _ in 0..right_delta {
-                            result.push(fill);
-                        }
-                    }
-                    None => {
-                        if f.sign_aware_zero_pad() {
-                            let index = if sign { 1 } else { 0 };
-                            for _ in 0..delta {
-                                result.insert(index, '0');
-                            }
-                        } else {
-                            for _ in 0..delta {
-                                result.insert(0, fill);
-                            }
-                        }
-                    }
-                }
+                align_and_fill(&mut result, f, width, sign);
             }
         }
 
