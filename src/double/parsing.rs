@@ -112,7 +112,7 @@ impl FromStr for DoubleDouble {
 
 // #region Display implementations
 
-const DEFAULT_PRECISION: usize = 32;
+const DEFAULT_PRECISION: usize = 31;
 
 // Calculates the exponent of the supplied double-double, adjusting the double-double to fall
 // somewhere in the range [1, 10) (i.e., to have a single non-zero digit before the decimal point).
@@ -284,33 +284,79 @@ fn push_zero(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
     }
 }
 
+// Rounds a vector of digits based on the precision. This is -almost- identical to `round_vec` above
+// except that it rounds to precision (not to one past precision). It is necessary because fixed-
+// point numbers are calculated (and rounded) at greater than their needed precision for accuracy.
+// Hence they need to be rounded to the correct number of digits after they return.
+//
+// `offset` + `precision` is presumed to be positive. If not, `push_fixed_digits` won't call this
+// function.
+//
+// TODO: This can likely be made more efficient. Exponentials are rounded in `round_vec`; fixed are
+// rounded there unnecessarily and then here as well.
+fn round_fixed_digits(digits: &mut Vec<i32>, offset: &mut i32, precision: usize) {
+    let d = (*offset + precision as i32) as usize;
+    if digits[d] > 5 || digits[d] == 5 && digits[d - 1] % 2 == 1
+    {
+        digits[d - 1] += 1;
+        let mut i = d - 1;
+        while i > 0 && digits[i] > 9 {
+            digits[i] -= 10;
+            digits[i - 1] += 1;
+            i -= 1;
+        }
+    }
+
+    // If the first digit requires carry, insert one more digit to turn 9 into 10
+    // and adjust the offset
+    if digits[0] > 9 {
+        digits[0] = 0;
+        digits.insert(0, 1);
+        *offset += 1;
+    }
+}
+
 // Converts all of the digits, up to the number indicated by `precision`, into characters and
-// pushes them onto the supplied character vector. `exp` determines where the decimal point is
+// pushes them onto the supplied character vector. `offset` determines where the decimal point is
 // placed. This is used to create a fixed-point output format.
 #[inline]
-fn push_fixed_digits(chars: &mut Vec<char>, digits: &Vec<i32>, exp: i32, precision: usize) {
-    let offset = exp + 1;
-    if offset > 0 {
-        let offset = offset as usize;
-        for digit in &digits[..offset] {
-            chars.push(char_from_digit(digit));
-        }
+fn push_fixed_digits(chars: &mut Vec<char>, digits: &mut Vec<i32>, exp: i32, precision: usize) {
+    let mut offset = exp + 1;
+    if precision as i32 + offset <= 0 {
+        chars.push('0');
         if precision > 0 {
             chars.push('.');
-            for digit in &digits[offset..precision] {
-                chars.push(char_from_digit(digit));
-            }
-        }
-    } else {
-        chars.push('0');
-        chars.push('.');
-        if offset < 0 {
-            for _ in 0..-offset {
+            for _ in 0..precision {
                 chars.push('0');
             }
         }
-        for digit in &digits[..precision] {
-            chars.push(char_from_digit(digit));
+    }
+    else {
+        round_fixed_digits(digits, &mut offset, precision);
+
+        if offset > 0 {
+            let offset = offset as usize;
+            for digit in &digits[..offset] {
+                chars.push(char_from_digit(digit));
+            }
+            if precision > 0 {
+                chars.push('.');
+                for digit in &digits[offset..offset + precision] {
+                    chars.push(char_from_digit(digit));
+                }
+            }
+        } else {
+            chars.push('0');
+            chars.push('.');
+            if offset < 0 {
+                for _ in 0..-offset {
+                    chars.push('0');
+                }
+            }
+            let max = (offset + precision as i32) as usize;
+            for digit in &digits[..max] {
+                chars.push(char_from_digit(digit));
+            }
         }
     }
 }
@@ -446,6 +492,7 @@ fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
             push_zero(&mut result, f);
         } else {
             let width = precision as i32 + value.abs().log10().floor().to_int() + 1;
+            // Meant to be much wider than highest precision for better rounding
             let extra = width.max(60);
 
             // Special case: zero precision, |value| < 1.0
@@ -457,8 +504,8 @@ fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
             if width < 0 {
                 push_zero(&mut result, f);
             } else {
-                let (digits, exp) = to_digits(value, extra as usize);
-                push_fixed_digits(&mut result, &digits, exp, precision);
+                let (mut digits, exp) = to_digits(value, extra as usize);
+                push_fixed_digits(&mut result, &mut digits, exp, precision);
             }
         }
 
