@@ -592,6 +592,10 @@ mod tests {
         value.parse().unwrap()
     }
 
+    fn parse_error(value: &str) -> ParseQdFloatError {
+        value.parse::<DoubleDouble>().unwrap_err()
+    }
+
     fn close(a: DoubleDouble, b: DoubleDouble) -> bool {
         (a - b).abs() < 1e-28
     }
@@ -694,6 +698,37 @@ mod tests {
     fn parse_long_exp_float() {
         assert!(close(parse(PI_50_3), DoubleDouble::PI * 1000.0));
         assert!(close(parse(E_50_NEG_2), DoubleDouble::E / 100.0));
+    }
+
+    #[test]
+    fn parse_error_empty() {
+        assert_eq!(parse_error("").kind, QdFloatErrorKind::Empty);
+    }
+
+    #[test]
+    fn parse_error_misplaced_sign() {
+        assert_eq!(parse_error("2+317").kind, QdFloatErrorKind::Invalid);
+    }
+
+    #[test]
+    fn parse_error_duplicate_sign() {
+        assert_eq!(parse_error("+-2317").kind, QdFloatErrorKind::Invalid);
+    }
+
+    #[test]
+    fn parse_error_duplicate_point() {
+        assert_eq!(parse_error("2.31.7").kind, QdFloatErrorKind::Invalid);
+    }
+
+    #[test]
+    fn parse_error_bad_exponent() {
+        assert_eq!(parse_error("1.729e4e").kind, QdFloatErrorKind::Invalid);
+    }
+
+    #[test]
+    fn parse_error_bad_character() {
+        // Not yet!
+        assert_eq!(parse_error("0xcafebabe").kind, QdFloatErrorKind::Invalid);
     }
 
     // #endregion
