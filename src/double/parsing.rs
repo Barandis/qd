@@ -376,7 +376,7 @@ impl DoubleDouble {
                     None => {
                         if f.sign_aware_zero_pad() {
                             let index = if sign { 1 } else { 0 };
-                            for _ in index..delta {
+                            for _ in 0..delta {
                                 result.insert(index, '0');
                             }
                         } else {
