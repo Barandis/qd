@@ -98,7 +98,6 @@ impl FromStr for DoubleDouble {
             exp -= digits - point;
         }
         if exp != 0 {
-            // result *= 10f64.powi(exp);
             result *= DoubleDouble::from(10.0).powi(exp);
         }
         if sign == -1 {
@@ -113,12 +112,7 @@ impl FromStr for DoubleDouble {
 
 // #region Display implementations
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-enum Mode {
-    Fixed,
-    Upper,
-    Lower,
-}
+const DEFAULT_PRECISION: usize = 32;
 
 // Calculates the exponent of the supplied double-double, adjusting the double-double to fall
 // somewhere in the range [1, 10) (i.e., to have a single non-zero digit before the decimal point).
@@ -241,6 +235,29 @@ fn char_from_digit(digit: &i32) -> char {
 }
 
 #[inline]
+fn push_sign(chars: &mut Vec<char>, value: &DoubleDouble, formatter: &fmt::Formatter) -> bool {
+    let mut sign = true;
+    if value.is_sign_negative() {
+        chars.push('-');
+    } else if formatter.sign_plus() {
+        chars.push('+');
+    } else {
+        sign = false;
+    }
+    sign
+}
+
+#[inline]
+fn push_nan(chars: &mut Vec<char>) {
+    chars.append(&mut "NaN".chars().collect());
+}
+
+#[inline]
+fn push_inf(chars: &mut Vec<char>) {
+    chars.append(&mut "inf".chars().collect());
+}
+
+#[inline]
 fn push_zero(chars: &mut Vec<char>, precision: usize) {
     chars.push('0');
     if precision > 0 {
@@ -302,31 +319,35 @@ fn push_exp_digits(chars: &mut Vec<char>, digits: &Vec<i32>, precision: usize) {
 }
 
 #[inline]
-fn improper_offset_fix(chars: &mut Vec<char>, target_value: f64) {
-    let current_value: f64 = chars
-        .clone()
-        .into_iter()
-        .collect::<String>()
-        .parse()
-        .unwrap();
-    if (current_value / target_value).abs() > 3.0 {
-        let index = chars.clone().into_iter().position(|c| c == '.').unwrap();
-        let t = chars[index - 1];
-        chars[index - 1] = '.';
-        chars[index] = t;
+fn improper_offset_fix(chars: &mut Vec<char>, target_value: f64, precision: usize) {
+    if precision > 0 {
+        let current_value: f64 = chars
+            .clone()
+            .into_iter()
+            .collect::<String>()
+            .parse()
+            .unwrap();
+        if (current_value / target_value).abs() > 3.0 {
+            let index = chars.clone().into_iter().position(|c| c == '.').unwrap();
+            let t = chars[index - 1];
+            chars[index - 1] = '.';
+            chars[index] = t;
+        }
     }
 }
 
 #[inline]
-fn drop_trailing_zeros(chars: &mut Vec<char>) {
-    if chars.contains(&'.') {
-        if let Some(index) = chars.clone().into_iter().rposition(|c| c != '0') {
-            // Drop the decimal point itself if everything after it is a zero
-            let new_length = match chars[index] {
-                '.' => index,
-                _ => index + 1,
-            };
-            chars.truncate(new_length);
+fn drop_trailing_zeros(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
+    if let None = formatter.precision() {
+        if chars.contains(&'.') {
+            if let Some(index) = chars.clone().into_iter().rposition(|c| c != '0') {
+                // Drop the decimal point itself if everything after it is a zero
+                let new_length = match chars[index] {
+                    '.' => index,
+                    _ => index + 1,
+                };
+                chars.truncate(new_length);
+            }
         }
     }
 }
@@ -338,156 +359,144 @@ fn push_exponent(chars: &mut Vec<char>, marker: char, exp: i32) {
 }
 
 #[inline]
-fn align_and_fill(chars: &mut Vec<char>, formatter: &mut fmt::Formatter, width: usize, sign: bool) {
-    let delta = width - chars.len();
-    let fill = formatter.fill();
-    match formatter.align() {
-        Some(fmt::Alignment::Left) => {
-            for _ in 0..delta {
-                chars.push(fill);
-            }
-        }
-        Some(fmt::Alignment::Right) => {
-            for _ in 0..delta {
-                chars.insert(0, fill);
-            }
-        }
-        Some(fmt::Alignment::Center) => {
-            let left_delta = delta / 2;
-            let right_delta = delta - left_delta;
-            for _ in 0..left_delta {
-                chars.insert(0, fill);
-            }
-            for _ in 0..right_delta {
-                chars.push(fill);
-            }
-        }
-        None => {
-            if formatter.sign_aware_zero_pad() {
-                let index = if sign { 1 } else { 0 };
-                for _ in 0..delta {
-                    chars.insert(index, '0');
+fn align_and_fill(chars: &mut Vec<char>, formatter: &mut fmt::Formatter, sign: bool) {
+    if let Some(width) = formatter.width() {
+        let len = chars.len();
+        if len < width {
+            let delta = width - chars.len();
+            let fill = formatter.fill();
+            match formatter.align() {
+                Some(fmt::Alignment::Left) => {
+                    for _ in 0..delta {
+                        chars.push(fill);
+                    }
                 }
-            } else {
-                for _ in 0..delta {
-                    chars.insert(0, fill);
+                Some(fmt::Alignment::Right) => {
+                    for _ in 0..delta {
+                        chars.insert(0, fill);
+                    }
                 }
-            }
-        }
-    }
-}
-
-impl DoubleDouble {
-    fn format(&self, f: &mut fmt::Formatter, mode: Mode) -> String {
-        let mut result = Vec::new();
-        let mut sign = true;
-        let mut exp = 0;
-        let precision = match f.precision() {
-            Some(p) => p,
-            None => 32,
-        };
-
-        if self.is_nan() {
-            result.append(&mut "NaN".chars().collect());
-        } else {
-            if self.is_sign_negative() {
-                result.push('-');
-            } else if f.sign_plus() {
-                result.push('+');
-            } else {
-                sign = false;
-            }
-
-            if self.is_infinite() {
-                result.append(&mut "inf".chars().collect());
-            } else if *self == 0.0 {
-                push_zero(&mut result, precision);
-            } else {
-                let width = precision as i32
-                    + match mode {
-                        Mode::Fixed => 1 + self.abs().log10().floor().to_int(),
-                        _ => 1,
-                    };
-                let extra = match mode {
-                    Mode::Fixed => width.max(60),
-                    _ => width,
-                };
-
-                // Special case: fixed mode, zero precision, |self| < 1.0
-                // In this case a number greater than 0.5 prints 0 and should print 1
-                if mode == Mode::Fixed && precision == 0 && self.abs() < 1.0 {
-                    result.push(if self.abs() >= 0.5 { '1' } else { '0' });
+                Some(fmt::Alignment::Center) => {
+                    let left_delta = delta / 2;
+                    let right_delta = delta - left_delta;
+                    for _ in 0..left_delta {
+                        chars.insert(0, fill);
+                    }
+                    for _ in 0..right_delta {
+                        chars.push(fill);
+                    }
                 }
-
-                if mode == Mode::Fixed && width < 0 {
-                    push_leading_zeros(&mut result, precision);
-                } else {
-                    let (digits, e) = match mode {
-                        // These casts are safe because we handled width < 0 above
-                        Mode::Fixed => to_digits(self, extra as usize),
-                        _ => to_digits(self, width as usize),
-                    };
-                    exp = e;
-
-                    match mode {
-                        Mode::Fixed => {
-                            push_fixed_digits(&mut result, &digits, exp, precision);
+                None => {
+                    if formatter.sign_aware_zero_pad() {
+                        let index = if sign { 1 } else { 0 };
+                        for _ in 0..delta {
+                            chars.insert(index, '0');
                         }
-                        _ => {
-                            push_exp_digits(&mut result, &digits, precision);
+                    } else {
+                        for _ in 0..delta {
+                            chars.insert(0, fill);
                         }
                     }
                 }
             }
-
-            // Fix a fixed number because of an improper offset with large values.
-            // This affects values of 10^x - 1 for x > 28, causing them to put the point in the
-            // wrong place.
-            if mode == Mode::Fixed && precision > 0 {
-                improper_offset_fix(&mut result, self.0);
-            }
-
-            // If no precision was specified and there is a decimal point, drop all trailing zeroes
-            // after the decimal point.
-            if let None = f.precision() {
-                drop_trailing_zeros(&mut result);
-            }
-
-            if mode != Mode::Fixed && !self.is_infinite() {
-                let marker = if mode == Mode::Upper { 'E' } else { 'e' };
-                push_exponent(&mut result, marker, exp);
-            }
         }
-
-        let len = result.len();
-        if let Some(width) = f.width() {
-            if len < width {
-                align_and_fill(&mut result, f, width, sign);
-            }
-        }
-
-        result.into_iter().collect()
     }
+}
+
+#[inline]
+fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
+    let mut result = Vec::new();
+    let mut sign = true;
+    let precision = match f.precision() {
+        Some(p) => p,
+        None => DEFAULT_PRECISION,
+    };
+
+    if value.is_nan() {
+        push_nan(&mut result);
+    } else {
+        sign = push_sign(&mut result, value, f);
+
+        if value.is_infinite() {
+            push_inf(&mut result);
+        } else if *value == 0.0 {
+            push_zero(&mut result, precision);
+        } else {
+            let width = precision as i32 + value.abs().log10().floor().to_int() + 1;
+            let extra = width.max(60);
+
+            // Special case: zero precision, |value| < 1.0
+            // In this case a number greater than 0.5 prints 0 and should print 1
+            if precision == 0 && value.abs() < 1.0 {
+                result.push(if value.abs() >= 0.5 { '1' } else { '0' });
+            }
+
+            if width < 0 {
+                push_leading_zeros(&mut result, precision);
+            } else {
+                let (digits, exp) = to_digits(value, extra as usize);
+                push_fixed_digits(&mut result, &digits, exp, precision);
+            }
+        }
+
+        improper_offset_fix(&mut result, value.0, precision);
+        drop_trailing_zeros(&mut result, f);
+    }
+    align_and_fill(&mut result, f, sign);
+
+    write!(f, "{}", result.into_iter().collect::<String>())
+}
+
+#[inline]
+fn format_exp(value: &DoubleDouble, f: &mut fmt::Formatter, upper: bool) -> fmt::Result {
+    let mut result = Vec::new();
+    let mut sign = true;
+    let mut exp = 0;
+    let precision = match f.precision() {
+        Some(p) => p,
+        None => DEFAULT_PRECISION,
+    };
+
+    if value.is_nan() {
+        push_nan(&mut result);
+    } else {
+        sign = push_sign(&mut result, value, f);
+
+        if value.is_infinite() {
+            push_inf(&mut result);
+        } else if *value == 0.0 {
+            push_zero(&mut result, precision);
+        } else {
+            let width = precision + 1;
+            let (digits, e) = to_digits(value, width as usize);
+            exp = e;
+            push_exp_digits(&mut result, &digits, precision);
+        }
+
+        drop_trailing_zeros(&mut result, f);
+        let marker = if upper { 'E' } else { 'e' };
+        push_exponent(&mut result, marker, exp);
+    }
+    align_and_fill(&mut result, f, sign);
+
+    write!(f, "{}", result.into_iter().collect::<String>())
 }
 
 impl fmt::Display for DoubleDouble {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let text = self.format(f, Mode::Fixed);
-        write!(f, "{}", text)
+        format_fixed(self, f)
     }
 }
 
 impl fmt::LowerExp for DoubleDouble {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let text = self.format(f, Mode::Lower);
-        write!(f, "{}", text)
+        format_exp(self, f, false)
     }
 }
 
 impl fmt::UpperExp for DoubleDouble {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let text = self.format(f, Mode::Upper);
-        write!(f, "{}", text)
+        format_exp(self, f, true)
     }
 }
 
