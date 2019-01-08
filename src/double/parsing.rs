@@ -211,27 +211,28 @@ fn round_vec(s: &mut Vec<i32>, exp: &mut i32) {
     }
 }
 
-fn to_digits(r: &DoubleDouble, precision: usize) -> (Vec<char>, i32) {
+// Turns a double-double into a vector of digits and an exponent. Sign is ignored, and no decimal
+// appears in the vector; the exponent is calculated based on having the decimal point after the
+// first digit.
+//
+// This function returns a vector of signed integers even though unsigned would make more logical
+// sense. That's because internally (with the call to `extract_digits`) the vector has to deal with
+// signed integers, and it's more efficient to let the caller cast them to unsigned as needed than
+// it is to create a new vector of unsigned integers and copy them over.
+fn to_digits(r: &DoubleDouble, precision: usize) -> (Vec<i32>, i32) {
     let mut r = r.abs();
 
     if r == 0.0 {
-        return (vec!['0'; precision], 0);
+        return (vec![0; precision], 0);
     }
 
     let mut exp = calculate_exponent(&mut r);
     // We pass one more than the actual precision to leave an extra digit at the end to do rounding
-    let mut s = extract_digits(&mut r, precision + 1);
-    correct_range(&mut s);
-    round_vec(&mut s, &mut exp);
+    let mut digits = extract_digits(&mut r, precision + 1);
+    correct_range(&mut digits);
+    round_vec(&mut digits, &mut exp);
 
-    // Transfer into a vector of chars. Using the vec slice drops the last item, which had only
-    // been used for rounding.
-    let result: Vec<char> = s[0..precision]
-        .into_iter()
-        .map(|d| char::from_digit(*d as u32, 10).unwrap())
-        .collect();
-
-    (result, exp)
+    (digits, exp)
 }
 
 impl DoubleDouble {
@@ -304,12 +305,12 @@ impl DoubleDouble {
                             if offset > 0 {
                                 let offset = offset as usize;
                                 for digit in &digits[..offset] {
-                                    result.push(*digit);
+                                    result.push(char::from_digit(*digit as u32, 10).unwrap());
                                 }
                                 if precision > 0 {
                                     result.push('.');
                                     for digit in &digits[offset..precision] {
-                                        result.push(*digit);
+                                        result.push(char::from_digit(*digit as u32, 10).unwrap());
                                     }
                                 }
                             } else {
@@ -321,17 +322,17 @@ impl DoubleDouble {
                                     }
                                 }
                                 for digit in &digits[..precision] {
-                                    result.push(*digit);
+                                    result.push(char::from_digit(*digit as u32, 10).unwrap());
                                 }
                             }
                         }
                         _ => {
-                            result.push(digits[0]);
+                            result.push(char::from_digit(digits[0] as u32, 10).unwrap());
                             if precision > 0 {
                                 result.push('.');
                             }
                             for digit in &digits[1..precision] {
-                                result.push(*digit);
+                                result.push(char::from_digit(*digit as u32, 10).unwrap());
                             }
                         }
                     }
