@@ -120,91 +120,124 @@ enum Mode {
     Lower,
 }
 
-impl DoubleDouble {
-    // Converts a DoubleDouble to a vector of its digits and an exponent. Sign and decimal point are
-    // not included, though the exponent assumes the decimal point to be after the first digit.
-    fn to_digits(&self, precision: usize) -> (Vec<char>, i32) {
-        let mut r = self.abs();
+// Calculates the exponent of the supplied double-double, adjusting the double-double to fall
+// somewhere in the range [1, 10) (i.e., to have a single non-zero digit before the decimal point).
+#[inline]
+fn calculate_exponent(r: &mut DoubleDouble) -> i32 {
+    // Quick calculation of exponent based on the first component of `r`. This could turn out to be
+    // off by 1 either direction depending on the second component.
+    let mut exp = r.0.abs().log10().floor() as i32;
 
-        // Handle the zero case
-        if r == 0.0 {
-            return (vec!['0'; precision], 0);
-        }
-
-        // Determine the approximate exponent
-        let mut exp = self.0.abs().log10().floor() as i32;
-        if exp < -300 {
-            r *= DoubleDouble::from(10.0).powi(300);
-            r /= DoubleDouble::from(10.0).powi(exp + 300);
-        } else if exp > 300 {
-            r = r.ldexp(-53);
-            r /= DoubleDouble::from(10.0).powi(exp);
-            r = r.ldexp(53);
-        } else {
-            r /= DoubleDouble::from(10.0).powi(exp);
-        }
-
-        // Adjust the exponent by 1 in either direction, if necessary
-        if r >= 10.0 {
-            r /= 10.0;
-            exp += 1;
-        } else if r < 1.0 {
-            r *= 10.0;
-            exp -= 1;
-        }
-
-        // Extract digits into a vector of values from 0-9
-        // Initially there are likely to "digits" out of this range, but that will be corrected
-        // below
-        let digits = precision + 1; // One more than the precision, so we can round the last digit
-        let mut s = Vec::with_capacity(digits);
-        for _ in 0..digits {
-            let digit = r.0 as i32;
-            r -= digit as f64;
-            r *= 10.0;
-            s.push(digit);
-        }
-
-        // Correct out of range digits
-        for i in (1..digits).rev() {
-            if s[i] < 0 {
-                s[i - 1] -= 1;
-                s[i] += 10;
-            } else if s[i] > 9 {
-                s[i - 1] += 1;
-                s[i] -= 10;
-            }
-        }
-
-        // Round the last digit and handle carry through the vector
-        if s[digits - 1] > 5 {
-            s[digits - 2] += 1;
-            let mut i = digits - 2;
-            while i > 0 && s[i] > 9 {
-                s[i] -= 10;
-                s[i - 1] += 1;
-                i -= 1;
-            }
-        }
-
-        // If the first digit requires carry, insert one more digit to turn 9 into 10
-        // and adjust the exponent
-        if s[0] > 9 {
-            exp += 1;
-            s[0] = 0;
-            s.insert(0, 1);
-        }
-
-        // Transfer into a vector of chars. Using the vec slice drops the last item, which had only
-        // been used for rounding.
-        let result: Vec<char> = s[0..precision]
-            .into_iter()
-            .map(|d| char::from_digit(*d as u32, 10).unwrap())
-            .collect();
-
-        (result, exp)
+    // Adjust `r` based on that exponent approximation
+    if exp < -300 {
+        *r *= DoubleDouble::from(10.0).powi(300);
+        *r /= DoubleDouble::from(10.0).powi(exp + 300);
+    } else if exp > 300 {
+        *r = r.ldexp(-53);
+        *r /= DoubleDouble::from(10.0).powi(exp);
+        *r = r.ldexp(53);
+    } else {
+        *r /= DoubleDouble::from(10.0).powi(exp);
     }
 
+    // If `r` is outside the range [1, 10), then the exponent was off by 1. Adjust both it and `r`.
+    if *r >= 10.0 {
+        *r /= 10.0;
+        exp += 1;
+    } else if *r < 1.0 {
+        *r *= 10.0;
+        exp -= 1;
+    }
+
+    exp
+}
+
+// Extracts the digits of `r` into a vector of integers. These integers will fall in the range [-9,
+// 9]. Even if `r` is always positive as a whole, its second component can be negative which will
+// generate negative 'digits'.
+//
+// `r` is modified throughout to extract the digits and contains nothing of value when this function
+// is complete.
+#[inline]
+fn extract_digits(r: &mut DoubleDouble, precision: usize) -> Vec<i32> {
+    let mut s = Vec::with_capacity(precision);
+    for _ in 0..precision {
+        let digit = r.0 as i32;
+        *r -= digit as f64;
+        *r *= 10.0;
+        s.push(digit);
+    }
+    s
+}
+
+// Adjusts the range of integers in the supplied vector from [9, -9] to [0, 9]. (This function will
+// handle 'digits' up to 19, but I don't believe in this application that they're ever over 9.)
+//
+// The `precision` isn't really necessary, as we can calculate the length of the vector, but since
+// it would have had to be calculated for `extract_digits` anyway there's no need to calculate it
+// again.
+#[inline]
+fn correct_range(s: &mut Vec<i32>, precision: usize) {
+    for i in (1..precision).rev() {
+        if s[i] < 0 {
+            s[i - 1] -= 1;
+            s[i] += 10;
+        } else if s[i] > 9 {
+            s[i - 1] += 1;
+            s[i] -= 10;
+        }
+    }
+}
+
+// Rounds the second-to-last digit of an i32 vector based on the value of the last digit. This
+// rounding is standard round-to-even in the case of a final digit of 5. Any necessary carrying is
+// propagated as far as it needs to, adjusting the exponent if the carry goes all the way to the
+// first digit.
+#[inline]
+fn round_vec(s: &mut Vec<i32>, exp: &mut i32, precision: usize) {
+    if s[precision - 1] > 5 || s[precision - 1] == 5 && s[precision - 2] % 2 == 1 {
+        s[precision - 2] += 1;
+        let mut i = precision - 2;
+        while i > 0 && s[i] > 9 {
+            s[i] -= 10;
+            s[i - 1] += 1;
+            i -= 1;
+        }
+    }
+
+    // If the first digit requires carry, insert one more digit to turn 9 into 10
+    // and adjust the exponent
+    if s[0] > 9 {
+        *exp += 1;
+        s[0] = 0;
+        s.insert(0, 1);
+    }
+}
+
+fn to_digits(r: &DoubleDouble, precision: usize) -> (Vec<char>, i32) {
+    let mut r = r.abs();
+
+    if r == 0.0 {
+        return (vec!['0'; precision], 0);
+    }
+
+    let mut exp = calculate_exponent(&mut r);
+    let digits = precision + 1; // One more than the precision, so we can round the last digit
+    let mut s = extract_digits(&mut r, digits);
+    correct_range(&mut s, digits);
+    round_vec(&mut s, &mut exp, digits);
+
+    // Transfer into a vector of chars. Using the vec slice drops the last item, which had only
+    // been used for rounding.
+    let result: Vec<char> = s[0..precision]
+        .into_iter()
+        .map(|d| char::from_digit(*d as u32, 10).unwrap())
+        .collect();
+
+    (result, exp)
+}
+
+impl DoubleDouble {
     fn format(&self, f: &mut fmt::Formatter, mode: Mode) -> String {
         let mut result = Vec::new();
         let mut sign = true;
@@ -263,8 +296,8 @@ impl DoubleDouble {
                 } else {
                     let (digits, e) = match mode {
                         // These casts are safe because we handled width < 0 above
-                        Mode::Fixed => self.to_digits(extra as usize),
-                        _ => self.to_digits(width as usize),
+                        Mode::Fixed => to_digits(self, extra as usize),
+                        _ => to_digits(self, width as usize),
                     };
                     exp = e;
 
