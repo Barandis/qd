@@ -85,6 +85,9 @@ impl FromStr for DoubleDouble {
                             }
                         }
                     }
+                    '_' => {
+                        // just continue; _ is a no-op but not an error
+                    }
                     _ => {
                         return Err(ParseQdFloatError {
                             kind: QdFloatErrorKind::Invalid,
@@ -296,8 +299,7 @@ fn push_zero(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
 // rounded there unnecessarily and then here as well.
 fn round_fixed_digits(digits: &mut Vec<i32>, offset: &mut i32, precision: usize) {
     let d = (*offset + precision as i32) as usize;
-    if digits[d] > 5 || digits[d] == 5 && digits[d - 1] % 2 == 1
-    {
+    if digits[d] > 5 || digits[d] == 5 && digits[d - 1] % 2 == 1 {
         digits[d - 1] += 1;
         let mut i = d - 1;
         while i > 0 && digits[i] > 9 {
@@ -330,8 +332,7 @@ fn push_fixed_digits(chars: &mut Vec<char>, digits: &mut Vec<i32>, exp: i32, pre
                 chars.push('0');
             }
         }
-    }
-    else {
+    } else {
         round_fixed_digits(digits, &mut offset, precision);
 
         if offset > 0 {
@@ -569,6 +570,133 @@ impl fmt::UpperExp for DoubleDouble {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         format_exp(self, f, true)
     }
+}
+
+// #endregion
+
+// #region Tests
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const PI_50: &str = "3.14159265358979323846264338327950288419716939937510";
+    const E_50: &str  = "2.71828182845904523536028747135266249775724709369995";
+    const PI_50_3: &str = "3.14159265358979323846264338327950288419716939937510e3";
+    const E_50_NEG_2: &str  = "2.71828182845904523536028747135266249775724709369995e-2";
+    const PI_TIMES_10_20: &str = "314159265358979323846";
+    const E_TIMES_10_25: &str = "27182818284590452353602874";
+    const PI_TIMES_10_20_EXP: &str = "3.14159265358979323846e20";
+    const E_TIMES_10_25_EXP: &str = "2.7182818284590452353602874e25";
+
+    fn parse(value: &str) -> DoubleDouble {
+        value.parse().unwrap()
+    }
+
+    fn close(a: DoubleDouble, b: DoubleDouble) -> bool {
+        (a - b).abs() < 1e-28
+    }
+
+    // #region Parsing tests
+
+    #[test]
+    fn parse_nan() {
+        assert!(parse("nan").is_nan());
+    }
+
+    #[test]
+    fn parse_inf() {
+        assert_eq!(parse("inf"), DoubleDouble::INFINITY);
+    }
+
+    #[test]
+    fn parse_neg_inf() {
+        assert_eq!(parse("-inf"), DoubleDouble::NEG_INFINITY);
+    }
+
+    #[test]
+    fn parse_zero() {
+        assert_eq!(parse("0"), DoubleDouble::from(0));
+    }
+
+    #[test]
+    fn parse_integer() {
+        assert_eq!(parse("1729"), DoubleDouble::from(1729));
+        assert_eq!(parse("16_777_216"), DoubleDouble::from(16_777_216));
+        assert_eq!(parse("+2317"), DoubleDouble::from(2317));
+        assert_eq!(parse("-42"), DoubleDouble::from(-42));
+    }
+
+    #[test]
+    fn parse_long_integer() {
+        assert_eq!(
+            parse(PI_TIMES_10_20),
+            (DoubleDouble::PI * DoubleDouble::from(10).powi(20)).floor()
+        );
+        assert_eq!(
+            parse(E_TIMES_10_25),
+            (DoubleDouble::E * DoubleDouble::from(10).powi(25)).floor()
+        );
+    }
+
+    #[test]
+    fn parse_float() {
+        // Using just the first component for comparisons here, because on numbers that don't
+        // need that much precision, there is a notable error component in the parsing calculations
+        // (much less than the precision necessary, but enough that tests would catch it).
+        //
+        // This could easily be checked by formatting an output with the proper precision, but that
+        // would be testing both parsing and precision, and we want to isolate those.
+        assert_eq!(parse("17.29").0, DoubleDouble::from(17.29).0);
+        assert_eq!(parse(".016_777_216").0, DoubleDouble::from(0.016_777_216).0);
+        assert_eq!(parse("0.016_777_216").0, DoubleDouble::from(0.016_777_216).0);
+        assert_eq!(parse("+2.317").0, DoubleDouble::from(2.317).0);
+        assert_eq!(parse("-0.00042").0, DoubleDouble::from(-0.00042).0);
+    }
+
+    #[test]
+    fn parse_long_float() {
+        // Using closeness for comparisons here, because the input numbers are long enough to
+        // warrant it
+        assert!(close(parse(PI_50), DoubleDouble::PI));
+        assert!(close(parse(E_50), DoubleDouble::E));
+    }
+
+    #[test]
+    fn parse_exp_integer() {
+        assert_eq!(parse("1729e0"), DoubleDouble::from(1729));
+        assert_eq!(parse("16_777_216e+1"), DoubleDouble::from(167772160));
+        assert_eq!(parse("+231700000E-5"), DoubleDouble::from(2317));
+        assert_eq!(parse("-42E3"), DoubleDouble::from(-42000));
+    }
+
+    #[test]
+    fn parse_long_exp_integer() {
+        assert_eq!(
+            parse(PI_TIMES_10_20_EXP),
+            (DoubleDouble::PI * DoubleDouble::from(10).powi(20)).floor()
+        );
+        assert_eq!(
+            parse(E_TIMES_10_25_EXP),
+            (DoubleDouble::E * DoubleDouble::from(10).powi(25)).floor()
+        );
+    }
+
+    #[test]
+    fn parse_exp_float() {
+        assert_eq!(parse("17.29e0").0, DoubleDouble::from(17.29).0);
+        assert_eq!(parse("1.6777216e-2").0, DoubleDouble::from(0.016_777_216).0);
+        assert_eq!(parse("0.16777216e-1").0, DoubleDouble::from(0.016_777_216).0);
+        assert_eq!(parse("+2.317E3").0, DoubleDouble::from(2317).0);
+        assert_eq!(parse("-4.2e-4").0, DoubleDouble::from(-0.00042).0);
+    }
+
+    #[test]
+    fn parse_long_exp_float() {
+        assert!(close(parse(PI_50_3), DoubleDouble::PI * 1000.0));
+        assert!(close(parse(E_50_NEG_2), DoubleDouble::E / 100.0));
+    }
+
+    // #endregion
 }
 
 // #endregion
