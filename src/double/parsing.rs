@@ -172,13 +172,9 @@ fn extract_digits(r: &mut DoubleDouble, precision: usize) -> Vec<i32> {
 
 // Adjusts the range of integers in the supplied vector from [9, -9] to [0, 9]. (This function will
 // handle 'digits' up to 19, but I don't believe in this application that they're ever over 9.)
-//
-// The `precision` isn't really necessary, as we can calculate the length of the vector, but since
-// it would have had to be calculated for `extract_digits` anyway there's no need to calculate it
-// again.
 #[inline]
-fn correct_range(s: &mut Vec<i32>, precision: usize) {
-    for i in (1..precision).rev() {
+fn correct_range(s: &mut Vec<i32>) {
+    for i in (1..s.len()).rev() {
         if s[i] < 0 {
             s[i - 1] -= 1;
             s[i] += 10;
@@ -194,10 +190,11 @@ fn correct_range(s: &mut Vec<i32>, precision: usize) {
 // propagated as far as it needs to, adjusting the exponent if the carry goes all the way to the
 // first digit.
 #[inline]
-fn round_vec(s: &mut Vec<i32>, exp: &mut i32, precision: usize) {
-    if s[precision - 1] > 5 || s[precision - 1] == 5 && s[precision - 2] % 2 == 1 {
-        s[precision - 2] += 1;
-        let mut i = precision - 2;
+fn round_vec(s: &mut Vec<i32>, exp: &mut i32) {
+    let len = s.len();
+    if s[len - 1] > 5 || s[len - 1] == 5 && s[len - 2] % 2 == 1 {
+        s[len - 2] += 1;
+        let mut i = len - 2;
         while i > 0 && s[i] > 9 {
             s[i] -= 10;
             s[i - 1] += 1;
@@ -222,10 +219,10 @@ fn to_digits(r: &DoubleDouble, precision: usize) -> (Vec<char>, i32) {
     }
 
     let mut exp = calculate_exponent(&mut r);
-    let digits = precision + 1; // One more than the precision, so we can round the last digit
-    let mut s = extract_digits(&mut r, digits);
-    correct_range(&mut s, digits);
-    round_vec(&mut s, &mut exp, digits);
+    // We pass one more than the actual precision to leave an extra digit at the end to do rounding
+    let mut s = extract_digits(&mut r, precision + 1);
+    correct_range(&mut s);
+    round_vec(&mut s, &mut exp);
 
     // Transfer into a vector of chars. Using the vec slice drops the last item, which had only
     // been used for rounding.
