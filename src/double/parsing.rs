@@ -4,7 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 use crate::double::DoubleDouble;
-use crate::error::{DoubleDoubleErrorKind, ParseDoubleDoubleError};
+use crate::error::{ParseQdFloatError, QdFloatErrorKind};
 use std::char;
 use std::fmt;
 use std::str::FromStr;
@@ -12,9 +12,9 @@ use std::str::FromStr;
 // #region Parsing
 
 impl FromStr for DoubleDouble {
-    type Err = ParseDoubleDoubleError;
+    type Err = ParseQdFloatError;
 
-    fn from_str(s: &str) -> Result<DoubleDouble, ParseDoubleDoubleError> {
+    fn from_str(s: &str) -> Result<DoubleDouble, ParseQdFloatError> {
         let mut result = DoubleDouble::from(0);
         let mut digits = 0;
         let mut point = -1;
@@ -24,8 +24,8 @@ impl FromStr for DoubleDouble {
         let s = s.trim();
 
         if s.is_empty() {
-            return Err(ParseDoubleDoubleError {
-                kind: DoubleDoubleErrorKind::Empty,
+            return Err(ParseQdFloatError {
+                kind: QdFloatErrorKind::Empty,
             });
         }
 
@@ -49,24 +49,24 @@ impl FromStr for DoubleDouble {
                 None => match ch {
                     '.' => {
                         if point >= 0 {
-                            return Err(ParseDoubleDoubleError {
-                                kind: DoubleDoubleErrorKind::Invalid,
+                            return Err(ParseQdFloatError {
+                                kind: QdFloatErrorKind::Invalid,
                             });
                         }
                         point = digits;
                     }
                     '-' => {
                         if sign != 0 || digits > 0 {
-                            return Err(ParseDoubleDoubleError {
-                                kind: DoubleDoubleErrorKind::Invalid,
+                            return Err(ParseQdFloatError {
+                                kind: QdFloatErrorKind::Invalid,
                             });
                         }
                         sign = -1;
                     }
                     '+' => {
                         if sign != 0 || digits > 0 {
-                            return Err(ParseDoubleDoubleError {
-                                kind: DoubleDoubleErrorKind::Invalid,
+                            return Err(ParseQdFloatError {
+                                kind: QdFloatErrorKind::Invalid,
                             });
                         }
                         sign = 1;
@@ -79,15 +79,15 @@ impl FromStr for DoubleDouble {
                                 break;
                             }
                             Err(_) => {
-                                return Err(ParseDoubleDoubleError {
-                                    kind: DoubleDoubleErrorKind::Invalid,
+                                return Err(ParseQdFloatError {
+                                    kind: QdFloatErrorKind::Invalid,
                                 });
                             }
                         }
                     }
                     _ => {
-                        return Err(ParseDoubleDoubleError {
-                            kind: DoubleDoubleErrorKind::Invalid,
+                        return Err(ParseQdFloatError {
+                            kind: QdFloatErrorKind::Invalid,
                         });
                     }
                 },
