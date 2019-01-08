@@ -228,12 +228,16 @@ fn to_digits(r: &DoubleDouble, precision: usize) -> (Vec<i32>, i32) {
 
     (digits, exp)
 }
-
+// Converts an integer into a character representation of that integer. This assumes that `digit` is
+// between 0 and 9 inclusive. If it's not, there's a bug somewhere, so we WANT to panic; hence the
+// unchecked `unwrap`.
 #[inline]
 fn char_from_digit(digit: &i32) -> char {
     char::from_digit(*digit as u32, 10).unwrap()
 }
 
+// Potentially pushes a sign character to the supplied vector. Returns whether or not a character
+// was actually added, information that is used later in formatting.
 #[inline]
 fn push_sign(chars: &mut Vec<char>, value: &DoubleDouble, formatter: &fmt::Formatter) -> bool {
     let mut sign = true;
@@ -247,38 +251,42 @@ fn push_sign(chars: &mut Vec<char>, value: &DoubleDouble, formatter: &fmt::Forma
     sign
 }
 
+// Appends "NaN" to the supplied vector.
 #[inline]
 fn push_nan(chars: &mut Vec<char>) {
     chars.append(&mut "NaN".chars().collect());
 }
 
+// Appends "inf" to the supplied vector.
 #[inline]
 fn push_inf(chars: &mut Vec<char>) {
     chars.append(&mut "inf".chars().collect());
 }
 
+// Pushes the number zero to the supplied vector. If the formatter has a precision set, then it will
+// add that many zeros behind the decimal; if none is set, it'll just push "0.0".
 #[inline]
-fn push_zero(chars: &mut Vec<char>, precision: usize) {
-    chars.push('0');
-    if precision > 0 {
-        chars.push('.');
-        for _ in 0..precision {
+fn push_zero(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
+    match formatter.precision() {
+        Some(p) if p == 0 => {
             chars.push('0');
+        }
+        Some(p) => {
+            chars.push('0');
+            chars.push('.');
+            for _ in 0..p {
+                chars.push('0');
+            }
+        }
+        None => {
+            chars.append(&mut "0.0".chars().collect());
         }
     }
 }
 
-#[inline]
-fn push_leading_zeros(chars: &mut Vec<char>, precision: usize) {
-    chars.push('0');
-    if precision > 0 {
-        chars.push('.');
-        for _ in 0..precision {
-            chars.push('0');
-        }
-    }
-}
-
+// Converts all of the digits, up to the number indicated by `precision`, into characters and
+// pushes them onto the supplied character vector. `exp` determines where the decimal point is
+// placed. This is used to create a fixed-point output format.
 #[inline]
 fn push_fixed_digits(chars: &mut Vec<char>, digits: &Vec<i32>, exp: i32, precision: usize) {
     let offset = exp + 1;
@@ -307,6 +315,10 @@ fn push_fixed_digits(chars: &mut Vec<char>, digits: &Vec<i32>, exp: i32, precisi
     }
 }
 
+// Converts all of the digits, up to the number indicated by `precision`, into characters and
+// pushes them onto the supplied character vector. If there is a decimal point (i.e, if `precision`
+// is not 0), it will always be after the first digit. This is used to create an exponential output
+// format.
 #[inline]
 fn push_exp_digits(chars: &mut Vec<char>, digits: &Vec<i32>, precision: usize) {
     chars.push(char_from_digit(&digits[0]));
@@ -318,6 +330,9 @@ fn push_exp_digits(chars: &mut Vec<char>, digits: &Vec<i32>, precision: usize) {
     }
 }
 
+// It was suggested in the MIT implementation that the decimal point is placed incorrectly in
+// large numbers of the form 10^x - 1, for x > 28. This function adjusts the decimal point if that
+// actually happens.
 #[inline]
 fn improper_offset_fix(chars: &mut Vec<char>, target_value: f64, precision: usize) {
     if precision > 0 {
@@ -336,6 +351,9 @@ fn improper_offset_fix(chars: &mut Vec<char>, target_value: f64, precision: usiz
     }
 }
 
+// Drops trailing zeros after the decimal point (and the decimal point as well, if necessary). This
+// happens only if no precision was supplied to the formatter. In that case the number is given
+// as many decimal places as it needs minus the trailing zeros.
 #[inline]
 fn drop_trailing_zeros(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
     if let None = formatter.precision() {
@@ -352,12 +370,16 @@ fn drop_trailing_zeros(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
     }
 }
 
+// Pushes the exponent to the supplied character vector. It includes a leading marker character,
+// which should be either 'e' or 'E'.
 #[inline]
 fn push_exponent(chars: &mut Vec<char>, marker: char, exp: i32) {
     chars.push(marker);
     chars.append(&mut exp.to_string().chars().collect());
 }
 
+// Adjusts the character vector for width, precision, alignment, and fill characters. The vector is
+// expanded as needed to accomodate the width.
 #[inline]
 fn align_and_fill(chars: &mut Vec<char>, formatter: &mut fmt::Formatter, sign: bool) {
     if let Some(width) = formatter.width() {
@@ -403,6 +425,7 @@ fn align_and_fill(chars: &mut Vec<char>, formatter: &mut fmt::Formatter, sign: b
     }
 }
 
+// Formats `value` as a fixed-point number, with the format defined by `f`.
 #[inline]
 fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
     let mut result = Vec::new();
@@ -420,7 +443,7 @@ fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
         if value.is_infinite() {
             push_inf(&mut result);
         } else if *value == 0.0 {
-            push_zero(&mut result, precision);
+            push_zero(&mut result, f);
         } else {
             let width = precision as i32 + value.abs().log10().floor().to_int() + 1;
             let extra = width.max(60);
@@ -432,7 +455,7 @@ fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
             }
 
             if width < 0 {
-                push_leading_zeros(&mut result, precision);
+                push_zero(&mut result, f);
             } else {
                 let (digits, exp) = to_digits(value, extra as usize);
                 push_fixed_digits(&mut result, &digits, exp, precision);
@@ -447,6 +470,7 @@ fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "{}", result.into_iter().collect::<String>())
 }
 
+// Formats `value` as a exponential number, with the format defined by `f`.
 #[inline]
 fn format_exp(value: &DoubleDouble, f: &mut fmt::Formatter, upper: bool) -> fmt::Result {
     let mut result = Vec::new();
@@ -465,7 +489,7 @@ fn format_exp(value: &DoubleDouble, f: &mut fmt::Formatter, upper: bool) -> fmt:
         if value.is_infinite() {
             push_inf(&mut result);
         } else if *value == 0.0 {
-            push_zero(&mut result, precision);
+            push_zero(&mut result, f);
         } else {
             let width = precision + 1;
             let (digits, e) = to_digits(value, width as usize);
