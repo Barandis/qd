@@ -54,4 +54,6 @@
 mod basic;
 mod double;
 
+pub mod error;
+
 pub use self::double::DoubleDouble;

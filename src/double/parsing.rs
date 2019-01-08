@@ -4,6 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 use crate::double::DoubleDouble;
+use crate::error::{DoubleDoubleErrorKind, ParseDoubleDoubleError};
 use std::char;
 use std::fmt;
 use std::str::FromStr;
@@ -153,10 +154,12 @@ impl DoubleDouble {
         }
 
         // Extract digits into a vector of values from 0-9
+        // Initially there are likely to "digits" out of this range, but that will be corrected
+        // below
         let digits = precision + 1; // One more than the precision, so we can round the last digit
         let mut s = Vec::with_capacity(digits);
         for _ in 0..digits {
-            let digit = r.0 as i32; // not u32 because it's possible to have a -1 during processing
+            let digit = r.0 as i32;
             r -= digit as f64;
             r *= 10.0;
             s.push(digit);
@@ -408,31 +411,6 @@ impl fmt::UpperExp for DoubleDouble {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let text = self.format(f, Mode::Upper);
         write!(f, "{}", text)
-    }
-}
-
-// #endregion
-
-// #region Parsing error
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ParseDoubleDoubleError {
-    kind: DoubleDoubleErrorKind,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-enum DoubleDoubleErrorKind {
-    Empty,
-    Invalid,
-}
-
-impl fmt::Display for ParseDoubleDoubleError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let description = match self.kind {
-            DoubleDoubleErrorKind::Empty => "cannot parse double-double from empty string",
-            DoubleDoubleErrorKind::Invalid => "invalid double-double literal",
-        };
-        description.fmt(f)
     }
 }
 
