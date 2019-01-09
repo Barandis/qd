@@ -295,10 +295,14 @@ fn push_zero(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
 // `offset` + `precision` is presumed to be positive. If not, `push_fixed_digits` won't call this
 // function.
 //
-// TODO: This can likely be made more efficient. Exponentials are rounded in `round_vec`; fixed are
-// rounded there unnecessarily and then here as well.
-fn round_fixed_digits(digits: &mut Vec<i32>, offset: &mut i32, precision: usize) {
-    let d = (*offset + precision as i32) as usize;
+// TODO: This can be made more efficient. Exponentials are rounded in `round_vec`; fixed are rounded
+// there unnecessarily and then here as well.
+fn round_fixed_digits(digits: &mut Vec<i32>, offset: &mut i32, precision: Option<usize>) {
+    let d = match precision {
+        Some(p) => *offset + p as i32,
+        None => *offset.min(&mut 0) + DEFAULT_PRECISION as i32, // no more than 31 digits
+    } as usize;
+
     if digits[d] > 5 || digits[d] == 5 && digits[d - 1] % 2 == 1 {
         digits[d - 1] += 1;
         let mut i = d - 1;
@@ -322,13 +326,21 @@ fn round_fixed_digits(digits: &mut Vec<i32>, offset: &mut i32, precision: usize)
 // pushes them onto the supplied character vector. `offset` determines where the decimal point is
 // placed. This is used to create a fixed-point output format.
 #[inline]
-fn push_fixed_digits(chars: &mut Vec<char>, digits: &mut Vec<i32>, exp: i32, precision: usize) {
+fn push_fixed_digits(
+    chars: &mut Vec<char>,
+    digits: &mut Vec<i32>,
+    exp: i32,
+    precision: Option<usize>,
+) {
     let mut offset = exp + 1;
-    if precision as i32 + offset <= 0 {
+    let pr_value = precision.unwrap_or(DEFAULT_PRECISION);
+
+    if pr_value as i32 + offset <= 0 {
+        // Offset is greater than precision, give zero at given precision
         chars.push('0');
-        if precision > 0 {
+        if pr_value > 0 {
             chars.push('.');
-            for _ in 0..precision {
+            for _ in 0..pr_value {
                 chars.push('0');
             }
         }
@@ -340,10 +352,21 @@ fn push_fixed_digits(chars: &mut Vec<char>, digits: &mut Vec<i32>, exp: i32, pre
             for digit in &digits[..offset] {
                 chars.push(char_from_digit(digit));
             }
-            if precision > 0 {
-                chars.push('.');
-                for digit in &digits[offset..offset + precision] {
-                    chars.push(char_from_digit(digit));
+            match precision {
+                Some(p) => {
+                    if p > 0 {
+                        chars.push('.');
+                        for digit in &digits[offset..offset + p] {
+                            chars.push(char_from_digit(digit));
+                        }
+                    }
+                }
+                None => {
+                    chars.push('.');
+                    // limit to 31 characters, whatever that precision is
+                    for digit in &digits[offset..DEFAULT_PRECISION] {
+                        chars.push(char_from_digit(digit));
+                    }
                 }
             }
         } else {
@@ -354,7 +377,7 @@ fn push_fixed_digits(chars: &mut Vec<char>, digits: &mut Vec<i32>, exp: i32, pre
                     chars.push('0');
                 }
             }
-            let max = (offset + precision as i32) as usize;
+            let max = (offset + pr_value as i32) as usize;
             for digit in &digits[..max] {
                 chars.push(char_from_digit(digit));
             }
@@ -367,7 +390,8 @@ fn push_fixed_digits(chars: &mut Vec<char>, digits: &mut Vec<i32>, exp: i32, pre
 // is not 0), it will always be after the first digit. This is used to create an exponential output
 // format.
 #[inline]
-fn push_exp_digits(chars: &mut Vec<char>, digits: &Vec<i32>, precision: usize) {
+fn push_exp_digits(chars: &mut Vec<char>, digits: &Vec<i32>, precision: Option<usize>) {
+    let precision = precision.unwrap_or(DEFAULT_PRECISION);
     chars.push(char_from_digit(&digits[0]));
     if precision > 0 {
         chars.push('.');
@@ -477,10 +501,7 @@ fn align_and_fill(chars: &mut Vec<char>, formatter: &mut fmt::Formatter, sign: b
 fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
     let mut result = Vec::new();
     let mut sign = true;
-    let precision = match f.precision() {
-        Some(p) => p,
-        None => DEFAULT_PRECISION,
-    };
+    let precision = f.precision().unwrap_or(DEFAULT_PRECISION);
 
     if value.is_nan() {
         push_nan(&mut result);
@@ -506,7 +527,7 @@ fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
                 push_zero(&mut result, f);
             } else {
                 let (mut digits, exp) = to_digits(value, extra as usize);
-                push_fixed_digits(&mut result, &mut digits, exp, precision);
+                push_fixed_digits(&mut result, &mut digits, exp, f.precision());
             }
         }
 
@@ -524,10 +545,6 @@ fn format_exp(value: &DoubleDouble, f: &mut fmt::Formatter, upper: bool) -> fmt:
     let mut result = Vec::new();
     let mut sign = true;
     let mut exp = 0;
-    let precision = match f.precision() {
-        Some(p) => p,
-        None => DEFAULT_PRECISION,
-    };
 
     if value.is_nan() {
         push_nan(&mut result);
@@ -539,10 +556,10 @@ fn format_exp(value: &DoubleDouble, f: &mut fmt::Formatter, upper: bool) -> fmt:
         } else if *value == 0.0 {
             push_zero(&mut result, f);
         } else {
-            let width = precision + 1;
-            let (digits, e) = to_digits(value, width as usize);
+            let width = f.precision().unwrap_or(DEFAULT_PRECISION) + 1;
+            let (digits, e) = to_digits(value, width);
             exp = e;
-            push_exp_digits(&mut result, &digits, precision);
+            push_exp_digits(&mut result, &digits, f.precision());
         }
 
         drop_trailing_zeros(&mut result, f);
@@ -580,9 +597,9 @@ mod tests {
     use super::*;
 
     const PI_50: &str = "3.14159265358979323846264338327950288419716939937510";
-    const E_50: &str  = "2.71828182845904523536028747135266249775724709369995";
+    const E_50: &str = "2.71828182845904523536028747135266249775724709369995";
     const PI_50_3: &str = "3.14159265358979323846264338327950288419716939937510e3";
-    const E_50_NEG_2: &str  = "2.71828182845904523536028747135266249775724709369995e-2";
+    const E_50_NEG_2: &str = "2.71828182845904523536028747135266249775724709369995e-2";
     const PI_TIMES_10_20: &str = "314159265358979323846";
     const E_TIMES_10_25: &str = "27182818284590452353602874";
     const PI_TIMES_10_20_EXP: &str = "3.14159265358979323846e20";
@@ -652,7 +669,10 @@ mod tests {
         // would be testing both parsing and precision, and we want to isolate those.
         assert_eq!(parse("17.29").0, DoubleDouble::from(17.29).0);
         assert_eq!(parse(".016_777_216").0, DoubleDouble::from(0.016_777_216).0);
-        assert_eq!(parse("0.016_777_216").0, DoubleDouble::from(0.016_777_216).0);
+        assert_eq!(
+            parse("0.016_777_216").0,
+            DoubleDouble::from(0.016_777_216).0
+        );
         assert_eq!(parse("+2.317").0, DoubleDouble::from(2.317).0);
         assert_eq!(parse("-0.00042").0, DoubleDouble::from(-0.00042).0);
     }
@@ -689,7 +709,10 @@ mod tests {
     fn parse_exp_float() {
         assert_eq!(parse("17.29e0").0, DoubleDouble::from(17.29).0);
         assert_eq!(parse("1.6777216e-2").0, DoubleDouble::from(0.016_777_216).0);
-        assert_eq!(parse("0.16777216e-1").0, DoubleDouble::from(0.016_777_216).0);
+        assert_eq!(
+            parse("0.16777216e-1").0,
+            DoubleDouble::from(0.016_777_216).0
+        );
         assert_eq!(parse("+2.317E3").0, DoubleDouble::from(2317).0);
         assert_eq!(parse("-4.2e-4").0, DoubleDouble::from(-0.00042).0);
     }
@@ -730,6 +753,21 @@ mod tests {
         // Not yet!
         assert_eq!(parse_error("0xcafebabe").kind, QdFloatErrorKind::Invalid);
     }
+
+    // #endregion
+
+    // #region Formatting tests
+
+    // #region Plain formatting
+
+    #[test]
+    fn format_integer() {
+        assert_eq!(format!("{}", DoubleDouble::from(23)), "23");
+        assert_eq!(format!("{}", DoubleDouble::from(-17)), "-17");
+        assert_eq!(format!("{}", DoubleDouble::from_str(PI_TIMES_10_20).unwrap()), PI_TIMES_10_20);
+    }
+
+    // #endregion
 
     // #endregion
 }
