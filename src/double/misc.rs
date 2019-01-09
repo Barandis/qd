@@ -47,12 +47,12 @@ impl DoubleDouble {
 impl DoubleDouble {
     #[inline]
     pub fn is_sign_negative(&self) -> bool {
-        self.0 < 0.0
+        self.0.is_sign_negative()
     }
 
     #[inline]
     pub fn is_sign_positive(&self) -> bool {
-        self.0 > 0.0
+        self.0.is_sign_positive()
     }
 
     #[inline]
