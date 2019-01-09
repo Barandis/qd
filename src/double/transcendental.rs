@@ -127,8 +127,7 @@ impl Double {
         //
         // So now we're doing a little calculus too. Exciting!
         //
-        // Only one iteration is needed because Newton's iteration approximately doubles the number
-        // of digits per iteration.
+        // Testing has shown that it requires two iterations to get the required precision.
         if self == 1.0 {
             return Double::from(0.0);
         }
@@ -136,8 +135,9 @@ impl Double {
             return Double::NAN;
         }
 
-        let x = self.0.ln(); // initial approximation
-        x + self * (-x).exp() - 1.0
+        let x1 = self.0.ln();                   // initial approximation
+        let x2 = x1 + self * (-x1).exp() - 1.0; // iteration 1
+        x2 + self * (-x2).exp() - 1.0           // iteration 2
     }
 
     #[inline]
