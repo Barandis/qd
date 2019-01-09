@@ -40,7 +40,7 @@ impl Double {
     /// use qd::Double;
     ///
     /// let dd = Double::new(0.0, 0.0);
-    /// assert!(dd == 0.0);
+    /// assert!(dd.is_zero());
     /// ```
     pub fn new(a: f64, b: f64) -> Double {
         Double(a, b)
@@ -118,6 +118,12 @@ impl Double {
 
     /// Archimedes' constant (π)
     pub const PI: Double = Double(3.141592653589793e0, 1.2246467991473532e-16);
+
+    /// Zero (0)
+    pub const ZERO: Double = Double(0.0, 0.0);
+
+    /// One (1)
+    pub const ONE: Double = Double(1.0, 0.0);
 
     /// π/2
     pub const FRAC_PI_2: Double = Double(1.5707963267948966e0, 6.123233995736766e-17);

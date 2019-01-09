@@ -219,7 +219,7 @@ fn round_vec(digits: &mut Vec<i32>, exp: &mut i32) {
 fn to_digits(r: &Double, precision: usize) -> (Vec<i32>, i32) {
     let mut r = r.abs();
 
-    if r == 0.0 {
+    if r.is_zero() {
         return (vec![0; precision], 0);
     }
 
@@ -487,7 +487,7 @@ fn format_fixed(value: &Double, f: &mut fmt::Formatter) -> fmt::Result {
 
         if value.is_infinite() {
             push_inf(&mut result);
-        } else if *value == 0.0 {
+        } else if value.is_zero() {
             push_zero(&mut result, f);
         } else {
             let width = precision as i32 + value.abs().log10().floor().to_int() + 1;
@@ -531,7 +531,7 @@ fn format_exp(value: &Double, f: &mut fmt::Formatter, upper: bool) -> fmt::Resul
 
         if value.is_infinite() {
             push_inf(&mut result);
-        } else if *value == 0.0 {
+        } else if value.is_zero() {
             push_zero(&mut result, f);
         } else {
             let width = f.precision().unwrap_or(DEFAULT_PRECISION) + 1;

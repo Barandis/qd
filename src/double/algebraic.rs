@@ -112,8 +112,8 @@ impl Double {
     /// assert!((dd.sqrt() - Double::SQRT_2).abs() < Double::EPSILON);
     /// ```
     pub fn sqrt(self) -> Double {
-        if self == 0.0 {
-            Double::from(0.0)
+        if self.is_zero() {
+            Double::ZERO
         } else if self.is_sign_negative() {
             Double::from(f64::NAN)
         } else {

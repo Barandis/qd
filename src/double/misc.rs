@@ -46,6 +46,16 @@ impl Double {
 
 impl Double {
     #[inline]
+    pub fn is_zero(&self) -> bool {
+        self.0 == 0.0
+    }
+
+    #[inline]
+    pub fn is_one(&self) -> bool {
+        self.0 == 1.0 && self.1 == 0.0
+    }
+
+    #[inline]
     pub fn is_sign_negative(&self) -> bool {
         self.0.is_sign_negative()
     }

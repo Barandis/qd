@@ -292,8 +292,8 @@ impl Double {
 
     #[inline]
     fn div_double(self, other: Double) -> Double {
-        if other == 0.0 {
-            if self == 0.0 {
+        if other.is_zero() {
+            if self.is_zero() {
                 Double::NAN
             } else if self.is_sign_negative() {
                 Double::NEG_INFINITY
@@ -315,7 +315,7 @@ impl Double {
     #[inline]
     fn div_f64(self, other: f64) -> (f64, f64) {
         if other == 0.0 {
-            if self == 0.0 {
+            if self.is_zero() {
                 (f64::NAN, f64::NAN)
             } else if self.is_sign_negative() {
                 (f64::NEG_INFINITY, f64::NEG_INFINITY)

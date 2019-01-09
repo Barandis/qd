@@ -8,7 +8,7 @@ use crate::double::Double;
 // #region Exponential
 
 /// Reciprocals of factorials, rendered as Doubles. These are used in the Taylor series for
-/// calculating the exponentiation function.
+/// calculating the exponential function.
 const INV_FACT: [Double; 15] = [
     Double(1.6666666666666666e-1, 9.25185853854297e-18),
     Double(4.1666666666666664e-2, 2.3129646346357427e-18),
@@ -35,7 +35,7 @@ fn mul_pwr2(a: Double, b: f64) -> Double {
 }
 
 impl Double {
-    /// Computes the exponentional function, e^self, in double-double precision.
+    /// Computes the exponential function, *e*<sup>self</sup>, in double-double precision.
     pub fn exp(&self) -> Double {
         // Strategy, as gleaned from MIT papers and Wikipedia:
         //
@@ -57,15 +57,15 @@ impl Double {
 
         // Common cases, including numbers too big or small to be represented with Doubles
         if self.0 <= -709.0 {
-            return Double::from(0.0);
+            return Double::ZERO;
         }
         if self.0 >= 709.0 {
             return Double::INFINITY;
         }
-        if *self == 0.0 {
-            return Double::from(1.0);
+        if self.is_zero() {
+            return Double::ONE;
         }
-        if *self == 1.0 {
+        if self.is_one() {
             return Double::E;
         }
 
@@ -128,10 +128,10 @@ impl Double {
         // So now we're doing a little calculus too. Exciting!
         //
         // Testing has shown that it requires two iterations to get the required precision.
-        if self == 1.0 {
-            return Double::from(0.0);
+        if self.is_one() {
+            return Double::ZERO;
         }
-        if self <= 0.0 {
+        if self.is_zero() || self.is_sign_negative() {
             return Double::NAN;
         }
 
