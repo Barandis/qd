@@ -34,8 +34,6 @@ impl Double {
 
     /// Calculates `self`<sup>`n`</sup> and returns it as a new `Double`.
     ///
-    /// This method uses more-efficient squaring over multiplication where possible.
-    ///
     /// # Examples
     ///
     /// ```

@@ -147,3 +147,48 @@ impl Double {
 }
 
 // #endregion
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn close(a: Double, b: Double) -> bool {
+        (a - b).abs() < Double::from(10).powi(-30)
+    }
+
+    fn error_message(expected: Double, actual: Double) -> String {
+        format!("\nExpected: {}\nActual:   {}", expected, actual)
+    }
+
+    #[test]
+    fn exp() {
+        let expected_e2: Double = "7.38905609893065022723042746057501".parse().unwrap();
+        let expected_e3: Double = "20.0855369231876677409285296545817".parse().unwrap();
+        let expected_e1_2: Double = "1.64872127070012814684865078781416".parse().unwrap();
+
+        let actual_e2 = Double::from(2).exp();
+        let actual_e3 = Double::from(3).exp();
+        let actual_e1_2 = Double::from(0.5).exp();
+
+        assert!(close(expected_e2, actual_e2), error_message(expected_e2, actual_e2));
+        assert!(close(expected_e3, actual_e3), error_message(expected_e3, actual_e3));
+        assert!(close(expected_e1_2, actual_e1_2), error_message(expected_e1_2, actual_e1_2));
+    }
+
+    #[test]
+    fn ln() {
+        let expected_ln2: Double = "0.693147180559945309417232121458176".parse().unwrap();
+        let expected_ln_ln2: Double = "-0.366512920581664327012439158232669".parse().unwrap();
+        let expected_ln_pi: Double = "1.144729885849400174143427351353058".parse().unwrap();
+
+        let actual_ln2 = Double::from(2).ln();
+        let actual_ln_ln2 = actual_ln2.ln();
+        let actual_ln_pi = Double::PI.ln();
+
+        assert!(close(expected_ln2, actual_ln2), error_message(expected_ln2, actual_ln2));
+        assert!(close(expected_ln_ln2, actual_ln_ln2));
+        assert!(close(expected_ln_pi, actual_ln_pi));
+    }
+
+
+}
