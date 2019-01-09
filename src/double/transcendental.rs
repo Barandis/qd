@@ -69,8 +69,8 @@ impl Double {
             return Double::E;
         }
 
-        let m = (self.0 / Double::LOG10_2.0 + 0.5).floor();
-        let r = mul_pwr2(*self - Double::LOG10_2 * m, inv_k);
+        let m = (self.0 / Double::LN_2.0 + 0.5).floor();
+        let r = mul_pwr2(*self - Double::LN_2 * m, inv_k);
 
         let mut p = r.square();
         let mut s = r + mul_pwr2(p, 0.5);
