@@ -271,18 +271,15 @@ fn push_inf(chars: &mut Vec<char>) {
 #[inline]
 fn push_zero(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
     match formatter.precision() {
-        Some(p) if p == 0 => {
-            chars.push('0');
-        }
-        Some(p) => {
+        Some(p) if p > 0 => {
             chars.push('0');
             chars.push('.');
             for _ in 0..p {
                 chars.push('0');
             }
         }
-        None => {
-            chars.append(&mut "0.0".chars().collect());
+        _ => {
+            chars.push('0');
         }
     }
 }
@@ -297,6 +294,7 @@ fn push_zero(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
 //
 // TODO: This can be made more efficient. Exponentials are rounded in `round_vec`; fixed are rounded
 // there unnecessarily and then here as well.
+#[inline]
 fn round_fixed_digits(digits: &mut Vec<i32>, offset: &mut i32, precision: Option<usize>) {
     let d = match precision {
         Some(p) => *offset + p as i32,
@@ -396,29 +394,8 @@ fn push_exp_digits(chars: &mut Vec<char>, digits: &Vec<i32>, precision: Option<u
     if precision > 0 {
         chars.push('.');
     }
-    for digit in &digits[1..precision] {
+    for digit in &digits[1..precision + 1] {
         chars.push(char_from_digit(digit));
-    }
-}
-
-// It was suggested in the MIT implementation that the decimal point is placed incorrectly in
-// large numbers of the form 10^x - 1, for x > 28. This function adjusts the decimal point if that
-// actually happens.
-#[inline]
-fn improper_offset_fix(chars: &mut Vec<char>, target_value: f64, precision: usize) {
-    if precision > 0 {
-        let current_value: f64 = chars
-            .clone()
-            .into_iter()
-            .collect::<String>()
-            .parse()
-            .unwrap();
-        if (current_value / target_value).abs() > 3.0 {
-            let index = chars.clone().into_iter().position(|c| c == '.').unwrap();
-            let t = chars[index - 1];
-            chars[index - 1] = '.';
-            chars[index] = t;
-        }
     }
 }
 
@@ -514,16 +491,16 @@ fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
             push_zero(&mut result, f);
         } else {
             let width = precision as i32 + value.abs().log10().floor().to_int() + 1;
-            // Meant to be much wider than highest precision for better rounding
-            let extra = width.max(60);
+            // Higher than the max-length number + max precision so that users can do
+            // their format!("{:.30}", DoubleDouble::from_str("999999999999999999999999999999")) in
+            // peace
+            let extra = width.max(65);
 
             // Special case: zero precision, |value| < 1.0
             // In this case a number greater than 0.5 prints 0 and should print 1
             if precision == 0 && value.abs() < 1.0 {
                 result.push(if value.abs() >= 0.5 { '1' } else { '0' });
-            }
-
-            if width < 0 {
+            } else if width < 0 {
                 push_zero(&mut result, f);
             } else {
                 let (mut digits, exp) = to_digits(value, extra as usize);
@@ -531,8 +508,9 @@ fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
             }
         }
 
-        improper_offset_fix(&mut result, value.0, precision);
-        drop_trailing_zeros(&mut result, f);
+        if !value.is_infinite() {
+            drop_trailing_zeros(&mut result, f);
+        }
     }
     align_and_fill(&mut result, f, sign);
 
@@ -562,9 +540,11 @@ fn format_exp(value: &DoubleDouble, f: &mut fmt::Formatter, upper: bool) -> fmt:
             push_exp_digits(&mut result, &digits, f.precision());
         }
 
-        drop_trailing_zeros(&mut result, f);
-        let marker = if upper { 'E' } else { 'e' };
-        push_exponent(&mut result, marker, exp);
+        if !value.is_infinite() {
+            drop_trailing_zeros(&mut result, f);
+            let marker = if upper { 'E' } else { 'e' };
+            push_exponent(&mut result, marker, exp);
+        }
     }
     align_and_fill(&mut result, f, sign);
 
@@ -637,6 +617,7 @@ mod tests {
     #[test]
     fn parse_zero() {
         assert_eq!(parse("0"), DoubleDouble::from(0));
+        assert_eq!(parse("-0"), DoubleDouble::from(-0.0));
     }
 
     #[test]
@@ -760,11 +741,330 @@ mod tests {
 
     // #region Plain formatting
 
+    fn plain(value: DoubleDouble) -> String {
+        format!("{}", value)
+    }
+
+    fn close_str(actual: &str, expected: &str) -> bool {
+        let len = expected.len() - 1;
+        &actual[0..len] == &expected[0..len]
+    }
+
     #[test]
     fn format_integer() {
         assert_eq!(format!("{}", DoubleDouble::from(23)), "23");
         assert_eq!(format!("{}", DoubleDouble::from(-17)), "-17");
-        assert_eq!(format!("{}", DoubleDouble::from_str(PI_TIMES_10_20).unwrap()), PI_TIMES_10_20);
+        assert_eq!(
+            format!("{}", DoubleDouble::from_str(PI_TIMES_10_20).unwrap()),
+            PI_TIMES_10_20
+        );
+        assert_eq!(format!("{}", DoubleDouble::from(0)), "0");
+        assert_eq!(format!("{}", DoubleDouble::from(-0.0)), "-0");
+    }
+
+    #[test]
+    fn format_special() {
+        assert_eq!(plain(DoubleDouble::NAN), "NaN");
+        assert_eq!(plain(DoubleDouble::INFINITY), "inf");
+        assert_eq!(plain(DoubleDouble::NEG_INFINITY), "-inf");
+    }
+
+    #[test]
+    fn format_float() {
+        // Floating point error will keep these from being displayed exactly when no precision is
+        // defined, because the default precision will extend into the deep bits of these numbers.
+        // So we're checking to see if they're close.
+        assert!(close_str(
+            plain(DoubleDouble::from(17.29)).as_str(),
+            "17.29"
+        ));
+        assert!(close_str(
+            plain(DoubleDouble::from(0.016_777_216)).as_str(),
+            "0.016777216"
+        ));
+        assert!(close_str(
+            plain(DoubleDouble::from(2.317)).as_str(),
+            "2.317"
+        ));
+        assert!(close_str(
+            plain(DoubleDouble::from(0.00042)).as_str(),
+            "0.00042"
+        ));
+    }
+
+    #[test]
+    fn format_integer_exp() {
+        assert_eq!(plain(DoubleDouble::from(1729e0)), "1729");
+        assert_eq!(plain(DoubleDouble::from(16_777_216e+1)), "167772160");
+        assert_eq!(plain(DoubleDouble::from(231700000E-5)), "2317");
+        assert_eq!(plain(DoubleDouble::from(-42e3)), "-42000");
+    }
+
+    #[test]
+    fn format_float_exp() {
+        assert!(close_str(
+            plain(DoubleDouble::from(17.29e0)).as_str(),
+            "17.29"
+        ));
+        assert!(close_str(
+            plain(DoubleDouble::from(1.6777216e-1)).as_str(),
+            "0.16777216"
+        ));
+        assert!(close_str(
+            plain(DoubleDouble::from(2.317e2)).as_str(),
+            "231.7"
+        ));
+        assert!(close_str(
+            plain(DoubleDouble::from(-4.2e-4)).as_str(),
+            "-0.00042"
+        ));
+    }
+
+    // This is a test for an issue that I have seen mentioned nowhere except in the source code
+    // of the MIT library source code. It claims that for numbers of the form 10^x - 1, the decimal
+    // point can be printed in the wrong place.
+    //
+    // I have not seen evidence of this, and it's one otherwise-unmentioned block of code in
+    // software that was written more than a decade ago. The "fix" has been taken out of the code
+    // but I'm leaving in the test just in case.
+    #[test]
+    fn format_offset_10_x_minus_1() {
+        assert_eq!(
+            plain(DoubleDouble::from(10).powi(29) - 1.0),
+            "99999999999999999999999999999"
+        );
+        assert_eq!(
+            plain(DoubleDouble::from(10).powi(30) - 1.0),
+            "999999999999999999999999999999"
+        );
+        assert_eq!(
+            plain(DoubleDouble::from(10).powi(29) - 2.0),
+            "99999999999999999999999999998"
+        );
+    }
+
+    // #endregion
+
+    // #region Exponential formatting
+
+    fn exp(value: DoubleDouble) -> String {
+        format!("{:e}", value)
+    }
+
+    fn close_exp(actual: &str, expected: &str) -> bool {
+        let ex_parts: Vec<&str> = expected.split('e').collect();
+        let ac_parts: Vec<&str> = actual.split('e').collect();
+
+        let len = ex_parts[0].len() - 1;
+        &ac_parts[0][0..len] == &ex_parts[0][0..len] && &ac_parts[1] == &ex_parts[1]
+    }
+
+    #[test]
+    fn format_exp_integer() {
+        assert_eq!(format!("{:e}", DoubleDouble::from(23)), "2.3e1");
+        assert_eq!(format!("{:e}", DoubleDouble::from(-17)), "-1.7e1");
+        assert_eq!(
+            format!("{:e}", DoubleDouble::from_str(PI_TIMES_10_20).unwrap()),
+            PI_TIMES_10_20_EXP
+        );
+        assert_eq!(format!("{:e}", DoubleDouble::from(0)), "0e0");
+    }
+
+    #[test]
+    fn format_exp_special() {
+        assert_eq!(exp(DoubleDouble::NAN), "NaN");
+        assert_eq!(exp(DoubleDouble::INFINITY), "inf");
+        assert_eq!(exp(DoubleDouble::NEG_INFINITY), "-inf");
+    }
+
+    #[test]
+    fn format_exp_float() {
+        // Floating point error will keep these from being displayed exactly when no precision is
+        // defined, because the default precision will extend into the deep bits of these numbers.
+        // So we're checking to see if they're close.
+        assert!(close_exp(
+            exp(DoubleDouble::from(17.29)).as_str(),
+            "1.729e1"
+        ));
+        assert!(close_exp(
+            exp(DoubleDouble::from(0.016_777_216)).as_str(),
+            "1.6777216e-2"
+        ));
+        assert!(close_exp(
+            exp(DoubleDouble::from(2.317)).as_str(),
+            "2.317e0"
+        ));
+        assert!(close_exp(
+            exp(DoubleDouble::from(-0.00042)).as_str(),
+            "-4.2e-4"
+        ));
+    }
+
+    #[test]
+    fn format_exp_integer_exp() {
+        assert_eq!(exp(DoubleDouble::from(1729e0)), "1.729e3");
+        assert_eq!(exp(DoubleDouble::from(16_777_216e+1)), "1.6777216e8");
+        assert_eq!(exp(DoubleDouble::from(231700000E-5)), "2.317e3");
+        assert_eq!(exp(DoubleDouble::from(-42e3)), "-4.2e4");
+    }
+
+    #[test]
+    fn format_exp_float_exp() {
+        assert!(close_exp(
+            exp(DoubleDouble::from(17.29e0)).as_str(),
+            "1.729e1"
+        ));
+        assert!(close_exp(
+            exp(DoubleDouble::from(1.6777216e-1)).as_str(),
+            "1.6777216e-1"
+        ));
+        assert!(close_exp(
+            exp(DoubleDouble::from(2.317e2)).as_str(),
+            "2.317e2"
+        ));
+        assert!(close_exp(
+            exp(DoubleDouble::from(-4.2e-4)).as_str(),
+            "-4.2e-4"
+        ));
+    }
+
+    // #endregion
+
+    // #region Precision formatting
+
+    #[test]
+    fn format_precision_integer() {
+        assert_eq!(format!("{:.3}", DoubleDouble::from(23)), "23.000");
+        assert_eq!(format!("{:.0}", DoubleDouble::from(-17)), "-17");
+        assert_eq!(format!("{}", DoubleDouble::from(0)), "0");
+        assert_eq!(format!("{:.0}", DoubleDouble::from(0)), "0");
+        assert_eq!(format!("{:.10}", DoubleDouble::from(0)), "0.0000000000");
+    }
+
+    #[test]
+    fn format_precision_float() {
+        assert_eq!(format!("{:.0}", DoubleDouble::from(17.29)), "17");
+        assert_eq!(
+            format!("{:.6}", DoubleDouble::from(0.016_777_216)),
+            "0.016777"
+        );
+        assert_eq!(
+            format!("{:.5}", DoubleDouble::from(0.016_777_216)),
+            "0.01678"
+        );
+        assert_eq!(
+            format!("{:.12}", DoubleDouble::from(0.016_777_216)),
+            "0.016777216000"
+        );
+        assert_eq!(format!("{:.0}", DoubleDouble::from(0.016_777_216)), "0");
+        assert_eq!(format!("{:.0}", DoubleDouble::from(-0.016_777_216)), "-0");
+        assert_eq!(format!("{:.4}", DoubleDouble::from(0.0000016_777_216)), "0.0000");
+    }
+
+    #[test]
+    fn format_precision_exp() {
+        let value = DoubleDouble::from(0.016_777_216);
+        assert_eq!(format!("{:.3e}", value), "1.678e-2");
+        assert_eq!(format!("{:.4e}", value), "1.6777e-2");
+        assert_eq!(format!("{:.10e}", value), "1.6777216000e-2");
+        assert_eq!(format!("{:.0e}", value), "2e-2");
+    }
+
+    #[test]
+    fn format_precision_alt() {
+        let value = DoubleDouble::from(0.016_777_216);
+        assert_eq!(format!("{:.*e}", 3, value), "1.678e-2");
+        assert_eq!(format!("{0:.1$e}", value, 4), "1.6777e-2");
+        assert_eq!(format!("{:.prec$e}", value, prec = 10), "1.6777216000e-2");
+    }
+
+    // #endregion
+
+    // #region Width, fill, and alignment formatting
+
+    #[test]
+    fn format_width_default_align() {
+        let value = DoubleDouble::from(123456);
+        assert_eq!(format!("{:3}", value), "123456");
+        assert_eq!(format!("{:6}", value), "123456");
+        assert_eq!(format!("{:10}", value), "    123456");
+        assert_eq!(format!("{:10}", -value), "   -123456");
+        assert_eq!(format!("{:10e}", value), " 1.23456e5");
+    }
+
+    #[test]
+    fn format_width_right_align() {
+        let value = DoubleDouble::from(123456);
+        assert_eq!(format!("{:>3}", value), "123456");
+        assert_eq!(format!("{:>6}", value), "123456");
+        assert_eq!(format!("{:>10}", value), "    123456");
+        assert_eq!(format!("{:>10}", -value), "   -123456");
+        assert_eq!(format!("{:>10e}", value), " 1.23456e5");
+    }
+
+    #[test]
+    fn format_width_left_align() {
+        let value = DoubleDouble::from(123456);
+        assert_eq!(format!("{:<3}", value), "123456");
+        assert_eq!(format!("{:<6}", value), "123456");
+        assert_eq!(format!("{:<10}", value), "123456    ");
+        assert_eq!(format!("{:<10}", -value), "-123456   ");
+        assert_eq!(format!("{:<10e}", value), "1.23456e5 ");
+    }
+
+    #[test]
+    fn format_width_center_align() {
+        let value = DoubleDouble::from(123456);
+        assert_eq!(format!("{:^3}", value), "123456");
+        assert_eq!(format!("{:^6}", value), "123456");
+        assert_eq!(format!("{:^10}", value), "  123456  ");
+        assert_eq!(format!("{:^10}", -value), " -123456  ");
+        assert_eq!(format!("{:^11}", value), "  123456   ");
+        assert_eq!(format!("{:^11e}", value), " 1.23456e5 ");
+    }
+
+    #[test]
+    fn format_width_fill() {
+        let value = DoubleDouble::from(123456);
+        assert_eq!(format!("{:*^3}", value), "123456");
+        assert_eq!(format!("{:*^10}", value), "**123456**");
+        assert_eq!(format!("{:*>10}", value), "****123456");
+        assert_eq!(format!("{:*<10}", value), "123456****");
+        assert_eq!(format!("{:*>10}", -value), "***-123456");
+        assert_eq!(format!("{:*>10e}", value), "*1.23456e5");
+    }
+
+    #[test]
+    fn format_width_sign_aware_zero_fill() {
+        let value = DoubleDouble::from(123456);
+        assert_eq!(format!("{:03}", value), "123456");
+        assert_eq!(format!("{:010}", value), "0000123456");
+        assert_eq!(format!("{:010}", -value), "-000123456");
+        assert_eq!(format!("{:0>10}", -value), "000-123456");
+        assert_eq!(format!("{:012e}", -value), "-001.23456e5");
+    }
+
+    // #endregion
+
+    // #region Miscellaneous formatting
+
+    #[test]
+    fn format_misc_plus_sign() {
+        let value = DoubleDouble::from(123456);
+        assert_eq!(format!("{:+}", value), "+123456");
+        assert_eq!(format!("{:+e}", value), "+1.23456e5");
+        assert_eq!(format!("{:+12e}", value), "  +1.23456e5");
+        assert_eq!(format!("{:*^+12e}", value), "*+1.23456e5*");
+        assert_eq!(format!("{:0>+12e}", value), "00+1.23456e5");
+        assert_eq!(format!("{:+012e}", value), "+001.23456e5");
+    }
+
+    #[test]
+    fn format_misc_big_number() {
+        let value = DoubleDouble::from_str("123456789012345678901234567890").unwrap();
+        // Not checking the value here because we don't even do 60 digits of precision, just
+        // checking that formatting will actually print out 60 digits (and the decimal point)
+        assert_eq!(format!("{:.30}", value).len(), 61);
     }
 
     // #endregion
