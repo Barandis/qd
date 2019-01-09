@@ -3,19 +3,19 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::double::DoubleDouble;
-use crate::error::{ParseQdFloatError, QdFloatErrorKind};
+use crate::double::Double;
+use crate::error::{ErrorKind, ParseError};
 use std::char;
 use std::fmt;
 use std::str::FromStr;
 
 // #region Parsing
 
-impl FromStr for DoubleDouble {
-    type Err = ParseQdFloatError;
+impl FromStr for Double {
+    type Err = ParseError;
 
-    fn from_str(s: &str) -> Result<DoubleDouble, ParseQdFloatError> {
-        let mut result = DoubleDouble::from(0);
+    fn from_str(s: &str) -> Result<Double, ParseError> {
+        let mut result = Double::from(0);
         let mut digits = 0;
         let mut point = -1;
         let mut sign = 0;
@@ -24,19 +24,19 @@ impl FromStr for DoubleDouble {
         let s = s.trim();
 
         if s.is_empty() {
-            return Err(ParseQdFloatError {
-                kind: QdFloatErrorKind::Empty,
+            return Err(ParseError {
+                kind: ErrorKind::Empty,
             });
         }
 
         if s.to_ascii_lowercase() == "nan" {
-            return Ok(DoubleDouble::NAN);
+            return Ok(Double::NAN);
         }
         if s.to_ascii_lowercase() == "inf" {
-            return Ok(DoubleDouble::INFINITY);
+            return Ok(Double::INFINITY);
         }
         if s.to_ascii_lowercase() == "-inf" {
-            return Ok(DoubleDouble::NEG_INFINITY);
+            return Ok(Double::NEG_INFINITY);
         }
 
         for (index, ch) in s.chars().enumerate() {
@@ -49,24 +49,24 @@ impl FromStr for DoubleDouble {
                 None => match ch {
                     '.' => {
                         if point >= 0 {
-                            return Err(ParseQdFloatError {
-                                kind: QdFloatErrorKind::Invalid,
+                            return Err(ParseError {
+                                kind: ErrorKind::Invalid,
                             });
                         }
                         point = digits;
                     }
                     '-' => {
                         if sign != 0 || digits > 0 {
-                            return Err(ParseQdFloatError {
-                                kind: QdFloatErrorKind::Invalid,
+                            return Err(ParseError {
+                                kind: ErrorKind::Invalid,
                             });
                         }
                         sign = -1;
                     }
                     '+' => {
                         if sign != 0 || digits > 0 {
-                            return Err(ParseQdFloatError {
-                                kind: QdFloatErrorKind::Invalid,
+                            return Err(ParseError {
+                                kind: ErrorKind::Invalid,
                             });
                         }
                         sign = 1;
@@ -79,8 +79,8 @@ impl FromStr for DoubleDouble {
                                 break;
                             }
                             Err(_) => {
-                                return Err(ParseQdFloatError {
-                                    kind: QdFloatErrorKind::Invalid,
+                                return Err(ParseError {
+                                    kind: ErrorKind::Invalid,
                                 });
                             }
                         }
@@ -89,8 +89,8 @@ impl FromStr for DoubleDouble {
                         // just continue; _ is a no-op but not an error
                     }
                     _ => {
-                        return Err(ParseQdFloatError {
-                            kind: QdFloatErrorKind::Invalid,
+                        return Err(ParseError {
+                            kind: ErrorKind::Invalid,
                         });
                     }
                 },
@@ -101,7 +101,7 @@ impl FromStr for DoubleDouble {
             exp -= digits - point;
         }
         if exp != 0 {
-            result *= DoubleDouble::from(10.0).powi(exp);
+            result *= Double::from(10.0).powi(exp);
         }
         if sign == -1 {
             result = -result;
@@ -120,21 +120,21 @@ const DEFAULT_PRECISION: usize = 31;
 // Calculates the exponent of the supplied double-double, adjusting the double-double to fall
 // somewhere in the range [1, 10) (i.e., to have a single non-zero digit before the decimal point).
 #[inline]
-fn calculate_exponent(r: &mut DoubleDouble) -> i32 {
+fn calculate_exponent(r: &mut Double) -> i32 {
     // Quick calculation of exponent based on the first component of `r`. This could turn out to be
     // off by 1 either direction depending on the second component.
     let mut exp = r.0.abs().log10().floor() as i32;
 
     // Adjust `r` based on that exponent approximation
     if exp < -300 {
-        *r *= DoubleDouble::from(10.0).powi(300);
-        *r /= DoubleDouble::from(10.0).powi(exp + 300);
+        *r *= Double::from(10.0).powi(300);
+        *r /= Double::from(10.0).powi(exp + 300);
     } else if exp > 300 {
         *r = r.ldexp(-53);
-        *r /= DoubleDouble::from(10.0).powi(exp);
+        *r /= Double::from(10.0).powi(exp);
         *r = r.ldexp(53);
     } else {
-        *r /= DoubleDouble::from(10.0).powi(exp);
+        *r /= Double::from(10.0).powi(exp);
     }
 
     // If `r` is outside the range [1, 10), then the exponent was off by 1. Adjust both it and `r`.
@@ -156,7 +156,7 @@ fn calculate_exponent(r: &mut DoubleDouble) -> i32 {
 // `r` is modified throughout to extract the digits and contains nothing of value when this function
 // is complete.
 #[inline]
-fn extract_digits(r: &mut DoubleDouble, precision: usize) -> Vec<i32> {
+fn extract_digits(r: &mut Double, precision: usize) -> Vec<i32> {
     let mut digits = Vec::with_capacity(precision);
     for _ in 0..precision {
         let digit = r.0 as i32;
@@ -216,7 +216,7 @@ fn round_vec(digits: &mut Vec<i32>, exp: &mut i32) {
 // sense. That's because internally (with the call to `extract_digits`) the vector has to deal with
 // signed integers, and it's more efficient to let the caller cast them to unsigned as needed than
 // it is to create a new vector of unsigned integers and copy them over.
-fn to_digits(r: &DoubleDouble, precision: usize) -> (Vec<i32>, i32) {
+fn to_digits(r: &Double, precision: usize) -> (Vec<i32>, i32) {
     let mut r = r.abs();
 
     if r == 0.0 {
@@ -242,7 +242,7 @@ fn char_from_digit(digit: &i32) -> char {
 // Potentially pushes a sign character to the supplied vector. Returns whether or not a character
 // was actually added, information that is used later in formatting.
 #[inline]
-fn push_sign(chars: &mut Vec<char>, value: &DoubleDouble, formatter: &fmt::Formatter) -> bool {
+fn push_sign(chars: &mut Vec<char>, value: &Double, formatter: &fmt::Formatter) -> bool {
     let mut sign = true;
     if value.is_sign_negative() {
         chars.push('-');
@@ -475,7 +475,7 @@ fn align_and_fill(chars: &mut Vec<char>, formatter: &mut fmt::Formatter, sign: b
 
 // Formats `value` as a fixed-point number, with the format defined by `f`.
 #[inline]
-fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
+fn format_fixed(value: &Double, f: &mut fmt::Formatter) -> fmt::Result {
     let mut result = Vec::new();
     let mut sign = true;
     let precision = f.precision().unwrap_or(DEFAULT_PRECISION);
@@ -492,7 +492,7 @@ fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
         } else {
             let width = precision as i32 + value.abs().log10().floor().to_int() + 1;
             // Higher than the max-length number + max precision so that users can do
-            // their format!("{:.30}", DoubleDouble::from_str("999999999999999999999999999999")) in
+            // their format!("{:.30}", Double::from_str("999999999999999999999999999999")) in
             // peace
             let extra = width.max(65);
 
@@ -519,7 +519,7 @@ fn format_fixed(value: &DoubleDouble, f: &mut fmt::Formatter) -> fmt::Result {
 
 // Formats `value` as a exponential number, with the format defined by `f`.
 #[inline]
-fn format_exp(value: &DoubleDouble, f: &mut fmt::Formatter, upper: bool) -> fmt::Result {
+fn format_exp(value: &Double, f: &mut fmt::Formatter, upper: bool) -> fmt::Result {
     let mut result = Vec::new();
     let mut sign = true;
     let mut exp = 0;
@@ -551,19 +551,19 @@ fn format_exp(value: &DoubleDouble, f: &mut fmt::Formatter, upper: bool) -> fmt:
     write!(f, "{}", result.into_iter().collect::<String>())
 }
 
-impl fmt::Display for DoubleDouble {
+impl fmt::Display for Double {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         format_fixed(self, f)
     }
 }
 
-impl fmt::LowerExp for DoubleDouble {
+impl fmt::LowerExp for Double {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         format_exp(self, f, false)
     }
 }
 
-impl fmt::UpperExp for DoubleDouble {
+impl fmt::UpperExp for Double {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         format_exp(self, f, true)
     }
@@ -585,15 +585,15 @@ mod tests {
     const PI_TIMES_10_20_EXP: &str = "3.14159265358979323846e20";
     const E_TIMES_10_25_EXP: &str = "2.7182818284590452353602874e25";
 
-    fn parse(value: &str) -> DoubleDouble {
+    fn parse(value: &str) -> Double {
         value.parse().unwrap()
     }
 
-    fn parse_error(value: &str) -> ParseQdFloatError {
-        value.parse::<DoubleDouble>().unwrap_err()
+    fn parse_error(value: &str) -> ParseError {
+        value.parse::<Double>().unwrap_err()
     }
 
-    fn close(a: DoubleDouble, b: DoubleDouble) -> bool {
+    fn close(a: Double, b: Double) -> bool {
         (a - b).abs() < 1e-28
     }
 
@@ -606,37 +606,37 @@ mod tests {
 
     #[test]
     fn parse_inf() {
-        assert_eq!(parse("inf"), DoubleDouble::INFINITY);
+        assert_eq!(parse("inf"), Double::INFINITY);
     }
 
     #[test]
     fn parse_neg_inf() {
-        assert_eq!(parse("-inf"), DoubleDouble::NEG_INFINITY);
+        assert_eq!(parse("-inf"), Double::NEG_INFINITY);
     }
 
     #[test]
     fn parse_zero() {
-        assert_eq!(parse("0"), DoubleDouble::from(0));
-        assert_eq!(parse("-0"), DoubleDouble::from(-0.0));
+        assert_eq!(parse("0"), Double::from(0));
+        assert_eq!(parse("-0"), Double::from(-0.0));
     }
 
     #[test]
     fn parse_integer() {
-        assert_eq!(parse("1729"), DoubleDouble::from(1729));
-        assert_eq!(parse("16_777_216"), DoubleDouble::from(16_777_216));
-        assert_eq!(parse("+2317"), DoubleDouble::from(2317));
-        assert_eq!(parse("-42"), DoubleDouble::from(-42));
+        assert_eq!(parse("1729"), Double::from(1729));
+        assert_eq!(parse("16_777_216"), Double::from(16_777_216));
+        assert_eq!(parse("+2317"), Double::from(2317));
+        assert_eq!(parse("-42"), Double::from(-42));
     }
 
     #[test]
     fn parse_long_integer() {
         assert_eq!(
             parse(PI_TIMES_10_20),
-            (DoubleDouble::PI * DoubleDouble::from(10).powi(20)).floor()
+            (Double::PI * Double::from(10).powi(20)).floor()
         );
         assert_eq!(
             parse(E_TIMES_10_25),
-            (DoubleDouble::E * DoubleDouble::from(10).powi(25)).floor()
+            (Double::E * Double::from(10).powi(25)).floor()
         );
     }
 
@@ -648,91 +648,85 @@ mod tests {
         //
         // This could easily be checked by formatting an output with the proper precision, but that
         // would be testing both parsing and precision, and we want to isolate those.
-        assert_eq!(parse("17.29").0, DoubleDouble::from(17.29).0);
-        assert_eq!(parse(".016_777_216").0, DoubleDouble::from(0.016_777_216).0);
-        assert_eq!(
-            parse("0.016_777_216").0,
-            DoubleDouble::from(0.016_777_216).0
-        );
-        assert_eq!(parse("+2.317").0, DoubleDouble::from(2.317).0);
-        assert_eq!(parse("-0.00042").0, DoubleDouble::from(-0.00042).0);
+        assert_eq!(parse("17.29").0, Double::from(17.29).0);
+        assert_eq!(parse(".016_777_216").0, Double::from(0.016_777_216).0);
+        assert_eq!(parse("0.016_777_216").0, Double::from(0.016_777_216).0);
+        assert_eq!(parse("+2.317").0, Double::from(2.317).0);
+        assert_eq!(parse("-0.00042").0, Double::from(-0.00042).0);
     }
 
     #[test]
     fn parse_long_float() {
         // Using closeness for comparisons here, because the input numbers are long enough to
         // warrant it
-        assert!(close(parse(PI_50), DoubleDouble::PI));
-        assert!(close(parse(E_50), DoubleDouble::E));
+        assert!(close(parse(PI_50), Double::PI));
+        assert!(close(parse(E_50), Double::E));
     }
 
     #[test]
     fn parse_exp_integer() {
-        assert_eq!(parse("1729e0"), DoubleDouble::from(1729));
-        assert_eq!(parse("16_777_216e+1"), DoubleDouble::from(167772160));
-        assert_eq!(parse("+231700000E-5"), DoubleDouble::from(2317));
-        assert_eq!(parse("-42E3"), DoubleDouble::from(-42000));
+        assert_eq!(parse("1729e0"), Double::from(1729));
+        assert_eq!(parse("16_777_216e+1"), Double::from(167772160));
+        assert_eq!(parse("+231700000E-5"), Double::from(2317));
+        assert_eq!(parse("-42E3"), Double::from(-42000));
     }
 
     #[test]
     fn parse_long_exp_integer() {
         assert_eq!(
             parse(PI_TIMES_10_20_EXP),
-            (DoubleDouble::PI * DoubleDouble::from(10).powi(20)).floor()
+            (Double::PI * Double::from(10).powi(20)).floor()
         );
         assert_eq!(
             parse(E_TIMES_10_25_EXP),
-            (DoubleDouble::E * DoubleDouble::from(10).powi(25)).floor()
+            (Double::E * Double::from(10).powi(25)).floor()
         );
     }
 
     #[test]
     fn parse_exp_float() {
-        assert_eq!(parse("17.29e0").0, DoubleDouble::from(17.29).0);
-        assert_eq!(parse("1.6777216e-2").0, DoubleDouble::from(0.016_777_216).0);
-        assert_eq!(
-            parse("0.16777216e-1").0,
-            DoubleDouble::from(0.016_777_216).0
-        );
-        assert_eq!(parse("+2.317E3").0, DoubleDouble::from(2317).0);
-        assert_eq!(parse("-4.2e-4").0, DoubleDouble::from(-0.00042).0);
+        assert_eq!(parse("17.29e0").0, Double::from(17.29).0);
+        assert_eq!(parse("1.6777216e-2").0, Double::from(0.016_777_216).0);
+        assert_eq!(parse("0.16777216e-1").0, Double::from(0.016_777_216).0);
+        assert_eq!(parse("+2.317E3").0, Double::from(2317).0);
+        assert_eq!(parse("-4.2e-4").0, Double::from(-0.00042).0);
     }
 
     #[test]
     fn parse_long_exp_float() {
-        assert!(close(parse(PI_50_3), DoubleDouble::PI * 1000.0));
-        assert!(close(parse(E_50_NEG_2), DoubleDouble::E / 100.0));
+        assert!(close(parse(PI_50_3), Double::PI * 1000.0));
+        assert!(close(parse(E_50_NEG_2), Double::E / 100.0));
     }
 
     #[test]
     fn parse_error_empty() {
-        assert_eq!(parse_error("").kind, QdFloatErrorKind::Empty);
+        assert_eq!(parse_error("").kind, ErrorKind::Empty);
     }
 
     #[test]
     fn parse_error_misplaced_sign() {
-        assert_eq!(parse_error("2+317").kind, QdFloatErrorKind::Invalid);
+        assert_eq!(parse_error("2+317").kind, ErrorKind::Invalid);
     }
 
     #[test]
     fn parse_error_duplicate_sign() {
-        assert_eq!(parse_error("+-2317").kind, QdFloatErrorKind::Invalid);
+        assert_eq!(parse_error("+-2317").kind, ErrorKind::Invalid);
     }
 
     #[test]
     fn parse_error_duplicate_point() {
-        assert_eq!(parse_error("2.31.7").kind, QdFloatErrorKind::Invalid);
+        assert_eq!(parse_error("2.31.7").kind, ErrorKind::Invalid);
     }
 
     #[test]
     fn parse_error_bad_exponent() {
-        assert_eq!(parse_error("1.729e4e").kind, QdFloatErrorKind::Invalid);
+        assert_eq!(parse_error("1.729e4e").kind, ErrorKind::Invalid);
     }
 
     #[test]
     fn parse_error_bad_character() {
         // Not yet!
-        assert_eq!(parse_error("0xcafebabe").kind, QdFloatErrorKind::Invalid);
+        assert_eq!(parse_error("0xcafebabe").kind, ErrorKind::Invalid);
     }
 
     // #endregion
@@ -741,7 +735,7 @@ mod tests {
 
     // #region Plain formatting
 
-    fn plain(value: DoubleDouble) -> String {
+    fn plain(value: Double) -> String {
         format!("{}", value)
     }
 
@@ -752,21 +746,21 @@ mod tests {
 
     #[test]
     fn format_integer() {
-        assert_eq!(format!("{}", DoubleDouble::from(23)), "23");
-        assert_eq!(format!("{}", DoubleDouble::from(-17)), "-17");
+        assert_eq!(format!("{}", Double::from(23)), "23");
+        assert_eq!(format!("{}", Double::from(-17)), "-17");
         assert_eq!(
-            format!("{}", DoubleDouble::from_str(PI_TIMES_10_20).unwrap()),
+            format!("{}", Double::from_str(PI_TIMES_10_20).unwrap()),
             PI_TIMES_10_20
         );
-        assert_eq!(format!("{}", DoubleDouble::from(0)), "0");
-        assert_eq!(format!("{}", DoubleDouble::from(-0.0)), "-0");
+        assert_eq!(format!("{}", Double::from(0)), "0");
+        assert_eq!(format!("{}", Double::from(-0.0)), "-0");
     }
 
     #[test]
     fn format_special() {
-        assert_eq!(plain(DoubleDouble::NAN), "NaN");
-        assert_eq!(plain(DoubleDouble::INFINITY), "inf");
-        assert_eq!(plain(DoubleDouble::NEG_INFINITY), "-inf");
+        assert_eq!(plain(Double::NAN), "NaN");
+        assert_eq!(plain(Double::INFINITY), "inf");
+        assert_eq!(plain(Double::NEG_INFINITY), "-inf");
     }
 
     #[test]
@@ -774,50 +768,32 @@ mod tests {
         // Floating point error will keep these from being displayed exactly when no precision is
         // defined, because the default precision will extend into the deep bits of these numbers.
         // So we're checking to see if they're close.
+        assert!(close_str(plain(Double::from(17.29)).as_str(), "17.29"));
         assert!(close_str(
-            plain(DoubleDouble::from(17.29)).as_str(),
-            "17.29"
-        ));
-        assert!(close_str(
-            plain(DoubleDouble::from(0.016_777_216)).as_str(),
+            plain(Double::from(0.016_777_216)).as_str(),
             "0.016777216"
         ));
-        assert!(close_str(
-            plain(DoubleDouble::from(2.317)).as_str(),
-            "2.317"
-        ));
-        assert!(close_str(
-            plain(DoubleDouble::from(0.00042)).as_str(),
-            "0.00042"
-        ));
+        assert!(close_str(plain(Double::from(2.317)).as_str(), "2.317"));
+        assert!(close_str(plain(Double::from(0.00042)).as_str(), "0.00042"));
     }
 
     #[test]
     fn format_integer_exp() {
-        assert_eq!(plain(DoubleDouble::from(1729e0)), "1729");
-        assert_eq!(plain(DoubleDouble::from(16_777_216e+1)), "167772160");
-        assert_eq!(plain(DoubleDouble::from(231700000E-5)), "2317");
-        assert_eq!(plain(DoubleDouble::from(-42e3)), "-42000");
+        assert_eq!(plain(Double::from(1729e0)), "1729");
+        assert_eq!(plain(Double::from(16_777_216e+1)), "167772160");
+        assert_eq!(plain(Double::from(231700000E-5)), "2317");
+        assert_eq!(plain(Double::from(-42e3)), "-42000");
     }
 
     #[test]
     fn format_float_exp() {
+        assert!(close_str(plain(Double::from(17.29e0)).as_str(), "17.29"));
         assert!(close_str(
-            plain(DoubleDouble::from(17.29e0)).as_str(),
-            "17.29"
-        ));
-        assert!(close_str(
-            plain(DoubleDouble::from(1.6777216e-1)).as_str(),
+            plain(Double::from(1.6777216e-1)).as_str(),
             "0.16777216"
         ));
-        assert!(close_str(
-            plain(DoubleDouble::from(2.317e2)).as_str(),
-            "231.7"
-        ));
-        assert!(close_str(
-            plain(DoubleDouble::from(-4.2e-4)).as_str(),
-            "-0.00042"
-        ));
+        assert!(close_str(plain(Double::from(2.317e2)).as_str(), "231.7"));
+        assert!(close_str(plain(Double::from(-4.2e-4)).as_str(), "-0.00042"));
     }
 
     // This is a test for an issue that I have seen mentioned nowhere except in the source code
@@ -830,15 +806,15 @@ mod tests {
     #[test]
     fn format_offset_10_x_minus_1() {
         assert_eq!(
-            plain(DoubleDouble::from(10).powi(29) - 1.0),
+            plain(Double::from(10).powi(29) - 1.0),
             "99999999999999999999999999999"
         );
         assert_eq!(
-            plain(DoubleDouble::from(10).powi(30) - 1.0),
+            plain(Double::from(10).powi(30) - 1.0),
             "999999999999999999999999999999"
         );
         assert_eq!(
-            plain(DoubleDouble::from(10).powi(29) - 2.0),
+            plain(Double::from(10).powi(29) - 2.0),
             "99999999999999999999999999998"
         );
     }
@@ -847,7 +823,7 @@ mod tests {
 
     // #region Exponential formatting
 
-    fn exp(value: DoubleDouble) -> String {
+    fn exp(value: Double) -> String {
         format!("{:e}", value)
     }
 
@@ -861,20 +837,20 @@ mod tests {
 
     #[test]
     fn format_exp_integer() {
-        assert_eq!(format!("{:e}", DoubleDouble::from(23)), "2.3e1");
-        assert_eq!(format!("{:e}", DoubleDouble::from(-17)), "-1.7e1");
+        assert_eq!(format!("{:e}", Double::from(23)), "2.3e1");
+        assert_eq!(format!("{:e}", Double::from(-17)), "-1.7e1");
         assert_eq!(
-            format!("{:e}", DoubleDouble::from_str(PI_TIMES_10_20).unwrap()),
+            format!("{:e}", Double::from_str(PI_TIMES_10_20).unwrap()),
             PI_TIMES_10_20_EXP
         );
-        assert_eq!(format!("{:e}", DoubleDouble::from(0)), "0e0");
+        assert_eq!(format!("{:e}", Double::from(0)), "0e0");
     }
 
     #[test]
     fn format_exp_special() {
-        assert_eq!(exp(DoubleDouble::NAN), "NaN");
-        assert_eq!(exp(DoubleDouble::INFINITY), "inf");
-        assert_eq!(exp(DoubleDouble::NEG_INFINITY), "-inf");
+        assert_eq!(exp(Double::NAN), "NaN");
+        assert_eq!(exp(Double::INFINITY), "inf");
+        assert_eq!(exp(Double::NEG_INFINITY), "-inf");
     }
 
     #[test]
@@ -882,50 +858,32 @@ mod tests {
         // Floating point error will keep these from being displayed exactly when no precision is
         // defined, because the default precision will extend into the deep bits of these numbers.
         // So we're checking to see if they're close.
+        assert!(close_exp(exp(Double::from(17.29)).as_str(), "1.729e1"));
         assert!(close_exp(
-            exp(DoubleDouble::from(17.29)).as_str(),
-            "1.729e1"
-        ));
-        assert!(close_exp(
-            exp(DoubleDouble::from(0.016_777_216)).as_str(),
+            exp(Double::from(0.016_777_216)).as_str(),
             "1.6777216e-2"
         ));
-        assert!(close_exp(
-            exp(DoubleDouble::from(2.317)).as_str(),
-            "2.317e0"
-        ));
-        assert!(close_exp(
-            exp(DoubleDouble::from(-0.00042)).as_str(),
-            "-4.2e-4"
-        ));
+        assert!(close_exp(exp(Double::from(2.317)).as_str(), "2.317e0"));
+        assert!(close_exp(exp(Double::from(-0.00042)).as_str(), "-4.2e-4"));
     }
 
     #[test]
     fn format_exp_integer_exp() {
-        assert_eq!(exp(DoubleDouble::from(1729e0)), "1.729e3");
-        assert_eq!(exp(DoubleDouble::from(16_777_216e+1)), "1.6777216e8");
-        assert_eq!(exp(DoubleDouble::from(231700000E-5)), "2.317e3");
-        assert_eq!(exp(DoubleDouble::from(-42e3)), "-4.2e4");
+        assert_eq!(exp(Double::from(1729e0)), "1.729e3");
+        assert_eq!(exp(Double::from(16_777_216e+1)), "1.6777216e8");
+        assert_eq!(exp(Double::from(231700000E-5)), "2.317e3");
+        assert_eq!(exp(Double::from(-42e3)), "-4.2e4");
     }
 
     #[test]
     fn format_exp_float_exp() {
+        assert!(close_exp(exp(Double::from(17.29e0)).as_str(), "1.729e1"));
         assert!(close_exp(
-            exp(DoubleDouble::from(17.29e0)).as_str(),
-            "1.729e1"
-        ));
-        assert!(close_exp(
-            exp(DoubleDouble::from(1.6777216e-1)).as_str(),
+            exp(Double::from(1.6777216e-1)).as_str(),
             "1.6777216e-1"
         ));
-        assert!(close_exp(
-            exp(DoubleDouble::from(2.317e2)).as_str(),
-            "2.317e2"
-        ));
-        assert!(close_exp(
-            exp(DoubleDouble::from(-4.2e-4)).as_str(),
-            "-4.2e-4"
-        ));
+        assert!(close_exp(exp(Double::from(2.317e2)).as_str(), "2.317e2"));
+        assert!(close_exp(exp(Double::from(-4.2e-4)).as_str(), "-4.2e-4"));
     }
 
     // #endregion
@@ -934,36 +892,30 @@ mod tests {
 
     #[test]
     fn format_precision_integer() {
-        assert_eq!(format!("{:.3}", DoubleDouble::from(23)), "23.000");
-        assert_eq!(format!("{:.0}", DoubleDouble::from(-17)), "-17");
-        assert_eq!(format!("{}", DoubleDouble::from(0)), "0");
-        assert_eq!(format!("{:.0}", DoubleDouble::from(0)), "0");
-        assert_eq!(format!("{:.10}", DoubleDouble::from(0)), "0.0000000000");
+        assert_eq!(format!("{:.3}", Double::from(23)), "23.000");
+        assert_eq!(format!("{:.0}", Double::from(-17)), "-17");
+        assert_eq!(format!("{}", Double::from(0)), "0");
+        assert_eq!(format!("{:.0}", Double::from(0)), "0");
+        assert_eq!(format!("{:.10}", Double::from(0)), "0.0000000000");
     }
 
     #[test]
     fn format_precision_float() {
-        assert_eq!(format!("{:.0}", DoubleDouble::from(17.29)), "17");
+        assert_eq!(format!("{:.0}", Double::from(17.29)), "17");
+        assert_eq!(format!("{:.6}", Double::from(0.016_777_216)), "0.016777");
+        assert_eq!(format!("{:.5}", Double::from(0.016_777_216)), "0.01678");
         assert_eq!(
-            format!("{:.6}", DoubleDouble::from(0.016_777_216)),
-            "0.016777"
-        );
-        assert_eq!(
-            format!("{:.5}", DoubleDouble::from(0.016_777_216)),
-            "0.01678"
-        );
-        assert_eq!(
-            format!("{:.12}", DoubleDouble::from(0.016_777_216)),
+            format!("{:.12}", Double::from(0.016_777_216)),
             "0.016777216000"
         );
-        assert_eq!(format!("{:.0}", DoubleDouble::from(0.016_777_216)), "0");
-        assert_eq!(format!("{:.0}", DoubleDouble::from(-0.016_777_216)), "-0");
-        assert_eq!(format!("{:.4}", DoubleDouble::from(0.0000016_777_216)), "0.0000");
+        assert_eq!(format!("{:.0}", Double::from(0.016_777_216)), "0");
+        assert_eq!(format!("{:.0}", Double::from(-0.016_777_216)), "-0");
+        assert_eq!(format!("{:.4}", Double::from(0.0000016_777_216)), "0.0000");
     }
 
     #[test]
     fn format_precision_exp() {
-        let value = DoubleDouble::from(0.016_777_216);
+        let value = Double::from(0.016_777_216);
         assert_eq!(format!("{:.3e}", value), "1.678e-2");
         assert_eq!(format!("{:.4e}", value), "1.6777e-2");
         assert_eq!(format!("{:.10e}", value), "1.6777216000e-2");
@@ -972,7 +924,7 @@ mod tests {
 
     #[test]
     fn format_precision_alt() {
-        let value = DoubleDouble::from(0.016_777_216);
+        let value = Double::from(0.016_777_216);
         assert_eq!(format!("{:.*e}", 3, value), "1.678e-2");
         assert_eq!(format!("{0:.1$e}", value, 4), "1.6777e-2");
         assert_eq!(format!("{:.prec$e}", value, prec = 10), "1.6777216000e-2");
@@ -984,7 +936,7 @@ mod tests {
 
     #[test]
     fn format_width_default_align() {
-        let value = DoubleDouble::from(123456);
+        let value = Double::from(123456);
         assert_eq!(format!("{:3}", value), "123456");
         assert_eq!(format!("{:6}", value), "123456");
         assert_eq!(format!("{:10}", value), "    123456");
@@ -994,7 +946,7 @@ mod tests {
 
     #[test]
     fn format_width_right_align() {
-        let value = DoubleDouble::from(123456);
+        let value = Double::from(123456);
         assert_eq!(format!("{:>3}", value), "123456");
         assert_eq!(format!("{:>6}", value), "123456");
         assert_eq!(format!("{:>10}", value), "    123456");
@@ -1004,7 +956,7 @@ mod tests {
 
     #[test]
     fn format_width_left_align() {
-        let value = DoubleDouble::from(123456);
+        let value = Double::from(123456);
         assert_eq!(format!("{:<3}", value), "123456");
         assert_eq!(format!("{:<6}", value), "123456");
         assert_eq!(format!("{:<10}", value), "123456    ");
@@ -1014,7 +966,7 @@ mod tests {
 
     #[test]
     fn format_width_center_align() {
-        let value = DoubleDouble::from(123456);
+        let value = Double::from(123456);
         assert_eq!(format!("{:^3}", value), "123456");
         assert_eq!(format!("{:^6}", value), "123456");
         assert_eq!(format!("{:^10}", value), "  123456  ");
@@ -1025,7 +977,7 @@ mod tests {
 
     #[test]
     fn format_width_fill() {
-        let value = DoubleDouble::from(123456);
+        let value = Double::from(123456);
         assert_eq!(format!("{:*^3}", value), "123456");
         assert_eq!(format!("{:*^10}", value), "**123456**");
         assert_eq!(format!("{:*>10}", value), "****123456");
@@ -1036,7 +988,7 @@ mod tests {
 
     #[test]
     fn format_width_sign_aware_zero_fill() {
-        let value = DoubleDouble::from(123456);
+        let value = Double::from(123456);
         assert_eq!(format!("{:03}", value), "123456");
         assert_eq!(format!("{:010}", value), "0000123456");
         assert_eq!(format!("{:010}", -value), "-000123456");
@@ -1050,7 +1002,7 @@ mod tests {
 
     #[test]
     fn format_misc_plus_sign() {
-        let value = DoubleDouble::from(123456);
+        let value = Double::from(123456);
         assert_eq!(format!("{:+}", value), "+123456");
         assert_eq!(format!("{:+e}", value), "+1.23456e5");
         assert_eq!(format!("{:+12e}", value), "  +1.23456e5");
@@ -1061,7 +1013,7 @@ mod tests {
 
     #[test]
     fn format_misc_big_number() {
-        let value = DoubleDouble::from_str("123456789012345678901234567890").unwrap();
+        let value = Double::from_str("123456789012345678901234567890").unwrap();
         // Not checking the value here because we don't even do 60 digits of precision, just
         // checking that formatting will actually print out 60 digits (and the decimal point)
         assert_eq!(format!("{:.30}", value).len(), 61);

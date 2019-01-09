@@ -3,21 +3,21 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::double::DoubleDouble;
+use crate::double::Double;
 
 // #region From implementations
 
 macro_rules! from_impl {
     ($t:ty) => {
-        impl From<($t, $t)> for DoubleDouble {
-            fn from((a, b): ($t, $t)) -> DoubleDouble {
-                DoubleDouble(a.into(), b.into())
+        impl From<($t, $t)> for Double {
+            fn from((a, b): ($t, $t)) -> Double {
+                Double(a.into(), b.into())
             }
         }
 
-        impl From<$t> for DoubleDouble {
-            fn from(a: $t) -> DoubleDouble {
-                DoubleDouble(a.into(), 0.0)
+        impl From<$t> for Double {
+            fn from(a: $t) -> Double {
+                Double(a.into(), 0.0)
             }
         }
     };
@@ -36,7 +36,7 @@ from_impl!(u8);
 
 // #region Miscellaneous conversions
 
-impl DoubleDouble {
+impl Double {
     #[inline]
     pub fn to_float(&self) -> f64 {
         self.0 + self.1

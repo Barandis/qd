@@ -3,40 +3,40 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::double::DoubleDouble;
+use crate::double::Double;
 
 // #region Exponential
 
-/// Reciprocals of factorials, rendered as DoubleDoubles. These are used in the Taylor series for
+/// Reciprocals of factorials, rendered as Doubles. These are used in the Taylor series for
 /// calculating the exponentiation function.
-const INV_FACT: [DoubleDouble; 15] = [
-    DoubleDouble(1.6666666666666666e-1, 9.25185853854297e-18),
-    DoubleDouble(4.1666666666666664e-2, 2.3129646346357427e-18),
-    DoubleDouble(8.333333333333333e-3, 1.1564823173178714e-19),
-    DoubleDouble(1.388888888888889e-3, -5.300543954373577e-20),
-    DoubleDouble(1.984126984126984e-4, 1.7209558293420705e-22),
-    DoubleDouble(2.48015873015873e-5, 2.1511947866775882e-23),
-    DoubleDouble(2.7557319223985893e-6, -1.858393274046472e-22),
-    DoubleDouble(2.755731922398589e-7, 2.3767714622250297e-23),
-    DoubleDouble(2.505210838544172e-8, -1.448814070935912e-24),
-    DoubleDouble(2.08767569878681e-9, -1.20734505911326e-25),
-    DoubleDouble(1.6059043836821613e-10, 1.2585294588752098e-26),
-    DoubleDouble(1.1470745597729725e-11, 2.0655512752830745e-28),
-    DoubleDouble(7.647163731819816e-13, 7.03872877733453e-30),
-    DoubleDouble(4.779477332387385e-14, 4.399205485834081e-31),
-    DoubleDouble(2.8114572543455206e-15, 1.6508842730861433e-31),
+const INV_FACT: [Double; 15] = [
+    Double(1.6666666666666666e-1, 9.25185853854297e-18),
+    Double(4.1666666666666664e-2, 2.3129646346357427e-18),
+    Double(8.333333333333333e-3, 1.1564823173178714e-19),
+    Double(1.388888888888889e-3, -5.300543954373577e-20),
+    Double(1.984126984126984e-4, 1.7209558293420705e-22),
+    Double(2.48015873015873e-5, 2.1511947866775882e-23),
+    Double(2.7557319223985893e-6, -1.858393274046472e-22),
+    Double(2.755731922398589e-7, 2.3767714622250297e-23),
+    Double(2.505210838544172e-8, -1.448814070935912e-24),
+    Double(2.08767569878681e-9, -1.20734505911326e-25),
+    Double(1.6059043836821613e-10, 1.2585294588752098e-26),
+    Double(1.1470745597729725e-11, 2.0655512752830745e-28),
+    Double(7.647163731819816e-13, 7.03872877733453e-30),
+    Double(4.779477332387385e-14, 4.399205485834081e-31),
+    Double(2.8114572543455206e-15, 1.6508842730861433e-31),
 ];
 
-/// Helper function that efficiently multiplies a DoubleDouble by a power of 2. This is -much-
+/// Helper function that efficiently multiplies a Double by a power of 2. This is -much-
 /// faster than regular multiplication but only works with powers of 2.
 #[inline]
-fn mul_pwr2(a: DoubleDouble, b: f64) -> DoubleDouble {
-    DoubleDouble(a.0 * b, a.1 * b)
+fn mul_pwr2(a: Double, b: f64) -> Double {
+    Double(a.0 * b, a.1 * b)
 }
 
-impl DoubleDouble {
+impl Double {
     /// Computes the exponentional function, e^self, in double-double precision.
-    pub fn exp(&self) -> DoubleDouble {
+    pub fn exp(&self) -> Double {
         // Strategy, as gleaned from MIT papers and Wikipedia:
         //
         // The first step is to reduce the size of the exponent by noting that
@@ -55,22 +55,22 @@ impl DoubleDouble {
         let k = 512.0;
         let inv_k = 1.0 / k;
 
-        // Common cases, including numbers too big or small to be represented with DoubleDoubles
+        // Common cases, including numbers too big or small to be represented with Doubles
         if self.0 <= -709.0 {
-            return DoubleDouble::from(0.0);
+            return Double::from(0.0);
         }
         if self.0 >= 709.0 {
-            return DoubleDouble::INFINITY;
+            return Double::INFINITY;
         }
         if *self == 0.0 {
-            return DoubleDouble::from(1.0);
+            return Double::from(1.0);
         }
         if *self == 1.0 {
-            return DoubleDouble::E;
+            return Double::E;
         }
 
-        let m = (self.0 / DoubleDouble::LOG10_2.0 + 0.5).floor();
-        let r = mul_pwr2(*self - DoubleDouble::LOG10_2 * m, inv_k);
+        let m = (self.0 / Double::LOG10_2.0 + 0.5).floor();
+        let r = mul_pwr2(*self - Double::LOG10_2 * m, inv_k);
 
         let mut p = r.square();
         let mut s = r + mul_pwr2(p, 0.5);
@@ -83,7 +83,7 @@ impl DoubleDouble {
             p *= r;
             i += 1;
             t = p * INV_FACT[i];
-            if i >= 5 || t.to_float().abs() <= inv_k * DoubleDouble::EPSILON {
+            if i >= 5 || t.to_float().abs() <= inv_k * Double::EPSILON {
                 break;
             }
         }
@@ -109,8 +109,8 @@ impl DoubleDouble {
 
 // #region Logarithms
 
-impl DoubleDouble {
-    pub fn ln(self) -> DoubleDouble {
+impl Double {
+    pub fn ln(self) -> Double {
         // Strategy:
         //
         // The Taylor series for logarithms converges much more slowly than that of exp because of
@@ -130,10 +130,10 @@ impl DoubleDouble {
         // Only one iteration is needed because Newton's iteration approximately doubles the number
         // of digits per iteration.
         if self == 1.0 {
-            return DoubleDouble::from(0.0);
+            return Double::from(0.0);
         }
         if self <= 0.0 {
-            return DoubleDouble::NAN;
+            return Double::NAN;
         }
 
         let x = self.0.ln(); // initial approximation
@@ -141,8 +141,8 @@ impl DoubleDouble {
     }
 
     #[inline]
-    pub fn log10(self) -> DoubleDouble {
-        self.ln() / DoubleDouble::LN_10
+    pub fn log10(self) -> Double {
+        self.ln() / Double::LN_10
     }
 }
 

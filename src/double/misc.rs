@@ -3,13 +3,13 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::double::DoubleDouble;
+use crate::double::Double;
 
 // #region Miscellaneous mathematical operations
 
-impl DoubleDouble {
+impl Double {
     #[inline]
-    pub fn abs(self) -> DoubleDouble {
+    pub fn abs(self) -> Double {
         if self.is_sign_negative() {
             -self
         } else {
@@ -18,24 +18,24 @@ impl DoubleDouble {
     }
 
     #[inline]
-    pub fn floor(self) -> DoubleDouble {
+    pub fn floor(self) -> Double {
         let hi = self.0.floor();
 
         if hi == self.0 {
-            DoubleDouble::norm(hi, self.1.floor())
+            Double::norm(hi, self.1.floor())
         } else {
-            DoubleDouble(hi, 0.0)
+            Double(hi, 0.0)
         }
     }
 
     #[inline]
-    pub fn ceil(self) -> DoubleDouble {
+    pub fn ceil(self) -> Double {
         let hi = self.0.ceil();
 
         if hi == self.0 {
-            DoubleDouble::norm(hi, self.1.ceil())
+            Double::norm(hi, self.1.ceil())
         } else {
-            DoubleDouble(hi, 0.0)
+            Double(hi, 0.0)
         }
     }
 }
@@ -44,7 +44,7 @@ impl DoubleDouble {
 
 // #region Number properties
 
-impl DoubleDouble {
+impl Double {
     #[inline]
     pub fn is_sign_negative(&self) -> bool {
         self.0.is_sign_negative()

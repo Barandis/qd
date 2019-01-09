@@ -40,7 +40,7 @@
 //! quad-doubles, represented by four `f64`s. Every effort has been put into making them work as
 //! much like `f64`s as possible.
 //!
-//! The `DoubleDouble` type has 106 bits of significand, meaning about 32 decimal digits, while the
+//! The `Double` type has 106 bits of significand, meaning about 32 decimal digits, while the
 //! `QuadDouble` type has 212 bits (about 64 decimal digits). However, the exponents remain the same
 //! as in `f64`, so the range of each type is similar to `f64` (max value of around
 //! ~10<sup>308</sup>). These types don't make *bigger* numbers, they make *more precise* numbers.
@@ -56,4 +56,4 @@ mod double;
 
 pub mod error;
 
-pub use self::double::DoubleDouble;
+pub use self::double::Double;
