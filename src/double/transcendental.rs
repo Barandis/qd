@@ -41,16 +41,16 @@ impl Double {
         //
         // The first step is to reduce the size of the exponent by noting that
         //
-        //      exp(kr + m * log(2)) = 2^m * exp(r)^k
+        //      exp(kr + m * ln(2)) = 2^m * exp(r)^k
         //
         // where m and k are arbitary integers. By choosing m appropriately we can make |kr| <=
-        // log(2) / 2 = 0.347. Then exp(r) is evaluated using a Taylor series, which is actually
+        // ln(2) / 2 = 0.347. Then exp(r) is evaluated using a Taylor series, which is actually
         // reasonably easy to figure out for the exponential function:
         //
         //      exp(x) = 1 + x + x^2/2! + x^3/3! + x^4/4! ...
         //
-        // Reducing x substantially speeds up the convergence, so we only have to calculate a few
-        // terms of this series to reach our maximum precision.
+        // Reducing x substantially speeds up the convergence, so we have to use fewer terms to
+        // reach the required precision.
 
         let k = 512.0;
         let inv_k = 1.0 / k;
@@ -135,9 +135,9 @@ impl Double {
             return Double::NAN;
         }
 
-        let x1 = self.0.ln();                   // initial approximation
+        let x1 = self.0.ln(); // initial approximation
         let x2 = x1 + self * (-x1).exp() - 1.0; // iteration 1
-        x2 + self * (-x2).exp() - 1.0           // iteration 2
+        x2 + self * (-x2).exp() - 1.0 // iteration 2
     }
 
     #[inline]
@@ -170,9 +170,18 @@ mod tests {
         let actual_e3 = Double::from(3).exp();
         let actual_e1_2 = Double::from(0.5).exp();
 
-        assert!(close(expected_e2, actual_e2), error_message(expected_e2, actual_e2));
-        assert!(close(expected_e3, actual_e3), error_message(expected_e3, actual_e3));
-        assert!(close(expected_e1_2, actual_e1_2), error_message(expected_e1_2, actual_e1_2));
+        assert!(
+            close(expected_e2, actual_e2),
+            error_message(expected_e2, actual_e2)
+        );
+        assert!(
+            close(expected_e3, actual_e3),
+            error_message(expected_e3, actual_e3)
+        );
+        assert!(
+            close(expected_e1_2, actual_e1_2),
+            error_message(expected_e1_2, actual_e1_2)
+        );
     }
 
     #[test]
@@ -185,10 +194,35 @@ mod tests {
         let actual_ln_ln2 = actual_ln2.ln();
         let actual_ln_pi = Double::PI.ln();
 
-        assert!(close(expected_ln2, actual_ln2), error_message(expected_ln2, actual_ln2));
-        assert!(close(expected_ln_ln2, actual_ln_ln2));
-        assert!(close(expected_ln_pi, actual_ln_pi));
+        assert!(
+            close(expected_ln2, actual_ln2),
+            error_message(expected_ln2, actual_ln2)
+        );
+        assert!(
+            close(expected_ln_ln2, actual_ln_ln2),
+            error_message(expected_ln_ln2, actual_ln_ln2)
+        );
+        assert!(
+            close(expected_ln_pi, actual_ln_pi),
+            error_message(expected_ln_pi, actual_ln_pi)
+        );
     }
 
+    #[test]
+    fn log10() {
+        let expected_log_2: Double = "0.301029995663981195213738894724493".parse().unwrap();
+        let expected_log_e: Double = "0.434294481903251827651128918916605".parse().unwrap();
 
+        let actual_log_2 = Double::from(2).log10();
+        let actual_log_e = Double::E.log10();
+
+        assert!(
+            close(expected_log_2, actual_log_2),
+            error_message(expected_log_2, actual_log_2)
+        );
+        assert!(
+            close(expected_log_e, actual_log_e),
+            error_message(expected_log_e, actual_log_e)
+        );
+    }
 }
