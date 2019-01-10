@@ -310,13 +310,4 @@ mod tests {
             error_message(expected_log_e, actual_log_e)
         );
     }
-
-    #[test]
-    fn log() {
-        let expected_log_7_10: Double = "1.1832946624549383268179285616468591481".parse().unwrap();
-        let actual_log_7_10 = Double::from(10).log(7.0);
-
-        println!("{}", expected_log_7_10);
-        println!("{}", actual_log_7_10);
-    }
 }
