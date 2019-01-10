@@ -35,8 +35,21 @@ fn mul_pwr2(a: Double, b: f64) -> Double {
 }
 
 impl Double {
-    /// Computes the exponential function, *e*<sup>self</sup>, in double-double precision.
-    pub fn exp(&self) -> Double {
+    /// Computes the exponential function, *e*<sup>`self`</sup>, in double-double precision.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::Double;
+    ///
+    /// // e^2 to 32 digits of precision
+    /// let e2: Double = "7.3890560989306502272304274605750".parse().unwrap();
+    /// let ans = Double::from(2).exp();
+    ///
+    /// // Check to see that the two values are no more than 10^-30 apart
+    /// assert!((ans - e2).abs() < 10f64.powi(-30));
+    /// ```
+    pub fn exp(self) -> Double {
         // Strategy, as gleaned from MIT papers and Wikipedia:
         //
         // The first step is to reduce the size of the exponent by noting that
@@ -70,7 +83,7 @@ impl Double {
         }
 
         let m = (self.0 / Double::LN_2.0 + 0.5).floor();
-        let r = mul_pwr2(*self - Double::LN_2 * m, inv_k);
+        let r = mul_pwr2(self - Double::LN_2 * m, inv_k);
 
         let mut p = r.square();
         let mut s = r + mul_pwr2(p, 0.5);
@@ -110,6 +123,20 @@ impl Double {
 // #region Logarithms
 
 impl Double {
+    /// Calculates log<sub>*e*</sub> `self`, or the natural logarithm of `self`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::Double;
+    ///
+    /// // ln 7 to 32 digits of precision
+    /// let ln7: Double = "1.9459101490553133051053527434432".parse().unwrap();
+    /// let ans = Double::from(7).ln();
+    ///
+    /// // Check to see that the two values are no more than 10^-30 apart
+    /// assert!((ans - ln7).abs() < 10f64.powi(-30));
+    /// ```
     pub fn ln(self) -> Double {
         // Strategy:
         //
@@ -125,8 +152,6 @@ impl Double {
         //         = x - (1 - a * exp(-x))
         //         = x + a * exp(-x) - 1
         //
-        // So now we're doing a little calculus too. Exciting!
-        //
         // Testing has shown that it requires two iterations to get the required precision.
         if self.is_one() {
             return Double::ZERO;
@@ -140,9 +165,69 @@ impl Double {
         x2 + self * (-x2).exp() - 1.0 // iteration 2
     }
 
+    /// Calculates log<sub>10</sub> `self`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::Double;
+    ///
+    /// // log10 e to 32 digits of precision
+    /// let log_e: Double = "0.434294481903251827651128918916605".parse().unwrap();
+    /// let ans = Double::E.log10();
+    ///
+    /// // Check to see that the two values are no more than 10^-30 apart
+    /// assert!((ans - log_e).abs() < 10f64.powi(-30));
+    /// ```
     #[inline]
     pub fn log10(self) -> Double {
         self.ln() / Double::LN_10
+    }
+
+    /// Calculates log<sub>2</sub> `self`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::Double;
+    ///
+    /// // log2 10 to 32 digits of precision
+    /// let log_10: Double = "3.32192809488736234787031942948939".parse().unwrap();
+    /// let ans = Double::from(10).log2();
+    ///
+    /// // Check to see that the two values are no more than 10^-30 apart
+    /// assert!((ans - log_10).abs() < 10f64.powi(-30));
+    /// ```
+    #[inline]
+    pub fn log2(self) -> Double {
+        self.ln() / Double::LN_2
+    }
+
+    /// Calculates the base `b` logarithm of `self` (log<sub>`b`</sub> `self`).
+    ///
+    /// If the goal is to calculate the base *e*, base 2, or base 10 logarithms of `self`, the
+    /// specialized functions for those purposes([`ln`], [`log2`], and [`log10`] respectively) will
+    /// be more efficient.
+    ///
+    /// [`ln`]: #method.ln
+    /// [`log2`]: #method.log2
+    /// [`log10`]: #method.log10
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use qd::Double;
+    ///
+    /// // log7 10 to 32 digits of precision
+    /// let log_10: Double = "1.18329466245493832681792856164686".parse().unwrap();
+    /// let ans = Double::from(10).log(7.0);
+    ///
+    /// // Check to see that the two values are no more than 10^-30 apart
+    /// assert!((ans - log_10).abs() < 10f64.powi(-30));
+    /// ```
+    #[inline]
+    pub fn log(self, b: f64) -> Double {
+        self.ln() / Double::from(b).ln()
     }
 }
 
@@ -224,5 +309,14 @@ mod tests {
             close(expected_log_e, actual_log_e),
             error_message(expected_log_e, actual_log_e)
         );
+    }
+
+    #[test]
+    fn log() {
+        let expected_log_7_10: Double = "1.1832946624549383268179285616468591481".parse().unwrap();
+        let actual_log_7_10 = Double::from(10).log(7.0);
+
+        println!("{}", expected_log_7_10);
+        println!("{}", actual_log_7_10);
     }
 }

@@ -42,7 +42,6 @@ impl Double {
     /// let dd = Double::from(3);
     /// assert!(dd.powi(3) == 27.0);
     /// ```
-    #[inline]
     pub fn powi(self, n: i32) -> Double {
         if n == 0 {
             return Double::from(1.0);
@@ -71,6 +70,14 @@ impl Double {
         } else {
             s
         }
+    }
+
+    #[inline]
+    pub fn powf(self, n: Double) -> Double {
+        // a^b = exp(b ln(a)), but since ln(a) is not defined for negative values, this works
+        // ONLY FOR POSITIVE VALUES OF A (self in this case). Other solutions to powf are more
+        // general but also much more complex and I am not yet ready to try one.
+        (n * self.ln()).exp()
     }
 
     /// Calculates `self` &times; 2<sup>`n`</sup> and returns it as a new `Double`.
@@ -133,6 +140,51 @@ impl Double {
             let ax = self * x;
             ax + (self - ax.square()) * x * 0.5
         }
+    }
+
+    #[inline]
+    pub fn cbrt(self) -> Double {
+        self.nroot(3)
+    }
+
+    pub fn nroot(self, n: i32) -> Double {
+        if n <= 0 {
+            return Double::NAN;
+        }
+        if n % 2 == 0 && self.is_sign_negative() {
+            return Double::NAN;
+        }
+        if n == 1 {
+            return self.clone();
+        }
+        if n == 2 {
+            return self.sqrt();  // use the more specialized method in sqrt
+        }
+        if self.is_zero() {
+            return Double::ZERO;
+        }
+
+        // Strategy: the square root method is specialized for square roots, but the traditional
+        // way of finding roots is using Newton's iteration for the function
+        //
+        //      f(x) = x^(-n) - a
+        //
+        // to find its root a^(-1/n). The iteration is therefore
+        //
+        //      x' = x + x * (1 - a * x^n) / n
+        //
+        // This converges quadratically, which is pretty fast. We can then find a^(1/n) by taking
+        // the reciprocal.
+
+        let r = self.abs();
+        let mut x: Double = (-(r.0.ln()) / n as f64).exp().into();  // a^(-1/n) = exp(-ln(a) / n)
+
+        x += x * (1.0 - r * x.powi(n)) / n as f64;
+        if self.is_sign_negative() {
+            x = -x;
+        }
+
+        x.recip()
     }
 }
 
