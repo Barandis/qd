@@ -38,12 +38,12 @@ from_impl!(u8);
 
 impl Double {
     #[inline]
-    pub fn to_float(&self) -> f64 {
+    pub fn to_float(self) -> f64 {
         self.0 + self.1
     }
 
     #[inline]
-    pub fn to_int(&self) -> i32 {
+    pub fn to_int(self) -> i32 {
         self.0 as i32
     }
 }

@@ -46,37 +46,37 @@ impl Double {
 
 impl Double {
     #[inline]
-    pub fn is_zero(&self) -> bool {
+    pub fn is_zero(self) -> bool {
         self.0 == 0.0
     }
 
     #[inline]
-    pub fn is_one(&self) -> bool {
+    pub fn is_one(self) -> bool {
         self.0 == 1.0 && self.1 == 0.0
     }
 
     #[inline]
-    pub fn is_sign_negative(&self) -> bool {
+    pub fn is_sign_negative(self) -> bool {
         self.0.is_sign_negative()
     }
 
     #[inline]
-    pub fn is_sign_positive(&self) -> bool {
+    pub fn is_sign_positive(self) -> bool {
         self.0.is_sign_positive()
     }
 
     #[inline]
-    pub fn is_nan(&self) -> bool {
+    pub fn is_nan(self) -> bool {
         self.0.is_nan() || self.1.is_nan()
     }
 
     #[inline]
-    pub fn is_infinite(&self) -> bool {
+    pub fn is_infinite(self) -> bool {
         self.0.is_infinite() || self.1.is_infinite()
     }
 
     #[inline]
-    pub fn is_finite(&self) -> bool {
+    pub fn is_finite(self) -> bool {
         self.0.is_finite() && self.1.is_finite()
     }
 }
