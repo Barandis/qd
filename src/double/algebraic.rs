@@ -10,7 +10,7 @@ use std::f64;
 // #region Powers
 
 impl Double {
-    /// Calculates the square of `self` and returns it as a new `Double`.
+    /// Calculates `self`<sup>2</sup> and returns it as a new `Double`.
     ///
     /// This method takes advantage of optimizations in multiplication that are available when the
     /// two numbers being multiplied are the same, so it is more efficient than bare multiplication.

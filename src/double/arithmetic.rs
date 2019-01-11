@@ -395,3 +395,70 @@ impl DivAssign<f64> for Double {
 }
 
 // #endregion
+
+// #region Tests
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn close(a: Double, b: Double, places: i32) -> bool {
+        a.0 == b.0 && (a.1 - b.1).abs() < 10f64.powi(-places)
+    }
+
+    #[test]
+    fn add_double_int() {
+        assert_eq!(Double::from(13) + Double::from(14), 27.0);
+        assert_eq!(
+            "1357913579135791357913579".parse::<Double>().unwrap()
+                + "8642086420864208642086420".parse::<Double>().unwrap(),
+            "9999999999999999999999999".parse::<Double>().unwrap()
+        );
+    }
+
+    #[test]
+    fn add_double_dec() {
+        assert_eq!(Double::from(2.0) + Double::from(3.0), 5.0);
+        assert_eq!(Double::from(6.3) + Double::from(4.2), 10.5);
+        assert!(close(
+            "135791357913579.1357913579".parse::<Double>().unwrap()
+                + "864208642086420.8642086420".parse::<Double>().unwrap(),
+            "999999999999999.9999999999".parse::<Double>().unwrap(),
+            16
+        ));
+    }
+
+    #[test]
+    fn add_double_exp() {
+        assert_eq!(Double::from(2e0) + Double::from(3e0), 5.0);
+        assert_eq!(Double::from(6.3e0) + Double::from(4.2e0), 10.5);
+        assert!(close(
+            "1.357913579135791357913579e14".parse::<Double>().unwrap()
+                + "8.642086420864208642086420e14".parse::<Double>().unwrap(),
+            "9.999999999999999999999999e14".parse::<Double>().unwrap(),
+            16
+        ));
+    }
+
+    #[test]
+    fn add_f64_int() {
+        assert_eq!(Double::from(13) + 14.0, 27.0);
+        assert_eq!(
+            "1357913579135791357913579".parse::<Double>().unwrap() + 864208642086420.0,
+            "1357913579999999999999999".parse::<Double>().unwrap()
+        );
+    }
+
+    #[test]
+    fn add_f64_dec() {
+        assert_eq!(Double::from(2.0) + 3.0, 5.0);
+        assert_eq!(Double::from(6.3) + 4.2, 10.5);
+        assert!(close(
+            "135791357913579.1357913579".parse::<Double>().unwrap() + 86420.8642086420,
+            "135791357999999.9999999999".parse::<Double>().unwrap(),
+            12
+        ));
+    }
+}
+
+// #endregion
