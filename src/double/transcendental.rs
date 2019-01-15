@@ -160,9 +160,16 @@ impl Double {
             return Double::NAN;
         }
 
-        let x1 = self.0.ln(); // initial approximation
-        let x2 = x1 + self * (-x1).exp() - 1.0; // iteration 1
-        x2 + self * (-x2).exp() - 1.0 // iteration 2
+        let mut x = Double::from(self.0.ln()); // initial approximation
+        let mut i = 0;
+        loop {
+            let next = x + self * (-x).exp() - 1.0;
+            if (x - next).abs() < Double::EPSILON || i >= 5 {
+                return next;
+            }
+            x = next;
+            i += 1;
+        }
     }
 
     /// Calculates log<sub>10</sub> `self`.
@@ -274,10 +281,12 @@ mod tests {
         let expected_ln2: Double = "0.693147180559945309417232121458176".parse().unwrap();
         let expected_ln_ln2: Double = "-0.366512920581664327012439158232669".parse().unwrap();
         let expected_ln_pi: Double = "1.144729885849400174143427351353058".parse().unwrap();
+        let expected_ln_63: Double = "1.840549633397487003877851762603866931".parse().unwrap();
 
         let actual_ln2 = Double::from(2).ln();
         let actual_ln_ln2 = actual_ln2.ln();
         let actual_ln_pi = Double::PI.ln();
+        let actual_ln_63 = Double::from(6.3).ln();
 
         assert!(
             close(expected_ln2, actual_ln2),
@@ -290,6 +299,10 @@ mod tests {
         assert!(
             close(expected_ln_pi, actual_ln_pi),
             error_message(expected_ln_pi, actual_ln_pi)
+        );
+        assert!(
+            close(expected_ln_63, actual_ln_63),
+            error_message(expected_ln_63, actual_ln_63)
         );
     }
 

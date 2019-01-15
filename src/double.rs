@@ -122,6 +122,9 @@ impl Double {
     /// Zero (0)
     pub const ZERO: Double = Double(0.0, 0.0);
 
+    /// Negative zero (-0)
+    pub const NEG_ZERO: Double = Double(-0.0, 0.0);
+
     /// One (1)
     pub const ONE: Double = Double(1.0, 0.0);
 

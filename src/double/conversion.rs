@@ -7,6 +7,27 @@ use crate::double::Double;
 
 // #region From implementations
 
+fn from_float(n: f64) -> Double {
+    if n == 0.0 {
+        return if n.is_sign_negative() { Double::NEG_ZERO } else { Double::ZERO };
+    }
+    if n.is_nan() {
+        return Double::NAN;
+    }
+    if n.is_infinite() {
+        return if n.is_sign_negative() { Double::NEG_INFINITY } else { Double::INFINITY }
+    }
+    if n.floor() == n {
+        return Double(n, 0.0);
+    }
+
+    // TODO: This needs investigation. The idea of converting the number back and forth from being
+    // a string seems terribly inefficient, but that shouldn't be declared to be so until
+    // benchmarking is done.
+
+    n.to_string().parse().unwrap()
+}
+
 macro_rules! from_impl {
     ($t:ty) => {
         impl From<($t, $t)> for Double {
@@ -17,7 +38,7 @@ macro_rules! from_impl {
 
         impl From<$t> for Double {
             fn from(a: $t) -> Double {
-                Double(a.into(), 0.0)
+                from_float(a.into())
             }
         }
     };

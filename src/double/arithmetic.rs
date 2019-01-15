@@ -398,6 +398,17 @@ impl DivAssign<f64> for Double {
 
 // #region Tests
 
+// Tests are all to be done with these types of numbers:
+//
+// 1 Whole numbers (integers with .0)
+// 2 Representable numbers (numbers with even binary fractions)
+// 3 Unrepresentable numbers
+// 4 High-precision whole numbers
+// 5 High-precision representable numbers
+// 6 High-precision unrepresentable numbers
+// 7 Exponentials with whole numbers
+// 8 Exponentials with representable numbers
+// 9 Exponentials with unrepresentable numbers
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -406,58 +417,106 @@ mod tests {
         a.0 == b.0 && (a.1 - b.1).abs() < 10f64.powi(-places)
     }
 
+    fn message(a: Double, b: Double) -> String {
+        format!("\nActual:   {:?}\nExpected: {:?}", a, b)
+    }
+
+    fn check(a: Double, b: Double, places: i32) {
+        assert!(close(a, b, places), message(a, b));
+    }
+
     #[test]
-    fn add_double_int() {
+    fn add_whole() {
         assert_eq!(Double::from(13) + Double::from(14), 27.0);
         assert_eq!(
             "1357913579135791357913579".parse::<Double>().unwrap()
                 + "8642086420864208642086420".parse::<Double>().unwrap(),
             "9999999999999999999999999".parse::<Double>().unwrap()
         );
+        assert_eq!(Double::from(3e10) + Double::from(5e10), 8e10);
     }
 
     #[test]
-    fn add_double_dec() {
-        assert_eq!(Double::from(2.0) + Double::from(3.0), 5.0);
-        assert_eq!(Double::from(6.3) + Double::from(4.2), 10.5);
-        assert!(close(
+    fn add_repr() {
+        check(
+            Double::from(6.25) + Double::from(5.5),
+            Double::from(11.75),
+            28
+        );
+        check(
+            "13579135791357913579.25".parse::<Double>().unwrap()
+                + "86420864208642086420.5".parse::<Double>().unwrap(),
+            "99999999999999999999.75".parse::<Double>().unwrap(),
+            10
+        );
+        check(Double::from(6.25e20) + Double::from(5.5e20), Double::from(1.175e21), 8);
+    }
+
+    #[test]
+    fn add_unrepr() {
+        check(
+            Double::from(6.3) + Double::from(4.2),
+            Double::from(10.5),
+            28
+        );
+        check(
             "135791357913579.1357913579".parse::<Double>().unwrap()
                 + "864208642086420.8642086420".parse::<Double>().unwrap(),
             "999999999999999.9999999999".parse::<Double>().unwrap(),
             16
-        ));
-    }
-
-    #[test]
-    fn add_double_exp() {
-        assert_eq!(Double::from(2e0) + Double::from(3e0), 5.0);
-        assert_eq!(Double::from(6.3e0) + Double::from(4.2e0), 10.5);
-        assert!(close(
-            "1.357913579135791357913579e14".parse::<Double>().unwrap()
-                + "8.642086420864208642086420e14".parse::<Double>().unwrap(),
-            "9.999999999999999999999999e14".parse::<Double>().unwrap(),
-            16
-        ));
-    }
-
-    #[test]
-    fn add_f64_int() {
-        assert_eq!(Double::from(13) + 14.0, 27.0);
-        assert_eq!(
-            "1357913579135791357913579".parse::<Double>().unwrap() + 864208642086420.0,
-            "1357913579999999999999999".parse::<Double>().unwrap()
+        );
+        check(
+            Double::from(1.35e20) + Double::from(8.64e19),
+            Double::from(2.214e20),
+            8
         );
     }
 
     #[test]
-    fn add_f64_dec() {
-        assert_eq!(Double::from(2.0) + 3.0, 5.0);
-        assert_eq!(Double::from(6.3) + 4.2, 10.5);
-        assert!(close(
-            "135791357913579.1357913579".parse::<Double>().unwrap() + 86420.8642086420,
-            "135791357999999.9999999999".parse::<Double>().unwrap(),
-            12
-        ));
+    fn sub_whole() {
+        assert_eq!(Double::from(13) - Double::from(14), -1.0);
+        assert_eq!(
+            "1357913579135791357913579".parse::<Double>().unwrap()
+                - "8642086420864208642086420".parse::<Double>().unwrap(),
+            "-7284172841728417284172841".parse::<Double>().unwrap()
+        );
+        assert_eq!(Double::from(3e10) - Double::from(5e10), -2e10);
+    }
+
+    #[test]
+    fn sub_repr() {
+        check(
+            Double::from(6.25) - Double::from(5.5),
+            Double::from(0.75),
+            28
+        );
+        check(
+            "13579135791357913579.5".parse::<Double>().unwrap()
+                - "86420864208642086420.25".parse::<Double>().unwrap(),
+            "-72841728417284172840.75".parse::<Double>().unwrap(),
+            10
+        );
+        check(Double::from(6.25e20) - Double::from(5.5e20), Double::from(7.5e19), 8);
+    }
+
+    #[test]
+    fn sub_unrepr() {
+        check(
+            Double::from(6.3) - Double::from(4.2),
+            Double::from(2.1),
+            28
+        );
+        check(
+            "135791357913579.1357913579".parse::<Double>().unwrap()
+                - "864208642086420.8642086420".parse::<Double>().unwrap(),
+            "-728417284172841.7284172841".parse::<Double>().unwrap(),
+            16
+        );
+        check(
+            Double::from(1.35e20) - Double::from(8.64e19),
+            Double::from(4.86e19),
+            8
+        );
     }
 }
 
