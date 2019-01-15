@@ -162,3 +162,11 @@ pub fn two_square(a: f64) -> (f64, f64) {
     let e = hi * hi - p + 2.0 * hi * lo + lo * lo;
     (p, e)
 }
+
+/// Calculates fl(a + b + c) and err(a + b + c)
+#[inline]
+pub fn three_sum(a: f64, b: f64, c: f64) -> (f64, f64) {
+    let (u, v) = two_sum(a, b);
+    let (s, w) = two_sum(c, u);
+    (s, v + w)
+}

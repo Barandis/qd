@@ -274,7 +274,9 @@ impl Double {
         if b == 0.0 {
             if a == 0.0 {
                 Double::NAN
-            } else if a.is_sign_negative() {
+            } else if a.is_sign_negative() && b.is_sign_positive()
+                || a.is_sign_positive() && b.is_sign_negative()
+            {
                 Double::NEG_INFINITY
             } else {
                 Double::INFINITY
@@ -291,14 +293,16 @@ impl Double {
     }
 
     #[inline]
-    fn div_double(self, other: Double) -> Double {
+    fn div_double(self, other: Double) -> (f64, f64) {
         if other.is_zero() {
             if self.is_zero() {
-                Double::NAN
-            } else if self.is_sign_negative() {
-                Double::NEG_INFINITY
+                (f64::NAN, f64::NAN)
+            } else if self.is_sign_negative() && other.is_sign_positive()
+                || self.is_sign_positive() && other.is_sign_negative()
+            {
+                (f64::NEG_INFINITY, f64::NEG_INFINITY)
             } else {
-                Double::INFINITY
+                (f64::INFINITY, f64::INFINITY)
             }
         } else {
             let q1 = self.0 / other.0;
@@ -308,7 +312,7 @@ impl Double {
             r -= q2 * other;
 
             let q3 = r.0 / other.0;
-            Double::from(quick_two_sum(q1, q2)) + q3
+            three_sum(q1, q2, q3)
         }
     }
 
@@ -317,7 +321,9 @@ impl Double {
         if other == 0.0 {
             if self.is_zero() {
                 (f64::NAN, f64::NAN)
-            } else if self.is_sign_negative() {
+            } else if self.is_sign_negative() && other.is_sign_positive()
+                || self.is_sign_positive() && other.is_sign_negative()
+            {
                 (f64::NEG_INFINITY, f64::NEG_INFINITY)
             } else {
                 (f64::INFINITY, f64::INFINITY)
@@ -354,7 +360,7 @@ impl Div for Double {
 
     #[inline]
     fn div(self, other: Double) -> Double {
-        self.div_double(other)
+        Double::from(self.div_double(other))
     }
 }
 
@@ -379,18 +385,18 @@ impl Div<Double> for f64 {
 impl DivAssign for Double {
     #[inline]
     fn div_assign(&mut self, other: Double) {
-        let result = *self / other;
-        self.0 = result.0;
-        self.1 = result.1;
+        let (a, b) = self.div_double(other);
+        self.0 = a;
+        self.1 = b;
     }
 }
 
 impl DivAssign<f64> for Double {
     #[inline]
     fn div_assign(&mut self, other: f64) {
-        let result = *self / other;
-        self.0 = result.0;
-        self.1 = result.1;
+        let (a, b) = self.div_f64(other);
+        self.0 = a;
+        self.1 = b;
     }
 }
 
@@ -600,7 +606,11 @@ mod tests {
 
     #[test]
     fn div_unrepr() {
-        check(Double::from(14.3) / Double::from(2.2), Double::from(6.5), 28);
+        check(
+            Double::from(14.3) / Double::from(2.2),
+            Double::from(6.5),
+            28,
+        );
         check(
             "86420864208642086420.6".parse::<Double>().unwrap() / Double::from(2),
             "43210432104321043210.3".parse::<Double>().unwrap(),
