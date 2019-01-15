@@ -101,6 +101,14 @@ impl FromStr for Double {
             exp -= digits - point;
         }
         if exp != 0 {
+            // Do this in two stages if the exponent is too small
+            // For exmaple, a number with 30 digits could have an exponent as low as -337 and
+            // still not overflow, but doing the -337 all at once WOULD overflow
+            if exp < -307 {
+                let adjust = exp + 307;
+                result *= Double::from(10.0).powi(adjust);
+                exp -= adjust;
+            }
             result *= Double::from(10.0).powi(exp);
         }
         if sign == -1 {
@@ -360,10 +368,12 @@ fn push_fixed_digits(
                     }
                 }
                 None => {
-                    chars.push('.');
-                    // limit to 31 characters, whatever that precision is
-                    for digit in &digits[offset..DEFAULT_PRECISION] {
-                        chars.push(char_from_digit(digit));
+                    if offset < DEFAULT_PRECISION {
+                        chars.push('.');
+                        // limit to 31 characters, whatever that precision is
+                        for digit in &digits[offset..DEFAULT_PRECISION] {
+                            chars.push(char_from_digit(digit));
+                        }
                     }
                 }
             }
