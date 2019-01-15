@@ -441,15 +441,19 @@ mod tests {
         check(
             Double::from(6.25) + Double::from(5.5),
             Double::from(11.75),
-            28
+            28,
         );
         check(
             "13579135791357913579.25".parse::<Double>().unwrap()
                 + "86420864208642086420.5".parse::<Double>().unwrap(),
             "99999999999999999999.75".parse::<Double>().unwrap(),
-            10
+            10,
         );
-        check(Double::from(6.25e20) + Double::from(5.5e20), Double::from(1.175e21), 8);
+        check(
+            Double::from(6.25e20) + Double::from(5.5e20),
+            Double::from(1.175e21),
+            8,
+        );
     }
 
     #[test]
@@ -457,18 +461,18 @@ mod tests {
         check(
             Double::from(6.3) + Double::from(4.2),
             Double::from(10.5),
-            28
+            28,
         );
         check(
             "135791357913579.1357913579".parse::<Double>().unwrap()
                 + "864208642086420.8642086420".parse::<Double>().unwrap(),
             "999999999999999.9999999999".parse::<Double>().unwrap(),
-            16
+            16,
         );
         check(
             Double::from(1.35e20) + Double::from(8.64e19),
             Double::from(2.214e20),
-            8
+            8,
         );
     }
 
@@ -488,35 +492,121 @@ mod tests {
         check(
             Double::from(6.25) - Double::from(5.5),
             Double::from(0.75),
-            28
+            28,
         );
         check(
             "13579135791357913579.5".parse::<Double>().unwrap()
                 - "86420864208642086420.25".parse::<Double>().unwrap(),
             "-72841728417284172840.75".parse::<Double>().unwrap(),
-            10
+            10,
         );
-        check(Double::from(6.25e20) - Double::from(5.5e20), Double::from(7.5e19), 8);
+        check(
+            Double::from(6.25e20) - Double::from(5.5e20),
+            Double::from(7.5e19),
+            8,
+        );
     }
 
     #[test]
     fn sub_unrepr() {
-        check(
-            Double::from(6.3) - Double::from(4.2),
-            Double::from(2.1),
-            28
-        );
+        check(Double::from(6.3) - Double::from(4.2), Double::from(2.1), 28);
         check(
             "135791357913579.1357913579".parse::<Double>().unwrap()
                 - "864208642086420.8642086420".parse::<Double>().unwrap(),
             "-728417284172841.7284172841".parse::<Double>().unwrap(),
-            16
+            16,
         );
         check(
             Double::from(1.35e20) - Double::from(8.64e19),
             Double::from(4.86e19),
-            8
+            8,
         );
+    }
+
+    #[test]
+    fn mul_whole() {
+        assert_eq!(Double::from(13) * Double::from(14), 182.0);
+        assert_eq!(
+            Double::from(135791357913579.0) * Double::from(864208642086420.0),
+            "117352065029565150100609497180".parse::<Double>().unwrap()
+        );
+        assert_eq!(Double::from(3e10) * Double::from(5e10), 1.5e21);
+    }
+
+    #[test]
+    fn mul_repr() {
+        check(
+            Double::from(6.25) * Double::from(5.5),
+            Double::from(34.375),
+            25,
+        );
+        check(
+            "135791357913579.5".parse::<Double>().unwrap()
+                * "864208642086420.25".parse::<Double>().unwrap(),
+            "117352065029565616152770018784.875"
+                .parse::<Double>()
+                .unwrap(),
+            3,
+        );
+        check(
+            Double::from(6.25e20) * Double::from(5.5e20),
+            "3.4375e41".parse::<Double>().unwrap(),
+            8,
+        );
+    }
+
+    #[test]
+    fn mul_unrepr() {
+        check(
+            Double::from(6.3) * Double::from(4.2),
+            Double::from(26.46),
+            28,
+        );
+        check(
+            "135791357913579.13".parse::<Double>().unwrap()
+                * "864208642086420.86".parse::<Double>().unwrap(),
+            "1.173520650295653792283007740926518e29"
+                .parse::<Double>()
+                .unwrap(),
+            3,
+        );
+        check(
+            Double::from(1.35e10) * Double::from(8.64e9),
+            Double::from(1.1664e20),
+            8,
+        );
+    }
+
+    #[test]
+    fn div_whole() {
+        assert_eq!(Double::from(14) / Double::from(2), 7.0);
+        assert_eq!(
+            "86420864208642086420".parse::<Double>().unwrap() / Double::from(2),
+            "43210432104321043210".parse::<Double>().unwrap()
+        );
+        assert_eq!(Double::from(1e11) / Double::from(5e10), 2.0);
+    }
+
+    #[test]
+    fn div_repr() {
+        check(Double::from(14.5) / Double::from(2), Double::from(7.25), 28);
+        check(
+            "86420864208642086420.5".parse::<Double>().unwrap() / Double::from(2),
+            "43210432104321043210.25".parse::<Double>().unwrap(),
+            12,
+        );
+        assert_eq!(Double::from(1e11) / Double::from(5e10), 2.0);
+    }
+
+    #[test]
+    fn div_unrepr() {
+        check(Double::from(14.3) / Double::from(2.2), Double::from(6.5), 28);
+        check(
+            "86420864208642086420.6".parse::<Double>().unwrap() / Double::from(2),
+            "43210432104321043210.3".parse::<Double>().unwrap(),
+            12,
+        );
+        assert_eq!(Double::from(1.3e11) / Double::from(5.2e10), 2.5);
     }
 }
 
