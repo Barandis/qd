@@ -25,6 +25,8 @@ fn from_float(n: f64) -> Double {
     // a string seems terribly inefficient, but that shouldn't be declared to be so until
     // benchmarking is done.
 
+    // `unwrap` is safe because `n.to_string` will never return a string that can't be parsed into
+    // a Double
     n.to_string().parse().unwrap()
 }
 
@@ -52,6 +54,21 @@ from_impl!(i16);
 from_impl!(u16);
 from_impl!(i8);
 from_impl!(u8);
+
+impl From<&str> for Double {
+    /// Converts a string representation of a number into a `Double`.
+    ///
+    /// `parse` from [`FromStr`] is going to be universally better than this way of converting a
+    /// string to a `Double` unless there is absolute assurance that the string is, in fact, a legal
+    /// number. This function has no way of indicating a parsing error other than returning `NaN`,
+    /// and there's no way to know whether a returned `NaN` is genuine or the result of a parser
+    /// error. Take care when using this function.
+    ///
+    /// [`FromStr`]: #impl-FromStr
+    fn from(s: &str) -> Double {
+        s.parse().unwrap_or(Double::NAN)
+    }
+}
 
 // #endregion
 

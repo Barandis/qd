@@ -6,6 +6,16 @@
 use crate::basic::quick_two_sum;
 use std::f64;
 
+#[macro_use]
+mod macros {
+    #[macro_export]
+    macro_rules! dd {
+        ($x:expr) => {
+            Double::from($x)
+        };
+    }
+}
+
 mod algebraic;
 mod arithmetic;
 mod comparison;
