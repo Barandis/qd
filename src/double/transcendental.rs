@@ -244,83 +244,191 @@ impl Double {
 mod tests {
     use super::*;
 
-    fn close(a: Double, b: Double) -> bool {
-        (a - b).abs() < Double::from(10).powi(-30)
-    }
-
-    fn error_message(expected: Double, actual: Double) -> String {
-        format!("\nExpected: {}\nActual:   {}", expected, actual)
-    }
-
-    #[test]
-    fn exp() {
-        let expected_e2: Double = "7.38905609893065022723042746057501".parse().unwrap();
-        let expected_e3: Double = "20.0855369231876677409285296545817".parse().unwrap();
-        let expected_e1_2: Double = "1.64872127070012814684865078781416".parse().unwrap();
-
-        let actual_e2 = Double::from(2).exp();
-        let actual_e3 = Double::from(3).exp();
-        let actual_e1_2 = Double::from(0.5).exp();
-
-        assert!(
-            close(expected_e2, actual_e2),
-            error_message(expected_e2, actual_e2)
-        );
-        assert!(
-            close(expected_e3, actual_e3),
-            error_message(expected_e3, actual_e3)
-        );
-        assert!(
-            close(expected_e1_2, actual_e1_2),
-            error_message(expected_e1_2, actual_e1_2)
-        );
+    macro_rules! assert_close {
+        ($expected:expr, $actual:expr $(,)*) => {
+            assert_precision!($expected, $actual, 30);
+        };
     }
 
     #[test]
-    fn ln() {
-        let expected_ln2: Double = "0.693147180559945309417232121458176".parse().unwrap();
-        let expected_ln_ln2: Double = "-0.366512920581664327012439158232669".parse().unwrap();
-        let expected_ln_pi: Double = "1.144729885849400174143427351353058".parse().unwrap();
-        let expected_ln_63: Double = "1.840549633397487003877851762603866931".parse().unwrap();
+    fn exp_whole() {
+        assert_close!(dd!("20.085536923187667740928529654582"), dd!(3).exp());
+        assert_exact!(Double::INFINITY, dd!("13579135791357913579").exp());
+        assert_close!(dd!("20.085536923187667740928529654582"), dd!(3e0).exp());
+        assert_close!(dd!("0.049787068367863942979342415650062"), dd!(-3).exp());
+    }
 
-        let actual_ln2 = Double::from(2).ln();
-        let actual_ln_ln2 = actual_ln2.ln();
-        let actual_ln_pi = Double::PI.ln();
-        let actual_ln_63 = Double::from(6.3).ln();
+    #[test]
+    fn exp_repr() {
+        assert_close!(dd!("33.115451958692313750653249350389"), dd!(3.5).exp());
+        assert_exact!(Double::INFINITY, dd!("13579135791357913579.5").exp());
+        assert_close!(dd!("33.115451958692313750653249350389"), dd!(3.5e0).exp());
+        assert_close!(dd!("0.030197383422318500739786292363620"), dd!(-3.5).exp());
+    }
 
-        assert!(
-            close(expected_ln2, actual_ln2),
-            error_message(expected_ln2, actual_ln2)
+    #[test]
+    fn exp_unrepr() {
+        assert_close!(dd!("27.112638920657887426818372110231"), dd!(3.3).exp());
+        assert_exact!(Double::INFINITY, dd!("13579135791357913579.3").exp());
+        assert_close!(dd!("27.112638920657887426818372110231"), dd!(3.3e0).exp());
+        assert_close!(dd!("0.036883167401240005445603704741515"), dd!(-3.3).exp());
+    }
+
+    #[test]
+    fn exp_edge() {
+        // Check for less precision here, as floating point numbers lose precision when this large
+        assert_precision!(
+            dd!("7.4363225878808657251823671807256e307"),
+            dd!(708.9).exp(),
+            27
         );
-        assert!(
-            close(expected_ln_ln2, actual_ln_ln2),
-            error_message(expected_ln_ln2, actual_ln_ln2)
+        assert_exact!(Double::INFINITY, dd!(709).exp());
+        // Check exact because we actually can't check precision this close to the negative limit
+        // of floating point exponents, but precision is only f64 precision anyway
+        assert_exact!(
+            dd!("3.6554113896149252338842678903601e-308"),
+            dd!(-707.9).exp()
         );
-        assert!(
-            close(expected_ln_pi, actual_ln_pi),
-            error_message(expected_ln_pi, actual_ln_pi)
+        assert_exact!(Double::ZERO, dd!(-709).exp());
+        assert_exact!(Double::E, Double::ONE.exp());
+        assert_exact!(Double::ONE, Double::ZERO.exp());
+    }
+
+    #[test]
+    fn ln_whole() {
+        assert_close!(dd!("1.0986122886681096913952452369225"), dd!(3).ln());
+        assert_close!(
+            dd!("44.055066155659480309583232783789"),
+            dd!("13579135791357913579").ln()
         );
-        assert!(
-            close(expected_ln_63, actual_ln_63),
-            error_message(expected_ln_63, actual_ln_63)
+        assert_close!(dd!("33.334803590584749267647125602504"), dd!(3e14).ln());
+    }
+
+    #[test]
+    fn ln_repr() {
+        assert_close!(dd!("1.2527629684953679956881206219850"), dd!(3.5).ln());
+        assert_close!(
+            dd!("44.055066155659480309620053978280"),
+            dd!("13579135791357913579.5").ln()
+        );
+        assert_close!(dd!("33.488954270412007571940000987566"), dd!(3.5e14).ln());
+    }
+
+    #[test]
+    fn ln_unrepr() {
+        assert_close!(dd!("1.1939224684724345514391973602033"), dd!(3.3).ln());
+        assert_close!(
+            dd!("44.055066155659480309605325500484"),
+            dd!("13579135791357913579.3").ln()
+        );
+        assert_close!(dd!("33.430113770389074127691077725784"), dd!(3.3e14).ln());
+    }
+
+    #[test]
+    fn ln_edge() {
+        assert_exact!(Double::ZERO, Double::ONE.ln());
+        assert!(Double::ZERO.ln().is_nan());
+    }
+
+    #[test]
+    fn log10_whole() {
+        assert_close!(dd!("0.47712125471966243729502790325512"), dd!(3).log10());
+        assert_close!(
+            dd!("19.132872131285618236170988986373"),
+            dd!("13579135791357913579").log10()
+        );
+        assert_close!(dd!("14.477121254719662437295027903255"), dd!(3e14).log10());
+    }
+
+    #[test]
+    fn log10_repr() {
+        assert_close!(dd!("0.54406804435027563549847736386814"), dd!(3.5).log10());
+        assert_close!(
+            dd!("19.132872131285618236186980227958"),
+            dd!("13579135791357913579.5").log10()
+        );
+        assert_close!(
+            dd!("14.544068044350275635498477363868"),
+            dd!(3.5e14).log10()
         );
     }
 
     #[test]
-    fn log10() {
-        let expected_log_2: Double = "0.301029995663981195213738894724493".parse().unwrap();
-        let expected_log_e: Double = "0.434294481903251827651128918916605".parse().unwrap();
-
-        let actual_log_2 = Double::from(2).log10();
-        let actual_log_e = Double::E.log10();
-
-        assert!(
-            close(expected_log_2, actual_log_2),
-            error_message(expected_log_2, actual_log_2)
+    fn log10_unrepr() {
+        assert_close!(dd!("0.51851393987788747804522787449814"), dd!(3.3).log10());
+        assert_close!(
+            dd!("19.132872131285618236180583731324"),
+            dd!("13579135791357913579.3").log10()
         );
-        assert!(
-            close(expected_log_e, actual_log_e),
-            error_message(expected_log_e, actual_log_e)
+        assert_close!(
+            dd!("14.518513939877887478045227874498"),
+            dd!(3.3e14).log10()
+        );
+    }
+
+    #[test]
+    fn log2_whole() {
+        assert_close!(dd!("1.5849625007211561814537389439478"), dd!(3).log2());
+        assert_close!(
+            dd!("63.558025468805141892815343984787"),
+            dd!("13579135791357913579").log2()
+        );
+        assert_close!(dd!("48.091955829144229051638210956799"), dd!(3e14).log2());
+    }
+
+    #[test]
+    fn log2_repr() {
+        assert_close!(dd!("1.8073549220576041074419693172318"), dd!(3.5).log2());
+        assert_close!(
+            dd!("63.558025468805141892868465739480"),
+            dd!("13579135791357913579.5").log2()
+        );
+        assert_close!(dd!("48.314348250480676977626441330083"), dd!(3.5e14).log2());
+    }
+
+    #[test]
+    fn log2_unrepr() {
+        assert_close!(dd!("1.7224660244710910897827825611842"), dd!(3.3).log2());
+        assert_close!(
+            dd!("63.558025468805141892847217037603"),
+            dd!("13579135791357913579.3").log2()
+        );
+        assert_close!(dd!("48.229459352894163959967254574036"), dd!(3.3e14).log2());
+    }
+
+    #[test]
+    fn log_whole() {
+        assert_close!(dd!("0.61314719276545841312975386153218"), dd!(3).log(6.0));
+        assert_close!(
+            dd!("24.587600574891760229061986690548"),
+            dd!("13579135791357913579").log(6.0)
+        );
+        assert_close!(dd!("18.604508117904021052338461213292"), dd!(3e14).log(6.0));
+    }
+
+    #[test]
+    fn log_repr() {
+        assert_close!(dd!("0.66928171360986244557771423441173"), dd!(3.5).log(6.5));
+        assert_close!(
+            dd!("23.536176364846509016600040652890"),
+            dd!("13579135791357913579.5").log(6.5)
+        );
+        assert_close!(
+            dd!("17.891289305927900856466621928281"),
+            dd!(3.5e14).log(6.5)
+        );
+    }
+
+    #[test]
+    fn log_unrepr() {
+        assert_close!(dd!("0.64867713796370837633691947605569"), dd!(3.3).log(6.3));
+        assert_close!(
+            dd!("23.935820776719745554239970452887"),
+            dd!("13579135791357913579.3").log(6.3)
+        );
+        assert_close!(
+            dd!("18.163114519590611961621954529941"),
+            dd!(3.3e14).log(6.3)
         );
     }
 }

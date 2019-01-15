@@ -419,216 +419,157 @@ impl DivAssign<f64> for Double {
 mod tests {
     use super::*;
 
-    fn close(a: Double, b: Double, places: i32) -> bool {
-        a.0 == b.0 && (a.1 - b.1).abs() < 10f64.powi(-places)
-    }
-
-    fn message(a: Double, b: Double) -> String {
-        format!("\nActual:   {:?}\nExpected: {:?}", a, b)
-    }
-
-    fn check(a: Double, b: Double, places: i32) {
-        assert!(close(a, b, places), message(a, b));
+    macro_rules! assert_close {
+        ($expected:expr, $actual:expr $(,)*) => {
+            assert_precision!($expected, $actual, 30);
+        };
     }
 
     #[test]
     fn add_whole() {
-        assert_eq!(Double::from(13) + Double::from(14), 27.0);
-        assert_eq!(
+        assert_close!(27.0, Double::from(13) + Double::from(14));
+        assert_close!(
+            "9999999999999999999999999".parse::<Double>().unwrap(),
             "1357913579135791357913579".parse::<Double>().unwrap()
-                + "8642086420864208642086420".parse::<Double>().unwrap(),
-            "9999999999999999999999999".parse::<Double>().unwrap()
+                + "8642086420864208642086420".parse::<Double>().unwrap()
         );
-        assert_eq!(
+        assert_close!(
+            Double::from("9999999999999999999999999"),
             Double::from("1357913579135791357913579") + Double::from("8642086420864208642086420"),
-            Double::from("9999999999999999999999999")
         );
-        assert_eq!(
-            dd!("1357913579135791357913579") + dd!("8642086420864208642086420"),
-            dd!("9999999999999999999999999")
+        assert_close!(
+            dd!("9999999999999999999999999"),
+            dd!("1357913579135791357913579") + dd!("8642086420864208642086420")
         );
-        assert_eq!(Double::from(3e10) + Double::from(5e10), 8e10);
+        assert_close!(8e10, Double::from(3e10) + Double::from(5e10));
     }
 
     #[test]
     fn add_repr() {
-        check(
-            Double::from(6.25) + Double::from(5.5),
-            Double::from(11.75),
-            28,
-        );
-        check(
+        assert_close!(11.75, Double::from(6.25) + Double::from(5.5));
+        assert_close!(
+            "99999999999999999999.75".parse::<Double>().unwrap(),
             "13579135791357913579.25".parse::<Double>().unwrap()
                 + "86420864208642086420.5".parse::<Double>().unwrap(),
-            "99999999999999999999.75".parse::<Double>().unwrap(),
-            10,
         );
-        check(
-            Double::from(6.25e20) + Double::from(5.5e20),
+        assert_close!(
             Double::from(1.175e21),
-            8,
+            Double::from(6.25e20) + Double::from(5.5e20),
         );
     }
 
     #[test]
     fn add_unrepr() {
-        check(
-            Double::from(6.3) + Double::from(4.2),
-            Double::from(10.5),
-            28,
-        );
-        check(
+        assert_close!(10.5, Double::from(6.3) + Double::from(4.2));
+        assert_close!(
+            "999999999999999.9999999999".parse::<Double>().unwrap(),
             "135791357913579.1357913579".parse::<Double>().unwrap()
                 + "864208642086420.8642086420".parse::<Double>().unwrap(),
-            "999999999999999.9999999999".parse::<Double>().unwrap(),
-            16,
         );
-        check(
-            Double::from(1.35e20) + Double::from(8.64e19),
-            Double::from(2.214e20),
-            8,
-        );
+        assert_close!(2.214e20, Double::from(1.35e20) + Double::from(8.64e19));
     }
 
     #[test]
     fn sub_whole() {
-        assert_eq!(Double::from(13) - Double::from(14), -1.0);
-        assert_eq!(
+        assert_close!(-1.0, Double::from(13) - Double::from(14));
+        assert_close!(
+            "-7284172841728417284172841".parse::<Double>().unwrap(),
             "1357913579135791357913579".parse::<Double>().unwrap()
                 - "8642086420864208642086420".parse::<Double>().unwrap(),
-            "-7284172841728417284172841".parse::<Double>().unwrap()
         );
-        assert_eq!(Double::from(3e10) - Double::from(5e10), -2e10);
+        assert_close!(-2e10, Double::from(3e10) - Double::from(5e10));
     }
 
     #[test]
     fn sub_repr() {
-        check(
-            Double::from(6.25) - Double::from(5.5),
-            Double::from(0.75),
-            28,
-        );
-        check(
+        assert_close!(0.75, Double::from(6.25) - Double::from(5.5));
+        assert_close!(
+            "-72841728417284172840.75".parse::<Double>().unwrap(),
             "13579135791357913579.5".parse::<Double>().unwrap()
                 - "86420864208642086420.25".parse::<Double>().unwrap(),
-            "-72841728417284172840.75".parse::<Double>().unwrap(),
-            10,
         );
-        check(
-            Double::from(6.25e20) - Double::from(5.5e20),
-            Double::from(7.5e19),
-            8,
-        );
+        assert_close!(7.5e19, Double::from(6.25e20) - Double::from(5.5e20));
     }
 
     #[test]
     fn sub_unrepr() {
-        check(Double::from(6.3) - Double::from(4.2), Double::from(2.1), 28);
-        check(
+        assert_close!(2.1, Double::from(6.3) - Double::from(4.2));
+        assert_close!(
+            "-728417284172841.7284172841".parse::<Double>().unwrap(),
             "135791357913579.1357913579".parse::<Double>().unwrap()
                 - "864208642086420.8642086420".parse::<Double>().unwrap(),
-            "-728417284172841.7284172841".parse::<Double>().unwrap(),
-            16,
         );
-        check(
-            Double::from(1.35e20) - Double::from(8.64e19),
-            Double::from(4.86e19),
-            8,
-        );
+        assert_close!(4.86e19, Double::from(1.35e20) - Double::from(8.64e19));
     }
 
     #[test]
     fn mul_whole() {
-        assert_eq!(Double::from(13) * Double::from(14), 182.0);
-        assert_eq!(
+        assert_close!(182.0, Double::from(13) * Double::from(14));
+        assert_close!(
+            "117352065029565150100609497180".parse::<Double>().unwrap(),
             Double::from(135791357913579.0) * Double::from(864208642086420.0),
-            "117352065029565150100609497180".parse::<Double>().unwrap()
         );
-        assert_eq!(
+        assert_close!(
+            dd!("117352065029565150100609497180"),
             dd!(135791357913579.0) * dd!(864208642086420.0),
-            dd!("117352065029565150100609497180")
         );
-        assert_eq!(Double::from(3e10) * Double::from(5e10), 1.5e21);
+        assert_close!(1.5e21, Double::from(3e10) * Double::from(5e10));
     }
 
     #[test]
     fn mul_repr() {
-        check(
-            Double::from(6.25) * Double::from(5.5),
-            Double::from(34.375),
-            25,
-        );
-        check(
-            "135791357913579.5".parse::<Double>().unwrap()
-                * "864208642086420.25".parse::<Double>().unwrap(),
+        assert_close!(34.375, Double::from(6.25) * Double::from(5.5));
+        assert_close!(
             "117352065029565616152770018784.875"
                 .parse::<Double>()
                 .unwrap(),
-            3,
+            "135791357913579.5".parse::<Double>().unwrap()
+                * "864208642086420.25".parse::<Double>().unwrap(),
         );
-        check(
-            Double::from(6.25e20) * Double::from(5.5e20),
-            "3.4375e41".parse::<Double>().unwrap(),
-            8,
-        );
+        assert_close!("3.4375e41", Double::from(6.25e20) * 5.5e20);
     }
 
     #[test]
     fn mul_unrepr() {
-        check(
-            Double::from(6.3) * Double::from(4.2),
-            Double::from(26.46),
-            28,
-        );
-        check(
-            "135791357913579.13".parse::<Double>().unwrap()
-                * "864208642086420.86".parse::<Double>().unwrap(),
+        assert_close!(26.46, Double::from(6.3) * Double::from(4.2));
+        assert_close!(
             "1.173520650295653792283007740926518e29"
                 .parse::<Double>()
                 .unwrap(),
-            3,
+            "135791357913579.13".parse::<Double>().unwrap()
+                * "864208642086420.86".parse::<Double>().unwrap(),
         );
-        check(
-            Double::from(1.35e10) * Double::from(8.64e9),
-            Double::from(1.1664e20),
-            8,
-        );
+        assert_close!(1.1664e20, Double::from(1.35e10) * Double::from(8.64e9));
     }
 
     #[test]
     fn div_whole() {
-        assert_eq!(Double::from(14) / Double::from(2), 7.0);
-        assert_eq!(
+        assert_close!(7.0, Double::from(14) / Double::from(2));
+        assert_close!(
+            "43210432104321043210".parse::<Double>().unwrap(),
             "86420864208642086420".parse::<Double>().unwrap() / Double::from(2),
-            "43210432104321043210".parse::<Double>().unwrap()
         );
-        assert_eq!(Double::from(1e11) / Double::from(5e10), 2.0);
+        assert_close!(2.0, Double::from(1e11) / Double::from(5e10));
     }
 
     #[test]
     fn div_repr() {
-        check(Double::from(14.5) / Double::from(2), Double::from(7.25), 28);
-        check(
-            "86420864208642086420.5".parse::<Double>().unwrap() / Double::from(2),
+        assert_close!(Double::from(14.5) / Double::from(2), Double::from(7.25));
+        assert_close!(
             "43210432104321043210.25".parse::<Double>().unwrap(),
-            12,
+            "86420864208642086420.5".parse::<Double>().unwrap() / Double::from(2),
         );
-        assert_eq!(Double::from(1e11) / Double::from(5e10), 2.0);
+        assert_close!(2.0, Double::from(1e11) / Double::from(5e10));
     }
 
     #[test]
     fn div_unrepr() {
-        check(
-            Double::from(14.3) / Double::from(2.2),
-            Double::from(6.5),
-            28,
-        );
-        check(
-            "86420864208642086420.6".parse::<Double>().unwrap() / Double::from(2),
+        assert_close!(6.5, Double::from(14.3) / Double::from(2.2));
+        assert_close!(
             "43210432104321043210.3".parse::<Double>().unwrap(),
-            12,
+            "86420864208642086420.6".parse::<Double>().unwrap() / Double::from(2),
         );
-        assert_eq!(Double::from(1.3e11) / Double::from(5.2e10), 2.5);
+        assert_close!(2.5, Double::from(1.3e11) / Double::from(5.2e10));
     }
 }
 

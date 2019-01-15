@@ -16,6 +16,36 @@ mod macros {
     }
 }
 
+#[cfg(test)]
+#[macro_use]
+mod tests {
+    macro_rules! assert_precision {
+        ($expected:expr, $actual:expr, $digits:expr) => {
+            let expected = Double::from($expected);
+            let actual = Double::from($actual);
+            let mag = expected.abs().log10().floor().to_int();
+            let epsilon = 10f64.powi(mag - $digits);
+            let message = format!(
+                "\nExpected: {0} ({0:?})\nActual:   {1} ({1:?})",
+                expected, actual
+            );
+            assert!((expected - actual).abs() < epsilon, message);
+        };
+    }
+
+    macro_rules! assert_exact {
+        ($expected:expr, $actual:expr) => {
+            let expected = Double::from($expected);
+            let actual = Double::from($actual);
+            let message = format!(
+                "\nExpected: {0} ({0:?})\nActual:   {1} ({1:?})",
+                expected, actual
+            );
+            assert!(expected == actual, message);
+        }
+    }
+}
+
 mod algebraic;
 mod arithmetic;
 mod comparison;
