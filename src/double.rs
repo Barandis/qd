@@ -47,6 +47,7 @@ mod tests {
 }
 
 mod consts;
+mod common;
 mod algebraic;
 mod arithmetic;
 mod comparison;
