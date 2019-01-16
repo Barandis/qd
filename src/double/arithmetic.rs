@@ -6,7 +6,9 @@
 use crate::basic::*;
 use crate::double::Double;
 use std::f64;
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use std::ops::{
+    Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
+};
 
 // #region Addition
 
@@ -397,6 +399,58 @@ impl DivAssign<f64> for Double {
         let (a, b) = self.div_f64(other);
         self.0 = a;
         self.1 = b;
+    }
+}
+
+// #endregion
+
+// #region Mod
+
+impl Rem for Double {
+    type Output = Double;
+
+    #[inline]
+    fn rem(self, other: Double) -> Double {
+        let n = (self / other).trunc();
+        self - other * n
+    }
+}
+
+impl Rem<f64> for Double {
+    type Output = Double;
+
+    #[inline]
+    fn rem(self, other: f64) -> Double {
+        let n = (self / other).trunc();
+        self - other * n
+    }
+}
+
+impl Rem<Double> for f64 {
+    type Output = Double;
+
+    #[inline]
+    fn rem(self, other: Double) -> Double {
+        let n = (self / other).trunc();
+        self - other * n
+    }
+}
+
+impl RemAssign for Double {
+    #[inline]
+    fn rem_assign(&mut self, other: Double) {
+        let a = *self % other;
+        self.0 = a.0;
+        self.1 = a.1;
+    }
+}
+
+impl RemAssign<f64> for Double {
+    #[inline]
+    fn rem_assign(&mut self, other: f64) {
+        let a = *self % other;
+        self.0 = a.0;
+        self.1 = a.1;
     }
 }
 

@@ -55,6 +55,20 @@ impl Double {
             }
         }
     }
+
+    #[inline]
+    pub fn trunc(self) -> Double {
+        if self.0 >= 0.0 {
+            self.floor()
+        } else {
+            self.ceil()
+        }
+    }
+
+    #[inline]
+    pub fn fract(self) -> Double {
+        self - self.trunc()
+    }
 }
 
 // #endregion
