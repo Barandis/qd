@@ -143,7 +143,7 @@ pub fn two_prod(a: f64, b: f64) -> (f64, f64) {
 /// considerably more operations.
 #[cfg(not(no_fma))]
 #[inline]
-pub fn two_square(a: f64) -> (f64, f64) {
+pub fn two_sqr(a: f64) -> (f64, f64) {
     let p = a * a;
     let e = a.mul_add(a, -p);
     (p, e)
@@ -156,7 +156,7 @@ pub fn two_square(a: f64) -> (f64, f64) {
 /// 12 floating-point operations, though with a very large argument it can be 15.
 #[cfg(no_fma)]
 #[inline]
-pub fn two_square(a: f64) -> (f64, f64) {
+pub fn two_sqr(a: f64) -> (f64, f64) {
     let p = a * a;
     let (hi, lo) = split(a);
     let e = hi * hi - p + 2.0 * hi * lo + lo * lo;

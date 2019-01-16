@@ -4,6 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 use crate::double::Double;
+use crate::basic::quick_two_sum;
 
 // #region Miscellaneous mathematical operations
 
@@ -36,6 +37,22 @@ impl Double {
             Double::norm(hi, self.1.ceil())
         } else {
             Double(hi, 0.0)
+        }
+    }
+
+    #[inline]
+    pub fn round(self) -> Double {
+        let hi = self.0.round();
+
+        if hi == self.0 {
+            let lo = self.1.round();
+            Double::from(quick_two_sum(hi, lo))
+        } else {
+            if (hi - self.0).abs() == 0.5 && self.1 < 0.0 {
+                Double(hi - 1.0, 0.0)
+            } else {
+                Double(hi, 0.0)
+            }
         }
     }
 }

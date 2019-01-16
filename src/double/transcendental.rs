@@ -85,7 +85,7 @@ impl Double {
         let m = (self.0 / Double::LN_2.0 + 0.5).floor();
         let r = mul_pwr2(self - Double::LN_2 * m, inv_k);
 
-        let mut p = r.square();
+        let mut p = r.sqr();
         let mut s = r + mul_pwr2(p, 0.5);
         p *= r;
         let mut t = p * INV_FACT[0];
@@ -103,15 +103,15 @@ impl Double {
 
         s += t;
 
-        s = mul_pwr2(s, 2.0) + s.square();
-        s = mul_pwr2(s, 2.0) + s.square();
-        s = mul_pwr2(s, 2.0) + s.square();
-        s = mul_pwr2(s, 2.0) + s.square();
-        s = mul_pwr2(s, 2.0) + s.square();
-        s = mul_pwr2(s, 2.0) + s.square();
-        s = mul_pwr2(s, 2.0) + s.square();
-        s = mul_pwr2(s, 2.0) + s.square();
-        s = mul_pwr2(s, 2.0) + s.square();
+        s = mul_pwr2(s, 2.0) + s.sqr();
+        s = mul_pwr2(s, 2.0) + s.sqr();
+        s = mul_pwr2(s, 2.0) + s.sqr();
+        s = mul_pwr2(s, 2.0) + s.sqr();
+        s = mul_pwr2(s, 2.0) + s.sqr();
+        s = mul_pwr2(s, 2.0) + s.sqr();
+        s = mul_pwr2(s, 2.0) + s.sqr();
+        s = mul_pwr2(s, 2.0) + s.sqr();
+        s = mul_pwr2(s, 2.0) + s.sqr();
         s += 1.0;
 
         s.ldexp(m as i32)

@@ -21,11 +21,11 @@ impl Double {
     /// use qd::Double;
     ///
     /// let dd = Double::from(3);
-    /// assert!(dd.square() == dd * dd); // The left side is faster though
+    /// assert!(dd.sqr() == dd * dd); // The left side is faster though
     /// ```
     #[inline]
-    pub fn square(self) -> Double {
-        let (p, e) = two_square(self.0);
+    pub fn sqr(self) -> Double {
+        let (p, e) = two_sqr(self.0);
         Double::from(quick_two_sum(
             p,
             e + 2.0 * self.0 * self.1 + self.1 * self.1,
@@ -58,7 +58,7 @@ impl Double {
                 }
                 i /= 2;
                 if i > 0 {
-                    r = r.square();
+                    r = r.sqr();
                 }
             }
         } else {
@@ -138,7 +138,7 @@ impl Double {
             // more.)
             let x = Double::from_div(1.0, self.0.sqrt());
             let ax = self * x;
-            ax + (self - ax.square()) * x * 0.5
+            ax + (self - ax.sqr()) * x * 0.5
         }
     }
 
