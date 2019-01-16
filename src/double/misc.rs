@@ -69,6 +69,17 @@ impl Double {
     pub fn fract(self) -> Double {
         self - self.trunc()
     }
+
+    #[inline]
+    pub fn signum(self) -> Double {
+        if self.is_nan() {
+            Double::NAN
+        } else if self.is_sign_negative() {
+            -Double::ONE
+        } else {
+            Double::ONE
+        }
+    }
 }
 
 // #endregion
