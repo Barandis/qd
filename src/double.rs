@@ -12,7 +12,7 @@ mod macros {
     ///
     /// The argument can be any expression that evaluates to a type that this library defines a
     /// `From` implementation for. This includes `&str`, `Double`, any primitive number that is not
-    /// a `u64` or `i64`, and 2-tuples of any of those number types.
+    /// a `u128` or `i128`, and 2-tuples of any of those primitive number types.
     ///
     /// # Panics
     ///
