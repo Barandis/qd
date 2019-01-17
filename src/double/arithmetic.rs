@@ -6,6 +6,7 @@
 use crate::basic::*;
 use crate::double::Double;
 use std::f64;
+use std::iter::{Product, Sum};
 use std::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
 };
@@ -419,6 +420,46 @@ impl<'a> RemAssign<&'a Double> for Double {
 
 // #endregion
 
+// #region Iterator-related implementations
+
+impl Sum for Double {
+    fn sum<I>(iter: I) -> Double
+    where
+        I: Iterator<Item = Double>,
+    {
+        iter.fold(Double::ZERO, |a, b| a + b)
+    }
+}
+
+impl<'a> Sum<&'a Double> for Double {
+    fn sum<I>(iter: I) -> Double
+    where
+        I: Iterator<Item = &'a Double>,
+    {
+        iter.fold(Double::ZERO, |a, b| a + *b)
+    }
+}
+
+impl Product for Double {
+    fn product<I>(iter: I) -> Double
+    where
+        I: Iterator<Item = Double>,
+    {
+        iter.fold(Double::ONE, |a, b| a * b)
+    }
+}
+
+impl<'a> Product<&'a Double> for Double {
+    fn product<I>(iter: I) -> Double
+    where
+        I: Iterator<Item = &'a Double>,
+    {
+        iter.fold(Double::ONE, |a, b| a * *b)
+    }
+}
+
+// #endregion
+
 // #region Tests
 
 // Tests are all to be done with these types of numbers:
@@ -587,6 +628,22 @@ mod tests {
             "86420864208642086420.6".parse::<Double>().unwrap() / Double::from(2),
         );
         assert_close!(2.5, Double::from(1.3e11) / Double::from(5.2e10));
+    }
+
+    #[test]
+    fn sum() {
+        assert_eq!(
+            dd!(15),
+            [dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().sum()
+        );
+    }
+
+    #[test]
+    fn product() {
+        assert_eq!(
+            dd!(120),
+            [dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().product()
+        );
     }
 }
 

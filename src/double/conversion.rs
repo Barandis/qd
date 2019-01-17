@@ -9,13 +9,21 @@ use crate::double::Double;
 
 fn from_float(n: f64) -> Double {
     if n == 0.0 {
-        return if n.is_sign_negative() { Double::NEG_ZERO } else { Double::ZERO };
+        return if n.is_sign_negative() {
+            Double::NEG_ZERO
+        } else {
+            Double::ZERO
+        };
     }
     if n.is_nan() {
         return Double::NAN;
     }
     if n.is_infinite() {
-        return if n.is_sign_negative() { Double::NEG_INFINITY } else { Double::INFINITY }
+        return if n.is_sign_negative() {
+            Double::NEG_INFINITY
+        } else {
+            Double::INFINITY
+        };
     }
     if n.floor() == n {
         return Double(n, 0.0);
@@ -31,7 +39,7 @@ fn from_float(n: f64) -> Double {
 }
 
 macro_rules! from_impl {
-    ($t:ty) => {
+    ($($t:ty)*) => ($(
         impl From<($t, $t)> for Double {
             fn from((a, b): ($t, $t)) -> Double {
                 Double(a.into(), b.into())
@@ -43,17 +51,10 @@ macro_rules! from_impl {
                 from_float(a.into())
             }
         }
-    };
+    )*);
 }
 
-from_impl!(f64);
-from_impl!(f32);
-from_impl!(i32);
-from_impl!(u32);
-from_impl!(i16);
-from_impl!(u16);
-from_impl!(i8);
-from_impl!(u8);
+from_impl! { i8 i16 i32 u8 u16 u32 f32 f64 }
 
 impl From<&str> for Double {
     /// Converts a string representation of a number into a `Double`.
