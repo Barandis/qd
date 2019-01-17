@@ -72,14 +72,14 @@ mod tests {
 
 mod common;
 mod consts;
-mod parsing;
-mod arithmetic;
-mod comparison;
-mod conversion;
-mod algebraic;
-mod transcendental;
-mod trigonometric;
-mod hyperbolic;
+mod parse;
+mod arith;
+mod comp;
+mod conv;
+mod alg;
+mod trans;
+mod trig;
+mod hyper;
 mod misc;
 
 /// A 128-bit floating-point number implemented as the unevaluated sum of two 64-bit floating-point
