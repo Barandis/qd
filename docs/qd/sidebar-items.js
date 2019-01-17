@@ -1,0 +1,1 @@
+initSidebarItems({"macro":[["dd","Creates a new double-double from another number or from a string."]],"mod":[["error",""]],"struct":[["Double","A 128-bit floating-point number implemented as the unevaluated sum of two 64-bit floating-point numbers."]]});
