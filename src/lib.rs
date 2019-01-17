@@ -42,7 +42,7 @@
 //!
 //! # Using double-double and quad-double numbers
 //!
-//! `qd` provides a pair of macros, [`dd!`] and `qd!`, which can be used to create double-doubles
+//! `qd` provides a pair of macros, [`dd!`][2] and `qd!`, which can be used to create double-doubles
 //! and quad-doubles, respectively. These macros will take any primitive number type (`dd!` cannot
 //! take `u128` or `i128`, as there would be a *loss* of precision to turn those into
 //! double-doubles) or a string containing a number that can be represented (if the string contains
@@ -62,8 +62,8 @@
 //! `f64` and an `f32` together) and actually makes it less insanity-inducing when reading code with
 //! a lot of different number types.
 //!
-//! [1]: http://web.mit.edu/tabbott/Public/quaddouble-debian/qd-2.3.4-old/docs/qd.pdf [`dd!`]:
-//! macros.dd.html
+//! [1]: http://web.mit.edu/tabbott/Public/quaddouble-debian/qd-2.3.4-old/docs/qd.pdf
+//! [2]: macros.dd.html
 
 mod basic;
 mod double;
