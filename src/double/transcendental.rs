@@ -9,19 +9,19 @@ use crate::double::Double;
 // #region Exponential
 
 impl Double {
-    /// Computes the exponential function, *e*<sup>`self`</sup>, in double-double precision.
+    /// Computes the exponential function, *e*<sup>x</sup>, for the number.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = dd!(2).exp();
+    /// let expected = dd!("7.3890560989306502272304274605750");
     ///
-    /// // e^2 to 32 digits of precision
-    /// let e2: Double = "7.3890560989306502272304274605750".parse().unwrap();
-    /// let ans = Double::from(2).exp();
-    ///
-    /// // Check to see that the two values are no more than 10^-30 apart
-    /// assert!((ans - e2).abs() < 10f64.powi(-30));
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
     /// ```
     pub fn exp(self) -> Double {
         // Strategy, as gleaned from MIT papers and Wikipedia:
@@ -52,7 +52,7 @@ impl Double {
         if self.is_zero() {
             return Double::ONE;
         }
-        if self.is_one() {
+        if self == 1.0 {
             return Double::E;
         }
 
@@ -97,19 +97,19 @@ impl Double {
 // #region Logarithms
 
 impl Double {
-    /// Calculates log<sub>*e*</sub> `self`, or the natural logarithm of `self`.
+    /// Calculates the natural logarithm, log<sub>*e*</sub>, of the number.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = Double::from(7).ln();
+    /// let expected = dd!("1.9459101490553133051053527434432");
     ///
-    /// // ln 7 to 32 digits of precision
-    /// let ln7: Double = "1.9459101490553133051053527434432".parse().unwrap();
-    /// let ans = Double::from(7).ln();
-    ///
-    /// // Check to see that the two values are no more than 10^-30 apart
-    /// assert!((ans - ln7).abs() < 10f64.powi(-30));
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
     /// ```
     pub fn ln(self) -> Double {
         // Strategy:
@@ -127,7 +127,7 @@ impl Double {
         //         = x + a * exp(-x) - 1
         //
         // Testing has shown that it requires two iterations to get the required precision.
-        if self.is_one() {
+        if self == 1.0 {
             return Double::ZERO;
         }
         if self.is_zero() || self.is_sign_negative() {
@@ -146,45 +146,45 @@ impl Double {
         }
     }
 
-    /// Calculates log<sub>10</sub> `self`.
+    /// Calculates log<sub>10</sub> of the number.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = Double::E.log10();
+    /// let expected = dd!("0.434294481903251827651128918916605");
     ///
-    /// // log10 e to 32 digits of precision
-    /// let log_e: Double = "0.434294481903251827651128918916605".parse().unwrap();
-    /// let ans = Double::E.log10();
-    ///
-    /// // Check to see that the two values are no more than 10^-30 apart
-    /// assert!((ans - log_e).abs() < 10f64.powi(-30));
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
     /// ```
     #[inline]
     pub fn log10(self) -> Double {
         self.ln() / Double::LN_10
     }
 
-    /// Calculates log<sub>2</sub> `self`.
+    /// Calculates log<sub>2</sub> of the number.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = dd!(10).log2();
+    /// let expected = dd!("3.32192809488736234787031942948939");
     ///
-    /// // log2 10 to 32 digits of precision
-    /// let log_10: Double = "3.32192809488736234787031942948939".parse().unwrap();
-    /// let ans = Double::from(10).log2();
-    ///
-    /// // Check to see that the two values are no more than 10^-30 apart
-    /// assert!((ans - log_10).abs() < 10f64.powi(-30));
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
     /// ```
     #[inline]
     pub fn log2(self) -> Double {
         self.ln() / Double::LN_2
     }
 
-    /// Calculates the base `b` logarithm of `self` (log<sub>`b`</sub> `self`).
+    /// Calculates the base `b` logarithm (log<sub>`b`</sub>) of the number.
     ///
     /// If the goal is to calculate the base *e*, base 2, or base 10 logarithms of `self`, the
     /// specialized functions for those purposes([`ln`], [`log2`], and [`log10`] respectively) will
@@ -195,16 +195,16 @@ impl Double {
     /// [`log10`]: #method.log10
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = dd!(10).log(7.0);
+    /// let expected = dd!("1.18329466245493832681792856164686");
     ///
-    /// // log7 10 to 32 digits of precision
-    /// let log_10: Double = "1.18329466245493832681792856164686".parse().unwrap();
-    /// let ans = Double::from(10).log(7.0);
-    ///
-    /// // Check to see that the two values are no more than 10^-30 apart
-    /// assert!((ans - log_10).abs() < 10f64.powi(-30));
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
     /// ```
     #[inline]
     pub fn log(self, b: f64) -> Double {

@@ -13,18 +13,11 @@ use std::ops::{
 // #region Addition
 
 impl Double {
-    /// Creates a new `Double` representing the sum of two numbers.
-    ///
-    /// This acts differently from the basic `Double(a, b)` constructor in that the internal
-    /// values are completely normalized by this function. This is only relevant if no other
-    /// operation is done on the number afterwards, as all mathematical ops in this library
-    /// normalize their values.
+    /// Creates a new double-double representing the sum of two floats.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
-    ///
+    /// # use qd::Double;
     /// let dd = Double::from_add(1.0, 2.0);
     /// assert!(dd == 3.0);
     /// ```
@@ -97,13 +90,11 @@ impl AddAssign<f64> for Double {
 // #region Subtraction
 
 impl Double {
-    /// Creates a new `Double` representing the difference of two numbers.
+    /// Creates a new double-double representing the difference of two floats.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
-    ///
+    /// # use qd::Double;
     /// let dd = Double::from_sub(1.0, 2.0);
     /// assert!(dd == -1.0);
     /// ```
@@ -185,13 +176,11 @@ impl Neg for Double {
 // #region Multiplication
 
 impl Double {
-    /// Creates a new `Double` representing the product of two numbers.
+    /// Creates a new double-double representing the product of two floats.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
-    ///
+    /// # use qd::Double;
     /// let dd = Double::from_mul(1.0, 2.0);
     /// assert!(dd == 2.0);
     /// ```
@@ -262,13 +251,11 @@ impl MulAssign<f64> for Double {
 // #region Division
 
 impl Double {
-    /// Creates a new `Double` representing the quotient of two numbers.
+    /// Creates a new double-double representing the quotient of two floats.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
-    ///
+    /// # use qd::Double;
     /// let dd = Double::from_div(1.0, 2.0);
     /// assert!(dd == 0.5);
     /// ```
@@ -341,13 +328,11 @@ impl Double {
         }
     }
 
-    /// Calculates the reciprocal of `self`, returning it as a new `Double`.
+    /// Calculates the reciprocal of the number.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
-    ///
+    /// # use qd::Double;
     /// let r = Double::from(2.0).recip();
     /// assert!(r == 0.5);
     /// ```

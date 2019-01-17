@@ -7,6 +7,20 @@ use crate::double::common::mul_pwr2;
 use crate::double::Double;
 
 impl Double {
+    /// Computes the hyperbolic sine of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = dd!(1).sinh();
+    /// let expected = dd!("1.1752011936438014568823818505956");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
+    /// ```
     pub fn sinh(self) -> Double {
         if self.is_zero() {
             Double::ZERO
@@ -35,6 +49,20 @@ impl Double {
         }
     }
 
+    /// Computes the hyperbolic cosine of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = dd!(1).cosh();
+    /// let expected = dd!("1.5430806348152437784779056207571");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
+    /// ```
     pub fn cosh(self) -> Double {
         if self.is_zero() {
             Double::ONE
@@ -44,6 +72,20 @@ impl Double {
         }
     }
 
+    /// Computes the hyperbolic tangent of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = dd!(1).tanh();
+    /// let expected = dd!("0.76159415595576488811945828260479");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
+    /// ```
     pub fn tanh(self) -> Double {
         if self.is_zero() {
             Double::ZERO
@@ -58,6 +100,30 @@ impl Double {
         }
     }
 
+    /// Simultaneously computes the hyperbolic sine and cosine of the number.
+    ///
+    /// This method is more efficient to run than [`sinh`] and [`cosh`] individually and is useful
+    /// when both numbers are needed.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let (sin_h, cos_h) = dd!(1).sinh_cosh();
+    /// let esin = dd!("1.1752011936438014568823818505956");
+    /// let ecos = dd!("1.5430806348152437784779056207571");
+    ///
+    /// let diff1 = (sin_h - esin).abs();
+    /// let diff2 = (cos_h - ecos).abs();
+    ///
+    /// assert!(diff1 < 1e-20);
+    /// assert!(diff2 < 1e-20);
+    /// # }
+    /// ```
+    ///
+    /// [`sinh`]: #method.sinh
+    /// [`cosh`]: #method.cosh
     pub fn sinh_cosh(self) -> (Double, Double) {
         if self.abs() <= 0.05 {
             let s = self.sinh();
@@ -72,10 +138,38 @@ impl Double {
         }
     }
 
+    /// Calculates the inverse hyperbolic sine of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = dd!(1.5).asinh();
+    /// let expected = dd!("1.1947632172871093041119308285191");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
+    /// ```
     pub fn asinh(self) -> Double {
         (self + (self.sqr() + 1.0).sqrt()).ln()
     }
 
+    /// Calculates the inverse hyperbolic cosine of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = dd!(1.5).acosh();
+    /// let expected = dd!("0.96242365011920689499551782684874");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
+    /// ```
     pub fn acosh(self) -> Double {
         if self < 1.0 {
             Double::NAN
@@ -84,6 +178,20 @@ impl Double {
         }
     }
 
+    /// Calculates the inverse hyperbolic tangent of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = dd!(0.5).atanh();
+    /// let expected = dd!("0.54930614433405484569762261846126");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
+    /// ```
     pub fn atanh(self) -> Double {
         if self.abs() >= 1.0 {
             Double::NAN

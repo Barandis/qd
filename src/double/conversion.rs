@@ -58,11 +58,10 @@ from_impl!(u8);
 impl From<&str> for Double {
     /// Converts a string representation of a number into a `Double`.
     ///
-    /// `parse` from [`FromStr`] is going to be universally better than this way of converting a
-    /// string to a `Double` unless there is absolute assurance that the string is, in fact, a legal
-    /// number. This function has no way of indicating a parsing error other than returning `NaN`,
-    /// and there's no way to know whether a returned `NaN` is genuine or the result of a parser
-    /// error. Take care when using this function.
+    /// `parse` from [`FromStr`] is a safer way to make this conversion, as it returns a type
+    /// (`Result`) that allows for error checking. This function returns `NaN` in the case of a
+    /// parse error, which is indistinguishable from a legitimately-returned `NaN`. Take care when
+    /// using this function.
     ///
     /// [`FromStr`]: #impl-FromStr
     fn from(s: &str) -> Double {
@@ -75,11 +74,13 @@ impl From<&str> for Double {
 // #region Miscellaneous conversions
 
 impl Double {
+    /// Converts the number into an `f64`.
     #[inline]
     pub fn to_float(self) -> f64 {
-        self.0 + self.1
+        self.0
     }
 
+    /// Converts the number into an `i32`.
     #[inline]
     pub fn to_int(self) -> i32 {
         self.0 as i32

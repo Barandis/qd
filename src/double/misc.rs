@@ -3,12 +3,24 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::double::Double;
 use crate::basic::quick_two_sum;
+use crate::double::Double;
+use std::num::FpCategory;
 
 // #region Miscellaneous mathematical operations
 
 impl Double {
+    /// Calculates the absolute value of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// assert!(dd!(3).abs() == 3.0);
+    /// assert!(dd!(-3).abs() == 3.0);
+    /// # }
+    /// ```
     #[inline]
     pub fn abs(self) -> Double {
         if self.is_sign_negative() {
@@ -18,6 +30,20 @@ impl Double {
         }
     }
 
+    /// Returns the largest integer less than or equal to the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let f = dd!(3.99);
+    /// let g = dd!(3.0);
+    ///
+    /// assert!(f.floor() == 3.0);
+    /// assert!(g.floor() == 3.0);
+    /// # }
+    /// ```
     #[inline]
     pub fn floor(self) -> Double {
         let hi = self.0.floor();
@@ -29,6 +55,20 @@ impl Double {
         }
     }
 
+    /// Returns the smallest integer greater than or equal to the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let f = dd!(3.01);
+    /// let g = dd!(4.0);
+    ///
+    /// assert!(f.ceil() == 4.0);
+    /// assert!(g.ceil() == 4.0);
+    /// # }
+    /// ```
     #[inline]
     pub fn ceil(self) -> Double {
         let hi = self.0.ceil();
@@ -40,6 +80,20 @@ impl Double {
         }
     }
 
+    /// Returns the nearest integer to the number. Half-way cases are rounded away from `0.0`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let f = dd!(3.3);
+    /// let g = dd!(-3.3);
+    ///
+    /// assert!(f.round() == 3.0);
+    /// assert!(g.round() == -3.0);
+    /// # }
+    /// ```
     #[inline]
     pub fn round(self) -> Double {
         let hi = self.0.round();
@@ -56,6 +110,20 @@ impl Double {
         }
     }
 
+    /// Returns the integer part of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let f = dd!(3.3);
+    /// let g = dd!(-3.7);
+    ///
+    /// assert!(f.trunc() == 3.0);
+    /// assert!(g.trunc() == -3.0);
+    /// # }
+    /// ```
     #[inline]
     pub fn trunc(self) -> Double {
         if self.0 >= 0.0 {
@@ -65,11 +133,48 @@ impl Double {
         }
     }
 
+    /// Returns the fractional part of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let f = dd!(3.3);
+    /// let g = dd!(-3.7);
+    ///
+    /// let fdiff = (f.fract() - dd!(0.3)).abs();
+    /// let gdiff = (g.fract() - dd!(-0.7)).abs();
+    ///
+    /// assert!(fdiff < 1e-20);
+    /// assert!(gdiff < 1e-20);
+    /// # }
+    /// ```
     #[inline]
     pub fn fract(self) -> Double {
         self - self.trunc()
     }
 
+    /// Returns a number that represents the sign of the number.
+    ///
+    /// * `1.0` if the number is positive, `+0.0`, or [`INFINITY`]
+    /// * `-1.0` if the number is negative, `-0.0`, or [`NEG_INFINITY`]
+    /// *  [`NAN`] if the number is [`NAN`]
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// assert!(dd!(3.5).signum() == 1.0);
+    /// assert!(Double::NEG_INFINITY.signum() == -1.0);
+    /// assert!(Double::NAN.signum().is_nan());
+    /// # }
+    /// ```
+    ///
+    /// [`INFINITY`]: #associatedconstant.INFINITY
+    /// [`NEG_INFINITY`]: #associatedconstant.NEG_INFINITY
+    /// [`NAN`]: #associatedconstant.NAN
     #[inline]
     pub fn signum(self) -> Double {
         if self.is_nan() {
@@ -87,6 +192,23 @@ impl Double {
 // #region Number properties
 
 impl Double {
+    /// Returns the floating point category of the number. If only one property is being tested,
+    /// it's generally faster to use the specific predicate rather than this function.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// use std::num::FpCategory;
+    ///
+    /// let num = dd!(12.4);
+    /// let inf = Double::INFINITY;
+    ///
+    /// assert!(num.classify() == FpCategory::Normal);
+    /// assert!(inf.classify() == FpCategory::Infinite);
+    /// # }
+    /// ```
     pub fn classify(self) -> FpCategory {
         use std::num::FpCategory::*;
 
@@ -106,41 +228,134 @@ impl Double {
         }
     }
 
+    /// Returns `true` if the number is neither zero, infinite, subnormal, or `NaN`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let min = Double::MIN_POSITIVE;
+    /// let max = Double::MAX;
+    /// let lower = dd!(1e-308);
+    /// let zero = Double::ZERO;
+    ///
+    /// assert!(min.is_normal());
+    /// assert!(max.is_normal());
+    ///
+    /// assert!(!zero.is_normal());
+    /// assert!(!Double::NAN.is_normal());
+    /// assert!(!Double::INFINITY.is_normal());
+    /// // Values between `0` and `MIN_POSITIVE` are subnormal.
+    /// assert!(!lower.is_normal());
+    /// # }
+    /// ```
     #[inline]
     pub fn is_normal(self) -> bool {
         self.classify() == FpCategory::Normal
     }
 
+    /// Returns `true` if the number is either positive or negative zero.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::Double;
+    /// assert!(Double::ZERO.is_zero());
+    /// assert!(Double::NEG_ZERO.is_zero());
+    /// assert!(!Double::PI.is_zero());
+    /// ```
     #[inline]
     pub fn is_zero(self) -> bool {
         self.0 == 0.0
     }
 
-    #[inline]
-    pub fn is_one(self) -> bool {
-        self.0 == 1.0 && self.1 == 0.0
-    }
-
+    /// Returns `true` if the number is negative, including negative zero and infinity and `NaN`
+    /// with a negative sign bit.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// assert!(Double::NEG_ZERO.is_sign_negative());
+    /// assert!(Double::NEG_INFINITY.is_sign_negative());
+    /// assert!(dd!(-7.0).is_sign_negative());
+    /// assert!(!Double::ZERO.is_sign_negative());
+    /// assert!(!dd!(7.0).is_sign_negative());
+    /// # }
+    /// ```
     #[inline]
     pub fn is_sign_negative(self) -> bool {
         self.0.is_sign_negative()
     }
 
+    /// Returns `true` if the number is positive, including positive zero and infinity and `NaN`
+    /// with a positive sign bit.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// assert!(Double::ZERO.is_sign_positive());
+    /// assert!(Double::INFINITY.is_sign_positive());
+    /// assert!(dd!(7.0).is_sign_positive());
+    /// assert!(!Double::NEG_ZERO.is_sign_positive());
+    /// assert!(!dd!(-7.0).is_sign_positive());
+    /// # }
+    /// ```
     #[inline]
     pub fn is_sign_positive(self) -> bool {
         self.0.is_sign_positive()
     }
 
+    /// Returns `true` if this value is `NaN`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// assert!(Double::NAN.is_nan());
+    /// assert!(!dd!(7.0).is_nan());
+    /// # }
+    /// ```
     #[inline]
     pub fn is_nan(self) -> bool {
         self.0.is_nan() || self.1.is_nan()
     }
 
+    /// Returns `true` if this number is positive or negative infinity.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// assert!(Double::INFINITY.is_infinite());
+    /// assert!(Double::NEG_INFINITY.is_infinite());
+    /// assert!(!Double::NAN.is_infinite());
+    /// assert!(!dd!(7.0).is_infinite());
+    /// # }
+    /// ```
     #[inline]
     pub fn is_infinite(self) -> bool {
         self.0.is_infinite() || self.1.is_infinite()
     }
 
+    /// Returns `true` if this number is neither infinite nor `NaN`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// assert!(!Double::INFINITY.is_finite());
+    /// assert!(!Double::NEG_INFINITY.is_finite());
+    /// assert!(!Double::NAN.is_finite());
+    /// assert!(dd!(7.0).is_finite());
+    /// # }
+    /// ```
     #[inline]
     pub fn is_finite(self) -> bool {
         self.0.is_finite() && self.1.is_finite()
@@ -148,3 +363,20 @@ impl Double {
 }
 
 // #endregion
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    macro_rules! assert_close {
+        ($expected:expr, $actual:expr $(,)*) => {
+            assert_precision!($expected, $actual, 30);
+        };
+    }
+
+    #[test]
+    fn misc_fract() {
+        assert_close!(0.3, dd!(3.3).fract());
+        assert_close!(-0.7, dd!(-3.7).fract());
+    }
+}

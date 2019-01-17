@@ -102,7 +102,7 @@ fn reduce(a: Double) -> (i32, i32, Double) {
 }
 
 impl Double {
-    /// Computes the sine of `self`, which is assumed to be in radians.
+    /// Computes the sine of the number.
     ///
     /// # Examples
     /// ```
@@ -172,7 +172,7 @@ impl Double {
         }
     }
 
-    /// Computes the cosine of `self`, which is assumed to be in radians.
+    /// Computes the cosine of the number.
     ///
     /// # Examples
     /// ```
@@ -230,8 +230,8 @@ impl Double {
         }
     }
 
-    /// Simultaneously computes the sine and the cosine of `self`. This is more efficient if you
-    /// need both numbers. Returns `(sin(self), cos(self))`.
+    /// Simultaneously computes the sine and the cosine of the number. This is more efficient if you
+    /// need both numbers. Returns `(sin(x), cos(x))`.
     ///
     /// # Examples
     /// ```
@@ -285,7 +285,7 @@ impl Double {
         }
     }
 
-    /// Computes the tangent of `self`, which is assumed to be in radians.
+    /// Computes the tangent of the number.
     ///
     /// # Examples
     /// ```
@@ -301,7 +301,7 @@ impl Double {
         s / c
     }
 
-    /// Computes the 2-argument arctangent of `self` (`y`) and `other` (`x`) in radians.
+    /// Computes the 2-argument arctangent of the number (`y`) and `other` (`x`) in radians.
     ///
     /// The second argument allows the avoidance of ambiguities in the single-argument [`atan`]
     /// function, notably allowing the determination of quadrant.
@@ -394,34 +394,38 @@ impl Double {
         }
     }
 
-    /// Computes the arctangent of `self`. The return value is in the range [-π/2, π/2].
+    /// Computes the arctangent of the number. The return value is in the range [-π/2, π/2].
     ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
+    /// # fn main() {
     /// let x = dd!(1).atan();
     ///
     /// // Answer should be π/4
     /// let diff = (x - Double::PI / 4.0).abs();
     /// assert!(diff < 1e-20);
+    /// # }
     /// ```
     pub fn atan(self) -> Double {
         self.atan2(Double::ONE)
     }
 
-    /// Computes the arcsine of `self`. The return value is in the range [-π/2, π/2] for any `self`
-    /// value in the range [-1, 1]. Otherwise the return value is `NaN`.
+    /// Computes the arcsine of the number. The return value is in the range [-π/2, π/2] for any
+    /// number in the range [-1, 1]. Otherwise the return value is `NaN`.
     ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
+    /// # fn main() {
     /// let x = dd!(1).asin();
     ///
     /// // Answer should be π/2
     /// let diff = (x - Double::PI / 2.0).abs();
     /// assert!(diff < 1e-20);
+    /// # }
     /// ```
     pub fn asin(self) -> Double {
         if self.abs() > 1.0 {
@@ -435,18 +439,20 @@ impl Double {
         }
     }
 
-    /// Computes the arccosine of `self`. The return value is in the range [0, π] for any `self`
-    /// value in the range [-1, 1]. Otherwise the return value is `NaN`.
+    /// Computes the arccosine of the number. The return value is in the range [0, π] for any number
+    /// in the range [-1, 1]. Otherwise the return value is `NaN`.
     ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
+    /// # fn main() {
     /// let x = dd!(1).acos();
     ///
     /// // Answer should be 0
     /// let diff = (x - 0.0).abs();
     /// assert!(diff < 1e-20);
+    /// # }
     /// ```
     pub fn acos(self) -> Double {
         if self.abs() > 1.0 {

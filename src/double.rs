@@ -8,6 +8,30 @@ use std::f64;
 
 #[macro_use]
 mod macros {
+    /// Creates a new double-double from another number or from a string.
+    ///
+    /// The argument can be any expression that evaluates to a type that this library defines a
+    /// `From` implementation for. This includes `&str`, `Double`, any primitive number that is not
+    /// a `u64` or `i64`, and 2-tuples of any of those number types.
+    ///
+    /// # Panics
+    ///
+    /// Passing an expression that evaluates to a type that does not have a `From` implementation
+    /// will cause a panic.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// assert!(dd!(0) == Double::ZERO);
+    ///
+    /// let x = 1.0 / dd!(2).sqrt();
+    /// let expected = dd!("0.70710678118654752440084436210485");
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
+    /// ```
     #[macro_export]
     macro_rules! dd {
         ($x:expr) => {
@@ -46,25 +70,39 @@ mod tests {
     }
 }
 
-mod consts;
 mod common;
-mod algebraic;
+mod consts;
+mod parsing;
 mod arithmetic;
 mod comparison;
 mod conversion;
-mod hyperbolic;
-mod misc;
-mod parsing;
+mod algebraic;
 mod transcendental;
 mod trigonometric;
+mod hyperbolic;
+mod misc;
 
 /// A 128-bit floating-point number implemented as the unevaluated sum of two 64-bit floating-point
 /// numbers.
 ///
-/// There are several ways to create a new `Double`: the [`new`](#method.new) or
-/// [`norm`](#method.norm) functions, the various `From` implementations, the `FromStr`
-/// implementation, or one of the mathematical `from_xxx` functions. See the [module-level
-/// documentation](index.html) for more information.
+/// There are several ways to create a new `Double`:
+///
+/// * calling the [`new`] or [`norm`] functions
+/// * calling `Double::from` and passing a type that has a `From` implementation
+/// * calling `parse` on a string
+/// * calling [`from_add`], [`from_sub`], [`from_mul`], or [`from_div`]
+/// * using the [`dd`] macro
+///
+/// See the [module-level documentation] (index.html) for more information.
+///
+/// [`new`]: #method.new
+/// [`norm`]: #method.norm
+/// [`from_add`]: #method.from_add
+/// [`from_sub`]: #method.from_sub
+/// [`from_mul`]: #method.from_mul
+/// [`from_div`]: #method.from_div
+/// [`dd`]: macro.dd.html
+/// [module-level documentation]: index.html
 #[derive(Clone, Copy, Debug)]
 pub struct Double(f64, f64);
 
@@ -77,10 +115,8 @@ impl Double {
     /// been pre-computed.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
-    ///
+    /// # use qd::Double;
     /// let dd = Double::new(0.0, 0.0);
     /// assert!(dd.is_zero());
     /// ```
@@ -96,10 +132,8 @@ impl Double {
     /// [`from_add`](#method.from_add) instead.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
-    ///
+    /// # use qd::Double;
     /// let dd = Double::norm(2.0, 1.0);
     /// assert!(dd == 3.0);
     /// ```

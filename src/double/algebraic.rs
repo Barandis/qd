@@ -10,18 +10,19 @@ use std::f64;
 // #region Powers
 
 impl Double {
-    /// Calculates `self`<sup>2</sup> and returns it as a new `Double`.
+    /// Calculates the square of the number.
     ///
     /// This method takes advantage of optimizations in multiplication that are available when the
     /// two numbers being multiplied are the same, so it is more efficient than bare multiplication.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
-    ///
-    /// let dd = Double::from(3);
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let dd = dd!(3);
     /// assert!(dd.sqr() == dd * dd); // The left side is faster though
+    /// # }
     /// ```
     #[inline]
     pub fn sqr(self) -> Double {
@@ -32,15 +33,16 @@ impl Double {
         ))
     }
 
-    /// Calculates `self`<sup>`n`</sup> and returns it as a new `Double`.
+    /// Calculates the number raised to an integral power.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
-    ///
-    /// let dd = Double::from(3);
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let dd = dd!(3);
     /// assert!(dd.powi(3) == 27.0);
+    /// # }
     /// ```
     pub fn powi(self, n: i32) -> Double {
         if n == 0 {
@@ -72,6 +74,24 @@ impl Double {
         }
     }
 
+    /// Calculates the number raised to a double-double power.
+    ///
+    /// This function only works for positive values of the number as it uses a simplified
+    /// logarithm-based algorithm. This is likely to change in the future when a more complex
+    /// algorithm is implemented.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let dd = dd!(3).powf(dd!(3.3));
+    /// let expected = dd!("37.540507598529552193101865954634");
+    ///
+    /// let diff = (dd - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
+    /// ```
     #[inline]
     pub fn powf(self, n: Double) -> Double {
         // a^b = exp(b ln(a)), but since ln(a) is not defined for negative values, this works
@@ -88,12 +108,13 @@ impl Double {
     /// offered despite it not being part of the `f64` API.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
-    ///
-    /// let dd = Double::from(3);
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let dd = dd!(3);
     /// assert!(dd.ldexp(3) == 24.0); // 3 * 2^3
+    /// # }
     /// ```
     #[inline]
     pub fn ldexp(self, n: i32) -> Double {
@@ -106,17 +127,17 @@ impl Double {
 // #region Roots
 
 impl Double {
-    /// Calculates the square root of `self` and returns it as a new `Double`.
+    /// Calculates the square root of the number.
     ///
     /// # Examples
-    ///
     /// ```
-    /// use qd::Double;
-    ///
-    /// let dd = Double::from(2);
-    /// // floating point error is reduced substantially but can't be eliminated,
-    /// // so we check to see that the numbers are very close rather than equal
-    /// assert!((dd.sqrt() - Double::SQRT_2).abs() < Double::EPSILON);
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let dd = dd!(2).sqrt();
+    /// let diff = (dd - Double::SQRT_2).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
     /// ```
     pub fn sqrt(self) -> Double {
         if self.is_zero() {
@@ -142,11 +163,39 @@ impl Double {
         }
     }
 
+    /// Calculates the cube root of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let dd = dd!(2).cbrt();
+    /// let expected = dd!("1.2599210498948731647672106072782");
+    ///
+    /// let diff = (dd - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
+    /// ```
     #[inline]
     pub fn cbrt(self) -> Double {
         self.nroot(3)
     }
 
+    /// Calculates the `n`th root of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let dd = dd!(2).nroot(4);
+    /// let expected = dd!("1.1892071150027210667174999705605");
+    ///
+    /// let diff = (dd - expected).abs();
+    /// assert!(diff < 1e-20);
+    /// # }
+    /// ```
     pub fn nroot(self, n: i32) -> Double {
         if n <= 0 {
             return Double::NAN;
