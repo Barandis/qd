@@ -393,7 +393,7 @@ impl Double {
             let y = self / r;
 
             // Compute f64 approximation to atan
-            let mut z = Double::from(self.to_float().atan2(other.to_float()));
+            let mut z = Double::from(self.as_float().atan2(other.as_float()));
             let (sin_z, cos_z) = z.sin_cos();
 
             if x.0.abs() > y.0.abs() {

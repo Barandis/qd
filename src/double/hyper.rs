@@ -24,7 +24,7 @@ impl Double {
     pub fn sinh(self) -> Double {
         if self.is_zero() {
             Double::ZERO
-        } else if self.abs().to_float() > 0.05 {
+        } else if self.abs().as_float() > 0.05 {
             let a = self.exp();
             mul_pwr2(a - a.recip(), 0.5)
         } else {
@@ -89,7 +89,7 @@ impl Double {
     pub fn tanh(self) -> Double {
         if self.is_zero() {
             Double::ZERO
-        } else if self.abs().to_float() > 0.05 {
+        } else if self.abs().as_float() > 0.05 {
             let a = self.exp();
             let inv_a = a.recip();
             (a - inv_a) / (a + inv_a)
@@ -125,7 +125,7 @@ impl Double {
     /// [`sinh`]: #method.sinh
     /// [`cosh`]: #method.cosh
     pub fn sinh_cosh(self) -> (Double, Double) {
-        if self.abs().to_float() <= 0.05 {
+        if self.abs().as_float() <= 0.05 {
             let s = self.sinh();
             let c = (Double::ONE + s.sqr()).sqrt();
             (s, c)

@@ -138,14 +138,18 @@ impl From<&str> for Double {
 impl Double {
     /// Converts the number into an `f64`.
     #[inline]
-    pub fn to_float(self) -> f64 {
+    pub fn as_float(self) -> f64 {
         self.0
     }
 
-    /// Converts the number into an `i32`.
+    /// Converts the number into an `i64`.
+    ///
+    /// While it is possible for a `Double` to be created from a `u64`, whether or not the original
+    /// is signed is not recorded (since `Double` itself is signed). The return value of this
+    /// function can be cast to u64 if necessary.
     #[inline]
-    pub fn to_int(self) -> i32 {
-        self.0 as i32
+    pub fn as_int(self) -> i64 {
+        self.0 as i64 + self.1 as i64
     }
 }
 
@@ -167,5 +171,13 @@ mod tests {
         let a = -0x0123456789abcdefi64;
         let d = dd!(a);
         assert_eq!(format!("{}", a), format!("{}", d));
+    }
+
+    #[test]
+    fn conv_from_and_to_i64() {
+        let a = -0x0123456789abcdefi64;
+        let d = dd!(a);
+        let x = d.as_int();
+        assert_eq!(a, x);
     }
 }

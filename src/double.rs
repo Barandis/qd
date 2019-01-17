@@ -47,7 +47,7 @@ mod tests {
         ($expected:expr, $actual:expr, $digits:expr) => {
             let expected = Double::from($expected);
             let actual = Double::from($actual);
-            let mag = expected.abs().log10().floor().to_int();
+            let mag = expected.abs().log10().floor().as_int() as i32;
             let epsilon = Double(10.0, 0.0).powi(mag - $digits);
             let message = format!(
                 "\nExpected: {0} ({0:?})\nActual:   {1} ({1:?})",
