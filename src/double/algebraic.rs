@@ -20,8 +20,8 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let dd = dd!(3);
-    /// assert!(dd.sqr() == dd * dd); // The left side is faster though
+    /// let x = dd!(3);
+    /// assert!(x.sqr() == x * x); // The left side is faster though
     /// # }
     /// ```
     #[inline]
@@ -40,8 +40,8 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let dd = dd!(3);
-    /// assert!(dd.powi(3) == dd!(27));
+    /// let x = dd!(3);
+    /// assert!(x.powi(3) == dd!(27));
     /// # }
     /// ```
     pub fn powi(self, n: i32) -> Double {
@@ -85,10 +85,10 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let dd = dd!(3).powf(dd!(3.3));
+    /// let x = dd!(3).powf(dd!(3.3));
     /// let expected = dd!("37.540507598529552193101865954634");
     ///
-    /// let diff = (dd - expected).abs();
+    /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
@@ -112,8 +112,8 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let dd = dd!(3);
-    /// assert!(dd.ldexp(3) == dd!(24)); // 3 * 2^3
+    /// let x = dd!(3);
+    /// assert!(x.ldexp(3) == dd!(24)); // 3 * 2^3
     /// # }
     /// ```
     #[inline]
@@ -134,8 +134,8 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let dd = dd!(2).sqrt();
-    /// let diff = (dd - Double::SQRT_2).abs();
+    /// let x = dd!(2).sqrt();
+    /// let diff = (x - Double::SQRT_2).abs();
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
@@ -170,10 +170,10 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let dd = dd!(2).cbrt();
+    /// let x = dd!(2).cbrt();
     /// let expected = dd!("1.2599210498948731647672106072782");
     ///
-    /// let diff = (dd - expected).abs();
+    /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
@@ -189,10 +189,10 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let dd = dd!(2).nroot(4);
+    /// let x = dd!(2).nroot(4);
     /// let expected = dd!("1.1892071150027210667174999705605");
     ///
-    /// let diff = (dd - expected).abs();
+    /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
