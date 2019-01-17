@@ -23,11 +23,11 @@ much like <code>f64</code>s as possible.</p>
 type has 212 bits (about 63 decimal digits). However, the exponents remain the same as in <code>f64</code>,
 so the range of each type is similar to <code>f64</code> (max value of around ~10<sup>308</sup>). These
 types don't make <em>bigger</em> numbers, they make <em>more precise</em> numbers.</p>
-<p>For those who are interested, a paper from MIT called [Library for Double-Double and Quad-Double
-Arithmetic][1] explains the algorithms for working with these numbers in great detail, and that
+<p>For those who are interested, a paper from MIT called <a href="http://web.mit.edu/tabbott/Public/quaddouble-debian/qd-2.3.4-old/docs/qd.pdf">Library for Double-Double and Quad-Double
+Arithmetic</a> explains the algorithms for working with these numbers in great detail, and that
 paper plus their C++ implementation were absolutely invaluable in writing this library.</p>
 <h1 id="using-double-double-and-quad-double-numbers" class="section-header"><a href="#using-double-double-and-quad-double-numbers">Using double-double and quad-double numbers</a></h1>
-<p><code>qd</code> provides a pair of macros, [<code>dd!</code>] and <code>qd!</code>, which can be used to create double-doubles
+<p><code>qd</code> provides a pair of macros, <a href="macros.dd.html"><code>dd!</code></a> and <code>qd!</code>, which can be used to create double-doubles
 and quad-doubles, respectively. These macros will take any primitive number type (<code>dd!</code> cannot
 take <code>u128</code> or <code>i128</code>, as there would be a <em>loss</em> of precision to turn those into
 double-doubles) or a string containing a number that can be represented (if the string contains
@@ -44,8 +44,6 @@ them), and you can't multiply a <code>Quad</code> by an <code>i32</code> (though
 to a <code>Quad</code> and then do it). This is typical of type casting in Rust (you also can't add an
 <code>f64</code> and an <code>f32</code> together) and actually makes it less insanity-inducing when reading code with
 a lot of different number types.</p>
-<p>[1]: http://web.mit.edu/tabbott/Public/quaddouble-debian/qd-2.3.4-old/docs/qd.pdf [<code>dd!</code>]:
-macros.dd.html</p>
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
