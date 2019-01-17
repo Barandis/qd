@@ -379,4 +379,12 @@ mod tests {
         assert_close!(0.3, dd!(3.3).fract());
         assert_close!(-0.7, dd!(-3.7).fract());
     }
+
+    // Used to quickly get raw Double definitions for the odd number here and there
+    // Run with `cargo test print_dd -- --nocapture`
+    // #[test]
+    // fn print_dd() {
+    //     let x = dd!("4.9303806576313237838233035330174e-32");
+    //     println!("Double({:e}, {:e})", x.0, x.1);
+    // }
 }

@@ -46,10 +46,37 @@ impl Add for Double {
     }
 }
 
+impl<'a> Add<&'a Double> for Double {
+    type Output = Double;
+
+    #[inline]
+    fn add(self, other: &Double) -> Double {
+        Double::from(self.add_double(*other))
+    }
+}
+
+impl<'a> Add<Double> for &'a Double {
+    type Output = Double;
+
+    #[inline]
+    fn add(self, other: Double) -> Double {
+        Double::from(self.add_double(other))
+    }
+}
+
 impl AddAssign for Double {
     #[inline]
     fn add_assign(&mut self, other: Double) {
         let (a, b) = self.add_double(other);
+        self.0 = a;
+        self.1 = b;
+    }
+}
+
+impl<'a> AddAssign<&'a Double> for Double {
+    #[inline]
+    fn add_assign(&mut self, other: &Double) {
+        let (a, b) = self.add_double(*other);
         self.0 = a;
         self.1 = b;
     }
@@ -93,10 +120,37 @@ impl Sub for Double {
     }
 }
 
+impl<'a> Sub<&'a Double> for Double {
+    type Output = Double;
+
+    #[inline]
+    fn sub(self, other: &Double) -> Double {
+        Double::from(self.sub_double(*other))
+    }
+}
+
+impl<'a> Sub<Double> for &'a Double {
+    type Output = Double;
+
+    #[inline]
+    fn sub(self, other: Double) -> Double {
+        Double::from(self.sub_double(other))
+    }
+}
+
 impl SubAssign for Double {
     #[inline]
     fn sub_assign(&mut self, other: Double) {
         let (a, b) = self.sub_double(other);
+        self.0 = a;
+        self.1 = b;
+    }
+}
+
+impl<'a> SubAssign<&'a Double> for Double {
+    #[inline]
+    fn sub_assign(&mut self, other: &Double) {
+        let (a, b) = self.sub_double(*other);
         self.0 = a;
         self.1 = b;
     }
@@ -146,10 +200,37 @@ impl Mul for Double {
     }
 }
 
+impl<'a> Mul<&'a Double> for Double {
+    type Output = Double;
+
+    #[inline]
+    fn mul(self, other: &Double) -> Double {
+        Double::from(self.mul_double(*other))
+    }
+}
+
+impl<'a> Mul<Double> for &'a Double {
+    type Output = Double;
+
+    #[inline]
+    fn mul(self, other: Double) -> Double {
+        Double::from(self.mul_double(other))
+    }
+}
+
 impl MulAssign for Double {
     #[inline]
     fn mul_assign(&mut self, other: Double) {
         let (a, b) = self.mul_double(other);
+        self.0 = a;
+        self.1 = b;
+    }
+}
+
+impl<'a> MulAssign<&'a Double> for Double {
+    #[inline]
+    fn mul_assign(&mut self, other: &Double) {
+        let (a, b) = self.mul_double(*other);
         self.0 = a;
         self.1 = b;
     }
@@ -184,9 +265,7 @@ impl Double {
         if b == 0.0 {
             if a == 0.0 {
                 Double::NAN
-            } else if a.is_sign_negative() && b.is_sign_positive()
-                || a.is_sign_positive() && b.is_sign_negative()
-            {
+            } else if a.is_sign_negative() == b.is_sign_positive() {
                 Double::NEG_INFINITY
             } else {
                 Double::INFINITY
@@ -207,9 +286,7 @@ impl Double {
         if other.is_zero() {
             if self.is_zero() {
                 (f64::NAN, f64::NAN)
-            } else if self.is_sign_negative() && other.is_sign_positive()
-                || self.is_sign_positive() && other.is_sign_negative()
-            {
+            } else if self.is_sign_negative() == other.is_sign_positive() {
                 (f64::NEG_INFINITY, f64::NEG_INFINITY)
             } else {
                 (f64::INFINITY, f64::INFINITY)
@@ -252,10 +329,37 @@ impl Div for Double {
     }
 }
 
+impl<'a> Div<&'a Double> for Double {
+    type Output = Double;
+
+    #[inline]
+    fn div(self, other: &Double) -> Double {
+        Double::from(self.div_double(*other))
+    }
+}
+
+impl<'a> Div<Double> for &'a Double {
+    type Output = Double;
+
+    #[inline]
+    fn div(self, other: Double) -> Double {
+        Double::from(self.div_double(other))
+    }
+}
+
 impl DivAssign for Double {
     #[inline]
     fn div_assign(&mut self, other: Double) {
         let (a, b) = self.div_double(other);
+        self.0 = a;
+        self.1 = b;
+    }
+}
+
+impl<'a> DivAssign<&'a Double> for Double {
+    #[inline]
+    fn div_assign(&mut self, other: &Double) {
+        let (a, b) = self.div_double(*other);
         self.0 = a;
         self.1 = b;
     }
@@ -275,10 +379,39 @@ impl Rem for Double {
     }
 }
 
+impl<'a> Rem<&'a Double> for Double {
+    type Output = Double;
+
+    #[inline]
+    fn rem(self, other: &Double) -> Double {
+        let n = (self / *other).trunc();
+        self - *other * n
+    }
+}
+
+impl<'a> Rem<Double> for &'a Double {
+    type Output = Double;
+
+    #[inline]
+    fn rem(self, other: Double) -> Double {
+        let n = (self / other).trunc();
+        self - other * n
+    }
+}
+
 impl RemAssign for Double {
     #[inline]
     fn rem_assign(&mut self, other: Double) {
         let a = *self % other;
+        self.0 = a.0;
+        self.1 = a.1;
+    }
+}
+
+impl<'a> RemAssign<&'a Double> for Double {
+    #[inline]
+    fn rem_assign(&mut self, other: &Double) {
+        let a = *self % *other;
         self.0 = a.0;
         self.1 = a.1;
     }
