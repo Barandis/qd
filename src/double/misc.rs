@@ -17,8 +17,8 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// assert!(dd!(3).abs() == 3.0);
-    /// assert!(dd!(-3).abs() == 3.0);
+    /// assert!(dd!(3).abs() == dd!(3));
+    /// assert!(dd!(-3).abs() == dd!(3));
     /// # }
     /// ```
     #[inline]
@@ -40,8 +40,8 @@ impl Double {
     /// let f = dd!(3.99);
     /// let g = dd!(3.0);
     ///
-    /// assert!(f.floor() == 3.0);
-    /// assert!(g.floor() == 3.0);
+    /// assert!(f.floor() == dd!(3));
+    /// assert!(g.floor() == dd!(3));
     /// # }
     /// ```
     #[inline]
@@ -65,8 +65,8 @@ impl Double {
     /// let f = dd!(3.01);
     /// let g = dd!(4.0);
     ///
-    /// assert!(f.ceil() == 4.0);
-    /// assert!(g.ceil() == 4.0);
+    /// assert!(f.ceil() == dd!(4));
+    /// assert!(g.ceil() == dd!(4));
     /// # }
     /// ```
     #[inline]
@@ -90,8 +90,8 @@ impl Double {
     /// let f = dd!(3.3);
     /// let g = dd!(-3.3);
     ///
-    /// assert!(f.round() == 3.0);
-    /// assert!(g.round() == -3.0);
+    /// assert!(f.round() == dd!(3));
+    /// assert!(g.round() == dd!(-3));
     /// # }
     /// ```
     #[inline]
@@ -120,8 +120,8 @@ impl Double {
     /// let f = dd!(3.3);
     /// let g = dd!(-3.7);
     ///
-    /// assert!(f.trunc() == 3.0);
-    /// assert!(g.trunc() == -3.0);
+    /// assert!(f.trunc() == dd!(3));
+    /// assert!(g.trunc() == dd!(-3));
     /// # }
     /// ```
     #[inline]
@@ -146,8 +146,8 @@ impl Double {
     /// let fdiff = (f.fract() - dd!(0.3)).abs();
     /// let gdiff = (g.fract() - dd!(-0.7)).abs();
     ///
-    /// assert!(fdiff < 1e-20);
-    /// assert!(gdiff < 1e-20);
+    /// assert!(fdiff < dd!(1e-30));
+    /// assert!(gdiff < dd!(1e-30));
     /// # }
     /// ```
     #[inline]
@@ -166,8 +166,8 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// assert!(dd!(3.5).signum() == 1.0);
-    /// assert!(Double::NEG_INFINITY.signum() == -1.0);
+    /// assert!(dd!(3.5).signum() == Double::ONE);
+    /// assert!(Double::NEG_INFINITY.signum() == -Double::ONE);
     /// assert!(Double::NAN.signum().is_nan());
     /// # }
     /// ```

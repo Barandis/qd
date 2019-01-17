@@ -22,7 +22,7 @@ impl Double {
     /// This is the difference between `1.0` and the next largest representable number.
     ///
     /// [Machine epsilon]: https://en.wikipedia.org/wiki/Machine_epsilon
-    pub const EPSILON: f64 = 4.93038065763132e-32; // 2^-104
+    pub const EPSILON: Double = Double(4.93038065763132e-32, 0.0); // 2^-104
 
     /// Smallest finite `Double` value.
     pub const MIN: Double = Double(-1.7976931348623157e308, -9.979201547673598e291);

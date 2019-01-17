@@ -29,7 +29,7 @@ mod macros {
     /// let x = dd!(1) / dd!(2).sqrt();
     /// let expected = dd!("0.70710678118654752440084436210485");
     /// let diff = (x - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     #[macro_export]
@@ -48,7 +48,7 @@ mod tests {
             let expected = Double::from($expected);
             let actual = Double::from($actual);
             let mag = expected.abs().log10().floor().to_int();
-            let epsilon = 10f64.powi(mag - $digits);
+            let epsilon = Double(10.0, 0.0).powi(mag - $digits);
             let message = format!(
                 "\nExpected: {0} ({0:?})\nActual:   {1} ({1:?})",
                 expected, actual
@@ -133,9 +133,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
+    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
+    /// # fn main() {
     /// let dd = Double::norm(2.0, 1.0);
-    /// assert!(dd == 3.0);
+    /// assert!(dd == dd!(3.0));
+    /// # }
     /// ```
     pub fn norm(a: f64, b: f64) -> Double {
         Double::from(quick_two_sum(a, b))

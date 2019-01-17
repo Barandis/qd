@@ -20,7 +20,7 @@ impl Double {
     /// let expected = dd!("7.3890560989306502272304274605750");
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     pub fn exp(self) -> Double {
@@ -52,7 +52,7 @@ impl Double {
         if self.is_zero() {
             return Double::ONE;
         }
-        if self == 1.0 {
+        if self == Double::ONE {
             return Double::E;
         }
 
@@ -70,7 +70,7 @@ impl Double {
             p *= r;
             i += 1;
             t = p * INV_FACTS[i];
-            if i >= 5 || t.to_float().abs() <= inv_k * Double::EPSILON {
+            if i >= 5 || t.abs() <= Double::from(inv_k) * Double::EPSILON {
                 break;
             }
         }
@@ -108,7 +108,7 @@ impl Double {
     /// let expected = dd!("1.9459101490553133051053527434432");
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     pub fn ln(self) -> Double {
@@ -127,7 +127,7 @@ impl Double {
         //         = x + a * exp(-x) - 1
         //
         // Testing has shown that it requires two iterations to get the required precision.
-        if self == 1.0 {
+        if self == Double::ONE {
             return Double::ZERO;
         }
         if self.is_zero() || self.is_sign_negative() {
@@ -157,7 +157,7 @@ impl Double {
     /// let expected = dd!("0.434294481903251827651128918916605");
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     #[inline]
@@ -176,7 +176,7 @@ impl Double {
     /// let expected = dd!("3.32192809488736234787031942948939");
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     #[inline]
@@ -203,7 +203,7 @@ impl Double {
     /// let expected = dd!("1.18329466245493832681792856164686");
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     #[inline]

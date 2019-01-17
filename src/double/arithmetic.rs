@@ -17,9 +17,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
+    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// let dd = Double::from_add(1.0, 2.0);
-    /// assert!(dd == 3.0);
+    /// # fn main() {
+    /// let x = Double::from_add(1.0, 2.0);
+    /// assert!(x == dd!(3.0));
+    /// # }
     /// ```
     pub fn from_add(a: f64, b: f64) -> Double {
         Double::from(two_sum(a, b))
@@ -61,9 +64,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
+    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// let dd = Double::from_sub(1.0, 2.0);
-    /// assert!(dd == -1.0);
+    /// # fn main() {
+    /// let x = Double::from_sub(1.0, 2.0);
+    /// assert!(x == dd!(-1.0));
+    /// # }
     /// ```
     pub fn from_sub(a: f64, b: f64) -> Double {
         Double::from(two_diff(a, b))
@@ -113,9 +119,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
+    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// let dd = Double::from_mul(1.0, 2.0);
-    /// assert!(dd == 2.0);
+    /// # fn main() {
+    /// let x = Double::from_mul(1.0, 2.0);
+    /// assert!(x == dd!(2.0));
+    /// # }
     /// ```
     pub fn from_mul(a: f64, b: f64) -> Double {
         Double::from(two_prod(a, b))
@@ -164,9 +173,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
+    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// let dd = Double::from_div(1.0, 2.0);
-    /// assert!(dd == 0.5);
+    /// # fn main() {
+    /// let x = Double::from_div(1.0, 2.0);
+    /// assert!(x == dd!(0.5));
+    /// # }
     /// ```
     pub fn from_div(a: f64, b: f64) -> Double {
         if b == 0.0 {
@@ -218,9 +230,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
+    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
+    /// # fn main() {
     /// let r = Double::from(2.0).recip();
-    /// assert!(r == 0.5);
+    /// assert!(r == dd!(0.5));
+    /// # }
     /// ```
     #[inline]
     pub fn recip(self) -> Double {

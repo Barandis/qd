@@ -148,10 +148,10 @@ fn calculate_exponent(r: &mut Double) -> i32 {
     }
 
     // If `r` is outside the range [1, 10), then the exponent was off by 1. Adjust both it and `r`.
-    if *r >= 10.0 {
+    if *r >= TEN {
         *r /= TEN;
         exp += 1;
-    } else if *r < 1.0 {
+    } else if *r < Double::ONE {
         *r *= TEN;
         exp -= 1;
     }
@@ -510,8 +510,8 @@ fn format_fixed(value: &Double, f: &mut fmt::Formatter) -> fmt::Result {
 
             // Special case: zero precision, |value| < 1.0
             // In this case a number greater than 0.5 prints 0 and should print 1
-            if precision == 0 && value.abs() < 1.0 {
-                result.push(if value.abs() >= 0.5 { '1' } else { '0' });
+            if precision == 0 && value.abs().to_float() < 1.0 {
+                result.push(if value.abs().to_float() >= 0.5 { '1' } else { '0' });
             } else if width < 0 {
                 push_zero(&mut result, f);
             } else {
@@ -606,7 +606,7 @@ mod tests {
     }
 
     fn close(a: Double, b: Double) -> bool {
-        (a - b).abs() < 1e-28
+        (a - b).abs().to_float() < 1e-28
     }
 
     // #region Parsing tests

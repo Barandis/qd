@@ -22,7 +22,7 @@ const COSINES: [Double; 4] = [
 
 // Compute sin a using the Taylor series. This assumes that |a| <= π/32.
 fn sin_taylor(a: Double) -> Double {
-    let threshold = 0.5 * a.to_float().abs() * Double::EPSILON;
+    let threshold = Double(0.5, 0.0) * a.abs() * Double::EPSILON;
 
     if a.is_zero() {
         return Double::ZERO;
@@ -38,7 +38,7 @@ fn sin_taylor(a: Double) -> Double {
         let t = r * INV_FACTS[i];
         s += t;
         i += 2;
-        if i >= INV_FACTS.len() || t.to_float().abs() <= threshold {
+        if i >= INV_FACTS.len() || t.abs() <= threshold {
             break;
         }
     }
@@ -48,7 +48,7 @@ fn sin_taylor(a: Double) -> Double {
 
 // Compute cos a using the Taylor series. This assumes that |a| <= π/32.
 fn cos_taylor(a: Double) -> Double {
-    let threshold = 0.5 * Double::EPSILON;
+    let threshold = Double(0.5, 0.0) * Double::EPSILON;
 
     if a.is_zero() {
         return Double::ONE;
@@ -64,7 +64,7 @@ fn cos_taylor(a: Double) -> Double {
         let t = r * INV_FACTS[i];
         s += t;
         i += 2;
-        if i >= INV_FACTS.len() || t.to_float().abs() <= threshold {
+        if i >= INV_FACTS.len() || t.abs() <= threshold {
             break;
         }
     }
@@ -113,7 +113,7 @@ impl Double {
     /// let expected = dd!(1);
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     pub fn sin(self) -> Double {
@@ -186,7 +186,7 @@ impl Double {
     /// let expected = dd!(0);
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     pub fn cos(self) -> Double {
@@ -250,8 +250,8 @@ impl Double {
     /// let diff_sin = (sin_x - x.sin()).abs();
     /// let diff_cos = (cos_x - x.cos()).abs();
     ///
-    /// assert!(diff_sin < 1e-20);
-    /// assert!(diff_cos < 1e-20);
+    /// assert!(diff_sin < dd!(1e-30));
+    /// assert!(diff_cos < dd!(1e-30));
     /// # }
     /// ```
     pub fn sin_cos(self) -> (Double, Double) {
@@ -305,7 +305,7 @@ impl Double {
     /// let expected = dd!(1);
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     pub fn tan(self) -> Double {
@@ -338,8 +338,8 @@ impl Double {
     /// let diff1 = (y1.atan2(x1) - expected1).abs();
     /// let diff2 = (y2.atan2(x2) - expected2).abs();
     ///
-    /// assert!(diff1 < 1e-20);
-    /// assert!(diff2 < 1e-20);
+    /// assert!(diff1 < dd!(1e-30));
+    /// assert!(diff2 < dd!(1e-30));
     /// # }
     /// ```
     ///
@@ -419,7 +419,7 @@ impl Double {
     /// let expected = Double::PI / dd!(4);  // π/4
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     pub fn atan(self) -> Double {
@@ -438,15 +438,15 @@ impl Double {
     /// let expected = Double::PI / dd!(2);  // π/2
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     pub fn asin(self) -> Double {
-        if self.abs() > 1.0 {
+        if self.abs() > Double::ONE {
             Double::NAN
-        } else if self == 1.0 {
+        } else if self == Double::ONE {
             Double::FRAC_PI_2
-        } else if self == -1.0 {
+        } else if self == -Double::ONE {
             -Double::FRAC_PI_2
         } else {
             self.atan2((Double::ONE - self.sqr()).sqrt())
@@ -465,15 +465,15 @@ impl Double {
     /// let expected = dd!(0);
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     pub fn acos(self) -> Double {
-        if self.abs() > 1.0 {
+        if self.abs() > Double::ONE {
             Double::NAN
-        } else if self == 1.0 {
+        } else if self == Double::ONE {
             Double::ZERO
-        } else if self == -1.0 {
+        } else if self == -Double::ONE {
             Double::PI
         } else {
             (Double::ONE - self.sqr()).sqrt().atan2(self)

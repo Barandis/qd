@@ -41,7 +41,7 @@ impl Double {
     /// # use qd::Double;
     /// # fn main() {
     /// let dd = dd!(3);
-    /// assert!(dd.powi(3) == 27.0);
+    /// assert!(dd.powi(3) == dd!(27));
     /// # }
     /// ```
     pub fn powi(self, n: i32) -> Double {
@@ -89,7 +89,7 @@ impl Double {
     /// let expected = dd!("37.540507598529552193101865954634");
     ///
     /// let diff = (dd - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     #[inline]
@@ -113,7 +113,7 @@ impl Double {
     /// # use qd::Double;
     /// # fn main() {
     /// let dd = dd!(3);
-    /// assert!(dd.ldexp(3) == 24.0); // 3 * 2^3
+    /// assert!(dd.ldexp(3) == dd!(24)); // 3 * 2^3
     /// # }
     /// ```
     #[inline]
@@ -136,7 +136,7 @@ impl Double {
     /// # fn main() {
     /// let dd = dd!(2).sqrt();
     /// let diff = (dd - Double::SQRT_2).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     pub fn sqrt(self) -> Double {
@@ -174,7 +174,7 @@ impl Double {
     /// let expected = dd!("1.2599210498948731647672106072782");
     ///
     /// let diff = (dd - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     #[inline]
@@ -193,7 +193,7 @@ impl Double {
     /// let expected = dd!("1.1892071150027210667174999705605");
     ///
     /// let diff = (dd - expected).abs();
-    /// assert!(diff < 1e-20);
+    /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     pub fn nroot(self, n: i32) -> Double {
