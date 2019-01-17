@@ -39,7 +39,7 @@ impl Double {
             loop {
                 m += 2.0;
                 t *= r;
-                t /= (m - 1.0) * m;
+                t /= Double::from_mul(m - 1.0, m);
                 s += t;
                 if t.abs() <= threshold {
                     break;
@@ -95,7 +95,7 @@ impl Double {
             (a - inv_a) / (a + inv_a)
         } else {
             let s = self.sinh();
-            let c = (1.0 + s.sqr()).sqrt();
+            let c = (Double::ONE + s.sqr()).sqrt();
             s / c
         }
     }
@@ -127,7 +127,7 @@ impl Double {
     pub fn sinh_cosh(self) -> (Double, Double) {
         if self.abs() <= 0.05 {
             let s = self.sinh();
-            let c = (1.0 + s.sqr()).sqrt();
+            let c = (Double::ONE + s.sqr()).sqrt();
             (s, c)
         } else {
             let a = self.exp();
@@ -153,7 +153,7 @@ impl Double {
     /// # }
     /// ```
     pub fn asinh(self) -> Double {
-        (self + (self.sqr() + 1.0).sqrt()).ln()
+        (self + (self.sqr() + Double::ONE).sqrt()).ln()
     }
 
     /// Calculates the inverse hyperbolic cosine of the number.
@@ -174,7 +174,7 @@ impl Double {
         if self < 1.0 {
             Double::NAN
         } else {
-            (self + (self.sqr() - 1.0).sqrt()).ln()
+            (self + (self.sqr() - Double::ONE).sqrt()).ln()
         }
     }
 
@@ -196,7 +196,7 @@ impl Double {
         if self.abs() >= 1.0 {
             Double::NAN
         } else {
-            mul_pwr2(((1.0 + self) / (1.0 - self)).ln(), 0.5)
+            mul_pwr2(((Double::ONE + self) / (Double::ONE - self)).ln(), 0.5)
         }
     }
 }

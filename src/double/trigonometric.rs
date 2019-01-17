@@ -57,7 +57,7 @@ fn cos_taylor(a: Double) -> Double {
     let mut i = 1;
     let x = -a.sqr();
     let mut r = x;
-    let mut s = 1.0 + mul_pwr2(r, 0.5);
+    let mut s = Double::ONE + mul_pwr2(r, 0.5);
 
     loop {
         r *= x;
@@ -80,7 +80,7 @@ fn sincos_taylor(a: Double) -> (Double, Double) {
         (Double::ZERO, Double::ONE)
     } else {
         let sin_a = sin_taylor(a);
-        (sin_a, (1.0 - sin_a.sqr()).sqrt())
+        (sin_a, (Double::ONE - sin_a.sqr()).sqrt())
     }
 }
 
@@ -92,10 +92,10 @@ fn reduce(a: Double) -> (i32, i32, Double) {
 
     // approx. reduce modulo π/2 and then modulo π/16
     let mut q = (r.0 / Double::FRAC_PI_2.0 + 0.5).floor();
-    let mut t = r - q * Double::FRAC_PI_2;
+    let mut t = r - Double::from(q) * Double::FRAC_PI_2;
     let j = q as i32;
     q = (t.0 / Double::FRAC_PI_16.0 + 0.5).floor();
-    t -= q * Double::FRAC_PI_16;
+    t -= Double::from(q) * Double::FRAC_PI_16;
     let k = q as i32;
 
     (j, k, t)
@@ -106,12 +106,15 @@ impl Double {
     ///
     /// # Examples
     /// ```
+    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// let x = (Double::PI / 2.0).sin();
+    /// # fn main() {
+    /// let x = (Double::PI / dd!(2)).sin();
+    /// let expected = dd!(1);
     ///
-    /// // Answer should be 1
-    /// let diff = (x - 1.0).abs();
+    /// let diff = (x - expected).abs();
     /// assert!(diff < 1e-20);
+    /// # }
     /// ```
     pub fn sin(self) -> Double {
         // Strategy:
@@ -176,12 +179,15 @@ impl Double {
     ///
     /// # Examples
     /// ```
+    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// let x = (Double::PI / 2.0).cos();
+    /// # fn main() {
+    /// let x = (Double::PI / dd!(2)).cos();
+    /// let expected = dd!(0);
     ///
-    /// // Answer should be 0
-    /// let diff = (x - 0.0).abs();
+    /// let diff = (x - expected).abs();
     /// assert!(diff < 1e-20);
+    /// # }
     /// ```
     pub fn cos(self) -> Double {
         if self.is_zero() {
@@ -235,8 +241,10 @@ impl Double {
     ///
     /// # Examples
     /// ```
+    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// let x = Double::PI / 4.0;
+    /// # fn main() {
+    /// let x = Double::PI / dd!(4);
     /// let (sin_x, cos_x) = x.sin_cos();
     ///
     /// let diff_sin = (sin_x - x.sin()).abs();
@@ -244,6 +252,7 @@ impl Double {
     ///
     /// assert!(diff_sin < 1e-20);
     /// assert!(diff_cos < 1e-20);
+    /// # }
     /// ```
     pub fn sin_cos(self) -> (Double, Double) {
         if self.is_zero() {
@@ -289,12 +298,15 @@ impl Double {
     ///
     /// # Examples
     /// ```
+    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// let x = (Double::PI / 4.0).tan();
+    /// # fn main() {
+    /// let x = (Double::PI / dd!(4)).tan();
+    /// let expected = dd!(1);
     ///
-    /// // Answer should be 1
-    /// let diff = (x - 1.0).abs();
+    /// let diff = (x - expected).abs();
     /// assert!(diff < 1e-20);
+    /// # }
     /// ```
     pub fn tan(self) -> Double {
         let (s, c) = self.sin_cos();
@@ -316,13 +328,15 @@ impl Double {
     /// // -π/4 radians (45 degrees clockwise)
     /// let x1 = dd!(3);
     /// let y1 = dd!(-3);
+    /// let expected1 = -pi / dd!(4);
     ///
     /// // 3π/4 radians (135 degrees counter-clockwise)
     /// let x2 = dd!(-3);
     /// let y2 = dd!(3);
+    /// let expected2 = Double::from_div(3.0, 4.0) * pi;
     ///
-    /// let diff1 = (y1.atan2(x1) - (-pi / 4.0)).abs();
-    /// let diff2 = (y2.atan2(x2) - 3.0 * pi / 4.0).abs();
+    /// let diff1 = (y1.atan2(x1) - expected1).abs();
+    /// let diff2 = (y2.atan2(x2) - expected2).abs();
     ///
     /// assert!(diff1 < 1e-20);
     /// assert!(diff2 < 1e-20);
@@ -402,9 +416,9 @@ impl Double {
     /// # use qd::Double;
     /// # fn main() {
     /// let x = dd!(1).atan();
+    /// let expected = Double::PI / dd!(4);  // π/4
     ///
-    /// // Answer should be π/4
-    /// let diff = (x - Double::PI / 4.0).abs();
+    /// let diff = (x - expected).abs();
     /// assert!(diff < 1e-20);
     /// # }
     /// ```
@@ -421,9 +435,9 @@ impl Double {
     /// # use qd::Double;
     /// # fn main() {
     /// let x = dd!(1).asin();
+    /// let expected = Double::PI / dd!(2);  // π/2
     ///
-    /// // Answer should be π/2
-    /// let diff = (x - Double::PI / 2.0).abs();
+    /// let diff = (x - expected).abs();
     /// assert!(diff < 1e-20);
     /// # }
     /// ```
@@ -435,7 +449,7 @@ impl Double {
         } else if self == -1.0 {
             -Double::FRAC_PI_2
         } else {
-            self.atan2((1.0 - self.sqr()).sqrt())
+            self.atan2((Double::ONE - self.sqr()).sqrt())
         }
     }
 
@@ -448,9 +462,9 @@ impl Double {
     /// # use qd::Double;
     /// # fn main() {
     /// let x = dd!(1).acos();
+    /// let expected = dd!(0);
     ///
-    /// // Answer should be 0
-    /// let diff = (x - 0.0).abs();
+    /// let diff = (x - expected).abs();
     /// assert!(diff < 1e-20);
     /// # }
     /// ```
@@ -462,7 +476,7 @@ impl Double {
         } else if self == -1.0 {
             Double::PI
         } else {
-            (1.0 - self.sqr()).sqrt().atan2(self)
+            (Double::ONE - self.sqr()).sqrt().atan2(self)
         }
     }
 }
@@ -494,7 +508,7 @@ mod tests {
         assert_close!(dd!("0.84147098480789650665250232163030"), dd!(1).sin());
         assert_close!(
             dd!("0.70710678118654752440084436210485"),
-            (Double::PI / 4.0).sin()
+            (Double::PI / dd!(4)).sin()
         );
         assert_close!(dd!(0.5), Double::FRAC_PI_6.sin());
         assert_exact!(Double::ZERO, Double::ZERO.sin());
@@ -506,7 +520,7 @@ mod tests {
         assert_close!(dd!("0.54030230586813971740093660744298"), dd!(1).cos());
         assert_close!(
             dd!("0.70710678118654752440084436210485"),
-            (Double::PI / 4.0).cos()
+            (Double::PI / dd!(4)).cos()
         );
         assert_close!(dd!(0.5), Double::FRAC_PI_3.cos());
         assert_exact!(Double::ONE, Double::ZERO.cos());

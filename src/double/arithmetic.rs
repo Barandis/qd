@@ -32,12 +32,6 @@ impl Double {
         let (s2, e2) = quick_two_sum(s0, s1 + e0);
         quick_two_sum(s2, e1 + e2)
     }
-
-    #[inline]
-    fn add_f64(self, other: f64) -> (f64, f64) {
-        let (s, e) = two_sum(self.0, other);
-        quick_two_sum(s, e + self.1)
-    }
 }
 
 impl Add for Double {
@@ -49,37 +43,10 @@ impl Add for Double {
     }
 }
 
-impl Add<f64> for Double {
-    type Output = Double;
-
-    #[inline]
-    fn add(self, other: f64) -> Double {
-        Double::from(self.add_f64(other))
-    }
-}
-
-impl Add<Double> for f64 {
-    type Output = Double;
-
-    #[inline]
-    fn add(self, other: Double) -> Double {
-        other + self
-    }
-}
-
 impl AddAssign for Double {
     #[inline]
     fn add_assign(&mut self, other: Double) {
         let (a, b) = self.add_double(other);
-        self.0 = a;
-        self.1 = b;
-    }
-}
-
-impl AddAssign<f64> for Double {
-    #[inline]
-    fn add_assign(&mut self, other: f64) {
-        let (a, b) = self.add_f64(other);
         self.0 = a;
         self.1 = b;
     }
@@ -109,12 +76,6 @@ impl Double {
         let (s2, e2) = quick_two_sum(s0, s1 + e0);
         quick_two_sum(s2, e1 + e2)
     }
-
-    #[inline]
-    fn sub_f64(self, other: f64) -> (f64, f64) {
-        let (s, e) = two_diff(self.0, other);
-        quick_two_sum(s, e + self.1)
-    }
 }
 
 impl Sub for Double {
@@ -126,38 +87,10 @@ impl Sub for Double {
     }
 }
 
-impl Sub<f64> for Double {
-    type Output = Double;
-
-    #[inline]
-    fn sub(self, other: f64) -> Double {
-        Double::from(self.sub_f64(other))
-    }
-}
-
-impl Sub<Double> for f64 {
-    type Output = Double;
-
-    #[inline]
-    fn sub(self, other: Double) -> Double {
-        let (s, e) = two_diff(self, other.0);
-        Double::from(quick_two_sum(s, e - other.1))
-    }
-}
-
 impl SubAssign for Double {
     #[inline]
     fn sub_assign(&mut self, other: Double) {
         let (a, b) = self.sub_double(other);
-        self.0 = a;
-        self.1 = b;
-    }
-}
-
-impl SubAssign<f64> for Double {
-    #[inline]
-    fn sub_assign(&mut self, other: f64) {
-        let (a, b) = self.sub_f64(other);
         self.0 = a;
         self.1 = b;
     }
@@ -193,12 +126,6 @@ impl Double {
         let (p, e) = two_prod(self.0, other.0);
         quick_two_sum(p, e + self.0 * other.1 + self.1 * other.0)
     }
-
-    #[inline]
-    fn mul_f64(self, other: f64) -> (f64, f64) {
-        let (p, e) = two_prod(self.0, other);
-        quick_two_sum(p, e + self.1 * other)
-    }
 }
 
 impl Mul for Double {
@@ -207,24 +134,6 @@ impl Mul for Double {
     #[inline]
     fn mul(self, other: Double) -> Double {
         Double::from(self.mul_double(other))
-    }
-}
-
-impl Mul<f64> for Double {
-    type Output = Double;
-
-    #[inline]
-    fn mul(self, other: f64) -> Double {
-        Double::from(self.mul_f64(other))
-    }
-}
-
-impl Mul<Double> for f64 {
-    type Output = Double;
-
-    #[inline]
-    fn mul(self, other: Double) -> Double {
-        other * self
     }
 }
 
@@ -237,18 +146,18 @@ impl MulAssign for Double {
     }
 }
 
-impl MulAssign<f64> for Double {
-    #[inline]
-    fn mul_assign(&mut self, other: f64) {
-        let (a, b) = self.mul_f64(other);
-        self.0 = a;
-        self.1 = b;
-    }
-}
-
 // #endregion
 
 // #region Division
+
+// Helper function needed to avoid the only place in this arithmetic where Double::from must be
+// called on a non-tuple, non-integer number. With the current parsing of floats, calling
+// Double::from this way in the basic arithmetic would cause a stack overflow.
+#[inline]
+fn mul_f64(a: Double, b: f64) -> Double {
+    let (p, e) = two_prod(a.0, b);
+    Double::from(quick_two_sum(p, e + a.1 * b))
+}
 
 impl Double {
     /// Creates a new double-double representing the quotient of two floats.
@@ -295,36 +204,13 @@ impl Double {
             }
         } else {
             let q1 = self.0 / other.0;
-            let mut r = self - q1 * other;
+            let mut r = self - mul_f64(other, q1);
 
             let q2 = r.0 / other.0;
-            r -= q2 * other;
+            r -= mul_f64(other, q2);
 
             let q3 = r.0 / other.0;
             three_sum(q1, q2, q3)
-        }
-    }
-
-    #[inline]
-    fn div_f64(self, other: f64) -> (f64, f64) {
-        if other == 0.0 {
-            if self.is_zero() {
-                (f64::NAN, f64::NAN)
-            } else if self.is_sign_negative() && other.is_sign_positive()
-                || self.is_sign_positive() && other.is_sign_negative()
-            {
-                (f64::NEG_INFINITY, f64::NEG_INFINITY)
-            } else {
-                (f64::INFINITY, f64::INFINITY)
-            }
-        } else {
-            let q1 = self.0 / other;
-
-            let (p1, p2) = two_prod(q1, other);
-            let (s, e) = two_diff(self.0, p1);
-
-            let q2 = (s + e + self.1 - p2) / other;
-            quick_two_sum(q1, q2)
         }
     }
 
@@ -338,7 +224,7 @@ impl Double {
     /// ```
     #[inline]
     pub fn recip(self) -> Double {
-        1.0 / self
+        Double::ONE / self
     }
 }
 
@@ -351,37 +237,10 @@ impl Div for Double {
     }
 }
 
-impl Div<f64> for Double {
-    type Output = Double;
-
-    #[inline]
-    fn div(self, other: f64) -> Double {
-        Double::from(self.div_f64(other))
-    }
-}
-
-impl Div<Double> for f64 {
-    type Output = Double;
-
-    #[inline]
-    fn div(self, other: Double) -> Double {
-        Double::from(self) / other
-    }
-}
-
 impl DivAssign for Double {
     #[inline]
     fn div_assign(&mut self, other: Double) {
         let (a, b) = self.div_double(other);
-        self.0 = a;
-        self.1 = b;
-    }
-}
-
-impl DivAssign<f64> for Double {
-    #[inline]
-    fn div_assign(&mut self, other: f64) {
-        let (a, b) = self.div_f64(other);
         self.0 = a;
         self.1 = b;
     }
@@ -401,38 +260,9 @@ impl Rem for Double {
     }
 }
 
-impl Rem<f64> for Double {
-    type Output = Double;
-
-    #[inline]
-    fn rem(self, other: f64) -> Double {
-        let n = (self / other).trunc();
-        self - other * n
-    }
-}
-
-impl Rem<Double> for f64 {
-    type Output = Double;
-
-    #[inline]
-    fn rem(self, other: Double) -> Double {
-        let n = (self / other).trunc();
-        self - other * n
-    }
-}
-
 impl RemAssign for Double {
     #[inline]
     fn rem_assign(&mut self, other: Double) {
-        let a = *self % other;
-        self.0 = a.0;
-        self.1 = a.1;
-    }
-}
-
-impl RemAssign<f64> for Double {
-    #[inline]
-    fn rem_assign(&mut self, other: f64) {
         let a = *self % other;
         self.0 = a.0;
         self.1 = a.1;
@@ -565,7 +395,7 @@ mod tests {
             "135791357913579.5".parse::<Double>().unwrap()
                 * "864208642086420.25".parse::<Double>().unwrap(),
         );
-        assert_close!("3.4375e41", Double::from(6.25e20) * 5.5e20);
+        assert_close!("3.4375e41", Double::from(6.25e20) * Double::from(5.5e20));
     }
 
     #[test]

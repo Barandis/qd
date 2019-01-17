@@ -26,7 +26,7 @@ mod macros {
     /// # fn main() {
     /// assert!(dd!(0) == Double::ZERO);
     ///
-    /// let x = 1.0 / dd!(2).sqrt();
+    /// let x = dd!(1) / dd!(2).sqrt();
     /// let expected = dd!("0.70710678118654752440084436210485");
     /// let diff = (x - expected).abs();
     /// assert!(diff < 1e-20);

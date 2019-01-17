@@ -9,13 +9,15 @@ use std::char;
 use std::fmt;
 use std::str::FromStr;
 
+const TEN: Double = Double(10.0, 0.0);
+
 // #region Parsing
 
 impl FromStr for Double {
     type Err = ParseError;
 
     fn from_str(s: &str) -> Result<Double, ParseError> {
-        let mut result = Double::from(0);
+        let mut result = Double::ZERO;
         let mut digits = 0;
         let mut point = -1;
         let mut sign = 0;
@@ -42,8 +44,8 @@ impl FromStr for Double {
         for (index, ch) in s.chars().enumerate() {
             match ch.to_digit(10) {
                 Some(d) => {
-                    result *= 10.0;
-                    result += d as f64;
+                    result *= Double(10.0, 0.0);
+                    result += Double(d as f64, 0.0);
                     digits += 1;
                 }
                 None => match ch {
@@ -106,10 +108,10 @@ impl FromStr for Double {
             // still not overflow, but doing the -337 all at once WOULD overflow
             if exp < -307 {
                 let adjust = exp + 307;
-                result *= Double::from(10.0).powi(adjust);
+                result *= Double(10.0, 0.0).powi(adjust);
                 exp -= adjust;
             }
-            result *= Double::from(10.0).powi(exp);
+            result *= Double(10.0, 0.0).powi(exp);
         }
         if sign == -1 {
             result = -result;
@@ -135,22 +137,22 @@ fn calculate_exponent(r: &mut Double) -> i32 {
 
     // Adjust `r` based on that exponent approximation
     if exp < -300 {
-        *r *= Double::from(10.0).powi(300);
-        *r /= Double::from(10.0).powi(exp + 300);
+        *r *= TEN.powi(300);
+        *r /= TEN.powi(exp + 300);
     } else if exp > 300 {
         *r = r.ldexp(-53);
-        *r /= Double::from(10.0).powi(exp);
+        *r /= TEN.powi(exp);
         *r = r.ldexp(53);
     } else {
-        *r /= Double::from(10.0).powi(exp);
+        *r /= TEN.powi(exp);
     }
 
     // If `r` is outside the range [1, 10), then the exponent was off by 1. Adjust both it and `r`.
     if *r >= 10.0 {
-        *r /= 10.0;
+        *r /= TEN;
         exp += 1;
     } else if *r < 1.0 {
-        *r *= 10.0;
+        *r *= TEN;
         exp -= 1;
     }
 
@@ -168,8 +170,8 @@ fn extract_digits(r: &mut Double, precision: usize) -> Vec<i32> {
     let mut digits = Vec::with_capacity(precision);
     for _ in 0..precision {
         let digit = r.0 as i32;
-        *r -= digit as f64;
-        *r *= 10.0;
+        *r -= Double::from(digit);
+        *r *= TEN;
         digits.push(digit);
     }
     digits
@@ -704,8 +706,8 @@ mod tests {
 
     #[test]
     fn parse_long_exp_float() {
-        assert!(close(parse(PI_50_3), Double::PI * 1000.0));
-        assert!(close(parse(E_50_NEG_2), Double::E / 100.0));
+        assert!(close(parse(PI_50_3), Double::PI * dd!(1000.0)));
+        assert!(close(parse(E_50_NEG_2), Double::E / dd!(100.0)));
     }
 
     #[test]
@@ -816,16 +818,12 @@ mod tests {
     #[test]
     fn format_offset_10_x_minus_1() {
         assert_eq!(
-            plain(Double::from(10).powi(29) - 1.0),
+            plain(Double::from(10).powi(29) - Double::ONE),
             "99999999999999999999999999999"
         );
         assert_eq!(
-            plain(Double::from(10).powi(30) - 1.0),
+            plain(Double::from(10).powi(30) - Double::ONE),
             "999999999999999999999999999999"
-        );
-        assert_eq!(
-            plain(Double::from(10).powi(29) - 2.0),
-            "99999999999999999999999999998"
         );
     }
 

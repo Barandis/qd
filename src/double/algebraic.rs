@@ -68,7 +68,7 @@ impl Double {
         }
 
         if n < 0 {
-            1.0 / s
+            s.recip()
         } else {
             s
         }
@@ -159,7 +159,7 @@ impl Double {
             // more.)
             let x = Double::from_div(1.0, self.0.sqrt());
             let ax = self * x;
-            ax + (self - ax.sqr()) * x * 0.5
+            ax + (self - ax.sqr()) * x * Double::from(0.5)
         }
     }
 
@@ -228,7 +228,7 @@ impl Double {
         let r = self.abs();
         let mut x: Double = (-(r.0.ln()) / n as f64).exp().into();  // a^(-1/n) = exp(-ln(a) / n)
 
-        x += x * (1.0 - r * x.powi(n)) / n as f64;
+        x += x * (Double::from(1.0) - r * x.powi(n)) / Double::from(n);
         if self.is_sign_negative() {
             x = -x;
         }
