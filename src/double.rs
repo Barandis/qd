@@ -5,6 +5,7 @@
 
 use crate::basic::renorm2;
 use std::f64;
+use std::ops::{Index, IndexMut};
 
 #[macro_use]
 mod macros {
@@ -66,21 +67,21 @@ mod tests {
                 expected, actual
             );
             assert!(expected == actual, message);
-        }
+        };
     }
 }
 
-mod common;
-mod consts;
-mod parse;
-mod arith;
-mod comp;
-mod conv;
 mod alg;
-mod trans;
-mod trig;
+mod arith;
+mod common;
+mod comp;
+mod consts;
+mod conv;
 mod hyper;
 mod misc;
+mod parse;
+mod trans;
+mod trig;
 
 /// A 128-bit floating-point number implemented as the unevaluated sum of two 64-bit floating-point
 /// numbers.
@@ -142,5 +143,27 @@ impl Double {
     /// ```
     pub fn norm(a: f64, b: f64) -> Double {
         Double::from(renorm2(a, b))
+    }
+}
+
+impl Index<usize> for Double {
+    type Output = f64;
+
+    fn index(&self, idx: usize) -> &f64 {
+        match idx {
+            0 => &self.0,
+            1 => &self.1,
+            _ => panic!("Index of double-double out of range: {}", idx),
+        }
+    }
+}
+
+impl IndexMut<usize> for Double {
+    fn index_mut(&mut self, idx: usize) -> &mut f64 {
+        match idx {
+            0 => &mut self.0,
+            1 => &mut self.1,
+            _ => panic!("Index of double-double out of range: {}", idx),
+        }
     }
 }
