@@ -4,3 +4,4 @@
 // https://opensource.org/licenses/MIT
 
 pub(crate) mod basic;
+pub(crate) mod display;
