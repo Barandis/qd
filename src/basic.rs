@@ -45,6 +45,8 @@ const SPLIT_SHIFT_DOWN: f64 = 3.7252902984619140625e-9; // = 2^-28
 #[cfg(no_fma)]
 const SPLIT_SHIFT_UP: f64 = 268435456.0; // = 2^28
 
+// #region Basic f64 arithmetic
+
 /// Calculates fl(a + b) and err(a + b).
 ///
 /// This calculation performs 3 floating-point operations. This is more efficient than
@@ -163,6 +165,13 @@ pub fn two_sqr(a: f64) -> (f64, f64) {
     (p, e)
 }
 
+// #endregion
+
+// #region Specific f64 arithmetic for other algorithms
+
+// Each of the following functions is used as a component of a larger algorithm.
+
+/// Calculates the sum of three `f64`s in double-double precision.
 #[inline]
 pub fn three_two_sum(a: f64, b: f64, c: f64) -> (f64, f64) {
     let (u, v) = two_sum(a, b);
@@ -170,6 +179,7 @@ pub fn three_two_sum(a: f64, b: f64, c: f64) -> (f64, f64) {
     (s, v + w)
 }
 
+/// Calculates the sum of three `f64`s in triple-double precision.
 #[inline]
 pub fn three_three_sum(a: f64, b: f64, c: f64) -> (f64, f64, f64) {
     let (u, v) = two_sum(a, b);
@@ -178,12 +188,14 @@ pub fn three_three_sum(a: f64, b: f64, c: f64) -> (f64, f64, f64) {
     (s, e1, e2)
 }
 
+/// Calculates the sum of four `f64`s in double-double precision.
 #[inline]
 pub fn four_two_sum(a: f64, b: f64, c: f64, d: f64) -> (f64, f64) {
     let (s0, s1) = two_sum(a, c);
     (s0, s1 + b + d)
 }
 
+/// Calculates the sum of six `f64`s in triple-double precision.
 #[inline]
 pub fn six_three_sum(a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) -> (f64, f64, f64) {
     let (p0, p1, p2) = three_three_sum(a, b, c);
@@ -195,6 +207,7 @@ pub fn six_three_sum(a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) -> (f64, f6
     (r0, t0, u0)
 }
 
+/// Calculates the sum of nine `f64`s in double-double precision.
 #[inline]
 pub fn nine_two_sum(
     a: f64,
@@ -237,6 +250,10 @@ pub fn accumulate(a: f64, b: f64, c: f64) -> (f64, f64, f64) {
         (0.0, s, if zb { a } else { b })
     }
 }
+
+// #endregion
+
+// #region Renormalization functions
 
 /// Renormalizes two components into a two-component value.
 ///
@@ -345,3 +362,5 @@ pub fn renorm5(a: f64, b: f64, c: f64, d: f64, e: f64) -> (f64, f64, f64, f64) {
         }
     }
 }
+
+// #endregion

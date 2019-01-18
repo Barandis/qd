@@ -8,6 +8,8 @@ use crate::quad::Quad;
 use std::f64;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
+// Utility function that returns the quad component with the specified index and then increments
+// the index. This is how we do `a[i++]` without the `++` operator.
 #[inline]
 fn index_and_inc(a: Quad, i: &mut usize) -> f64 {
     let r = a[*i];
@@ -18,6 +20,9 @@ fn index_and_inc(a: Quad, i: &mut usize) -> f64 {
 // #region Addition
 
 impl Quad {
+    // This function is the real reason indexing was added to quads. Unlike multiplication, where
+    // every component has a specific function and appears in a specific place in the algorithm,
+    // addition is just a repeated iteration over each successive component.
     #[inline]
     fn add_quad(self, other: Quad) -> (f64, f64, f64, f64) {
         let mut i = 0;
@@ -26,6 +31,9 @@ impl Quad {
 
         let mut x = [0.0, 0.0, 0.0, 0.0];
 
+        // These two assignments, along with the reassignments of the same variables in the
+        // `accumulate` call below, act as a merge sort. The largest component between the two quads
+        // is operated on first, then the second largest, and so on.
         let u = if self[i].abs() > other[j].abs() {
             index_and_inc(self, &mut i)
         } else {
@@ -36,7 +44,6 @@ impl Quad {
         } else {
             index_and_inc(other, &mut j)
         };
-
         let (mut u, mut v) = renorm2(u, v);
 
         while k < 4 {
@@ -204,7 +211,7 @@ impl Quad {
     // able to see the way the source code works from the diagrams there.
     //
     // TERMS (a = self, b = other):
-    // Order   Components   Group (px, qx)
+    // Order   Components   Group (hx, lx)
     // O(1)    a0 * b0      0
     // O(ε)    a0 * b1      1
     //         a1 * b0      2
@@ -215,43 +222,53 @@ impl Quad {
     //         a1 * b2      7
     //         a2 * b1      8
     //         a3 * b0      9
-    // O(ε⁴)   a1 * b3      a
-    //         a2 * b2      b
-    //         a3 * b1      c
+    // O(ε⁴)   a1 * b3      a  (high word only)
+    //         a2 * b2      b  (high word only)
+    //         a3 * b1      c  (high word only)
     //
-    // Other terms, including the prospective `qa`, `qb`, and `qc`, are not necessary to reach the
-    // 212 bits of precision that we need.
+    // Other terms, including the remaining O(ε⁴) terms and the low words of the O(ε⁴) that are
+    // calculated, are not necessary to provide 212 bits of accuracy.
     #[inline]
     fn mul_quad(self, other: Quad) -> (f64, f64, f64, f64) {
         // O(1) term
-        let (p0, q0) = two_prod(self.0, other.0);
+        let (h0, l0) = two_prod(self.0, other.0);
 
         // O(ε) terms
-        let (p1, q1) = two_prod(self.0, other.1);
-        let (p2, q2) = two_prod(self.1, other.0);
+        let (h1, l1) = two_prod(self.0, other.1);
+        let (h2, l2) = two_prod(self.1, other.0);
 
         // O(ε²) terms
-        let (p3, q3) = two_prod(self.0, other.2);
-        let (p4, q4) = two_prod(self.1, other.1);
-        let (p5, q5) = two_prod(self.2, other.0);
+        let (h3, l3) = two_prod(self.0, other.2);
+        let (h4, l4) = two_prod(self.1, other.1);
+        let (h5, l5) = two_prod(self.2, other.0);
 
         // O(ε³) terms
-        let (p6, q6) = two_prod(self.0, other.3);
-        let (p7, q7) = two_prod(self.1, other.2);
-        let (p8, q8) = two_prod(self.2, other.1);
-        let (p9, q9) = two_prod(self.3, other.0);
+        let (h6, l6) = two_prod(self.0, other.3);
+        let (h7, l7) = two_prod(self.1, other.2);
+        let (h8, l8) = two_prod(self.2, other.1);
+        let (h9, l9) = two_prod(self.3, other.0);
 
-        // O(ε⁴) terms - these affect the result so little that the error terms are discarded
-        let pa = self.1 * other.3;
-        let pb = self.2 * other.2;
-        let pc = self.3 * other.1;
+        // O(ε⁴) terms - the low words aren't necessary for the accuracy we need
+        let ha = self.1 * other.3;
+        let hb = self.2 * other.2;
+        let hc = self.3 * other.1;
 
-        let r0 = p0;
-        let (r1, t0, t1) = three_three_sum(p1, p2, q0);
-        let (r2, t2, t3) = six_three_sum(t0, q1, q2, p3, p4, p5);
-        let (r3, t4) = nine_two_sum(t1, t2, q3, q4, q5, p6, p7, p8, p9);
-        let r4 = t3 + t4 + q6 + q7 + q8 + q9 + pa + pb + pc; // nine_one_sum
+        // Each calculation takes all of the high words for the terms of that level, whatever
+        // intermediate words are specified by the algorithm, and whatever low words fit in the
+        // remaining input space.
 
+        // O(1) calculation (pass-through)
+        let r0 = h0;
+        // O(ε) calculation
+        let (r1, t0, t1) = three_three_sum(h1, h2, l0);
+        // O(ε²) calculation
+        let (r2, t2, t3) = six_three_sum(t0, h3, h4, h5, l1, l2);
+        // O(ε³) calculation
+        let (r3, t4) = nine_two_sum(t1, t2, h6, h7, h8, h9, l3, l4, l5);
+        // O(ε⁴) calculation (nine_one_sum)
+        let r4 = t3 + t4 + ha + hb + hc + l6 + l7 + l8 + l9;
+
+        // Results of the prior calculations are renormalized into four f64s.
         renorm5(r0, r1, r2, r3, r4)
     }
 }
@@ -309,17 +326,24 @@ impl<'a> MulAssign<&'a Quad> for Quad {
 
 // #region Division
 
+// Quad x f64 analogue of full quad x quad multiplication above. This is here because we don't want
+// to depend on any Quad::from(x), where x is a single f64 (i.e., a non-tuple), in arithmetic. Doing
+// so will create infinite loops because arithmetic is used to parse the f64s into quads in the
+// first place. Multiplying the f64s directly into Quads bypasses this.
+//
+// Division is the only place where this is necessary, so this multiplication function is dropped
+// nearby.
 #[inline]
 fn mul_f64(a: Quad, b: f64) -> Quad {
-    let (p0, q0) = two_prod(a.0, b);
-    let (p1, q1) = two_prod(a.1, b);
-    let (p2, q2) = two_prod(a.2, b);
-    let p3 = a.3 * b;
+    let (h0, l0) = two_prod(a.0, b);
+    let (h1, l1) = two_prod(a.1, b);
+    let (h2, l2) = two_prod(a.2, b);
+    let h3 = a.3 * b;
 
-    let s0 = p0;
-    let (s1, t0) = two_sum(q0, p1);
-    let (s2, t1, t2) = three_three_sum(t0, q1, p2);
-    let (s3, t3) = three_two_sum(t1, q2, p3);
+    let s0 = h0;
+    let (s1, t0) = two_sum(h1, l0);
+    let (s2, t1, t2) = three_three_sum(t0, h2, l1);
+    let (s3, t3) = three_two_sum(t1, h3, l2);
     let s4 = t2 * t3;
 
     Quad::from(renorm5(s0, s1, s2, s3, s4))
@@ -342,6 +366,12 @@ impl Quad {
                 (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
             }
         } else {
+            // Strategy:
+            //
+            // Divide the first component of `self` by the first component of `other`. Then divide
+            // the first component of the remainder by the first component of `other`, then the
+            // first component of -that- remainder by the first component of `other`, and so on
+            // until we have five terms we can renormalize.
             let q0 = self.0 / other.0;
             let mut r = self - mul_f64(other, q0);
 
