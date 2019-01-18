@@ -67,7 +67,9 @@
 
 mod basic;
 mod double;
+mod quad;
 
 pub mod error;
 
 pub use self::double::Double;
+pub use self::quad::Quad;
