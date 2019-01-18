@@ -5,17 +5,17 @@
 
 use std::ops::{Index, IndexMut};
 
-mod common;
-mod consts;
-mod parse;
-mod arith;
-mod comp;
-mod conv;
 mod alg;
-mod trans;
-mod trig;
+mod arith;
+mod common;
+mod comp;
+mod consts;
+mod conv;
 mod hyper;
 mod misc;
+mod parse;
+mod trans;
+mod trig;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Quad(f64, f64, f64, f64);
@@ -35,7 +35,10 @@ impl Index<usize> for Quad {
             1 => &self.1,
             2 => &self.2,
             3 => &self.3,
-            _ => panic!("Index of quad-double out of range: {}", idx),
+            _ => panic!(
+                "Index of quad-double out of range (must be in range [0, 3]): {}",
+                idx
+            ),
         }
     }
 }
@@ -47,8 +50,10 @@ impl IndexMut<usize> for Quad {
             1 => &mut self.1,
             2 => &mut self.2,
             3 => &mut self.3,
-            _ => panic!("Index of quad-double out of range: {}", idx),
+            _ => panic!(
+                "Index of quad-double out of range (must be in range [0, 3]): {}",
+                idx
+            ),
         }
     }
 }
-

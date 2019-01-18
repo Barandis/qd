@@ -153,7 +153,10 @@ impl Index<usize> for Double {
         match idx {
             0 => &self.0,
             1 => &self.1,
-            _ => panic!("Index of double-double out of range: {}", idx),
+            _ => panic!(
+                "Index of double-double out of range (must be in range [0, 1]): {}",
+                idx
+            ),
         }
     }
 }
@@ -163,7 +166,10 @@ impl IndexMut<usize> for Double {
         match idx {
             0 => &mut self.0,
             1 => &mut self.1,
-            _ => panic!("Index of double-double out of range: {}", idx),
+            _ => panic!(
+                "Index of double-double out of range (must be in range [0, 1]): {}",
+                idx
+            ),
         }
     }
 }
