@@ -23,10 +23,8 @@ impl PartialOrd for Double {
     #[inline]
     fn partial_cmp(&self, other: &Double) -> Option<Ordering> {
         match self.0.partial_cmp(&other.0) {
-            Some(Ordering::Greater) => Some(Ordering::Greater),
-            Some(Ordering::Less) => Some(Ordering::Less),
             Some(Ordering::Equal) => self.1.partial_cmp(&other.1),
-            None => None,
+            x => x,
         }
     }
 }
