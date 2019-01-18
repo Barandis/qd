@@ -300,7 +300,7 @@ impl Double {
             r -= mul_f64(other, q2);
 
             let q3 = r.0 / other.0;
-            three_sum(q1, q2, q3)
+            renorm3(q1, q2, q3)
         }
     }
 

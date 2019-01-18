@@ -163,10 +163,130 @@ pub fn two_sqr(a: f64) -> (f64, f64) {
     (p, e)
 }
 
-/// Calculates fl(a + b + c) and err(a + b + c)
+/// Calculates fl(a + b + c) and err(a + b + c).
 #[inline]
-pub fn three_sum(a: f64, b: f64, c: f64) -> (f64, f64) {
+pub fn three_sum2(a: f64, b: f64, c: f64) -> (f64, f64) {
     let (u, v) = two_sum(a, b);
     let (s, w) = two_sum(c, u);
     (s, v + w)
+}
+
+/// Calculates fl(a + b + c) and err(a + b + c).
+///
+/// This implementation keeps the error as two separate components, which is useful in some
+/// quad-double operations.
+#[inline]
+pub fn three_sum3(a: f64, b: f64, c: f64) -> (f64, f64, f64) {
+    let (u, v) = two_sum(a, b);
+    let (s, w) = two_sum(c, u);
+    let (e1, e2) = two_sum(v, w);
+    (s, e1, e2)
+}
+
+/// Renormalizes two components into a two-component value.
+///
+/// Renormalization ensures that the components of the returned tuple are arranged in such a way
+/// that the absolute value of the last component is no more than half the ULP of the first.
+#[inline]
+pub fn renorm2(a: f64, b: f64) -> (f64, f64) {
+    quick_two_sum(a, b)
+}
+
+/// Renormalizes three components into a two-component value.
+///
+/// Renormalization ensures that the components of the returned tuple are arranged in such a way
+/// that the absolute value of the last component is no more than half the ULP of the first.
+#[inline]
+pub fn renorm3(a: f64, b: f64, c: f64) -> (f64, f64) {
+    let (u, v) = quick_two_sum(a, b);
+    let (s, w) = quick_two_sum(c, u);
+    quick_two_sum(s, v + w)
+}
+
+/// Renormalizes four components into a four-component value.
+///
+/// Renormalization ensures that the components of the returned tuple are arranged in such a way
+/// that the absolute value of each component is no more than half of the ULP of the prior
+/// component.
+#[inline]
+pub fn renorm4(a: f64, b: f64, c: f64, d: f64) -> (f64, f64, f64, f64) {
+    let (x, s3) = quick_two_sum(c, d);
+    let (x, s2) = quick_two_sum(b, x);
+    let (s0, s1) = quick_two_sum(a, x);
+
+    if s1 != 0.0 {
+        let (s1, s2) = quick_two_sum(s1, s2);
+        if s2 != 0.0 {
+            let (s2, s3) = quick_two_sum(s2, s3);
+            (s0, s1, s2, s3)
+        } else {
+            let (s1, s2) = quick_two_sum(s1, s3);
+            (s0, s1, s2, 0.0)
+        }
+    } else {
+        let (s0, s1) = quick_two_sum(s0, s2);
+        if s1 != 0.0 {
+            let (s1, s2) = quick_two_sum(s1, s3);
+            (s0, s1, s2, 0.0)
+        } else {
+            let (s0, s1) = quick_two_sum(s0, s3);
+            (s0, s1, 0.0, 0.0)
+        }
+    }
+}
+
+/// Renormalizes five components into a four-component value.
+///
+/// Renormalization ensures that the components of the returned tuple are arranged in such a way
+/// that the absolute value of each component is no more than half of the ULP of the prior
+/// component.
+#[inline]
+pub fn renorm5(a: f64, b: f64, c: f64, d: f64, e: f64) -> (f64, f64, f64, f64) {
+    let (x, s4) = quick_two_sum(d, e);
+    let (x, s3) = quick_two_sum(c, x);
+    let (x, s2) = quick_two_sum(b, x);
+    let (s0, s1) = quick_two_sum(a, x);
+
+    if s1 != 0.0 {
+        let (s1, s2) = quick_two_sum(s1, s2);
+        if s2 != 0.0 {
+            let (s2, s3) = quick_two_sum(s2, s3);
+            if s3 != 0.0 {
+                (s0, s1, s2, s3 + s4)
+            } else {
+                let (s2, s3) = quick_two_sum(s2, s4);
+                (s0, s1, s2, s3)
+            }
+        } else {
+            let (s1, s2) = quick_two_sum(s1, s3);
+            if s2 != 0.0 {
+                let (s2, s3) = quick_two_sum(s2, s4);
+                (s0, s1, s2, s3)
+            } else {
+                let (s1, s2) = quick_two_sum(s1, s4);
+                (s0, s1, s2, 0.0)
+            }
+        }
+    } else {
+        let (s0, s1) = quick_two_sum(s0, s2);
+        if s1 != 0.0 {
+            let (s1, s2) = quick_two_sum(s1, s3);
+            if s2 != 0.0 {
+                let (s2, s3) = quick_two_sum(s2, s4);
+                (s0, s1, s2, s3)
+            } else {
+                let (s1, s2) = quick_two_sum(s1, s4);
+                (s0, s1, s2, 0.0)
+            }
+        } else {
+            let (s0, s1) = quick_two_sum(s0, s3);
+            if s1 != 0.0 {
+                let (s1, s2) = quick_two_sum(s1, s4);
+                (s0, s1, s2, 0.0)
+            } else {
+                let (s0, s1) = quick_two_sum(s0, s4);
+                (s0, s1, 0.0, 0.0)
+            }
+        }
+    }
 }

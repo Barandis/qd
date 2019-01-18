@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::basic::quick_two_sum;
+use crate::basic::renorm2;
 use std::f64;
 
 #[macro_use]
@@ -141,6 +141,6 @@ impl Double {
     /// # }
     /// ```
     pub fn norm(a: f64, b: f64) -> Double {
-        Double::from(quick_two_sum(a, b))
+        Double::from(renorm2(a, b))
     }
 }
