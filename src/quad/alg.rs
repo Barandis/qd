@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+use crate::common::basic::*;
 use crate::quad::Quad;
-use crate::basic::*;
 
 impl Quad {
     // A considerable simplification over simply multiplying the number by itself, with the

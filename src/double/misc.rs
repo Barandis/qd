@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::basic::quick_two_sum;
+use crate::common::basic::quick_two_sum;
 use crate::double::Double;
 use std::num::FpCategory;
 

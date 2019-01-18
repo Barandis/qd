@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::basic::*;
+use crate::common::basic::*;
 use crate::double::Double;
 use std::f64;
 use std::iter::{Product, Sum};

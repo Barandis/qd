@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::basic::renorm2;
+use crate::common::basic::renorm2;
 use std::f64;
 use std::ops::{Index, IndexMut};
 
