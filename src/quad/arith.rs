@@ -389,6 +389,11 @@ impl Quad {
             renorm5(q0, q1, q2, q3, q4)
         }
     }
+
+    #[inline]
+    pub fn recip(self) -> Quad {
+        Quad::ONE / self
+    }
 }
 
 impl Div for Quad {

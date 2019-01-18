@@ -44,7 +44,7 @@ impl FromStr for Double {
         for (index, ch) in s.chars().enumerate() {
             match ch.to_digit(10) {
                 Some(d) => {
-                    result *= Double(10.0, 0.0);
+                    result *= TEN;
                     result += Double(d as f64, 0.0);
                     digits += 1;
                 }
@@ -108,10 +108,10 @@ impl FromStr for Double {
             // still not overflow, but doing the -337 all at once WOULD overflow
             if exp < -307 {
                 let adjust = exp + 307;
-                result *= Double(10.0, 0.0).powi(adjust);
+                result *= TEN.powi(adjust);
                 exp -= adjust;
             }
-            result *= Double(10.0, 0.0).powi(exp);
+            result *= TEN.powi(exp);
         }
         if sign == -1 {
             result = -result;
