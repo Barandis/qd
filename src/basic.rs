@@ -20,7 +20,7 @@
 ///
 /// This value is 2<sup>27</sup> + 1.
 #[cfg(no_fma)]
-const SPLIT_FACTOR: f64 = 134217729.0;                  // = 2^27 + 1
+const SPLIT_FACTOR: f64 = 134217729.0; // = 2^27 + 1
 
 /// The threshold over which special handling is done when splitting an `f64`.
 ///
@@ -31,7 +31,7 @@ const SPLIT_FACTOR: f64 = 134217729.0;                  // = 2^27 + 1
 /// This value is 2<sup>996</sup>, which is the highest power of two that is less than
 /// 10<sup>300</sup>.
 #[cfg(no_fma)]
-const SPLIT_THRESHOLD: f64 = 6.69692879491417e+299;     // = 2^996
+const SPLIT_THRESHOLD: f64 = 6.69692879491417e+299; // = 2^996
 
 /// The factor by which a very large number is multiplied before being split.
 ///
@@ -43,7 +43,7 @@ const SPLIT_SHIFT_DOWN: f64 = 3.7252902984619140625e-9; // = 2^-28
 ///
 /// This value is 2<sup>28</sup>, or the inverse of the value used before splitting.
 #[cfg(no_fma)]
-const SPLIT_SHIFT_UP: f64 = 268435456.0;                // = 2^28
+const SPLIT_SHIFT_UP: f64 = 268435456.0; // = 2^28
 
 /// Calculates fl(a + b) and err(a + b).
 ///
@@ -163,24 +163,79 @@ pub fn two_sqr(a: f64) -> (f64, f64) {
     (p, e)
 }
 
-/// Calculates fl(a + b + c) and err(a + b + c).
 #[inline]
-pub fn three_sum2(a: f64, b: f64, c: f64) -> (f64, f64) {
+pub fn three_two_sum(a: f64, b: f64, c: f64) -> (f64, f64) {
     let (u, v) = two_sum(a, b);
     let (s, w) = two_sum(c, u);
     (s, v + w)
 }
 
-/// Calculates fl(a + b + c) and err(a + b + c).
-///
-/// This implementation keeps the error as two separate components, which is useful in some
-/// quad-double operations.
 #[inline]
-pub fn three_sum3(a: f64, b: f64, c: f64) -> (f64, f64, f64) {
+pub fn three_three_sum(a: f64, b: f64, c: f64) -> (f64, f64, f64) {
     let (u, v) = two_sum(a, b);
     let (s, w) = two_sum(c, u);
     let (e1, e2) = two_sum(v, w);
     (s, e1, e2)
+}
+
+#[inline]
+pub fn four_two_sum(a: f64, b: f64, c: f64, d: f64) -> (f64, f64) {
+    let (s0, s1) = two_sum(a, c);
+    (s0, s1 + b + d)
+}
+
+#[inline]
+pub fn six_three_sum(a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) -> (f64, f64, f64) {
+    let (p0, p1, p2) = three_three_sum(a, b, c);
+    let (q0, q1, q2) = three_three_sum(d, e, f);
+    let (r0, r1) = two_sum(p0, q0);
+    let (s0, s1) = two_sum(p1, q1);
+    let (t0, t1) = two_sum(s0, r1);
+    let u0 = p2 + q2 + s1 + t1;
+    (r0, t0, u0)
+}
+
+#[inline]
+pub fn nine_two_sum(
+    a: f64,
+    b: f64,
+    c: f64,
+    d: f64,
+    e: f64,
+    f: f64,
+    g: f64,
+    h: f64,
+    i: f64,
+) -> (f64, f64) {
+    let (p0, p1) = two_sum(a, b);
+    let (q0, q1) = two_sum(c, d);
+    let (r0, r1) = two_sum(e, f);
+    let (s0, s1) = two_sum(g, h);
+    let (t0, t1) = four_two_sum(p0, p1, q0, q1);
+    let (u0, u1) = four_two_sum(r0, r1, s0, s1);
+    let (v0, v1) = four_two_sum(t0, t1, u0, u1);
+    let (w0, w1) = two_sum(v0, i);
+    (w0, w1 + v1)
+}
+
+/// Adds a float to an value/error pair.
+///
+/// If the result of this addition doesn't fit in two `f64`s, the sum is output as the first tuple
+/// component and the second and third contain the remainder. Otherwise, the first tuple component
+/// is `0.0` and the sum is in the other two components.
+#[inline]
+pub fn accumulate(a: f64, b: f64, c: f64) -> (f64, f64, f64) {
+    let (s, b) = two_sum(b, c);
+    let (s, a) = two_sum(a, s);
+
+    let za = a == 0.0;
+    let zb = b == 0.0;
+
+    if !(za || zb) {
+        (s, a, b)
+    } else {
+        (0.0, s, if zb { a } else { b })
+    }
 }
 
 /// Renormalizes two components into a two-component value.
