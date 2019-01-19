@@ -103,7 +103,20 @@ impl Quad {
 
 // #region Logarithms
 
-impl Quad {
+impl Quad {/// Calculates the natural logarithm, log<sub>*e*</sub>, of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = qd!(7).ln();
+    /// let expected = qd!("1.945910149055313305105352743443179729637084729581861188459390150");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     pub fn ln(self) -> Quad {
         // Strategy:
         //
@@ -142,16 +155,66 @@ impl Quad {
         }
     }
 
+    /// Calculates log<sub>10</sub> of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = Quad::E.log10();
+    /// let expected = qd!("0.4342944819032518276511289189166050822943970058036665661144537832");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     pub fn log10(self) -> Quad {
         self.ln() / Quad::LN_10
     }
 
+    /// Calculates log<sub>2</sub> of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = qd!(10).log2();
+    /// let expected = qd!("3.321928094887362347870319429489390175864831393024580612054756396");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     pub fn log2(self) -> Quad {
         self.ln() / Quad::LN_2
     }
 
+    /// Calculates the base `b` logarithm (log<sub>`b`</sub>) of the number.
+    ///
+    /// If the goal is to calculate the base *e*, base 2, or base 10 logarithms of `self`, the
+    /// specialized functions for those purposes([`ln`], [`log2`], and [`log10`] respectively) will
+    /// be more efficient.
+    ///
+    /// [`ln`]: #method.ln
+    /// [`log2`]: #method.log2
+    /// [`log10`]: #method.log10
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = qd!(10).log(7.3);
+    /// let expected = qd!("1.158315209978887965104764376269736420106652944692834002126233653");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     pub fn log(self, b: f64) -> Quad {
         self.ln() / Quad::from(b).ln()

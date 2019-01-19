@@ -104,7 +104,7 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x = Double::from(7).ln();
+    /// let x = dd!(7).ln();
     /// let expected = dd!("1.9459101490553133051053527434432");
     ///
     /// let diff = (x - expected).abs();
