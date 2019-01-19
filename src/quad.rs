@@ -65,7 +65,11 @@ mod tests {
                 "\nExpected: {0} ({0:?})\nActual:   {1} ({1:?})",
                 expected, actual
             );
-            assert!(expected == actual, message);
+            if expected.is_nan() {
+                assert!(actual.is_nan(), message);
+            } else {
+                assert!(expected == actual, message);
+            }
         };
     }
 }

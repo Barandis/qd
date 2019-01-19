@@ -119,46 +119,39 @@ impl Quad {
         // compute sin x from sin s and cos s. This greatly increases the convergence of the Taylor
         // series for sine and cosine.
         if self.is_zero() {
-            return Quad::ZERO;
-        }
-
-        let (j, k, t) = reduce(self);
-        let abs_k = k.abs() as usize;
-
-        if j < -2 || j > 2 {
-            // Cannot reduce modulo π/2
-            return Quad::NAN;
-        }
-        if abs_k > 256 {
-            // Cannot reduce modulo π/1024
-            return Quad::NAN;
-        }
-
-        if k == 0 {
-            match j {
-                0 => sin_taylor(t),
-                1 => cos_taylor(t),
-                -1 => -cos_taylor(t),
-                _ => -sin_taylor(t),
-            }
+            Quad::ZERO
+        } else if !self.is_finite() {
+            Quad::NAN
         } else {
-            let u = COSINES[abs_k - 1];
-            let v = SINES[abs_k - 1];
-            let (sin_t, cos_t) = sincos_taylor(t);
+            let (j, k, t) = reduce(self);
+            let abs_k = k.abs() as usize;
 
-            if k > 0 {
+            if k == 0 {
                 match j {
-                    0 => u * sin_t + v * cos_t,
-                    1 => u * cos_t - v * sin_t,
-                    -1 => -u * cos_t + v * sin_t,
-                    _ => -u * sin_t - v * cos_t,
+                    0 => sin_taylor(t),
+                    1 => cos_taylor(t),
+                    -1 => -cos_taylor(t),
+                    _ => -sin_taylor(t),
                 }
             } else {
-                match j {
-                    0 => u * sin_t - v * cos_t,
-                    1 => u * cos_t + v * sin_t,
-                    -1 => -u * cos_t - v * sin_t,
-                    _ => -u * sin_t + v * cos_t,
+                let u = COSINES[abs_k - 1];
+                let v = SINES[abs_k - 1];
+                let (sin_t, cos_t) = sincos_taylor(t);
+
+                if k > 0 {
+                    match j {
+                        0 => u * sin_t + v * cos_t,
+                        1 => u * cos_t - v * sin_t,
+                        -1 => -u * cos_t + v * sin_t,
+                        _ => -u * sin_t - v * cos_t,
+                    }
+                } else {
+                    match j {
+                        0 => u * sin_t - v * cos_t,
+                        1 => u * cos_t + v * sin_t,
+                        -1 => -u * cos_t - v * sin_t,
+                        _ => -u * sin_t + v * cos_t,
+                    }
                 }
             }
         }
@@ -180,46 +173,39 @@ impl Quad {
     /// ```
     pub fn cos(self) -> Quad {
         if self.is_zero() {
-            return Quad::ONE;
-        }
-
-        let (j, k, t) = reduce(self);
-        let abs_k = k.abs() as usize;
-
-        if j < -2 || j > 2 {
-            // Cannot reduce modulo π/2
-            return Quad::NAN;
-        }
-        if abs_k > 256 {
-            // Cannot reduce modulo π/1024
-            return Quad::NAN;
-        }
-
-        if k == 0 {
-            match j {
-                0 => cos_taylor(t),
-                1 => -sin_taylor(t),
-                -1 => sin_taylor(t),
-                _ => -cos_taylor(t),
-            }
+            Quad::ONE
+        } else if !self.is_finite() {
+            Quad::NAN
         } else {
-            let u = COSINES[abs_k - 1];
-            let v = SINES[abs_k - 1];
-            let (sin_t, cos_t) = sincos_taylor(t);
+            let (j, k, t) = reduce(self);
+            let abs_k = k.abs() as usize;
 
-            if k > 0 {
+            if k == 0 {
                 match j {
-                    0 => u * cos_t - v * sin_t,
-                    1 => -u * sin_t - v * cos_t,
-                    -1 => u * sin_t + v * cos_t,
-                    _ => -u * cos_t + v * sin_t,
+                    0 => cos_taylor(t),
+                    1 => -sin_taylor(t),
+                    -1 => sin_taylor(t),
+                    _ => -cos_taylor(t),
                 }
             } else {
-                match j {
-                    0 => u * cos_t + v * sin_t,
-                    1 => v * cos_t - u * sin_t,
-                    -1 => u * sin_t - v * cos_t,
-                    _ => -u * cos_t - v * sin_t,
+                let u = COSINES[abs_k - 1];
+                let v = SINES[abs_k - 1];
+                let (sin_t, cos_t) = sincos_taylor(t);
+
+                if k > 0 {
+                    match j {
+                        0 => u * cos_t - v * sin_t,
+                        1 => -u * sin_t - v * cos_t,
+                        -1 => u * sin_t + v * cos_t,
+                        _ => -u * cos_t + v * sin_t,
+                    }
+                } else {
+                    match j {
+                        0 => u * cos_t + v * sin_t,
+                        1 => v * cos_t - u * sin_t,
+                        -1 => u * sin_t - v * cos_t,
+                        _ => -u * cos_t - v * sin_t,
+                    }
                 }
             }
         }
@@ -245,41 +231,33 @@ impl Quad {
     /// ```
     pub fn sin_cos(self) -> (Quad, Quad) {
         if self.is_zero() {
-            return (Quad::ZERO, Quad::ONE);
-        }
-
-        let (j, k, t) = reduce(self);
-        let abs_k = k.abs() as usize;
-
-        // I honestly don't know if either of these error conditions happen. Will look into it more.
-        if j < -2 || j > 2 {
-            // Cannot reduce modulo π/2
-            return (Quad::NAN, Quad::NAN);
-        }
-        if abs_k > 256 {
-            // Cannot reduce modulo π/16
-            return (Quad::NAN, Quad::NAN);
-        }
-
-        let (sin_t, cos_t) = sincos_taylor(t);
-
-        let (s, c) = if k == 0 {
-            (sin_t, cos_t)
+            (Quad::ZERO, Quad::ONE)
+        } else if !self.is_finite() {
+            (Quad::NAN, Quad::NAN)
         } else {
-            let u = COSINES[abs_k - 1];
-            let v = SINES[abs_k - 1];
-            if k > 0 {
-                (u * sin_t + v * cos_t, u * cos_t - v * sin_t)
-            } else {
-                (u * sin_t - v * cos_t, u * cos_t + v * sin_t)
-            }
-        };
+            let (j, k, t) = reduce(self);
+            let abs_k = k.abs() as usize;
 
-        match j {
-            0 => (s, c),
-            1 => (c, -s),
-            -1 => (-c, s),
-            _ => (-s, -c),
+            let (sin_t, cos_t) = sincos_taylor(t);
+
+            let (s, c) = if k == 0 {
+                (sin_t, cos_t)
+            } else {
+                let u = COSINES[abs_k - 1];
+                let v = SINES[abs_k - 1];
+                if k > 0 {
+                    (u * sin_t + v * cos_t, u * cos_t - v * sin_t)
+                } else {
+                    (u * sin_t - v * cos_t, u * cos_t + v * sin_t)
+                }
+            };
+
+            match j {
+                0 => (s, c),
+                1 => (c, -s),
+                -1 => (-c, s),
+                _ => (-s, -c),
+            }
         }
     }
 
@@ -364,6 +342,20 @@ impl Quad {
             } else {
                 Quad::PI
             }
+        } else if self.is_infinite() {
+            if other.is_infinite() {
+                Quad::NAN
+            } else {
+                if self.is_sign_positive() {
+                    Quad::FRAC_PI_2
+                } else {
+                    -Quad::FRAC_PI_2
+                }
+            }
+        } else if other.is_infinite() {
+            Quad::ZERO
+        } else if self.is_nan() || other.is_nan() {
+            Quad::NAN
         } else if self == other {
             if self.is_sign_positive() {
                 Quad::FRAC_PI_4
@@ -501,6 +493,9 @@ mod tests {
         assert_close!(qd!(0.5), Quad::FRAC_PI_6.sin());
         assert_exact!(Quad::ZERO, Quad::ZERO.sin());
         assert_exact!(Quad::ONE, Quad::FRAC_PI_2.sin());
+        assert_exact!(Quad::NAN, Quad::INFINITY.sin());
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.sin());
+        assert_exact!(Quad::NAN, Quad::NAN.sin());
     }
 
     #[test]
@@ -516,5 +511,130 @@ mod tests {
         assert_close!(qd!(0.5), Quad::FRAC_PI_3.cos());
         assert_exact!(Quad::ONE, Quad::ZERO.cos());
         assert_exact!(Quad::ZERO, Quad::FRAC_PI_2.cos());
+        assert_exact!(Quad::NAN, Quad::INFINITY.cos());
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.cos());
+        assert_exact!(Quad::NAN, Quad::NAN.cos());
+    }
+
+    #[test]
+    fn quad_trig_tangent() {
+        assert_close!(
+            qd!("1.557407724654902230506974807458360173087250772381520038383946606"),
+            qd!(1).tan()
+        );
+        assert_close!(qd!(1), Quad::FRAC_PI_4.tan());
+        assert_exact!(Quad::ZERO, Quad::ZERO.tan());
+        assert!(Quad::FRAC_PI_2.tan().is_infinite());
+        assert_exact!(Quad::NAN, Quad::INFINITY.tan());
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.tan());
+        assert_exact!(Quad::NAN, Quad::NAN.tan());
+    }
+
+    #[test]
+    fn quad_trig_sin_cos() {
+        let (s, c) = qd!(1).sin_cos();
+        assert_close!(
+            qd!("0.8414709848078965066525023216302989996225630607983710656727517100"),
+            s
+        );
+        assert_close!(
+            qd!("0.5403023058681397174009366074429766037323104206179222276700972554"),
+            c
+        );
+        let (s, c) = qd!(Quad::PI / qd!(4)).sin_cos();
+        assert_close!(
+            qd!("0.7071067811865475244008443621048490392848359376884740365883398690"),
+            s
+        );
+        assert_close!(
+            qd!("0.7071067811865475244008443621048490392848359376884740365883398690"),
+            c
+        );
+        assert_close!(qd!(0.5), Quad::FRAC_PI_6.sin());
+
+        assert_exact!(Quad::ZERO, Quad::ZERO.sin_cos().0);
+        assert_exact!(Quad::ONE, Quad::ZERO.sin_cos().1);
+
+        assert_exact!(Quad::ONE, Quad::FRAC_PI_2.sin_cos().0);
+        assert_exact!(Quad::ZERO, Quad::FRAC_PI_2.sin_cos().1);
+
+        assert_exact!(Quad::NAN, Quad::INFINITY.sin_cos().0);
+        assert_exact!(Quad::NAN, Quad::INFINITY.sin_cos().1);
+
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.sin_cos().0);
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.sin_cos().1);
+
+        assert_exact!(Quad::NAN, Quad::NAN.sin_cos().0);
+        assert_exact!(Quad::NAN, Quad::NAN.sin_cos().1);
+    }
+
+    #[test]
+    fn quad_trig_atan2() {
+        assert_exact!(Quad::NAN, qd!(0).atan2(qd!(0)));
+        assert_exact!(Quad::ZERO, qd!(0).atan2(qd!(1)));
+        assert_close!(Quad::PI, qd!(0).atan2(qd!(-1)));
+        assert_close!(Quad::FRAC_PI_2, qd!(1).atan2(qd!(0)));
+        assert_close!(-Quad::FRAC_PI_2, qd!(-1).atan2(qd!(0)));
+        assert_close!(Quad::FRAC_PI_4, qd!(1).atan2(qd!(1)));
+        assert_close!(-Quad::FRAC_3_PI_4, qd!(-1).atan2(qd!(-1)));
+        assert_close!(Quad::FRAC_3_PI_4, qd!(1).atan2(qd!(-1)));
+        assert_close!(-Quad::FRAC_PI_4, qd!(-1).atan2(qd!(1)));
+        assert_exact!(Quad::NAN, Quad::INFINITY.atan2(Quad::INFINITY));
+        assert_close!(Quad::FRAC_PI_2, Quad::INFINITY.atan2(qd!(1)));
+        assert_close!(-Quad::FRAC_PI_2, Quad::NEG_INFINITY.atan2(qd!(1)));
+        assert_exact!(Quad::ZERO, qd!(1).atan2(Quad::INFINITY));
+        assert_close!(
+            qd!("0.4636476090008061162142562314612144020285370542861202638109330887"),
+            qd!(1).atan2(qd!(2))
+        );
+        assert_close!(
+            qd!("2.677945044588987122248387151818288482168632345088985557164011504"),
+            qd!(1).atan2(qd!(-2))
+        );
+        assert_close!(
+            qd!("-0.4636476090008061162142562314612144020285370542861202638109330887"),
+            qd!(-1).atan2(qd!(2))
+        );
+        assert_close!(
+            qd!("-2.677945044588987122248387151818288482168632345088985557164011504"),
+            qd!(-1).atan2(qd!(-2))
+        );
+    }
+
+    #[test]
+    fn quad_trig_atan() {
+        assert_exact!(Quad::ZERO, qd!(0).atan());
+        assert_close!(Quad::FRAC_PI_4, qd!(1).atan());
+        assert_close!(Quad::FRAC_PI_2, Quad::INFINITY.atan());
+        assert_close!(-Quad::FRAC_PI_2, Quad::NEG_INFINITY.atan());
+        assert_exact!(Quad::NAN, Quad::NAN.atan());
+        assert_close!(
+            qd!("0.9827937232473290679857106110146660144968774536316285567614250883"),
+            qd!(1.5).atan()
+        );
+    }
+
+    #[test]
+    fn quad_trig_asin() {
+        assert_exact!(Quad::NAN, qd!(1.5).asin());
+        assert_exact!(Quad::NAN, qd!(-1.5).asin());
+        assert_close!(Quad::FRAC_PI_2, qd!(1).asin());
+        assert_close!(-Quad::FRAC_PI_2, qd!(-1).asin());
+        assert_close!(
+            qd!("0.5235987755982988730771072305465838140328615665625176368291574321"),
+            qd!(0.5).asin()
+        );
+    }
+
+    #[test]
+    fn quad_trig_acos() {
+        assert_exact!(Quad::NAN, qd!(1.5).acos());
+        assert_exact!(Quad::NAN, qd!(-1.5).acos());
+        assert_exact!(Quad::ZERO, qd!(1).acos());
+        assert_close!(Quad::PI, qd!(-1).acos());
+        assert_close!(
+            qd!("1.047197551196597746154214461093167628065723133125035273658314864"),
+            qd!(0.5).acos()
+        );
     }
 }

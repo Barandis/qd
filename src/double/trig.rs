@@ -123,46 +123,39 @@ impl Double {
         // compute sin x from sin s and cos s. This greatly increases the convergence of the Taylor
         // series for sine and cosine.
         if self.is_zero() {
-            return Double::ZERO;
-        }
-
-        let (j, k, t) = reduce(self);
-        let abs_k = k.abs() as usize;
-
-        if j < -2 || j > 2 {
-            // Cannot reduce modulo π/2
-            return Double::NAN;
-        }
-        if abs_k > 4 {
-            // Cannot reduce modulo π/16
-            return Double::NAN;
-        }
-
-        if k == 0 {
-            match j {
-                0 => sin_taylor(t),
-                1 => cos_taylor(t),
-                -1 => -cos_taylor(t),
-                _ => -sin_taylor(t),
-            }
+            Double::ZERO
+        } else if !self.is_finite() {
+            Double::NAN
         } else {
-            let u = COSINES[abs_k - 1];
-            let v = SINES[abs_k - 1];
-            let (sin_t, cos_t) = sincos_taylor(t);
+            let (j, k, t) = reduce(self);
+            let abs_k = k.abs() as usize;
 
-            if k > 0 {
+            if k == 0 {
                 match j {
-                    0 => u * sin_t + v * cos_t,
-                    1 => u * cos_t - v * sin_t,
-                    -1 => -u * cos_t + v * sin_t,
-                    _ => -u * sin_t - v * cos_t,
+                    0 => sin_taylor(t),
+                    1 => cos_taylor(t),
+                    -1 => -cos_taylor(t),
+                    _ => -sin_taylor(t),
                 }
             } else {
-                match j {
-                    0 => u * sin_t - v * cos_t,
-                    1 => u * cos_t + v * sin_t,
-                    -1 => -u * cos_t - v * sin_t,
-                    _ => -u * sin_t + v * cos_t,
+                let u = COSINES[abs_k - 1];
+                let v = SINES[abs_k - 1];
+                let (sin_t, cos_t) = sincos_taylor(t);
+
+                if k > 0 {
+                    match j {
+                        0 => u * sin_t + v * cos_t,
+                        1 => u * cos_t - v * sin_t,
+                        -1 => -u * cos_t + v * sin_t,
+                        _ => -u * sin_t - v * cos_t,
+                    }
+                } else {
+                    match j {
+                        0 => u * sin_t - v * cos_t,
+                        1 => u * cos_t + v * sin_t,
+                        -1 => -u * cos_t - v * sin_t,
+                        _ => -u * sin_t + v * cos_t,
+                    }
                 }
             }
         }
@@ -184,46 +177,39 @@ impl Double {
     /// ```
     pub fn cos(self) -> Double {
         if self.is_zero() {
-            return Double::ONE;
-        }
-
-        let (j, k, t) = reduce(self);
-        let abs_k = k.abs() as usize;
-
-        if j < -2 || j > 2 {
-            // Cannot reduce modulo π/2
-            return Double::NAN;
-        }
-        if abs_k > 4 {
-            // Cannot reduce modulo π/16
-            return Double::NAN;
-        }
-
-        if k == 0 {
-            match j {
-                0 => cos_taylor(t),
-                1 => -sin_taylor(t),
-                -1 => sin_taylor(t),
-                _ => -cos_taylor(t),
-            }
+            Double::ONE
+        } else if !self.is_finite() {
+            Double::NAN
         } else {
-            let u = COSINES[abs_k - 1];
-            let v = SINES[abs_k - 1];
-            let (sin_t, cos_t) = sincos_taylor(t);
+            let (j, k, t) = reduce(self);
+            let abs_k = k.abs() as usize;
 
-            if k > 0 {
+            if k == 0 {
                 match j {
-                    0 => u * cos_t - v * sin_t,
-                    1 => -u * sin_t - v * cos_t,
-                    -1 => u * sin_t + v * cos_t,
-                    _ => -u * cos_t + v * sin_t,
+                    0 => cos_taylor(t),
+                    1 => -sin_taylor(t),
+                    -1 => sin_taylor(t),
+                    _ => -cos_taylor(t),
                 }
             } else {
-                match j {
-                    0 => u * cos_t + v * sin_t,
-                    1 => v * cos_t - u * sin_t,
-                    -1 => u * sin_t - v * cos_t,
-                    _ => -u * cos_t - v * sin_t,
+                let u = COSINES[abs_k - 1];
+                let v = SINES[abs_k - 1];
+                let (sin_t, cos_t) = sincos_taylor(t);
+
+                if k > 0 {
+                    match j {
+                        0 => u * cos_t - v * sin_t,
+                        1 => -u * sin_t - v * cos_t,
+                        -1 => u * sin_t + v * cos_t,
+                        _ => -u * cos_t + v * sin_t,
+                    }
+                } else {
+                    match j {
+                        0 => u * cos_t + v * sin_t,
+                        1 => v * cos_t - u * sin_t,
+                        -1 => u * sin_t - v * cos_t,
+                        _ => -u * cos_t - v * sin_t,
+                    }
                 }
             }
         }
@@ -249,41 +235,33 @@ impl Double {
     /// ```
     pub fn sin_cos(self) -> (Double, Double) {
         if self.is_zero() {
-            return (Double::ZERO, Double::ONE);
-        }
-
-        let (j, k, t) = reduce(self);
-        let abs_k = k.abs() as usize;
-
-        // I honestly don't know if either of these error conditions happen. Will look into it more.
-        if j < -2 || j > 2 {
-            // Cannot reduce modulo π/2
-            return (Double::NAN, Double::NAN);
-        }
-        if abs_k > 4 {
-            // Cannot reduce modulo π/16
-            return (Double::NAN, Double::NAN);
-        }
-
-        let (sin_t, cos_t) = sincos_taylor(t);
-
-        let (s, c) = if k == 0 {
-            (sin_t, cos_t)
+            (Double::ZERO, Double::ONE)
+        } else if !self.is_finite() {
+            (Double::NAN, Double::NAN)
         } else {
-            let u = COSINES[abs_k - 1];
-            let v = SINES[abs_k - 1];
-            if k > 0 {
-                (u * sin_t + v * cos_t, u * cos_t - v * sin_t)
-            } else {
-                (u * sin_t - v * cos_t, u * cos_t + v * sin_t)
-            }
-        };
+            let (j, k, t) = reduce(self);
+            let abs_k = k.abs() as usize;
 
-        match j {
-            0 => (s, c),
-            1 => (c, -s),
-            -1 => (-c, s),
-            _ => (-s, -c),
+            let (sin_t, cos_t) = sincos_taylor(t);
+
+            let (s, c) = if k == 0 {
+                (sin_t, cos_t)
+            } else {
+                let u = COSINES[abs_k - 1];
+                let v = SINES[abs_k - 1];
+                if k > 0 {
+                    (u * sin_t + v * cos_t, u * cos_t - v * sin_t)
+                } else {
+                    (u * sin_t - v * cos_t, u * cos_t + v * sin_t)
+                }
+            };
+
+            match j {
+                0 => (s, c),
+                1 => (c, -s),
+                -1 => (-c, s),
+                _ => (-s, -c),
+            }
         }
     }
 
@@ -368,6 +346,20 @@ impl Double {
             } else {
                 Double::PI
             }
+        } else if self.is_infinite() {
+            if other.is_infinite() {
+                Double::NAN
+            } else {
+                if self.is_sign_positive() {
+                    Double::FRAC_PI_2
+                } else {
+                    -Double::FRAC_PI_2
+                }
+            }
+        } else if other.is_infinite() {
+            Double::ZERO
+        } else if self.is_nan() || other.is_nan() {
+            Double::NAN
         } else if self == other {
             if self.is_sign_positive() {
                 Double::FRAC_PI_4
@@ -484,20 +476,8 @@ mod tests {
         };
     }
 
-    fn print_impl(a: Double) -> String {
-        format!("    Double({:e}, {:e}),", a.0, a.1)
-    }
-
     #[test]
-    fn print() {
-        let values = ["2.3561944901923449288469825374596"];
-        for s in values.iter() {
-            println!("{}", print_impl(dd!(*s)));
-        }
-    }
-
-    #[test]
-    fn trig_sine() {
+    fn double_trig_sine() {
         assert_close!(dd!("0.84147098480789650665250232163030"), dd!(1).sin());
         assert_close!(
             dd!("0.70710678118654752440084436210485"),
@@ -506,10 +486,13 @@ mod tests {
         assert_close!(dd!(0.5), Double::FRAC_PI_6.sin());
         assert_exact!(Double::ZERO, Double::ZERO.sin());
         assert_exact!(Double::ONE, Double::FRAC_PI_2.sin());
+        assert_exact!(Double::NAN, Double::INFINITY.sin());
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.sin());
+        assert_exact!(Double::NAN, Double::NAN.sin());
     }
 
     #[test]
-    fn trig_cosine() {
+    fn double_trig_cosine() {
         assert_close!(dd!("0.54030230586813971740093660744298"), dd!(1).cos());
         assert_close!(
             dd!("0.70710678118654752440084436210485"),
@@ -518,13 +501,106 @@ mod tests {
         assert_close!(dd!(0.5), Double::FRAC_PI_3.cos());
         assert_exact!(Double::ONE, Double::ZERO.cos());
         assert_exact!(Double::ZERO, Double::FRAC_PI_2.cos());
+        assert_exact!(Double::NAN, Double::INFINITY.cos());
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.cos());
+        assert_exact!(Double::NAN, Double::NAN.cos());
     }
 
     #[test]
-    fn trig_tangent() {
+    fn double_trig_tangent() {
         assert_close!(dd!("1.5574077246549022305069748074584"), dd!(1).tan());
         assert_close!(dd!(1), Double::FRAC_PI_4.tan());
         assert_exact!(Double::ZERO, Double::ZERO.tan());
         assert!(Double::FRAC_PI_2.tan().is_infinite());
+        assert_exact!(Double::NAN, Double::INFINITY.tan());
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.tan());
+        assert_exact!(Double::NAN, Double::NAN.tan());
+    }
+
+    #[test]
+    fn double_trig_sin_cos() {
+        let (s, c) = dd!(1).sin_cos();
+        assert_close!(dd!("0.84147098480789650665250232163030"), s);
+        assert_close!(dd!("0.54030230586813971740093660744298"), c);
+        let (s, c) = dd!(Double::PI / dd!(4)).sin_cos();
+        assert_close!(dd!("0.70710678118654752440084436210485"), s);
+        assert_close!(dd!("0.70710678118654752440084436210485"), c);
+        assert_close!(dd!(0.5), Double::FRAC_PI_6.sin());
+
+        assert_exact!(Double::ZERO, Double::ZERO.sin_cos().0);
+        assert_exact!(Double::ONE, Double::ZERO.sin_cos().1);
+
+        assert_exact!(Double::ONE, Double::FRAC_PI_2.sin_cos().0);
+        assert_exact!(Double::ZERO, Double::FRAC_PI_2.sin_cos().1);
+
+        assert_exact!(Double::NAN, Double::INFINITY.sin_cos().0);
+        assert_exact!(Double::NAN, Double::INFINITY.sin_cos().1);
+
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.sin_cos().0);
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.sin_cos().1);
+
+        assert_exact!(Double::NAN, Double::NAN.sin_cos().0);
+        assert_exact!(Double::NAN, Double::NAN.sin_cos().1);
+    }
+
+    #[test]
+    fn double_trig_atan2() {
+        assert_exact!(Double::NAN, dd!(0).atan2(dd!(0)));
+        assert_exact!(Double::ZERO, dd!(0).atan2(dd!(1)));
+        assert_close!(Double::PI, dd!(0).atan2(dd!(-1)));
+        assert_close!(Double::FRAC_PI_2, dd!(1).atan2(dd!(0)));
+        assert_close!(-Double::FRAC_PI_2, dd!(-1).atan2(dd!(0)));
+        assert_close!(Double::FRAC_PI_4, dd!(1).atan2(dd!(1)));
+        assert_close!(-Double::FRAC_3_PI_4, dd!(-1).atan2(dd!(-1)));
+        assert_close!(Double::FRAC_3_PI_4, dd!(1).atan2(dd!(-1)));
+        assert_close!(-Double::FRAC_PI_4, dd!(-1).atan2(dd!(1)));
+        assert_exact!(Double::NAN, Double::INFINITY.atan2(Double::INFINITY));
+        assert_close!(Double::FRAC_PI_2, Double::INFINITY.atan2(dd!(1)));
+        assert_close!(-Double::FRAC_PI_2, Double::NEG_INFINITY.atan2(dd!(1)));
+        assert_exact!(Double::ZERO, dd!(1).atan2(Double::INFINITY));
+        assert_close!(
+            dd!("0.46364760900080611621425623146121"),
+            dd!(1).atan2(dd!(2))
+        );
+        assert_close!(
+            dd!("2.6779450445889871222483871518183"),
+            dd!(1).atan2(dd!(-2))
+        );
+        assert_close!(
+            dd!("-0.46364760900080611621425623146121"),
+            dd!(-1).atan2(dd!(2))
+        );
+        assert_close!(
+            dd!("-2.6779450445889871222483871518183"),
+            dd!(-1).atan2(dd!(-2))
+        );
+    }
+
+    #[test]
+    fn double_trig_atan() {
+        assert_exact!(Double::ZERO, dd!(0).atan());
+        assert_close!(Double::FRAC_PI_4, dd!(1).atan());
+        assert_close!(Double::FRAC_PI_2, Double::INFINITY.atan());
+        assert_close!(-Double::FRAC_PI_2, Double::NEG_INFINITY.atan());
+        assert_exact!(Double::NAN, Double::NAN.atan());
+        assert_close!(dd!("0.98279372324732906798571061101467"), dd!(1.5).atan());
+    }
+
+    #[test]
+    fn double_trig_asin() {
+        assert_exact!(Double::NAN, dd!(1.5).asin());
+        assert_exact!(Double::NAN, dd!(-1.5).asin());
+        assert_close!(Double::FRAC_PI_2, dd!(1).asin());
+        assert_close!(-Double::FRAC_PI_2, dd!(-1).asin());
+        assert_close!(dd!("0.52359877559829887307710723054658"), dd!(0.5).asin());
+    }
+
+    #[test]
+    fn double_trig_acos() {
+        assert_exact!(Double::NAN, dd!(1.5).acos());
+        assert_exact!(Double::NAN, dd!(-1.5).acos());
+        assert_exact!(Double::ZERO, dd!(1).acos());
+        assert_close!(Double::PI, dd!(-1).acos());
+        assert_close!(dd!("1.0471975511965977461542144610932"), dd!(0.5).acos());
     }
 }
