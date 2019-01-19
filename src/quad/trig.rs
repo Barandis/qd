@@ -76,16 +76,22 @@ fn sincos_taylor(a: Quad) -> (Quad, Quad) {
     }
 }
 
+// Helper function to reduce the input to a value whose sin/cos can be calculated via Taylor series.
+// It firsts reduces modulo 2π, then π/2, then π/1024. Aside from returning the reduced value (`t`),
+// it also returns the group within the next higher modulo in which the value fell (`j` and `k`,
+// this is the quadrant for `j`).
 #[inline]
 fn reduce(a: Quad) -> (i32, i32, Quad) {
-    // approximately reduce modulo 2π
+    // reduce modulo 2π
     let z = (a / Quad::MUL_2_PI).round();
     let r = a - z * Quad::MUL_2_PI;
 
-    // approx. reduce modulo π/2 and then modulo π/1024
+    // reduce modulo π/2
     let mut q = (r.0 / Quad::FRAC_PI_2.0 + 0.5).floor();
     let mut t = r - Quad::from(q) * Quad::FRAC_PI_2;
     let j = q as i32;
+
+    // reduce modulo π/1024
     q = (t.0 / FRAC_PI_1024.0 + 0.5).floor();
     t -= Quad::from(q) * FRAC_PI_1024;
     let k = q as i32;
