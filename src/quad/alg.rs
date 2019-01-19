@@ -7,17 +7,19 @@ use crate::common::basic::*;
 use crate::quad::Quad;
 
 impl Quad {
-    // A considerable simplification over simply multiplying the number by itself, with the
-    // simplifications possible because the two numbers being multiplied are in fact equal.
-    //
-    // The result is a simpler calculation:
-    //
-    //      a0² + 2a0a1 + 2a0a2 + a1² + 2a0a3 + 2a1a2
-    //
-    // where any further terms, including the low words of the final two terms, are unnecessary to
-    // achieve the desired accuracy.
+
     #[inline]
     pub fn sqr(self) -> Quad {
+        // A considerable simplification over simply multiplying the number by itself, with the
+        // simplifications possible because the two numbers being multiplied are in fact equal.
+        //
+        // The result is a simpler calculation:
+        //
+        //      a0² + 2a0a1 + 2a0a2 + a1² + 2a0a3 + 2a1a2
+        //
+        // where any further terms, including the low words of the final two terms, are unnecessary
+        // to achieve the desired accuracy.
+
         let (h0, l0) = two_sqr(self.0);
         let (h1, l1) = two_prod(2.0 * self.0, self.1);
         let (h2, l2) = two_prod(2.0 * self.0, self.2);
@@ -79,5 +81,11 @@ impl Quad {
                 s
             }
         }
+    }
+
+    #[inline]
+    pub fn ldexp(self, n: i32) -> Quad {
+        let factor = 2f64.powi(n);
+        Quad(self.0 * factor, self.1 * factor, self.2 * factor, self.3 * factor)
     }
 }

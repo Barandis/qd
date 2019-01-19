@@ -118,7 +118,8 @@ impl Double {
     /// ```
     #[inline]
     pub fn ldexp(self, n: i32) -> Double {
-        Double(self.0 * 2f64.powi(n), self.1 * 2f64.powi(n))
+        let factor = 2f64.powi(n);
+        Double(self.0 * factor, self.1 * factor)
     }
 }
 

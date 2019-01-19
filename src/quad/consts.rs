@@ -7,6 +7,60 @@ use crate::quad::Quad;
 use std::f64;
 
 impl Quad {
+    /// The radix or base of the internal representation of `Double`. This is the same as the
+    /// representation in the underlying f64.
+    pub const RADIX: u32 = 2;
+
+    /// Number of significant digits in base 2.
+    pub const MANTISSA_DIGITS: u32 = 212;
+
+    /// Approximate number of significant digits in base 10.
+    pub const DIGITS: u32 = 62;
+
+    /// [Machine epsilon] value for `Quad`.
+    ///
+    /// This is the difference between `1.0` and the next largest representable number.
+    ///
+    /// [Machine epsilon]: https://en.wikipedia.org/wiki/Machine_epsilon
+    // 2^-209
+    pub const EPSILON: Quad = Quad(1.2154326714572542e-63, 4.2261844194902035e-129, 0e0, 0e0);
+
+    /// Smallest finite `Quad` value.
+    pub const MIN: Quad = Quad(
+        -1.79769313486231570815e308,
+        -9.97920154767359795037e291,
+        -5.53956966280111259858e275,
+        -3.07507889307840487279e259,
+    );
+
+    /// Smallest positive normal `Quad` value.
+    pub const MIN_POSITIVE: Quad = Quad(
+        1.6259745436952323e-260,
+        1.323503361786795e-277,
+        2.5355262916141534e-294,
+        7.9750947698e-312,
+    );
+
+    /// Largest finite `Quad` value.
+    pub const MAX: Quad = Quad(
+        1.79769313486231570815e308,
+        9.97920154767359795037e291,
+        5.53956966280111259858e275,
+        3.07507889307840487279e259,
+    );
+
+    /// One greater than the minimum possible normal power of 2 exponent.
+    pub const MIN_EXP: i32 = -1021;
+
+    /// Maximum possible power of 2 exponent.
+    pub const MAX_EXP: i32 = 1024;
+
+    /// Minimum possible normal power of 10 exponent.
+    pub const MIN_10_EXP: i32 = -307;
+
+    /// Maximum possible power of 10 exponent.
+    pub const MAX_10_EXP: i32 = 308;
+
     /// Not a Number (NaN).
     pub const NAN: Quad = Quad(f64::NAN, f64::NAN, f64::NAN, f64::NAN);
 

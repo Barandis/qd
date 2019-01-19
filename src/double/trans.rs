@@ -130,7 +130,10 @@ impl Double {
         if self == Double::ONE {
             return Double::ZERO;
         }
-        if self.is_zero() || self.is_sign_negative() {
+        if self.is_zero() {
+            return Double::NAN;
+        }
+        if self.is_sign_negative() {
             return Double::NAN;
         }
 
