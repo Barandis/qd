@@ -3,39 +3,37 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+use crate::common::basic::renorm2;
 use crate::double::Double;
 
 // #region From implementations
 
 fn from_float(n: f64) -> Double {
     if n == 0.0 {
-        return if n.is_sign_negative() {
+        if n.is_sign_negative() {
             Double::NEG_ZERO
         } else {
             Double::ZERO
-        };
-    }
-    if n.is_nan() {
-        return Double::NAN;
-    }
-    if n.is_infinite() {
-        return if n.is_sign_negative() {
+        }
+    } else if n.is_nan() {
+        Double::NAN
+    } else if n.is_infinite() {
+        if n.is_sign_negative() {
             Double::NEG_INFINITY
         } else {
             Double::INFINITY
-        };
-    }
-    if n.floor() == n {
-        return Double(n, 0.0);
-    }
+        }
+    } else if n.floor() == n {
+        Double(n, 0.0)
+    } else {
+        // TODO: This needs investigation. It seems incorrect to double-convert a value, once to a
+        // string and then back again, but parsing a number as a string might be the most sensible
+        // way to do it in this particular case.
 
-    // TODO: This needs investigation. It seems incorrect to double-convert a value, once to a
-    // string and then back again, but parsing a number as a string might be the most sensible way
-    // to do it in this particular case.
-
-    // `unwrap` is safe because `n.to_string` will never return a string that can't be parsed into
-    // a Double
-    n.to_string().parse().unwrap()
+        // `unwrap` is safe because `n.to_string` will never return a string that can't be parsed
+        // into a Double
+        n.to_string().parse().unwrap()
+    }
 }
 
 #[inline]
@@ -47,41 +45,23 @@ fn split_u64(a: u64) -> (u32, u32) {
 
 fn from_u64(a: u64) -> Double {
     let (x, y) = split_u64(a);
-    Double::from_add(x as f64 * 2f64.powi(32), y as f64)
+    Double::from(renorm2(x as f64 * 2f64.powi(32), y as f64))
 }
 
 fn from_i64(a: i64) -> Double {
     let sign = a.signum();
     let a = a.abs() as u64;
     let (x, y) = split_u64(a);
-    let d = Double::from_add(x as f64 * 2f64.powi(32), y as f64);
-    if sign == -1 { -d } else { d }
-}
-
-macro_rules! from_float_impl {
-    ($($t:ty)*) => ($(
-        impl From<($t, $t)> for Double {
-            fn from((a, b): ($t, $t)) -> Double {
-                Double(a.into(), b.into())
-            }
-        }
-
-        impl From<$t> for Double {
-            fn from(a: $t) -> Double {
-                from_float(a.into())
-            }
-        }
-    )*);
+    let d = Double::from(renorm2(x as f64 * 2f64.powi(32), y as f64));
+    if sign == -1 {
+        -d
+    } else {
+        d
+    }
 }
 
 macro_rules! from_int_impl {
     ($($t:ty)*) => ($(
-        impl From<($t, $t)> for Double {
-            fn from((a, b): ($t, $t)) -> Double {
-                Double(a.into(), b.into())
-            }
-        }
-
         impl From<$t> for Double {
             fn from(a: $t) -> Double {
                 Double(a.into(), 0.0)
@@ -90,8 +70,29 @@ macro_rules! from_int_impl {
     )*);
 }
 
-from_float_impl! { f32 f64 }
+macro_rules! from_float_impl {
+    ($($t:ty)*) => ($(
+        impl From<$t> for Double {
+            fn from(a: $t) -> Double {
+                from_float(a.into())
+            }
+        }
+    )*);
+}
+
+macro_rules! from_tuple_impl {
+    ($($t:ty)*) => ($(
+        impl From<($t, $t)> for Double {
+            fn from((a, b): ($t, $t)) -> Double {
+                Double(a.into(), b.into())
+            }
+        }
+    )*);
+}
+
 from_int_impl! { i8 u8 i16 u16 i32 u32 }
+from_float_impl! { f32 f64 }
+from_tuple_impl! { i8 u8 i16 u16 i32 u32 f32 f64 }
 
 impl From<(u64, u64)> for Double {
     fn from((a, b): (u64, u64)) -> Double {
