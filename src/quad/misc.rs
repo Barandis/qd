@@ -59,6 +59,39 @@ impl Quad {
             Quad(a, b, c, d)
         }
     }
+
+    #[inline]
+    pub fn round(self) -> Quad {
+        let a = self.0.round();
+        if a == self.0 {
+            let b = self.1.round();
+            if b == self.1 {
+                let c = self.2.round();
+                if c == self.2 {
+                    let d = self.3.round();
+                    Quad::from(renorm4(a, b, c, d))
+                } else {
+                    if (c - self.2).abs() == 0.5 && self.3 < 0.0 {
+                        Quad(a, b, c - 1.0, 0.0)
+                    } else {
+                        Quad(a, b, c, 0.0)
+                    }
+                }
+            } else {
+                if (b - self.1).abs() == 0.5 && self.2 < 0.0 {
+                    Quad(a, b - 1.0, 0.0, 0.0)
+                } else {
+                    Quad(a, b, 0.0, 0.0)
+                }
+            }
+        } else {
+            if (a - self.0).abs() == 0.5 && self.1 < 0.0 {
+                Quad(a - 1.0, 0.0, 0.0, 0.0)
+            } else {
+                Quad(a, 0.0, 0.0, 0.0)
+            }
+        }
+    }
 }
 
 // #endregion

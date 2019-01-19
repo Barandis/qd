@@ -22,54 +22,50 @@ const COSINES: [Double; 4] = [
 
 // Compute sin a using the Taylor series. This assumes that |a| <= π/32.
 fn sin_taylor(a: Double) -> Double {
-    let threshold = Double(0.5, 0.0) * a.abs() * Double::EPSILON;
-
     if a.is_zero() {
-        return Double::ZERO;
-    }
+        Double::ZERO
+    } else {
+        let threshold = mul_pwr2(a.abs() * Double::EPSILON, 0.5);
+        let x = -a.sqr();
+        let mut s = a;
+        let mut r = a;
+        let mut i = 0;
 
-    let mut i = 0;
-    let x = -a.sqr();
-    let mut s = a;
-    let mut r = a;
-
-    loop {
-        r *= x;
-        let t = r * INV_FACTS[i];
-        s += t;
-        i += 2;
-        if i >= INV_FACTS.len() || t.abs() <= threshold {
-            break;
+        loop {
+            r *= x;
+            let t = r * INV_FACTS[i];
+            s += t;
+            i += 2;
+            if i >= INV_FACTS.len() || t.abs() <= threshold {
+                break;
+            }
         }
+        s
     }
-
-    s
 }
 
 // Compute cos a using the Taylor series. This assumes that |a| <= π/32.
 fn cos_taylor(a: Double) -> Double {
-    let threshold = Double(0.5, 0.0) * Double::EPSILON;
-
     if a.is_zero() {
-        return Double::ONE;
-    }
+        Double::ONE
+    } else {
+        let threshold = mul_pwr2(Double::EPSILON, 0.5);
+        let x = -a.sqr();
+        let mut r = x;
+        let mut s = Double::ONE + mul_pwr2(r, 0.5);
+        let mut i = 1;
 
-    let mut i = 1;
-    let x = -a.sqr();
-    let mut r = x;
-    let mut s = Double::ONE + mul_pwr2(r, 0.5);
-
-    loop {
-        r *= x;
-        let t = r * INV_FACTS[i];
-        s += t;
-        i += 2;
-        if i >= INV_FACTS.len() || t.abs() <= threshold {
-            break;
+        loop {
+            r *= x;
+            let t = r * INV_FACTS[i];
+            s += t;
+            i += 2;
+            if i >= INV_FACTS.len() || t.abs() <= threshold {
+                break;
+            }
         }
+        s
     }
-
-    s
 }
 
 // Computes both the sine and cosine of a using the Taylor series. This is a bit quicker than
@@ -123,12 +119,9 @@ impl Double {
         //
         //      x = s + aπ/2 + bπ/16
         //
-        // and |s| <= π/32. Using the fact that
-        //
-        //      sin π/16 = 0.5 * √(2 - √(2 + √2))
-        //
-        // we can comput sin x from sin s and cos s. This greatly increases the convergence of the
-        // Taylor series for sine and cosine.
+        // where |s| <= π/32. Using a precomputed table of sin (kπ/16) and cos (kπ/16), we can
+        // compute sin x from sin s and cos s. This greatly increases the convergence of the Taylor
+        // series for sine and cosine.
         if self.is_zero() {
             return Double::ZERO;
         }
@@ -393,7 +386,7 @@ impl Double {
             let y = self / r;
 
             // Compute f64 approximation to atan
-            let mut z = Double::from(self.as_float().atan2(other.as_float()));
+            let mut z = Double::from(self.0.atan2(other.0));
             let (sin_z, cos_z) = z.sin_cos();
 
             if x.0.abs() > y.0.abs() {

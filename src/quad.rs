@@ -40,6 +40,36 @@ mod macros {
     }
 }
 
+#[cfg(test)]
+#[macro_use]
+mod tests {
+    macro_rules! assert_precision {
+        ($expected:expr, $actual:expr, $digits:expr) => {
+            let expected = Quad::from($expected);
+            let actual = Quad::from($actual);
+            let mag = expected.abs().log10().floor().as_int() as i32;
+            let epsilon = Quad(10.0, 0.0, 0.0, 0.0).powi(mag - $digits);
+            let message = format!(
+                "\nExpected: {0} ({0:?})\nActual:   {1} ({1:?})",
+                expected, actual
+            );
+            assert!((expected - actual).abs() < epsilon, message);
+        };
+    }
+
+    macro_rules! assert_exact {
+        ($expected:expr, $actual:expr) => {
+            let expected = Quad::from($expected);
+            let actual = Quad::from($actual);
+            let message = format!(
+                "\nExpected: {0} ({0:?})\nActual:   {1} ({1:?})",
+                expected, actual
+            );
+            assert!(expected == actual, message);
+        };
+    }
+}
+
 mod alg;
 mod arith;
 mod common;
