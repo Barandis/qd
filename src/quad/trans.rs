@@ -9,6 +9,20 @@ use crate::quad::common::{INV_FACTS, mul_pwr2};
 // #region Exponential
 
 impl Quad {
+    /// Computes the exponential function, *e*<sup>x</sup>, for the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = qd!(2.3).exp();
+    /// let expected = qd!("9.974182454814720739957615156908858001478701193684029563691421917");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     pub fn exp(self) -> Quad {
         // Strategy, as gleaned from MIT papers and Wikipedia:
         //
@@ -56,7 +70,7 @@ impl Quad {
             p *= r;
             i += 1;
             t = p * INV_FACTS[i];
-            if i >= 5 || t.abs() <= threshold {
+            if i >= 9 || t.abs() <= threshold {
                 break;
             }
         }
