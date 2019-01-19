@@ -6,6 +6,40 @@
 use crate::common::basic::renorm4;
 use std::ops::{Index, IndexMut};
 
+#[macro_use]
+mod macros {
+    /// Creates a new quad-double from another number or from a string.
+    ///
+    /// The argument can be any expression that evaluates to a type that this library defines a
+    /// `From` implementation for. This includes `&str`, `Double`, `Quad`, any primitive number, and
+    /// 2-, 3-, and 4-tuples of any of those primitive number types.
+    ///
+    /// # Panics
+    ///
+    /// Passing an expression that evaluates to a type that does not have a `From` implementation
+    /// will cause a panic.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// assert!(qd!(0) == Quad::ZERO);
+    ///
+    /// let x = qd!(1) / qd!(2).sqrt();
+    /// let expected = qd!("0.7071067811865475244008443621048490392848359376884740365883398690");
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
+    #[macro_export]
+    macro_rules! qd {
+        ($x:expr) => {
+            Quad::from($x)
+        };
+    }
+}
+
 mod alg;
 mod arith;
 mod common;
