@@ -5,6 +5,7 @@
 
 use crate::common::basic::*;
 use crate::double::Double;
+use crate::double::common::mul_pwr2;
 use std::f64;
 
 // #region Powers
@@ -100,7 +101,7 @@ impl Double {
         (n * self.ln()).exp()
     }
 
-    /// Calculates `self` &times; 2<sup>`n`</sup> and returns it as a new `Double`.
+    /// Calculates the number times 2<sup>`n`</sup>.
     ///
     /// Though this is not an everyday operation, it is often used in more advanced mathematical
     /// calculations (including several within this library). Therefore an implementation that is
@@ -144,7 +145,7 @@ impl Double {
         if self.is_zero() {
             Double::ZERO
         } else if self.is_sign_negative() {
-            Double::from(f64::NAN)
+            Double::NAN
         } else {
             // Strategy: use a method developed by Alan Karp and Peter Markstein at HP
             // https://cr.yp.to/bib/1997/karp.pdf
@@ -154,13 +155,11 @@ impl Double {
             //      sqrt(a) ≈ ax + (a - (ax)^2)x / 2
             //
             // The approximation is accurate to twice the accuracy of x. This can be repeated an
-            // arbitrary number of times, but this method when used on double-doubles seems to only
-            // require one iteration. (It can be performed with f64 mlutiplication for ax and
-            // (...)x, but that proved less accurate with a single iteration and probably requires
-            // more.)
+            // arbitrary number of times, but this method when used on double-doubles only requires
+            // one iteration.
             let x = Double::from_div(1.0, self.0.sqrt());
             let ax = self * x;
-            ax + (self - ax.sqr()) * x * Double::from(0.5)
+            ax + (self - ax.sqr()) * mul_pwr2(x, 0.5)
         }
     }
 
@@ -205,7 +204,7 @@ impl Double {
             return Double::NAN;
         }
         if n == 1 {
-            return self.clone();
+            return self;
         }
         if n == 2 {
             return self.sqrt();  // use the more specialized method in sqrt
@@ -229,11 +228,10 @@ impl Double {
         let r = self.abs();
         let mut x: Double = (-(r.0.ln()) / n as f64).exp().into();  // a^(-1/n) = exp(-ln(a) / n)
 
-        x += x * (Double::from(1.0) - r * x.powi(n)) / Double::from(n);
+        x += x * (Double::ONE - r * x.powi(n)) / Double::from(n);
         if self.is_sign_negative() {
             x = -x;
         }
-
         x.recip()
     }
 }

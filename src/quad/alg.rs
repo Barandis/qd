@@ -5,9 +5,25 @@
 
 use crate::common::basic::*;
 use crate::quad::Quad;
+use crate::quad::common::mul_pwr2;
+
+// #region Powers
 
 impl Quad {
-
+    /// Calculates the square of the number.
+    ///
+    /// This method takes advantage of optimizations in multiplication that are available when the
+    /// two numbers being multiplied are the same, so it is more efficient than bare multiplication.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = qd!(3);
+    /// assert!(x.sqr() == x * x); // The left side is faster though
+    /// # }
+    /// ```
     #[inline]
     pub fn sqr(self) -> Quad {
         // A considerable simplification over simply multiplying the number by itself, with the
@@ -53,6 +69,17 @@ impl Quad {
         Quad::from(renorm5(r0, r1, r2, r3, r4))
     }
 
+    /// Calculates the number raised to an integral power.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = qd!(3);
+    /// assert!(x.powi(3) == qd!(27));
+    /// # }
+    /// ```
     pub fn powi(self, n: i32) -> Quad {
         if n == 0 {
             Quad::ONE
@@ -83,9 +110,176 @@ impl Quad {
         }
     }
 
+    /// Calculates the number raised to a quad-double power.
+    ///
+    /// This function only works for positive values of the number as it uses a simplified
+    /// logarithm-based algorithm. This is likely to change in the future when a more complex
+    /// algorithm is implemented.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = qd!(3).powf(qd!(3.3));
+    /// let expected = qd!("37.54050759852955219310186595463382927684873090166843452920390518");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
+    #[inline]
+    pub fn powf(self, n: Quad) -> Quad {
+        // a^b = exp(b ln(a)), but since ln(a) is not defined for negative values, this works
+        // ONLY FOR POSITIVE VALUES OF A (self in this case). Other solutions to powf are more
+        // general but also much more complex and I am not yet ready to try one.
+        (n * self.ln()).exp()
+    }
+
+    /// Calculates the number times 2<sup>`n`</sup>.
+    ///
+    /// Though this is not an everyday operation, it is often used in more advanced mathematical
+    /// calculations (including several within this library). Therefore an implementation that is
+    /// much more efficient than calculating it through multiplication and [`powi`](#method.powi) is
+    /// offered despite it not being part of the `f64` API.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = qd!(3);
+    /// assert!(x.ldexp(3) == qd!(24)); // 3 * 2^3
+    /// # }
+    /// ```
     #[inline]
     pub fn ldexp(self, n: i32) -> Quad {
         let factor = 2f64.powi(n);
         Quad(self.0 * factor, self.1 * factor, self.2 * factor, self.3 * factor)
     }
 }
+
+// #endregion
+
+// #region Roots
+
+impl Quad {
+    /// Calculates the square root of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = qd!(2).sqrt();
+    /// let expected = qd!("1.414213562373095048801688724209698078569671875376948073176679738");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
+    pub fn sqrt(self) -> Quad {
+        if self.is_zero() {
+            Quad::ZERO
+        } else if self.is_sign_negative() {
+            Quad::NAN
+        } else {
+            // Strategy: use a Newton iteration.
+            //
+            // Perform the following Newton iteration
+            //
+            //      x' = x + (1 - ax²) * x / 2
+            //
+            // which converges to 1/√a, starting with a double-precision approximation of 1/√a.
+            // Newton's iteration more or less doubles the precision with each pass, so performing
+            // it three times should be enough.
+
+            let mut r = Quad::ONE / Quad::from(self.0.sqrt());
+            let h = mul_pwr2(self, 0.5);
+            let k = Quad(0.5, 0.0, 0.0, 0.0);
+
+            r += (k - h * r.sqr()) * r;
+            r += (k - h * r.sqr()) * r;
+            r += (k - h * r.sqr()) * r;
+
+            r *= self;
+            r
+        }
+    }
+
+    /// Calculates the cube root of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = qd!(2).cbrt();
+    /// let expected = qd!("1.259921049894873164767210607278228350570251464701507980081975112");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
+    pub fn cbrt(self) -> Quad {
+        self.nroot(3)
+    }
+
+    /// Calculates the `n`th root of the number.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = qd!(2).nroot(4);
+    /// let expected = qd!("1.189207115002721066717499970560475915292972092463817413019002225");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
+    pub fn nroot(self, n: i32) -> Quad {
+        if n <= 0 {
+            return Quad::NAN;
+        }
+        if n % 2 == 0 && self.is_sign_negative() {
+            return Quad::NAN;
+        }
+        if n == 1 {
+            return self;
+        }
+        if n == 2 {
+            return self.sqrt();  // use the more specialized method in sqrt
+        }
+        if self.is_zero() {
+            return Quad::ZERO;
+        }
+
+        // Strategy: the traditional way of finding roots is using Newton's iteration for the
+        // function
+        //
+        //      f(x) = x^(-n) - a
+        //
+        // to find its root a^(-1/n). The iteration is therefore
+        //
+        //      x' = x + x * (1 - a * x^n) / n
+        //
+        // This converges quadratically, which is pretty fast. After performing a small number of
+        // iterations, we can then find a^(1/n) by taking the reciprocal.
+
+        let r = self.abs();
+        let mut x: Quad = (-(r.0.ln()) / n as f64).exp().into();  // a^(-1/n) = exp(-ln(a) / n)
+
+        let qd_n = Quad::from(n);
+        x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
+        x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
+        x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
+        if self.0 < 0.0 {
+            x = -x
+        }
+        x.recip()
+    }
+}
+
+// #endregion
