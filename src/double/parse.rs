@@ -313,6 +313,26 @@ impl fmt::UpperExp for Double {
     }
 }
 
+impl fmt::Debug for Double {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let alt = f.alternate();
+        let mut r = String::from("Double(");
+        if alt {
+            r.push_str("\n    ");
+        }
+        r.push_str(format!("{:e}, ", self.0).as_str());
+        if alt {
+            r.push_str("\n    ");
+        }
+        r.push_str(format!("{:e}", self.1).as_str());
+        if alt {
+            r.push_str("\n");
+        }
+        r.push_str(")");
+        write!(f, "{}", r)
+    }
+}
+
 // #endregion
 
 // #region Tests

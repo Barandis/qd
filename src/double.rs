@@ -50,11 +50,18 @@ mod tests {
             let actual = Double::from($actual);
             let mag = expected.abs().log10().floor().as_int() as i32;
             let epsilon = Double(10.0, 0.0).powi(mag - $digits);
+            let diff = (expected - actual).abs();
             let message = format!(
-                "\nExpected: {0} ({0:?})\nActual:   {1} ({1:?})",
-                expected, actual
+                "\nExpected: {0}\n          ({0:?})\nActual:   {1}\n          ({1:?})\nDelta:    {2:e}",
+                expected, actual, diff
             );
-            assert!((expected - actual).abs() < epsilon, message);
+            assert!(diff < epsilon, message);
+        };
+    }
+
+    macro_rules! assert_close {
+        ($expected:expr, $actual:expr $(,)*) => {
+            assert_precision!($expected, $actual, 30);
         };
     }
 
@@ -63,7 +70,7 @@ mod tests {
             let expected = Double::from($expected);
             let actual = Double::from($actual);
             let message = format!(
-                "\nExpected: {0} ({0:?})\nActual:   {1} ({1:?})",
+                "\nExpected: {0}\n          ({0:?})\nActual:   {1}\n          ({1:?})",
                 expected, actual
             );
             if expected.is_nan() {
@@ -108,7 +115,7 @@ mod trig;
 /// [`from_div`]: #method.from_div
 /// [`dd`]: macro.dd.html
 /// [module-level documentation]: index.html
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 pub struct Double(f64, f64);
 
 impl Double {

@@ -49,11 +49,18 @@ mod tests {
             let actual = Quad::from($actual);
             let mag = expected.abs().log10().floor().as_int() as i32;
             let epsilon = Quad(10.0, 0.0, 0.0, 0.0).powi(mag - $digits);
+            let diff = (expected - actual).abs();
             let message = format!(
-                "\nExpected: {0} ({0:?})\nActual:   {1} ({1:?})",
-                expected, actual
+                "\nExpected: {0}\n          ({0:?})\nActual:   {1}\n          ({1:?})\nDelta:    {2:e}",
+                expected, actual, diff
             );
-            assert!((expected - actual).abs() < epsilon, message);
+            assert!(diff < epsilon, message);
+        };
+    }
+
+    macro_rules! assert_close {
+        ($expected:expr, $actual:expr $(,)*) => {
+            assert_precision!($expected, $actual, 60);
         };
     }
 
@@ -62,7 +69,7 @@ mod tests {
             let expected = Quad::from($expected);
             let actual = Quad::from($actual);
             let message = format!(
-                "\nExpected: {0} ({0:?})\nActual:   {1} ({1:?})",
+                "\nExpected: {0}\n          ({0:?})\nActual:   {1}\n          ({1:?})",
                 expected, actual
             );
             if expected.is_nan() {
@@ -86,7 +93,7 @@ mod parse;
 mod trans;
 mod trig;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 pub struct Quad(f64, f64, f64, f64);
 
 impl Quad {

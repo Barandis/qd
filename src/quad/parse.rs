@@ -322,6 +322,34 @@ impl fmt::UpperExp for Quad {
     }
 }
 
+impl fmt::Debug for Quad {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let alt = f.alternate();
+        let mut r = String::from("Quad(");
+        if alt {
+            r.push_str("\n    ");
+        }
+        r.push_str(format!("{:e}, ", self.0).as_str());
+        if alt {
+            r.push_str("\n    ");
+        }
+        r.push_str(format!("{:e}, ", self.1).as_str());
+        if alt {
+            r.push_str("\n    ");
+        }
+        r.push_str(format!("{:e}, ", self.2).as_str());
+        if alt {
+            r.push_str("\n    ");
+        }
+        r.push_str(format!("{:e}", self.3).as_str());
+        if alt {
+            r.push_str("\n");
+        }
+        r.push_str(")");
+        write!(f, "{}", r)
+    }
+}
+
 // #endregion
 
 // #[cfg(test)]
