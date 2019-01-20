@@ -87,6 +87,7 @@ mod common;
 mod comp;
 mod consts;
 mod conv;
+mod display;
 mod hyper;
 mod misc;
 mod parse;
