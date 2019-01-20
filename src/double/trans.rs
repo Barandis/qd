@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::double::common::{INV_FACTS, mul_pwr2};
+use crate::double::common::{mul_pwr2, INV_FACTS};
 use crate::double::Double;
 
 // #region Exponential
@@ -44,51 +44,50 @@ impl Double {
 
         // Common cases, including numbers too big or small to be represented with Doubles
         if self.0 <= -709.0 {
-            return Double::ZERO;
-        }
-        if self.0 >= 709.0 {
-            return Double::INFINITY;
-        }
-        if self.is_zero() {
-            return Double::ONE;
-        }
-        if self == Double::ONE {
-            return Double::E;
-        }
+            Double::ZERO
+        } else if self.0 >= 709.0 {
+            Double::INFINITY
+        } else if self.is_nan() {
+            Double::NAN
+        } else if self.is_zero() {
+            Double::ONE
+        } else if self == Double::ONE {
+            Double::E
+        } else {
+            let m = (self.0 / Double::LN_2.0 + 0.5).floor();
+            let r = mul_pwr2(self - Double::LN_2 * Double::from(m), inv_k);
 
-        let m = (self.0 / Double::LN_2.0 + 0.5).floor();
-        let r = mul_pwr2(self - Double::LN_2 * Double::from(m), inv_k);
-
-        let mut p = r.sqr();
-        let mut s = r + mul_pwr2(p, 0.5);
-        p *= r;
-        let mut t = p * INV_FACTS[0];
-        let mut i = 0;
-
-        loop {
-            s += t;
+            let mut p = r.sqr();
+            let mut s = r + mul_pwr2(p, 0.5);
             p *= r;
-            i += 1;
-            t = p * INV_FACTS[i];
-            if i >= 5 || t.abs() <= Double::from(inv_k) * Double::EPSILON {
-                break;
+            let mut t = p * INV_FACTS[0];
+            let mut i = 0;
+
+            loop {
+                s += t;
+                p *= r;
+                i += 1;
+                t = p * INV_FACTS[i];
+                if i >= 5 || t.abs() <= Double::from(inv_k) * Double::EPSILON {
+                    break;
+                }
             }
+
+            s += t;
+
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s += Double::ONE;
+
+            s.ldexp(m as i32)
         }
-
-        s += t;
-
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s += Double::ONE;
-
-        s.ldexp(m as i32)
     }
 }
 
@@ -128,24 +127,22 @@ impl Double {
         //
         // Testing has shown that it requires two iterations to get the required precision.
         if self == Double::ONE {
-            return Double::ZERO;
-        }
-        if self.is_zero() {
-            return Double::NAN;
-        }
-        if self.is_sign_negative() {
-            return Double::NAN;
-        }
-
-        let mut x = Double::from(self.0.ln()); // initial approximation
-        let mut i = 0;
-        loop {
-            let next = x + self * (-x).exp() - Double::ONE;
-            if (x - next).abs() < Double::EPSILON || i >= 5 {
-                return next;
+            Double::ZERO
+        } else if self.is_zero() {
+            Double::NAN
+        } else if self.is_sign_negative() {
+            Double::NAN
+        } else {
+            let mut x = Double::from(self.0.ln()); // initial approximation
+            let mut i = 0;
+            loop {
+                let next = x + self * (-x).exp() - Double::ONE;
+                if (x - next).abs() < Double::EPSILON || i >= 5 {
+                    return next;
+                }
+                x = next;
+                i += 1;
             }
-            x = next;
-            i += 1;
         }
     }
 
@@ -227,185 +224,86 @@ mod tests {
         };
     }
 
-    #[test]
-    fn exp_whole() {
-        assert_close!(dd!("20.085536923187667740928529654582"), dd!(3).exp());
-        assert_exact!(Double::INFINITY, dd!("13579135791357913579").exp());
-        assert_close!(dd!("20.085536923187667740928529654582"), dd!(3e0).exp());
-        assert_close!(dd!("0.049787068367863942979342415650062"), dd!(-3).exp());
-    }
+
 
     #[test]
-    fn exp_repr() {
-        assert_close!(dd!("33.115451958692313750653249350389"), dd!(3.5).exp());
-        assert_exact!(Double::INFINITY, dd!("13579135791357913579.5").exp());
-        assert_close!(dd!("33.115451958692313750653249350389"), dd!(3.5e0).exp());
-        assert_close!(dd!("0.030197383422318500739786292363620"), dd!(-3.5).exp());
-    }
-
-    #[test]
-    fn exp_unrepr() {
-        assert_close!(dd!("27.112638920657887426818372110231"), dd!(3.3).exp());
-        assert_exact!(Double::INFINITY, dd!("13579135791357913579.3").exp());
-        assert_close!(dd!("27.112638920657887426818372110231"), dd!(3.3e0).exp());
-        assert_close!(dd!("0.036883167401240005445603704741515"), dd!(-3.3).exp());
-    }
-
-    #[test]
-    fn exp_edge() {
-        // Check for less precision here, as floating point numbers lose precision when this large
-        assert_precision!(
-            dd!("7.4363225878808657251823671807256e307"),
-            dd!(708.9).exp(),
-            27
-        );
-        assert_exact!(Double::INFINITY, dd!(709).exp());
-        // Check exact because we actually can't check precision this close to the negative limit
-        // of floating point exponents, but precision is only f64 precision anyway
-        assert_exact!(
-            dd!("3.6554113896149252338842678903601e-308"),
-            dd!(-707.9).exp()
-        );
-        assert_exact!(Double::ZERO, dd!(-709).exp());
-        assert_exact!(Double::E, Double::ONE.exp());
-        assert_exact!(Double::ONE, Double::ZERO.exp());
-    }
-
-    #[test]
-    fn ln_whole() {
-        assert_close!(dd!("1.0986122886681096913952452369225"), dd!(3).ln());
+    fn double_trans_exp() {
+        assert_exact!(Double::ONE, dd!(0).exp());
+        assert_exact!(Double::NAN, Double::NAN.exp());
+        assert_close!(Double::E, dd!(1).exp());
+        assert_exact!(Double::ZERO, dd!(-710).exp());
+        assert_exact!(Double::INFINITY, dd!(710).exp());
         assert_close!(
-            dd!("44.055066155659480309583232783789"),
-            dd!("13579135791357913579").ln()
-        );
-        assert_close!(dd!("33.334803590584749267647125602504"), dd!(3e14).ln());
-    }
-
-    #[test]
-    fn ln_repr() {
-        assert_close!(dd!("1.2527629684953679956881206219850"), dd!(3.5).ln());
-        assert_close!(
-            dd!("44.055066155659480309620053978280"),
-            dd!("13579135791357913579.5").ln()
-        );
-        assert_close!(dd!("33.488954270412007571940000987566"), dd!(3.5e14).ln());
-    }
-
-    #[test]
-    fn ln_unrepr() {
-        assert_close!(dd!("1.1939224684724345514391973602033"), dd!(3.3).ln());
-        assert_close!(
-            dd!("44.055066155659480309605325500484"),
-            dd!("13579135791357913579.3").ln()
-        );
-        assert_close!(dd!("33.430113770389074127691077725784"), dd!(3.3e14).ln());
-    }
-
-    #[test]
-    fn ln_edge() {
-        assert_exact!(Double::ZERO, Double::ONE.ln());
-        assert!(Double::ZERO.ln().is_nan());
-    }
-
-    #[test]
-    fn log10_whole() {
-        assert_close!(dd!("0.47712125471966243729502790325512"), dd!(3).log10());
-        assert_close!(
-            dd!("19.132872131285618236170988986373"),
-            dd!("13579135791357913579").log10()
-        );
-        assert_close!(dd!("14.477121254719662437295027903255"), dd!(3e14).log10());
-    }
-
-    #[test]
-    fn log10_repr() {
-        assert_close!(dd!("0.54406804435027563549847736386814"), dd!(3.5).log10());
-        assert_close!(
-            dd!("19.132872131285618236186980227958"),
-            dd!("13579135791357913579.5").log10()
+            dd!("14.87973172487283411186899301946839578068879752075547683852481232"),
+            dd!(2.7).exp()
         );
         assert_close!(
-            dd!("14.544068044350275635498477363868"),
-            dd!(3.5e14).log10()
+            dd!("0.001836304777028906825227936299894998089886584890697273635291617797"),
+            dd!(-6.3).exp()
         );
     }
 
     #[test]
-    fn log10_unrepr() {
-        assert_close!(dd!("0.51851393987788747804522787449814"), dd!(3.3).log10());
+    fn double_trans_ln() {
+        assert_exact!(Double::ZERO, dd!(1).ln());
+        assert_exact!(Double::NAN, dd!(0).ln());
+        assert_exact!(Double::NAN, dd!(-1).ln());
+        assert_close!(Double::ONE, dd!(Double::E).ln());
         assert_close!(
-            dd!("19.132872131285618236180583731324"),
-            dd!("13579135791357913579.3").log10()
+            dd!("2.302585092994045684017991454684364207601101488628772976033327901"),
+            dd!(10).ln()
         );
         assert_close!(
-            dd!("14.518513939877887478045227874498"),
-            dd!(3.3e14).log10()
-        );
-    }
-
-    #[test]
-    fn log2_whole() {
-        assert_close!(dd!("1.5849625007211561814537389439478"), dd!(3).log2());
-        assert_close!(
-            dd!("63.558025468805141892815343984787"),
-            dd!("13579135791357913579").log2()
-        );
-        assert_close!(dd!("48.091955829144229051638210956799"), dd!(3e14).log2());
-    }
-
-    #[test]
-    fn log2_repr() {
-        assert_close!(dd!("1.8073549220576041074419693172318"), dd!(3.5).log2());
-        assert_close!(
-            dd!("63.558025468805141892868465739480"),
-            dd!("13579135791357913579.5").log2()
-        );
-        assert_close!(dd!("48.314348250480676977626441330083"), dd!(3.5e14).log2());
-    }
-
-    #[test]
-    fn log2_unrepr() {
-        assert_close!(dd!("1.7224660244710910897827825611842"), dd!(3.3).log2());
-        assert_close!(
-            dd!("63.558025468805141892847217037603"),
-            dd!("13579135791357913579.3").log2()
-        );
-        assert_close!(dd!("48.229459352894163959967254574036"), dd!(3.3e14).log2());
-    }
-
-    #[test]
-    fn log_whole() {
-        assert_close!(dd!("0.61314719276545841312975386153218"), dd!(3).log(6.0));
-        assert_close!(
-            dd!("24.587600574891760229061986690548"),
-            dd!("13579135791357913579").log(6.0)
-        );
-        assert_close!(dd!("18.604508117904021052338461213292"), dd!(3e14).log(6.0));
-    }
-
-    #[test]
-    fn log_repr() {
-        assert_close!(dd!("0.66928171360986244557771423441173"), dd!(3.5).log(6.5));
-        assert_close!(
-            dd!("23.536176364846509016600040652890"),
-            dd!("13579135791357913579.5").log(6.5)
-        );
-        assert_close!(
-            dd!("17.891289305927900856466621928281"),
-            dd!(3.5e14).log(6.5)
+            dd!("5.493061443340548456976226184612628523237452789113747258673471668"),
+            dd!(243).ln()
         );
     }
 
     #[test]
-    fn log_unrepr() {
-        assert_close!(dd!("0.64867713796370837633691947605569"), dd!(3.3).log(6.3));
+    fn double_trans_log2() {
+        assert_exact!(Double::ZERO, dd!(1).log2());
+        assert_exact!(Double::NAN, dd!(0).log2());
+        assert_exact!(Double::NAN, dd!(-1).log2());
+        assert_close!(Double::ONE, dd!(2).log2());
         assert_close!(
-            dd!("23.935820776719745554239970452887"),
-            dd!("13579135791357913579.3").log(6.3)
+            dd!("3.321928094887362347870319429489390175864831393024580612054756396"),
+            dd!(10).log2()
         );
         assert_close!(
-            dd!("18.163114519590611961621954529941"),
-            dd!(3.3e14).log(6.3)
+            dd!("7.924812503605780907268694719739082543799072038462405302278763273"),
+            dd!(243).log2()
+        );
+    }
+
+    #[test]
+    fn double_trans_log10() {
+        assert_exact!(Double::ZERO, dd!(1).log10());
+        assert_exact!(Double::NAN, dd!(0).log10());
+        assert_exact!(Double::NAN, dd!(-1).log10());
+        assert_close!(Double::ONE, dd!(10).log10());
+        assert_close!(
+            dd!("1.623249290397900463220983056572244529451891141976769812643928055"),
+            dd!(42).log10()
+        );
+        assert_close!(
+            dd!("2.385606273598312186475139516275576546000644320953479324149328202"),
+            dd!(243).log10()
+        );
+    }
+
+    #[test]
+    fn double_trans_log() {
+        assert_exact!(Double::ZERO, dd!(1).log(6.3));
+        assert_exact!(Double::NAN, dd!(0).log(9.2));
+        assert_exact!(Double::NAN, dd!(-1).log(1.8));
+        assert_close!(Double::ONE, dd!(3.3).log(3.3));
+        assert_close!(
+            dd!("1.174731503667180022671874948332360514453253860423778048991647180"),
+            dd!(10).log(7.1)
+        );
+        assert_close!(
+            dd!("4.224809005935378615289228804344351219807607162037233517389353517"),
+            dd!(243).log(3.67)
         );
     }
 }

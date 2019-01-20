@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+use crate::quad::common::{mul_pwr2, INV_FACTS};
 use crate::quad::Quad;
-use crate::quad::common::{INV_FACTS, mul_pwr2};
 
 // #region Exponential
 
@@ -38,64 +38,64 @@ impl Quad {
         //
         // Reducing x substantially speeds up the convergence, so we have to use fewer terms to
         // reach the required precision.
+
         let k = 2f64.powi(16);
         let inv_k = 1.0 / k;
 
         // Common cases, including numbers too big or small to be represented with Quads
         if self.0 <= -709.0 {
-            return Quad::ZERO;
-        }
-        if self.0 >= 709.0 {
-            return Quad::INFINITY;
-        }
-        if self.is_zero() {
-            return Quad::ONE;
-        }
-        if self == Quad::ONE {
-            return Quad::E;
-        }
+            Quad::ZERO
+        } else if self.0 >= 709.0 {
+            Quad::INFINITY
+        } else if self.is_nan() {
+            Quad::NAN
+        } else if self.is_zero() {
+            Quad::ONE
+        } else if self == Quad::ONE {
+            Quad::E
+        } else {
+            let m = (self.0 / Quad::LN_2.0 + 0.5).floor();
+            let r = mul_pwr2(self - Quad::LN_2 * Quad::from(m), inv_k);
+            let threshold = Quad::from(inv_k) * Quad::EPSILON;
 
-        let m = (self.0 / Quad::LN_2.0 + 0.5).floor();
-        let r = mul_pwr2(self - Quad::LN_2 * Quad::from(m), inv_k);
-        let threshold = Quad::from(inv_k) * Quad::EPSILON;
-
-        let mut p = r.sqr();
-        let mut s = r + mul_pwr2(p, 0.5);
-        p *= r;
-        let mut t = p * INV_FACTS[0];
-        let mut i = 0;
-
-        loop {
-            s += t;
+            let mut p = r.sqr();
+            let mut s = r + mul_pwr2(p, 0.5);
             p *= r;
-            i += 1;
-            t = p * INV_FACTS[i];
-            if i >= 9 || t.abs() <= threshold {
-                break;
+            let mut t = p * INV_FACTS[0];
+            let mut i = 0;
+
+            loop {
+                s += t;
+                p *= r;
+                i += 1;
+                t = p * INV_FACTS[i];
+                if i >= 9 || t.abs() <= threshold {
+                    break;
+                }
             }
+
+            s += t;
+
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = mul_pwr2(s, 2.0) + s.sqr();
+            s += Quad::ONE;
+
+            s.ldexp(m as i32)
         }
-
-        s += t;
-
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s = mul_pwr2(s, 2.0) + s.sqr();
-        s += Quad::ONE;
-
-        s.ldexp(m as i32)
     }
 }
 
@@ -103,7 +103,8 @@ impl Quad {
 
 // #region Logarithms
 
-impl Quad {/// Calculates the natural logarithm, log<sub>*e*</sub>, of the number.
+impl Quad {
+    /// Calculates the natural logarithm, log<sub>*e*</sub>, of the number.
     ///
     /// # Examples
     /// ```
@@ -134,24 +135,22 @@ impl Quad {/// Calculates the natural logarithm, log<sub>*e*</sub>, of the numbe
         //
         // Testing has shown that it requires two iterations to get the required precision.
         if self == Quad::ONE {
-            return Quad::ZERO;
-        }
-        if self.is_zero() {
-            return Quad::NAN;
-        }
-        if self.is_sign_negative() {
-            return Quad::NAN;
-        }
-
-        let mut x = Quad::from(self.0.ln()); // initial approximation
-        let mut i = 0;
-        loop {
-            let next = x + self * (-x).exp() - Quad::ONE;
-            if (x - next).abs() < Quad::EPSILON || i >= 5 {
-                return next;
+            Quad::ZERO
+        } else if self.is_zero() {
+            Quad::NAN
+        } else if self.is_sign_negative() {
+            Quad::NAN
+        } else {
+            let mut x = Quad::from(self.0.ln()); // initial approximation
+            let mut i = 0;
+            loop {
+                let next = x + self * (-x).exp() - Quad::ONE;
+                if (x - next).abs() < Quad::EPSILON || i >= 5 {
+                    return next;
+                }
+                x = next;
+                i += 1;
             }
-            x = next;
-            i += 1;
         }
     }
 
@@ -222,3 +221,95 @@ impl Quad {/// Calculates the natural logarithm, log<sub>*e*</sub>, of the numbe
 }
 
 // #endregion
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    macro_rules! assert_close {
+        ($expected:expr, $actual:expr $(,)*) => {
+            assert_precision!($expected, $actual, 60);
+        };
+    }
+
+    #[test]
+    fn quad_trans_exp() {
+        assert_exact!(Quad::ONE, qd!(0).exp());
+        assert_exact!(Quad::NAN, Quad::NAN.exp());
+        assert_close!(Quad::E, qd!(1).exp());
+        assert_exact!(Quad::ZERO, qd!(-710).exp());
+        assert_exact!(Quad::INFINITY, qd!(710).exp());
+        assert_close!(
+            qd!("14.87973172487283411186899301946839578068879752075547683852481232"),
+            qd!(2.7).exp()
+        );
+        assert_close!(
+            qd!("0.001836304777028906825227936299894998089886584890697273635291617797"),
+            qd!(-6.3).exp()
+        );
+    }
+
+    #[test]
+    fn quad_trans_ln() {
+        assert_exact!(Quad::ZERO, qd!(1).ln());
+        assert_exact!(Quad::NAN, qd!(0).ln());
+        assert_exact!(Quad::NAN, qd!(-1).ln());
+        assert_close!(Quad::ONE, qd!(Quad::E).ln());
+        assert_close!(
+            qd!("2.302585092994045684017991454684364207601101488628772976033327901"),
+            qd!(10).ln()
+        );
+        assert_close!(
+            qd!("5.493061443340548456976226184612628523237452789113747258673471668"),
+            qd!(243).ln()
+        );
+    }
+
+    #[test]
+    fn quad_trans_log2() {
+        assert_exact!(Quad::ZERO, qd!(1).log2());
+        assert_exact!(Quad::NAN, qd!(0).log2());
+        assert_exact!(Quad::NAN, qd!(-1).log2());
+        assert_close!(Quad::ONE, qd!(2).log2());
+        assert_close!(
+            qd!("3.321928094887362347870319429489390175864831393024580612054756396"),
+            qd!(10).log2()
+        );
+        assert_close!(
+            qd!("7.924812503605780907268694719739082543799072038462405302278763273"),
+            qd!(243).log2()
+        );
+    }
+
+    #[test]
+    fn quad_trans_log10() {
+        assert_exact!(Quad::ZERO, qd!(1).log10());
+        assert_exact!(Quad::NAN, qd!(0).log10());
+        assert_exact!(Quad::NAN, qd!(-1).log10());
+        assert_close!(Quad::ONE, qd!(10).log10());
+        assert_close!(
+            qd!("1.623249290397900463220983056572244529451891141976769812643928055"),
+            qd!(42).log10()
+        );
+        assert_close!(
+            qd!("2.385606273598312186475139516275576546000644320953479324149328202"),
+            qd!(243).log10()
+        );
+    }
+
+    #[test]
+    fn quad_trans_log() {
+        assert_exact!(Quad::ZERO, qd!(1).log(6.3));
+        assert_exact!(Quad::NAN, qd!(0).log(9.2));
+        assert_exact!(Quad::NAN, qd!(-1).log(1.8));
+        assert_close!(Quad::ONE, qd!(3.3).log(3.3));
+        assert_close!(
+            qd!("1.174731503667180022671874948332360514453253860423778048991647180"),
+            qd!(10).log(7.1)
+        );
+        assert_close!(
+            qd!("4.224809005935378615289228804344351219807607162037233517389353517"),
+            qd!(243).log(3.67)
+        );
+    }
+}
