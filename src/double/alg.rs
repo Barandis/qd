@@ -4,8 +4,8 @@
 // https://opensource.org/licenses/MIT
 
 use crate::common::basic::*;
-use crate::double::Double;
 use crate::double::common::mul_pwr2;
+use crate::double::Double;
 use std::f64;
 
 // #region Powers
@@ -47,39 +47,44 @@ impl Double {
     /// ```
     pub fn powi(self, n: i32) -> Double {
         if n == 0 {
-            return Double::from(1.0);
-        }
-
-        let mut r = self.clone();
-        let mut s = Double::from(1.0);
-        let mut i = n.abs();
-
-        if i > 1 {
-            while i > 0 {
-                if i % 2 == 1 {
-                    s *= r;
-                }
-                i /= 2;
-                if i > 0 {
-                    r = r.sqr();
-                }
+            if self.is_zero() {
+                Double::NAN
+            } else {
+                Double::ONE
             }
         } else {
-            s = r;
-        }
+            let mut r = self.clone();
+            let mut s = Double::from(1.0);
+            let mut i = n.abs();
 
-        if n < 0 {
-            s.recip()
-        } else {
-            s
+            if i > 1 {
+                while i > 0 {
+                    if i % 2 == 1 {
+                        s *= r;
+                    }
+                    i /= 2;
+                    if i > 0 {
+                        r = r.sqr();
+                    }
+                }
+            } else {
+                s = r;
+            }
+
+            if n < 0 {
+                s.recip()
+            } else {
+                s
+            }
         }
     }
 
     /// Calculates the number raised to a double-double power.
     ///
-    /// This function only works for positive values of the number as it uses a simplified
-    /// logarithm-based algorithm. This is likely to change in the future when a more complex
-    /// algorithm is implemented.
+    /// This function only works for positive values of the number, as it uses a simplified
+    /// logarithm-based algorithm. Full algorithms are much more difficult (see [this libm
+    /// implementation][1] if you're curious) and it will take some time before there is such an
+    /// implementation here.
     ///
     /// # Examples
     /// ```
@@ -207,7 +212,7 @@ impl Double {
             return self;
         }
         if n == 2 {
-            return self.sqrt();  // use the more specialized method in sqrt
+            return self.sqrt(); // use the more specialized method in sqrt
         }
         if self.is_zero() {
             return Double::ZERO;
@@ -226,7 +231,7 @@ impl Double {
         // the reciprocal.
 
         let r = self.abs();
-        let mut x: Double = (-(r.0.ln()) / n as f64).exp().into();  // a^(-1/n) = exp(-ln(a) / n)
+        let mut x: Double = (-(r.0.ln()) / n as f64).exp().into(); // a^(-1/n) = exp(-ln(a) / n)
 
         x += x * (Double::ONE - r * x.powi(n)) / Double::from(n);
         if self.is_sign_negative() {
@@ -237,3 +242,44 @@ impl Double {
 }
 
 // #endregion
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn double_alg_sqr() {
+        assert_exact!(Double::NAN, Double::NAN.sqr());
+        assert_exact!(Double::ZERO, dd!(0).sqr());
+        assert_exact!(dd!(121), dd!(-11).sqr());
+        assert_close!(dd!("9.869604401089358618834490999876"), Double::PI.sqr());
+    }
+
+    #[test]
+    fn double_alg_powi() {
+        assert_exact!(Double::NAN, Double::NAN.powi(3));
+        assert_exact!(Double::ZERO, dd!(0).powi(3));
+        assert_exact!(Double::NAN, dd!(0).powi(0));
+        assert_close!(
+            dd!("-6.2092132305915517444784571346965e-6"),
+            dd!(-11).powi(-5)
+        );
+        assert_close!(dd!("97.409091034002437236440332688705"), Double::PI.powi(4));
+    }
+
+    #[test]
+    fn double_alg_powf() {
+        assert_exact!(Double::NAN, Double::NAN.powf(dd!(3.6)));
+        assert_exact!(Double::NAN, dd!(0).powf(dd!(3.2))); // Sigh
+        assert_exact!(Double::NAN, dd!(0).powf(dd!(0)));
+        assert_exact!(Double::NAN, dd!(-1).powf(dd!(1))); // Also sigh
+        assert_close!(
+            dd!("24567.24805421478199532529771567617705237"),
+            dd!(11.1).powf(dd!(4.2))
+        );
+        assert_close!(
+            dd!("1.4097592790750537168360032434417"),
+            Double::PI.powf(dd!(0.3))
+        );
+    }
+}

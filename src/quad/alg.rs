@@ -4,8 +4,8 @@
 // https://opensource.org/licenses/MIT
 
 use crate::common::basic::*;
-use crate::quad::Quad;
 use crate::quad::common::mul_pwr2;
+use crate::quad::Quad;
 
 // #region Powers
 
@@ -82,7 +82,11 @@ impl Quad {
     /// ```
     pub fn powi(self, n: i32) -> Quad {
         if n == 0 {
-            Quad::ONE
+            if self.is_zero() {
+                Quad::NAN
+            } else {
+                Quad::ONE
+            }
         } else {
             let mut r = self;
             let mut s = Quad::ONE;
@@ -112,9 +116,10 @@ impl Quad {
 
     /// Calculates the number raised to a quad-double power.
     ///
-    /// This function only works for positive values of the number as it uses a simplified
-    /// logarithm-based algorithm. This is likely to change in the future when a more complex
-    /// algorithm is implemented.
+    /// This function only works for positive values of the number, as it uses a simplified
+    /// logarithm-based algorithm. Full algorithms are much more difficult (see [this libm
+    /// implementation][1] if you're curious) and it will take some time before there is such an
+    /// implementation here.
     ///
     /// # Examples
     /// ```
@@ -155,7 +160,12 @@ impl Quad {
     #[inline]
     pub fn ldexp(self, n: i32) -> Quad {
         let factor = 2f64.powi(n);
-        Quad(self.0 * factor, self.1 * factor, self.2 * factor, self.3 * factor)
+        Quad(
+            self.0 * factor,
+            self.1 * factor,
+            self.2 * factor,
+            self.3 * factor,
+        )
     }
 }
 
@@ -250,7 +260,7 @@ impl Quad {
             return self;
         }
         if n == 2 {
-            return self.sqrt();  // use the more specialized method in sqrt
+            return self.sqrt(); // use the more specialized method in sqrt
         }
         if self.is_zero() {
             return Quad::ZERO;
@@ -269,7 +279,7 @@ impl Quad {
         // iterations, we can then find a^(1/n) by taking the reciprocal.
 
         let r = self.abs();
-        let mut x: Quad = (-(r.0.ln()) / n as f64).exp().into();  // a^(-1/n) = exp(-ln(a) / n)
+        let mut x: Quad = (-(r.0.ln()) / n as f64).exp().into(); // a^(-1/n) = exp(-ln(a) / n)
 
         let qd_n = Quad::from(n);
         x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
@@ -283,3 +293,61 @@ impl Quad {
 }
 
 // #endregion
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn quad_alg_sqr() {
+        assert_exact!(Quad::NAN, Quad::NAN.sqr());
+        assert_exact!(Quad::ZERO, qd!(0).sqr());
+        assert_exact!(qd!(121), qd!(-11).sqr());
+        assert_close!(
+            qd!("9.869604401089358618834490999876151135313699407240790626413349376"),
+            Quad::PI.sqr()
+        );
+    }
+
+    #[test]
+    fn quad_alg_powi() {
+        assert_exact!(Quad::NAN, Quad::NAN.powi(3));
+        assert_exact!(Quad::ZERO, qd!(0).powi(3));
+        assert_exact!(Quad::NAN, qd!(0).powi(0));
+        assert_close!(
+            qd!("-6.209213230591551744478457134696462611222531992971170622970363425e-6"),
+            qd!(-11).powi(-5)
+        );
+        assert_close!(
+            qd!("97.40909103400243723644033268870511124972758567268542169146785939"),
+            Quad::PI.powi(4)
+        );
+    }
+
+    #[test]
+    fn quad_alg_powf() {
+        assert_exact!(Quad::NAN, Quad::NAN.powf(qd!(3.6)));
+        assert_exact!(Quad::NAN, qd!(0).powf(qd!(3.2))); // Sigh
+        assert_exact!(Quad::NAN, qd!(0).powf(qd!(0)));
+        assert_exact!(Quad::NAN, qd!(-1).powf(qd!(1))); // Also sigh
+        assert_close!(
+            qd!("24567.24805421478199532529771567617705237167216222778116359595012"),
+            qd!(11.1).powf(qd!(4.2))
+        );
+        assert_close!(
+            qd!("1.409759279075053716836003243441716711042960485535248677014414790"),
+            Quad::PI.powf(qd!(0.3))
+        );
+    }
+
+    #[test]
+    fn quad_alg_ldexp() {}
+
+    #[test]
+    fn quad_alg_sqrt() {}
+
+    #[test]
+    fn quad_alg_cbrt() {}
+
+    #[test]
+    fn quad_alg_nroot() {}
+}

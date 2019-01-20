@@ -480,12 +480,6 @@ impl Quad {
 mod tests {
     use super::*;
 
-    macro_rules! assert_close {
-        ($expected:expr, $actual:expr $(,)*) => {
-            assert_precision!($expected, $actual, 60);
-        };
-    }
-
     #[test]
     fn quad_trig_sine() {
         assert_close!(

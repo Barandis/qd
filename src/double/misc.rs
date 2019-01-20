@@ -368,12 +368,6 @@ impl Double {
 mod tests {
     use super::*;
 
-    macro_rules! assert_close {
-        ($expected:expr, $actual:expr $(,)*) => {
-            assert_precision!($expected, $actual, 30);
-        };
-    }
-
     #[test]
     fn misc_fract() {
         assert_close!(0.3, dd!(3.3).fract());

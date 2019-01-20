@@ -218,14 +218,6 @@ impl Double {
 mod tests {
     use super::*;
 
-    macro_rules! assert_close {
-        ($expected:expr, $actual:expr $(,)*) => {
-            assert_precision!($expected, $actual, 30);
-        };
-    }
-
-
-
     #[test]
     fn double_trans_exp() {
         assert_exact!(Double::ONE, dd!(0).exp());

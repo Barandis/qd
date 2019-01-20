@@ -476,12 +476,6 @@ impl Double {
 mod tests {
     use super::*;
 
-    macro_rules! assert_close {
-        ($expected:expr, $actual:expr $(,)*) => {
-            assert_precision!($expected, $actual, 30);
-        };
-    }
-
     #[test]
     fn double_trig_sine() {
         assert_close!(dd!("0.84147098480789650665250232163030"), dd!(1).sin());

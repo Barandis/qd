@@ -477,12 +477,6 @@ impl<'a> Product<&'a Double> for Double {
 mod tests {
     use super::*;
 
-    macro_rules! assert_close {
-        ($expected:expr, $actual:expr $(,)*) => {
-            assert_precision!($expected, $actual, 30);
-        };
-    }
-
     #[test]
     fn add_whole() {
         assert_close!(27.0, Double::from(13) + Double::from(14));
