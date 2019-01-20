@@ -72,13 +72,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn quad_alg_sqr() {
-        assert_exact!(Quad::NAN, Quad::NAN.sqr());
-        assert_exact!(Quad::ZERO, qd!(0).sqr());
+    fn calc() {
         assert_exact!(qd!(121), qd!(-11).sqr());
         assert_close!(
             qd!("9.869604401089358618834490999876151135313699407240790626413349376"),
             Quad::PI.sqr()
         );
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::NAN, Quad::NAN.sqr());
+        assert_exact!(Quad::ZERO, qd!(0).sqr());
     }
 }

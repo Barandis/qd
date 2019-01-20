@@ -39,14 +39,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn quad_trig_asin() {
-        assert_exact!(Quad::NAN, qd!(1.5).asin());
-        assert_exact!(Quad::NAN, qd!(-1.5).asin());
-        assert_close!(Quad::FRAC_PI_2, qd!(1).asin());
-        assert_close!(-Quad::FRAC_PI_2, qd!(-1).asin());
+    fn calc() {
         assert_close!(
             qd!("0.5235987755982988730771072305465838140328615665625176368291574321"),
             qd!(0.5).asin()
         );
+    }
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::NAN, qd!(1.5).asin());
+        assert_exact!(Quad::NAN, qd!(-1.5).asin());
+        assert_close!(Quad::FRAC_PI_2, qd!(1).asin());
+        assert_close!(-Quad::FRAC_PI_2, qd!(-1).asin());
     }
 }

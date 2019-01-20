@@ -129,20 +129,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn quad_trig_atan2() {
-        assert_exact!(Quad::NAN, qd!(0).atan2(qd!(0)));
-        assert_exact!(Quad::ZERO, qd!(0).atan2(qd!(1)));
-        assert_close!(Quad::PI, qd!(0).atan2(qd!(-1)));
-        assert_close!(Quad::FRAC_PI_2, qd!(1).atan2(qd!(0)));
-        assert_close!(-Quad::FRAC_PI_2, qd!(-1).atan2(qd!(0)));
-        assert_close!(Quad::FRAC_PI_4, qd!(1).atan2(qd!(1)));
-        assert_close!(-Quad::FRAC_3_PI_4, qd!(-1).atan2(qd!(-1)));
-        assert_close!(Quad::FRAC_3_PI_4, qd!(1).atan2(qd!(-1)));
-        assert_close!(-Quad::FRAC_PI_4, qd!(-1).atan2(qd!(1)));
-        assert_exact!(Quad::NAN, Quad::INFINITY.atan2(Quad::INFINITY));
-        assert_close!(Quad::FRAC_PI_2, Quad::INFINITY.atan2(qd!(1)));
-        assert_close!(-Quad::FRAC_PI_2, Quad::NEG_INFINITY.atan2(qd!(1)));
-        assert_exact!(Quad::ZERO, qd!(1).atan2(Quad::INFINITY));
+    fn calc() {
         assert_close!(
             qd!("0.4636476090008061162142562314612144020285370542861202638109330887"),
             qd!(1).atan2(qd!(2))
@@ -159,5 +146,22 @@ mod tests {
             qd!("-2.677945044588987122248387151818288482168632345088985557164011504"),
             qd!(-1).atan2(qd!(-2))
         );
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::NAN, qd!(0).atan2(qd!(0)));
+        assert_exact!(Quad::ZERO, qd!(0).atan2(qd!(1)));
+        assert_close!(Quad::PI, qd!(0).atan2(qd!(-1)));
+        assert_close!(Quad::FRAC_PI_2, qd!(1).atan2(qd!(0)));
+        assert_close!(-Quad::FRAC_PI_2, qd!(-1).atan2(qd!(0)));
+        assert_close!(Quad::FRAC_PI_4, qd!(1).atan2(qd!(1)));
+        assert_close!(-Quad::FRAC_3_PI_4, qd!(-1).atan2(qd!(-1)));
+        assert_close!(Quad::FRAC_3_PI_4, qd!(1).atan2(qd!(-1)));
+        assert_close!(-Quad::FRAC_PI_4, qd!(-1).atan2(qd!(1)));
+        assert_exact!(Quad::NAN, Quad::INFINITY.atan2(Quad::INFINITY));
+        assert_close!(Quad::FRAC_PI_2, Quad::INFINITY.atan2(qd!(1)));
+        assert_close!(-Quad::FRAC_PI_2, Quad::NEG_INFINITY.atan2(qd!(1)));
+        assert_exact!(Quad::ZERO, qd!(1).atan2(Quad::INFINITY));
     }
 }

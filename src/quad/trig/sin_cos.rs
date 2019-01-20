@@ -64,7 +64,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn quad_trig_sin_cos() {
+    fn calc() {
         let (s, c) = qd!(1).sin_cos();
         assert_close!(
             qd!("0.8414709848078965066525023216302989996225630607983710656727517100"),
@@ -84,7 +84,10 @@ mod tests {
             c
         );
         assert_close!(qd!(0.5), Quad::FRAC_PI_6.sin());
+    }
 
+    #[test]
+    fn edge() {
         assert_exact!(Quad::ZERO, Quad::ZERO.sin_cos().0);
         assert_exact!(Quad::ONE, Quad::ZERO.sin_cos().1);
 

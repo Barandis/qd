@@ -31,12 +31,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn quad_trig_tangent() {
+    fn calc() {
         assert_close!(
             qd!("1.557407724654902230506974807458360173087250772381520038383946606"),
             qd!(1).tan()
         );
         assert_close!(qd!(1), Quad::FRAC_PI_4.tan());
+
+    }
+
+    #[test]
+    fn edge() {
         assert_exact!(Quad::ZERO, Quad::ZERO.tan());
         assert!(Quad::FRAC_PI_2.tan().is_infinite());
         assert_exact!(Quad::NAN, Quad::INFINITY.tan());

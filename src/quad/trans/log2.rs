@@ -31,11 +31,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn quad_trans_log2() {
-        assert_exact!(Quad::ZERO, qd!(1).log2());
-        assert_exact!(Quad::NAN, qd!(0).log2());
-        assert_exact!(Quad::NAN, qd!(-1).log2());
-        assert_close!(Quad::ONE, qd!(2).log2());
+    fn calc() {
         assert_close!(
             qd!("3.321928094887362347870319429489390175864831393024580612054756396"),
             qd!(10).log2()
@@ -44,5 +40,13 @@ mod tests {
             qd!("7.924812503605780907268694719739082543799072038462405302278763273"),
             qd!(243).log2()
         );
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::ZERO, qd!(1).log2());
+        assert_exact!(Quad::NAN, qd!(0).log2());
+        assert_exact!(Quad::NAN, qd!(-1).log2());
+        assert_close!(Quad::ONE, qd!(2).log2());
     }
 }

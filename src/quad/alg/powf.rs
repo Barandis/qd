@@ -39,11 +39,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn quad_alg_powf() {
-        assert_exact!(Quad::NAN, Quad::NAN.powf(qd!(3.6)));
-        assert_exact!(Quad::NAN, qd!(0).powf(qd!(3.2))); // Sigh
-        assert_exact!(Quad::NAN, qd!(0).powf(qd!(0)));
-        assert_exact!(Quad::NAN, qd!(-1).powf(qd!(1))); // Also sigh
+    fn calc() {
         assert_close!(
             qd!("24567.24805421478199532529771567617705237167216222778116359595012"),
             qd!(11.1).powf(qd!(4.2))
@@ -52,5 +48,13 @@ mod tests {
             qd!("1.409759279075053716836003243441716711042960485535248677014414790"),
             Quad::PI.powf(qd!(0.3))
         );
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::NAN, Quad::NAN.powf(qd!(3.6)));
+        assert_exact!(Quad::NAN, qd!(0).powf(qd!(3.2))); // Sigh
+        assert_exact!(Quad::NAN, qd!(0).powf(qd!(0)));
+        assert_exact!(Quad::NAN, qd!(-1).powf(qd!(1))); // Also sigh
     }
 }

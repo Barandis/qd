@@ -62,11 +62,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn quad_trans_ln() {
-        assert_exact!(Quad::ZERO, qd!(1).ln());
-        assert_exact!(Quad::NAN, qd!(0).ln());
-        assert_exact!(Quad::NAN, qd!(-1).ln());
-        assert_close!(Quad::ONE, qd!(Quad::E).ln());
+    fn calc() {
         assert_close!(
             qd!("2.302585092994045684017991454684364207601101488628772976033327901"),
             qd!(10).ln()
@@ -75,5 +71,13 @@ mod tests {
             qd!("5.493061443340548456976226184612628523237452789113747258673471668"),
             qd!(243).ln()
         );
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::ZERO, qd!(1).ln());
+        assert_exact!(Quad::NAN, qd!(0).ln());
+        assert_exact!(Quad::NAN, qd!(-1).ln());
+        assert_close!(Quad::ONE, qd!(Quad::E).ln());
     }
 }

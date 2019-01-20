@@ -57,10 +57,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn quad_alg_powi() {
-        assert_exact!(Quad::NAN, Quad::NAN.powi(3));
-        assert_exact!(Quad::ZERO, qd!(0).powi(3));
-        assert_exact!(Quad::NAN, qd!(0).powi(0));
+    fn calc() {
         assert_close!(
             qd!("-6.209213230591551744478457134696462611222531992971170622970363425e-6"),
             qd!(-11).powi(-5)
@@ -69,5 +66,12 @@ mod tests {
             qd!("97.40909103400243723644033268870511124972758567268542169146785939"),
             Quad::PI.powi(4)
         );
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::NAN, Quad::NAN.powi(3));
+        assert_exact!(Quad::ZERO, qd!(0).powi(3));
+        assert_exact!(Quad::NAN, qd!(0).powi(0));
     }
 }

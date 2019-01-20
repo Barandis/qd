@@ -39,14 +39,18 @@ mod tests {
     use super::*;
 
     #[test]
-    fn quad_trig_acos() {
-        assert_exact!(Quad::NAN, qd!(1.5).acos());
-        assert_exact!(Quad::NAN, qd!(-1.5).acos());
-        assert_exact!(Quad::ZERO, qd!(1).acos());
-        assert_close!(Quad::PI, qd!(-1).acos());
+    fn calc() {
         assert_close!(
             qd!("1.047197551196597746154214461093167628065723133125035273658314864"),
             qd!(0.5).acos()
         );
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::NAN, qd!(1.5).acos());
+        assert_exact!(Quad::NAN, qd!(-1.5).acos());
+        assert_exact!(Quad::ZERO, qd!(1).acos());
+        assert_close!(Quad::PI, qd!(-1).acos());
     }
 }
