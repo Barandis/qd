@@ -34,7 +34,9 @@ fn mul_f64(a: Quad, b: f64) -> Quad {
 impl Quad {
     #[inline]
     fn div_quad(self, other: Quad) -> (f64, f64, f64, f64) {
-        if other.is_zero() {
+        if self.is_nan() || other.is_nan() {
+            (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
+        } else if other.is_zero() {
             if self.is_zero() {
                 (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
             } else if self.is_sign_negative() == other.is_sign_positive() {
@@ -46,6 +48,27 @@ impl Quad {
                 )
             } else {
                 (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
+            }
+        } else if self.is_infinite() {
+            if other.is_infinite() {
+                (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
+            } else {
+                if self.is_sign_positive() == other.is_sign_positive() {
+                    (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
+                } else {
+                    (
+                        f64::NEG_INFINITY,
+                        f64::NEG_INFINITY,
+                        f64::NEG_INFINITY,
+                        f64::NEG_INFINITY,
+                    )
+                }
+            }
+        } else if other.is_infinite() {
+            if self.is_sign_positive() == other.is_sign_positive() {
+                (0.0, 0.0, 0.0, 0.0)
+            } else {
+                (-0.0, 0.0, 0.0, 0.0)
             }
         } else {
             // Strategy:
@@ -124,5 +147,46 @@ impl<'a> DivAssign<&'a Quad> for Quad {
         self.1 = b;
         self.2 = c;
         self.3 = d;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calc() {
+        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
+        assert_close!(expected, Quad::PI / Quad::E);
+        assert_close!(expected, Quad::PI / &Quad::E);
+        assert_close!(expected, &Quad::PI / Quad::E);
+
+        let mut a = Quad::PI;
+        a /= Quad::E;
+        assert_close!(expected, a);
+
+        let mut b = Quad::PI;
+        b /= &Quad::E;
+        assert_close!(expected, b);
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::NAN, Quad::NAN / qd!(0));
+        assert_exact!(Quad::NAN, qd!(0) / Quad::NAN);
+        assert_exact!(Quad::NAN, Quad::NAN / qd!(1));
+        assert_exact!(Quad::NAN, qd!(1) / Quad::NAN);
+        assert_exact!(Quad::INFINITY, Quad::INFINITY / qd!(1));
+        assert_exact!(Quad::ZERO, qd!(1) / Quad::INFINITY);
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY / qd!(1));
+        assert_exact!(Quad::NEG_ZERO, qd!(1) / Quad::NEG_INFINITY);
+        assert_exact!(Quad::NAN, Quad::INFINITY / Quad::INFINITY);
+        assert_exact!(Quad::NAN, Quad::INFINITY / Quad::NEG_INFINITY);
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY / Quad::INFINITY);
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY / Quad::NEG_INFINITY);
+        assert_exact!(Quad::INFINITY, Quad::INFINITY / Quad::ZERO);
+        assert_exact!(Quad::ZERO, Quad::ZERO / Quad::INFINITY);
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY / Quad::ZERO);
+        assert_exact!(Quad::NEG_ZERO, Quad::ZERO / Quad::NEG_INFINITY);
     }
 }
