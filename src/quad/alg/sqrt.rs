@@ -27,7 +27,7 @@ impl Quad {
         } else if self.is_sign_negative() {
             Quad::NAN
         } else {
-            // Strategy: use a Newton iteration.
+            // Strategy: use Newton's iteration.
             //
             // Perform the following Newton iteration
             //
@@ -48,5 +48,28 @@ impl Quad {
             r *= self;
             r
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calc() {
+        assert_close!(
+            qd!("1.772453850905516027298167483341145182797549456122387128213807790"),
+            Quad::PI.sqrt()
+        );
+        assert_close!(
+            qd!("48.13522618623496195194491189007433987957200800774184036920112360"),
+            qd!(2317).sqrt()
+        );
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::ZERO, qd!(0).sqrt());
+        assert_exact!(Quad::NAN, qd!(-3).sqrt());
     }
 }
