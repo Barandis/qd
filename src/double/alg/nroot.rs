@@ -35,6 +35,14 @@ impl Double {
             }
         } else if n <= 0 {
             Double::NAN
+        } else if self.is_infinite() {
+            if self.is_sign_positive() {
+                Double::INFINITY
+            } else if n % 2 == 0 {
+                Double::NAN
+            } else {
+                Double::NEG_INFINITY
+            }
         } else if n == 1 {
             self
         } else if n == 2 {
@@ -92,5 +100,10 @@ mod tests {
         assert_exact!(Double::ZERO, dd!(0.0).nroot(5));
         assert_exact!(Double::NEG_ZERO, dd!(-0.0).nroot(4));
         assert_exact!(Double::NAN, dd!(2).nroot(-2));
+        assert_exact!(Double::INFINITY, Double::INFINITY.nroot(4));
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.nroot(4));
+        assert_exact!(Double::INFINITY, Double::INFINITY.nroot(3));
+        assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.nroot(3));
+        assert_exact!(Double::NAN, Double::NAN.nroot(3));
     }
 }

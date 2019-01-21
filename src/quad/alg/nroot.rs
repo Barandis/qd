@@ -35,6 +35,14 @@ impl Quad {
             }
         } else if n <= 0 {
             Quad::NAN
+        } else if self.is_infinite() {
+            if self.is_sign_positive() {
+                Quad::INFINITY
+            } else if n % 2 == 0 {
+                Quad::NAN
+            } else {
+                Quad::NEG_INFINITY
+            }
         } else if n == 1 {
             self
         } else if n == 2 {
@@ -95,5 +103,10 @@ mod tests {
         assert_exact!(Quad::ZERO, qd!(0.0).nroot(5));
         assert_exact!(Quad::NEG_ZERO, qd!(-0.0).nroot(4));
         assert_exact!(Quad::NAN, qd!(2).nroot(-2));
+        assert_exact!(Quad::INFINITY, Quad::INFINITY.nroot(4));
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.nroot(4));
+        assert_exact!(Quad::INFINITY, Quad::INFINITY.nroot(3));
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.nroot(3));
+        assert_exact!(Quad::NAN, Quad::NAN.nroot(3));
     }
 }

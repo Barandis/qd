@@ -24,3 +24,29 @@ impl Quad {
         self.nroot(3)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calc() {
+        assert_close!(
+            qd!("1.464591887561523263020142527263790391738596855627937174357255937"),
+            Quad::PI.cbrt()
+        );
+        assert_close!(
+            qd!("-1.395612425086089528628125319602586837597906515199406982617516706"),
+            (-Quad::E).cbrt()
+        );
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::ZERO, qd!(0.0).cbrt());
+        assert_exact!(Quad::NEG_ZERO, qd!(-0.0).cbrt());
+        assert_exact!(Quad::INFINITY, Quad::INFINITY.cbrt());
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.cbrt());
+        assert_exact!(Quad::NAN, Quad::NAN.cbrt());
+    }
+}
