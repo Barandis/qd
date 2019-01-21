@@ -3,8 +3,9 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::quad::Quad;
 use crate::common::basic::*;
+use crate::quad::Quad;
+use std::f64;
 use std::ops::{Mul, MulAssign};
 
 impl Quad {
@@ -35,46 +36,82 @@ impl Quad {
     // calculated, are not necessary to provide 212 bits of accuracy.
     #[inline]
     fn mul_quad(self, other: Quad) -> (f64, f64, f64, f64) {
-        // O(1) term
-        let (h0, l0) = two_prod(self.0, other.0);
+        if self.is_nan() || other.is_nan() {
+            (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
+        } else if self.is_zero() {
+            if other.is_infinite() {
+                (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
+            } else {
+                (0.0, 0.0, 0.0, 0.0)
+            }
+        } else if self.is_infinite() {
+            if other.is_zero() {
+                (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
+            } else {
+                if self.is_sign_positive() == other.is_sign_positive() {
+                    (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
+                } else {
+                    (
+                        f64::NEG_INFINITY,
+                        f64::NEG_INFINITY,
+                        f64::NEG_INFINITY,
+                        f64::NEG_INFINITY,
+                    )
+                }
+            }
+        } else if other.is_infinite() {
+            if self.is_sign_positive() == other.is_sign_positive() {
+                (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
+            } else {
+                (
+                    f64::NEG_INFINITY,
+                    f64::NEG_INFINITY,
+                    f64::NEG_INFINITY,
+                    f64::NEG_INFINITY,
+                )
+            }
+        } else {
+            // O(1) term
+            let (h0, l0) = two_prod(self.0, other.0);
 
-        // O(ε) terms
-        let (h1, l1) = two_prod(self.0, other.1);
-        let (h2, l2) = two_prod(self.1, other.0);
+            // O(ε) terms
+            let (h1, l1) = two_prod(self.0, other.1);
+            let (h2, l2) = two_prod(self.1, other.0);
 
-        // O(ε²) terms
-        let (h3, l3) = two_prod(self.0, other.2);
-        let (h4, l4) = two_prod(self.1, other.1);
-        let (h5, l5) = two_prod(self.2, other.0);
+            // O(ε²) terms
+            let (h3, l3) = two_prod(self.0, other.2);
+            let (h4, l4) = two_prod(self.1, other.1);
+            let (h5, l5) = two_prod(self.2, other.0);
 
-        // O(ε³) terms
-        let (h6, l6) = two_prod(self.0, other.3);
-        let (h7, l7) = two_prod(self.1, other.2);
-        let (h8, l8) = two_prod(self.2, other.1);
-        let (h9, l9) = two_prod(self.3, other.0);
+            // O(ε³) terms
+            let (h6, l6) = two_prod(self.0, other.3);
+            let (h7, l7) = two_prod(self.1, other.2);
+            let (h8, l8) = two_prod(self.2, other.1);
+            let (h9, l9) = two_prod(self.3, other.0);
 
-        // O(ε⁴) terms - the low words aren't necessary for the accuracy we need
-        let ha = self.1 * other.3;
-        let hb = self.2 * other.2;
-        let hc = self.3 * other.1;
+            // O(ε⁴) terms - the low words aren't necessary for the accuracy we need
+            let ha = self.1 * other.3;
+            let hb = self.2 * other.2;
+            let hc = self.3 * other.1;
 
-        // Each calculation takes all of the high words for the terms of that level, whatever
-        // intermediate words are specified by the algorithm, and whatever low words fit in the
-        // remaining input space.
+            // Each calculation takes all of the high words for the terms of that level, whatever
+            // intermediate words are specified by the algorithm, and whatever low words fit in the
+            // remaining input space.
 
-        // O(1) calculation (pass-through)
-        let r0 = h0;
-        // O(ε) calculation
-        let (r1, t0, t1) = three_three_sum(h1, h2, l0);
-        // O(ε²) calculation
-        let (r2, t2, t3) = six_three_sum(t0, h3, h4, h5, l1, l2);
-        // O(ε³) calculation
-        let (r3, t4) = nine_two_sum(t1, t2, h6, h7, h8, h9, l3, l4, l5);
-        // O(ε⁴) calculation (nine_one_sum)
-        let r4 = t3 + t4 + ha + hb + hc + l6 + l7 + l8 + l9;
+            // O(1) calculation (pass-through)
+            let r0 = h0;
+            // O(ε) calculation
+            let (r1, t0, t1) = three_three_sum(h1, h2, l0);
+            // O(ε²) calculation
+            let (r2, t2, t3) = six_three_sum(t0, h3, h4, h5, l1, l2);
+            // O(ε³) calculation
+            let (r3, t4) = nine_two_sum(t1, t2, h6, h7, h8, h9, l3, l4, l5);
+            // O(ε⁴) calculation (nine_one_sum)
+            let r4 = t3 + t4 + ha + hb + hc + l6 + l7 + l8 + l9;
 
-        // Results of the prior calculations are renormalized into four f64s.
-        renorm5(r0, r1, r2, r3, r4)
+            // Results of the prior calculations are renormalized into four f64s.
+            renorm5(r0, r1, r2, r3, r4)
+        }
     }
 }
 
@@ -124,5 +161,46 @@ impl<'a> MulAssign<&'a Quad> for Quad {
         self.1 = b;
         self.2 = c;
         self.3 = d;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calc() {
+        let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
+        assert_close!(expected, Quad::PI * Quad::E);
+        assert_close!(expected, Quad::PI * &Quad::E);
+        assert_close!(expected, &Quad::PI * Quad::E);
+
+        let mut a = Quad::PI;
+        a *= Quad::E;
+        assert_close!(expected, a);
+
+        let mut b = Quad::PI;
+        b *= &Quad::E;
+        assert_close!(expected, b);
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::NAN, Quad::NAN * qd!(0));
+        assert_exact!(Quad::NAN, qd!(0) * Quad::NAN);
+        assert_exact!(Quad::NAN, Quad::NAN * qd!(1));
+        assert_exact!(Quad::NAN, qd!(1) * Quad::NAN);
+        assert_exact!(Quad::INFINITY, Quad::INFINITY * qd!(1));
+        assert_exact!(Quad::INFINITY, qd!(1) * Quad::INFINITY);
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY * qd!(1));
+        assert_exact!(Quad::NEG_INFINITY, qd!(1) * Quad::NEG_INFINITY);
+        assert_exact!(Quad::INFINITY, Quad::INFINITY * Quad::INFINITY);
+        assert_exact!(Quad::NEG_INFINITY, Quad::INFINITY * Quad::NEG_INFINITY);
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY * Quad::INFINITY);
+        assert_exact!(Quad::INFINITY, Quad::NEG_INFINITY * Quad::NEG_INFINITY);
+        assert_exact!(Quad::NAN, Quad::INFINITY * Quad::ZERO);
+        assert_exact!(Quad::NAN, Quad::ZERO * Quad::INFINITY);
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY * Quad::ZERO);
+        assert_exact!(Quad::NAN, Quad::ZERO * Quad::NEG_INFINITY);
     }
 }
