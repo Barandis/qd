@@ -5,6 +5,7 @@
 
 use crate::common::basic::{quick_two_sum, two_sum};
 use crate::double::Double;
+use std::f64;
 use std::ops::{Add, AddAssign};
 
 impl Double {
@@ -12,8 +13,8 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
+    /// # #[macro_use] extern crate dd;
+    /// # use dd::Double;
     /// # fn main() {
     /// let x = Double::from_add(1.0, 2.0);
     /// assert!(x == dd!(3.0));
@@ -25,10 +26,40 @@ impl Double {
 
     #[inline]
     fn add_double(self, other: Double) -> (f64, f64) {
-        let (s0, e0) = two_sum(self.0, other.0);
-        let (s1, e1) = two_sum(self.1, other.1);
-        let (s2, e2) = quick_two_sum(s0, s1 + e0);
-        quick_two_sum(s2, e1 + e2)
+        if self.is_infinite() {
+            if other.is_infinite() {
+                if self.is_sign_positive() {
+                    if other.is_sign_positive() {
+                        (f64::INFINITY, f64::INFINITY)
+                    } else {
+                        (f64::NAN, f64::NAN)
+                    }
+                } else {
+                    if other.is_sign_negative() {
+                        (f64::NEG_INFINITY, f64::NEG_INFINITY)
+                    } else {
+                        (f64::NAN, f64::NAN)
+                    }
+                }
+            } else {
+                if self.is_sign_positive() {
+                    (f64::INFINITY, f64::INFINITY)
+                } else {
+                    (f64::NEG_INFINITY, f64::NEG_INFINITY)
+                }
+            }
+        } else if other.is_infinite() {
+            if other.is_sign_positive() {
+                (f64::INFINITY, f64::INFINITY)
+            } else {
+                (f64::NEG_INFINITY, f64::NEG_INFINITY)
+            }
+        } else {
+            let (s0, e0) = two_sum(self.0, other.0);
+            let (s1, e1) = two_sum(self.1, other.1);
+            let (s2, e2) = quick_two_sum(s0, s1 + e0);
+            quick_two_sum(s2, e1 + e2)
+        }
     }
 }
 
@@ -74,5 +105,43 @@ impl<'a> AddAssign<&'a Double> for Double {
         let (a, b) = self.add_double(*other);
         self.0 = a;
         self.1 = b;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calc() {
+        let expected = dd!("5.8598744820488384738229308546322");
+        assert_close!(expected, Double::PI + Double::E);
+        assert_close!(expected, Double::PI + &Double::E);
+        assert_close!(expected, &Double::PI + Double::E);
+
+        let mut a = Double::PI;
+        a += Double::E;
+        assert_close!(expected, a);
+
+        let mut b = Double::PI;
+        b += &Double::E;
+        assert_close!(expected, b);
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Double::NAN, Double::NAN + dd!(1));
+        assert_exact!(Double::NAN, dd!(1) + Double::NAN);
+        assert_exact!(Double::INFINITY, Double::INFINITY + dd!(1));
+        assert_exact!(Double::INFINITY, dd!(1) + Double::INFINITY);
+        assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY + dd!(1));
+        assert_exact!(Double::NEG_INFINITY, dd!(1) + Double::NEG_INFINITY);
+        assert_exact!(Double::INFINITY, Double::INFINITY + Double::INFINITY);
+        assert_exact!(
+            Double::NEG_INFINITY,
+            Double::NEG_INFINITY + Double::NEG_INFINITY
+        );
+        assert_exact!(Double::NAN, Double::INFINITY + Double::NEG_INFINITY);
+        assert_exact!(Double::NAN, Double::NEG_INFINITY + Double::INFINITY);
     }
 }

@@ -3,8 +3,9 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::quad::Quad;
 use crate::common::basic::*;
+use crate::quad::Quad;
+use std::f64;
 use std::ops::{Add, AddAssign};
 
 // Utility function that returns the quad component with the specified index and then increments
@@ -22,65 +23,110 @@ impl Quad {
     // addition is just a repeated iteration over each successive component.
     #[inline]
     pub(super) fn add_quad(self, other: Quad) -> (f64, f64, f64, f64) {
-        let mut i = 0;
-        let mut j = 0;
-        let mut k = 0;
-
-        let mut x = [0.0, 0.0, 0.0, 0.0];
-
-        // These two assignments, along with the reassignments of the same variables in the
-        // `accumulate` call below, act as a merge sort. The largest component between the two quads
-        // is operated on first, then the second largest, and so on.
-        let u = if self[i].abs() > other[j].abs() {
-            index_and_inc(self, &mut i)
-        } else {
-            index_and_inc(other, &mut j)
-        };
-        let v = if self[i].abs() > other[j].abs() {
-            index_and_inc(self, &mut i)
-        } else {
-            index_and_inc(other, &mut j)
-        };
-        let (mut u, mut v) = renorm2(u, v);
-
-        while k < 4 {
-            if i >= 4 && j >= 4 {
-                x[k] = u;
-                if k < 3 {
-                    k += 1;
-                    x[k] = v;
+        if self.is_infinite() {
+            if other.is_infinite() {
+                if self.is_sign_positive() {
+                    if other.is_sign_positive() {
+                        (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
+                    } else {
+                        (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
+                    }
+                } else {
+                    if other.is_sign_negative() {
+                        (
+                            f64::NEG_INFINITY,
+                            f64::NEG_INFINITY,
+                            f64::NEG_INFINITY,
+                            f64::NEG_INFINITY,
+                        )
+                    } else {
+                        (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
+                    }
                 }
-                break;
+            } else {
+                if self.is_sign_positive() {
+                    (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
+                } else {
+                    (
+                        f64::NEG_INFINITY,
+                        f64::NEG_INFINITY,
+                        f64::NEG_INFINITY,
+                        f64::NEG_INFINITY,
+                    )
+                }
             }
+        } else if other.is_infinite() {
+            if other.is_sign_positive() {
+                (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
+            } else {
+                (
+                    f64::NEG_INFINITY,
+                    f64::NEG_INFINITY,
+                    f64::NEG_INFINITY,
+                    f64::NEG_INFINITY,
+                )
+            }
+        } else {
+            let mut i = 0;
+            let mut j = 0;
+            let mut k = 0;
 
-            let t = if i >= 4 {
-                index_and_inc(other, &mut j)
-            } else if j >= 4 {
-                index_and_inc(self, &mut i)
-            } else if self[i].abs() > other[j].abs() {
+            let mut x = [0.0, 0.0, 0.0, 0.0];
+
+            // These two assignments, along with the reassignments of the same variables in the
+            // `accumulate` call below, act as a merge sort. The largest component between the two quads
+            // is operated on first, then the second largest, and so on.
+            let u = if self[i].abs() > other[j].abs() {
                 index_and_inc(self, &mut i)
             } else {
                 index_and_inc(other, &mut j)
             };
+            let v = if self[i].abs() > other[j].abs() {
+                index_and_inc(self, &mut i)
+            } else {
+                index_and_inc(other, &mut j)
+            };
+            let (mut u, mut v) = renorm2(u, v);
 
-            let (s, y, z) = accumulate(u, v, t);
-            u = y;
-            v = z;
+            while k < 4 {
+                if i >= 4 && j >= 4 {
+                    x[k] = u;
+                    if k < 3 {
+                        k += 1;
+                        x[k] = v;
+                    }
+                    break;
+                }
 
-            if s != 0.0 {
-                x[k] = s;
-                k += 1;
+                let t = if i >= 4 {
+                    index_and_inc(other, &mut j)
+                } else if j >= 4 {
+                    index_and_inc(self, &mut i)
+                } else if self[i].abs() > other[j].abs() {
+                    index_and_inc(self, &mut i)
+                } else {
+                    index_and_inc(other, &mut j)
+                };
+
+                let (s, y, z) = accumulate(u, v, t);
+                u = y;
+                v = z;
+
+                if s != 0.0 {
+                    x[k] = s;
+                    k += 1;
+                }
             }
-        }
 
-        for k in i..4 {
-            x[3] += self[k];
-        }
-        for k in j..4 {
-            x[3] += other[k];
-        }
+            for k in i..4 {
+                x[3] += self[k];
+            }
+            for k in j..4 {
+                x[3] += other[k];
+            }
 
-        renorm4(x[0], x[1], x[2], x[3])
+            renorm4(x[0], x[1], x[2], x[3])
+        }
     }
 }
 
@@ -130,5 +176,40 @@ impl<'a> AddAssign<&'a Quad> for Quad {
         self.1 = b;
         self.2 = c;
         self.3 = d;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calc() {
+        let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
+        assert_close!(expected, Quad::PI + Quad::E);
+        assert_close!(expected, Quad::PI + &Quad::E);
+        assert_close!(expected, &Quad::PI + Quad::E);
+
+        let mut a = Quad::PI;
+        a += Quad::E;
+        assert_close!(expected, a);
+
+        let mut b = Quad::PI;
+        b += &Quad::E;
+        assert_close!(expected, b);
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::NAN, Quad::NAN + qd!(1));
+        assert_exact!(Quad::NAN, qd!(1) + Quad::NAN);
+        assert_exact!(Quad::INFINITY, Quad::INFINITY + qd!(1));
+        assert_exact!(Quad::INFINITY, qd!(1) + Quad::INFINITY);
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY + qd!(1));
+        assert_exact!(Quad::NEG_INFINITY, qd!(1) + Quad::NEG_INFINITY);
+        assert_exact!(Quad::INFINITY, Quad::INFINITY + Quad::INFINITY);
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY + Quad::NEG_INFINITY);
+        assert_exact!(Quad::NAN, Quad::INFINITY + Quad::NEG_INFINITY);
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY + Quad::INFINITY);
     }
 }
