@@ -21,44 +21,79 @@ impl Quad {
     /// # }
     /// ```
     pub fn nroot(self, n: i32) -> Quad {
-        if n <= 0 {
-            return Quad::NAN;
-        }
-        if n % 2 == 0 && self.is_sign_negative() {
-            return Quad::NAN;
-        }
-        if n == 1 {
-            return self;
-        }
-        if n == 2 {
-            return self.sqrt(); // use the more specialized method in sqrt
-        }
         if self.is_zero() {
-            return Quad::ZERO;
+            if n % 2 == 0 || self.is_sign_positive() {
+                if n > 0 {
+                    Quad::ZERO
+                } else {
+                    Quad::INFINITY
+                }
+            } else if n > 0 {
+                Quad::NEG_ZERO
+            } else {
+                Quad::NEG_INFINITY
+            }
+        } else if n <= 0 {
+            Quad::NAN
+        } else if n == 1 {
+            self
+        } else if n == 2 {
+            self.sqrt() // use the more specialized method in sqrt
+        } else {
+            // Strategy: the traditional way of finding roots is using Newton's iteration for the
+            // function
+            //
+            //      f(x) = x^(-n) - a
+            //
+            // to find its root a^(-1/n). The iteration is therefore
+            //
+            //      x' = x + x * (1 - a * x^n) / n
+            //
+            // This converges quadratically, which is pretty fast. After performing a small number
+            // of iterations, we can then find a^(1/n) by taking the reciprocal.
+
+            let r = self.abs();
+            let mut x: Quad = (-(r.0.ln()) / n as f64).exp().into(); // a^(-1/n) = exp(-ln(a) / n)
+
+            let qd_n = Quad::from(n);
+            x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
+            x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
+            x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
+            if self.0 < 0.0 {
+                x = -x
+            }
+            x.recip()
         }
+    }
+}
 
-        // Strategy: the traditional way of finding roots is using Newton's iteration for the
-        // function
-        //
-        //      f(x) = x^(-n) - a
-        //
-        // to find its root a^(-1/n). The iteration is therefore
-        //
-        //      x' = x + x * (1 - a * x^n) / n
-        //
-        // This converges quadratically, which is pretty fast. After performing a small number of
-        // iterations, we can then find a^(1/n) by taking the reciprocal.
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-        let r = self.abs();
-        let mut x: Quad = (-(r.0.ln()) / n as f64).exp().into(); // a^(-1/n) = exp(-ln(a) / n)
+    #[test]
+    fn calc() {
+        assert_close!(Quad::PI, Quad::PI.nroot(1));
+        assert_close!(
+            qd!("1.772453850905516027298167483341145182797549456122387128213807790"),
+            Quad::PI.nroot(2)
+        );
+        assert_close!(
+            qd!("1.284025416687741484073420568062436458336280865281463089217507297"),
+            Quad::E.nroot(4)
+        );
+    }
 
-        let qd_n = Quad::from(n);
-        x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
-        x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
-        x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
-        if self.0 < 0.0 {
-            x = -x
-        }
-        x.recip()
+    #[test]
+    fn edge() {
+        assert_exact!(Quad::INFINITY, qd!(0.0).nroot(-2));
+        assert_exact!(Quad::INFINITY, qd!(-0.0).nroot(-2));
+        assert_exact!(Quad::INFINITY, qd!(0.0).nroot(-3));
+        assert_exact!(Quad::NEG_INFINITY, qd!(-0.0).nroot(-3));
+        assert_exact!(Quad::ZERO, qd!(0.0).nroot(4));
+        assert_exact!(Quad::ZERO, qd!(-0.0).nroot(4));
+        assert_exact!(Quad::ZERO, qd!(0.0).nroot(5));
+        assert_exact!(Quad::NEG_ZERO, qd!(-0.0).nroot(4));
+        assert_exact!(Quad::NAN, qd!(2).nroot(-2));
     }
 }
