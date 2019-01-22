@@ -92,6 +92,15 @@ impl Quad {
             }
         }
     }
+
+    #[inline]
+    pub fn trunc(self) -> Quad {
+        if self.0 >= 0.0 {
+            self.floor()
+        } else {
+            self.ceil()
+        }
+    }
 }
 
 // #endregion

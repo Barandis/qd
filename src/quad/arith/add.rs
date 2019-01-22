@@ -24,7 +24,9 @@ impl Add for Quad {
     // addition is just a repeated iteration over each successive component.
     #[inline]
     fn add(self, other: Quad) -> Quad {
-        if self.is_infinite() {
+        if self.is_nan() || other.is_nan() {
+            Quad::NAN
+        } else if self.is_infinite() {
             if other.is_infinite() {
                 if self.is_sign_positive() {
                     if other.is_sign_positive() {
@@ -180,5 +182,7 @@ mod tests {
         assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY + Quad::NEG_INFINITY);
         assert_exact!(Quad::NAN, Quad::INFINITY + Quad::NEG_INFINITY);
         assert_exact!(Quad::NAN, Quad::NEG_INFINITY + Quad::INFINITY);
+        assert_exact!(Quad::NAN, Quad::INFINITY + Quad::NAN);
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY + Quad::NAN);
     }
 }

@@ -29,7 +29,9 @@ impl Add for Double {
 
     #[inline]
     fn add(self, other: Double) -> Double {
-        if self.is_infinite() {
+        if self.is_nan() || other.is_nan() {
+            Double::NAN
+        } else if self.is_infinite() {
             if other.is_infinite() {
                 if self.is_sign_positive() {
                     if other.is_sign_positive() {
@@ -133,5 +135,7 @@ mod tests {
         );
         assert_exact!(Double::NAN, Double::INFINITY + Double::NEG_INFINITY);
         assert_exact!(Double::NAN, Double::NEG_INFINITY + Double::INFINITY);
+        assert_exact!(Double::NAN, Double::INFINITY + Double::NAN);
+        assert_exact!(Double::NAN, Double::NEG_INFINITY + Double::NAN);
     }
 }

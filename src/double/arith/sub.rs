@@ -29,7 +29,9 @@ impl Sub for Double {
 
     #[inline]
     fn sub(self, other: Double) -> Double {
-        if self.is_infinite() {
+        if self.is_nan() || other.is_nan() {
+            Double::NAN
+        } else if self.is_infinite() {
             if other.is_infinite() {
                 if self.is_sign_positive() {
                     if other.is_sign_positive() {
@@ -141,5 +143,7 @@ mod tests {
             Double::NEG_INFINITY,
             Double::NEG_INFINITY - Double::INFINITY
         );
+        assert_exact!(Double::NAN, Double::NAN - Double::INFINITY);
+        assert_exact!(Double::NAN, Double::INFINITY - Double::NAN);
     }
 }
