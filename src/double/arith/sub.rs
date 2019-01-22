@@ -5,7 +5,7 @@
 
 use crate::common::basic::{quick_two_sum, two_diff};
 use crate::double::Double;
-use std::ops::{Neg, Sub, SubAssign};
+use std::ops::{Sub, SubAssign};
 
 impl Double {
     /// Creates a new double-double representing the difference of two floats.
@@ -97,14 +97,6 @@ impl<'a> SubAssign<&'a Double> for Double {
     #[inline]
     fn sub_assign(&mut self, other: &Double) {
         self.assign(self.sub(*other).into());
-    }
-}
-
-impl Neg for Double {
-    type Output = Double;
-
-    fn neg(self) -> Double {
-        Double(-self.0, -self.1)
     }
 }
 

@@ -4,16 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 use crate::quad::Quad;
-use std::ops::{Add, Neg, Sub, SubAssign};
-
-impl Neg for Quad {
-    type Output = Quad;
-
-    #[inline]
-    fn neg(self) -> Quad {
-        Quad(-self.0, -self.1, -self.2, -self.3)
-    }
-}
+use std::ops::{Add, Sub, SubAssign};
 
 impl Sub for Quad {
     type Output = Quad;
