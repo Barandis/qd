@@ -8,5 +8,6 @@ mod ldexp;
 mod nroot;
 mod powf;
 mod powi;
+mod recip;
 mod sqr;
 mod sqrt;

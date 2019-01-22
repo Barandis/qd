@@ -21,8 +21,8 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate dd;
-    /// # use dd::Double;
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
     /// # fn main() {
     /// let x = Double::from_div(1.0, 2.0);
     /// assert!(x == dd!(0.5));
@@ -46,22 +46,6 @@ impl Double {
             let q2 = (s + e - p2) / b;
             Double::from(quick_two_sum(q1, q2))
         }
-    }
-
-    /// Calculates the reciprocal of the number.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate dd;
-    /// # use dd::Double;
-    /// # fn main() {
-    /// let r = Double::from(2.0).recip();
-    /// assert!(r == dd!(0.5));
-    /// # }
-    /// ```
-    #[inline]
-    pub fn recip(self) -> Double {
-        Double::ONE / self
     }
 }
 

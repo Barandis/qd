@@ -12,8 +12,8 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate dd;
-    /// # use dd::Double;
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
     /// # fn main() {
     /// let x = Double::from_add(1.0, 2.0);
     /// assert!(x == dd!(3.0));

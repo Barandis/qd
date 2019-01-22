@@ -119,13 +119,6 @@ impl<'a> DivAssign<&'a Quad> for Quad {
     }
 }
 
-impl Quad {
-    #[inline]
-    pub fn recip(self) -> Quad {
-        Quad::ONE / self
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
