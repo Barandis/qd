@@ -22,11 +22,31 @@ impl Double {
     /// # }
     /// ```
     pub fn cosh(self) -> Double {
-        if self.is_zero() {
+        if self.is_nan() {
+            Double::NAN
+        } else if self.is_zero() {
             Double::ONE
         } else {
             let a = self.exp();
             mul_pwr2(a + a.recip(), 0.5)
         }
+    }
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calc() {
+        assert_close!(dd!("11.591953275521520627751752052560"), Double::PI.cosh());
+        assert_close!(dd!("7.6101251386622883634186102301134"), Double::E.cosh());
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Double::ONE, dd!(0.0).cosh());
+        assert_exact!(Double::NAN, Double::NAN.cosh());
+        assert_exact!(Double::INFINITY, Double::INFINITY.cosh());
+        assert_exact!(Double::INFINITY, Double::NEG_INFINITY.cosh());
     }
 }

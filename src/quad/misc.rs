@@ -101,6 +101,17 @@ impl Quad {
             self.ceil()
         }
     }
+
+    #[inline]
+    pub fn signum(self) -> Quad {
+        if self.is_nan() {
+            Quad::NAN
+        } else if self.is_sign_negative() {
+            -Quad::ONE
+        } else {
+            Quad::ONE
+        }
+    }
 }
 
 // #endregion

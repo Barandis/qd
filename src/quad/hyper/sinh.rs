@@ -3,29 +3,29 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::double::common::mul_pwr2;
-use crate::double::Double;
+use crate::quad::common::mul_pwr2;
+use crate::quad::Quad;
 
-impl Double {
+impl Quad {
     /// Computes the hyperbolic sine of the number.
     ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
+    /// # use qd::Quad;
     /// # fn main() {
-    /// let x = dd!(1).sinh();
-    /// let expected = dd!("1.1752011936438014568823818505956");
+    /// let x = qd!(1).sinh();
+    /// let expected = qd!("1.175201193643801456882381850595600815155717981334095870229565413");
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < dd!(1e-30));
+    /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
-    pub fn sinh(self) -> Double {
+    pub fn sinh(self) -> Quad {
         if self.is_nan() {
-            Double::NAN
+            Quad::NAN
         } else if self.is_zero() {
-            Double::ZERO
+            Quad::ZERO
         } else if self.abs().as_float() > 0.05 {
             let a = self.exp();
             mul_pwr2(a - a.recip(), 0.5)
@@ -36,12 +36,12 @@ impl Double {
             let mut t = self;
             let r = t.sqr();
             let mut m = 1.0;
-            let threshold = (self * Double::EPSILON).abs();
+            let threshold = (self * Quad::EPSILON).abs();
 
             loop {
                 m += 2.0;
                 t *= r;
-                t /= Double::from_mul(m - 1.0, m);
+                t /= Quad::from((m - 1.0) * m);
                 s += t;
                 if t.abs() <= threshold {
                     break;
@@ -58,15 +58,21 @@ mod tests {
 
     #[test]
     fn calc() {
-        assert_close!(dd!("11.548739357257748377977334315388"), Double::PI.sinh());
-        assert_close!(dd!("7.5441371028169758263418200425165"), Double::E.sinh());
+        assert_close!(
+            qd!("11.54873935725774837797733431538840968449518906639478945523216336"),
+            Quad::PI.sinh()
+        );
+        assert_close!(
+            qd!("7.544137102816975826341820042516532740294985744301671666369136432"),
+            Quad::E.sinh()
+        );
     }
 
     #[test]
     fn edge() {
-        assert_exact!(Double::ZERO, dd!(0.0).sinh());
-        assert_exact!(Double::NAN, Double::NAN.sinh());
-        assert_exact!(Double::INFINITY, Double::INFINITY.sinh());
-        assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.sinh());
+        assert_exact!(Quad::ZERO, qd!(0.0).sinh());
+        assert_exact!(Quad::NAN, Quad::NAN.sinh());
+        assert_exact!(Quad::INFINITY, Quad::INFINITY.sinh());
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.sinh());
     }
 }

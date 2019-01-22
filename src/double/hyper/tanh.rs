@@ -21,8 +21,12 @@ impl Double {
     /// # }
     /// ```
     pub fn tanh(self) -> Double {
-        if self.is_zero() {
+        if self.is_nan() {
+            Double::NAN
+        } else if self.is_zero() {
             Double::ZERO
+        } else if self.is_infinite() {
+            self.signum() * Double::ONE
         } else if self.abs().as_float() > 0.05 {
             let a = self.exp();
             let inv_a = a.recip();
@@ -31,5 +35,24 @@ impl Double {
             let (s, c) = self.sinh_cosh();
             s / c
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calc() {
+        assert_close!(dd!("0.99627207622074994426469058001254"), Double::PI.tanh());
+        assert_close!(dd!("0.99132891580059983779555761569968"), Double::E.tanh());
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Double::ZERO, dd!(0.0).tanh());
+        assert_exact!(Double::NAN, Double::NAN.tanh());
+        assert_exact!(Double::ONE, Double::INFINITY.tanh());
+        assert_exact!(-Double::ONE, Double::NEG_INFINITY.tanh());
     }
 }

@@ -32,7 +32,11 @@ impl Double {
     /// [`sinh`]: #method.sinh
     /// [`cosh`]: #method.cosh
     pub fn sinh_cosh(self) -> (Double, Double) {
-        if self.abs().as_float() <= 0.05 {
+        if self.is_nan() {
+            (Double::NAN, Double::NAN)
+        } else if self.is_zero() {
+            (Double::ZERO, Double::ONE)
+        } else if self.abs().as_float() <= 0.05 {
             let s = self.sinh();
             let c = (Double::ONE + s.sqr()).sqrt();
             (s, c)
@@ -43,5 +47,36 @@ impl Double {
             let c = mul_pwr2(a + inv_a, 0.5);
             (s, c)
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calc() {
+        let (sinh_pi, cosh_pi) = Double::PI.sinh_cosh();
+        assert_close!(dd!("11.548739357257748377977334315388"), sinh_pi);
+        assert_close!(dd!("11.591953275521520627751752052560"), cosh_pi);
+
+        let (sinh_e, cosh_e) = Double::E.sinh_cosh();
+        assert_close!(dd!("7.5441371028169758263418200425165"), sinh_e);
+        assert_close!(dd!("7.6101251386622883634186102301134"), cosh_e);
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Double::ZERO, dd!(0.0).sinh_cosh().0);
+        assert_exact!(Double::ONE, dd!(0.0).sinh_cosh().1);
+
+        assert_exact!(Double::NAN, Double::NAN.sinh_cosh().0);
+        assert_exact!(Double::NAN, Double::NAN.sinh_cosh().1);
+
+        assert_exact!(Double::INFINITY, Double::INFINITY.sinh_cosh().0);
+        assert_exact!(Double::INFINITY, Double::INFINITY.sinh_cosh().1);
+
+        assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.sinh_cosh().0);
+        assert_exact!(Double::INFINITY, Double::NEG_INFINITY.sinh_cosh().1);
     }
 }

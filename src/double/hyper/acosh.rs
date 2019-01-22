@@ -23,8 +23,35 @@ impl Double {
     pub fn acosh(self) -> Double {
         if self < Double::ONE {
             Double::NAN
+        } else if self.is_infinite() {
+            Double::INFINITY
         } else {
             (self + (self.sqr() - Double::ONE).sqrt()).ln()
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calc() {
+        assert_close!(
+            dd!("1.811526272460853107021852049305420510220702081057922474861595623"),
+            Double::PI.acosh()
+        );
+        assert_close!(
+            dd!("1.657454454153077272593828742280534739158392762033676825848582209"),
+            Double::E.acosh()
+        );
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Double::NAN, dd!(0.0).acosh());
+        assert_exact!(Double::NAN, Double::NAN.acosh());
+        assert_exact!(Double::INFINITY, Double::INFINITY.acosh());
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.acosh());
     }
 }

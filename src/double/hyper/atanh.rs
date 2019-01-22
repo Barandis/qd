@@ -29,3 +29,28 @@ impl Double {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calc() {
+        assert_close!(
+            dd!("0.3297653149566991076178634175552186042701373911406924144029083548"),
+            Double::PI.recip().atanh()
+        );
+        assert_close!(
+            dd!("0.3859684164526523625353195700175926718961289961812712597770308403"),
+            Double::E.recip().atanh()
+        );
+    }
+
+    #[test]
+    fn edge() {
+        assert_exact!(Double::ZERO, dd!(0.0).atanh());
+        assert_exact!(Double::NAN, Double::NAN.atanh());
+        assert_exact!(Double::NAN, Double::INFINITY.atanh());
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.atanh());
+    }
+}
