@@ -5,7 +5,6 @@
 
 use crate::common::basic::*;
 use crate::quad::Quad;
-use std::f64;
 use std::ops::{Div, DivAssign};
 
 // Quad x f64 analogue of full quad x quad multiplication above. This is here because we don't want
@@ -31,44 +30,36 @@ fn mul_f64(a: Quad, b: f64) -> Quad {
     Quad::from(renorm5(s0, s1, s2, s3, s4))
 }
 
-impl Quad {
+impl Div for Quad {
+    type Output = Quad;
+
     #[inline]
-    fn div_quad(self, other: Quad) -> (f64, f64, f64, f64) {
+    fn div(self, other: Quad) -> Quad {
         if self.is_nan() || other.is_nan() {
-            (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
+            Quad::NAN
         } else if other.is_zero() {
             if self.is_zero() {
-                (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
+                Quad::NAN
             } else if self.is_sign_negative() == other.is_sign_positive() {
-                (
-                    f64::NEG_INFINITY,
-                    f64::NEG_INFINITY,
-                    f64::NEG_INFINITY,
-                    f64::NEG_INFINITY,
-                )
+                Quad::NEG_INFINITY
             } else {
-                (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
+                Quad::INFINITY
             }
         } else if self.is_infinite() {
             if other.is_infinite() {
-                (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
+                Quad::NAN
             } else {
                 if self.is_sign_positive() == other.is_sign_positive() {
-                    (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
+                    Quad::INFINITY
                 } else {
-                    (
-                        f64::NEG_INFINITY,
-                        f64::NEG_INFINITY,
-                        f64::NEG_INFINITY,
-                        f64::NEG_INFINITY,
-                    )
+                    Quad::NEG_INFINITY
                 }
             }
         } else if other.is_infinite() {
             if self.is_sign_positive() == other.is_sign_positive() {
-                (0.0, 0.0, 0.0, 0.0)
+                Quad::ZERO
             } else {
-                (-0.0, 0.0, 0.0, 0.0)
+                Quad::NEG_ZERO
             }
         } else {
             // Strategy:
@@ -91,22 +82,8 @@ impl Quad {
 
             let q4 = r.0 / other.0;
 
-            renorm5(q0, q1, q2, q3, q4)
+            Quad::from(renorm5(q0, q1, q2, q3, q4))
         }
-    }
-
-    #[inline]
-    pub fn recip(self) -> Quad {
-        Quad::ONE / self
-    }
-}
-
-impl Div for Quad {
-    type Output = Quad;
-
-    #[inline]
-    fn div(self, other: Quad) -> Quad {
-        Quad::from(self.div_quad(other))
     }
 }
 
@@ -115,7 +92,7 @@ impl<'a> Div<&'a Quad> for Quad {
 
     #[inline]
     fn div(self, other: &Quad) -> Quad {
-        Quad::from(self.div_quad(*other))
+        self.div(*other)
     }
 }
 
@@ -124,29 +101,28 @@ impl<'a> Div<Quad> for &'a Quad {
 
     #[inline]
     fn div(self, other: Quad) -> Quad {
-        Quad::from(self.div_quad(other))
+        (*self).div(other)
     }
 }
 
 impl DivAssign for Quad {
     #[inline]
     fn div_assign(&mut self, other: Quad) {
-        let (a, b, c, d) = self.div_quad(other);
-        self.0 = a;
-        self.1 = b;
-        self.2 = c;
-        self.3 = d;
+        self.assign(self.div(other).into());
     }
 }
 
 impl<'a> DivAssign<&'a Quad> for Quad {
     #[inline]
     fn div_assign(&mut self, other: &Quad) {
-        let (a, b, c, d) = self.div_quad(*other);
-        self.0 = a;
-        self.1 = b;
-        self.2 = c;
-        self.3 = d;
+        self.assign(self.div(*other).into());
+    }
+}
+
+impl Quad {
+    #[inline]
+    pub fn recip(self) -> Quad {
+        Quad::ONE / self
     }
 }
 

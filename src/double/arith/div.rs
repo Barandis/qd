@@ -5,7 +5,6 @@
 
 use crate::common::basic::{quick_two_sum, renorm3, two_diff, two_prod};
 use crate::double::Double;
-use std::f64;
 use std::ops::{Div, DivAssign};
 
 // Helper function needed to avoid the only place in this arithmetic where Double::from must be
@@ -49,52 +48,6 @@ impl Double {
         }
     }
 
-    #[inline]
-    fn div_double(self, other: Double) -> (f64, f64) {
-        if self.is_nan() || other.is_nan() {
-            (f64::NAN, f64::NAN)
-        } else if other.is_zero() {
-            if self.is_zero() {
-                (f64::NAN, f64::NAN)
-            } else if self.is_sign_negative() == other.is_sign_positive() {
-                (
-                    f64::NEG_INFINITY,
-                    f64::NEG_INFINITY,
-                )
-            } else {
-                (f64::INFINITY, f64::INFINITY)
-            }
-        } else if self.is_infinite() {
-            if other.is_infinite() {
-                (f64::NAN, f64::NAN)
-            } else {
-                if self.is_sign_positive() == other.is_sign_positive() {
-                    (f64::INFINITY, f64::INFINITY)
-                } else {
-                    (
-                        f64::NEG_INFINITY,
-                        f64::NEG_INFINITY,
-                    )
-                }
-            }
-        } else if other.is_infinite() {
-            if self.is_sign_positive() == other.is_sign_positive() {
-                (0.0, 0.0)
-            } else {
-                (-0.0, 0.0)
-            }
-        } else {
-            let q1 = self.0 / other.0;
-            let mut r = self - mul_f64(other, q1);
-
-            let q2 = r.0 / other.0;
-            r -= mul_f64(other, q2);
-
-            let q3 = r.0 / other.0;
-            renorm3(q1, q2, q3)
-        }
-    }
-
     /// Calculates the reciprocal of the number.
     ///
     /// # Examples
@@ -117,7 +70,40 @@ impl Div for Double {
 
     #[inline]
     fn div(self, other: Double) -> Double {
-        Double::from(self.div_double(other))
+        if self.is_nan() || other.is_nan() {
+            Double::NAN
+        } else if other.is_zero() {
+            if self.is_zero() {
+                Double::NAN
+            } else if self.is_sign_negative() == other.is_sign_positive() {
+                Double::NEG_INFINITY
+            } else {
+                Double::INFINITY
+            }
+        } else if self.is_infinite() {
+            if other.is_infinite() {
+                Double::NAN
+            } else if self.is_sign_positive() == other.is_sign_positive() {
+                Double::INFINITY
+            } else {
+                Double::NEG_INFINITY
+            }
+        } else if other.is_infinite() {
+            if self.is_sign_positive() == other.is_sign_positive() {
+                Double::ZERO
+            } else {
+                Double::NEG_ZERO
+            }
+        } else {
+            let q1 = self.0 / other.0;
+            let mut r = self - mul_f64(other, q1);
+
+            let q2 = r.0 / other.0;
+            r -= mul_f64(other, q2);
+
+            let q3 = r.0 / other.0;
+            Double::from(renorm3(q1, q2, q3))
+        }
     }
 }
 
@@ -126,7 +112,7 @@ impl<'a> Div<&'a Double> for Double {
 
     #[inline]
     fn div(self, other: &Double) -> Double {
-        Double::from(self.div_double(*other))
+        self.div(*other)
     }
 }
 
@@ -135,25 +121,21 @@ impl<'a> Div<Double> for &'a Double {
 
     #[inline]
     fn div(self, other: Double) -> Double {
-        Double::from(self.div_double(other))
+        (*self).div(other)
     }
 }
 
 impl DivAssign for Double {
     #[inline]
     fn div_assign(&mut self, other: Double) {
-        let (a, b) = self.div_double(other);
-        self.0 = a;
-        self.1 = b;
+        self.assign(self.div(other).into());
     }
 }
 
 impl<'a> DivAssign<&'a Double> for Double {
     #[inline]
     fn div_assign(&mut self, other: &Double) {
-        let (a, b) = self.div_double(*other);
-        self.0 = a;
-        self.1 = b;
+        self.assign(self.div(*other).into());
     }
 }
 

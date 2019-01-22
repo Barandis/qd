@@ -4,7 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 use crate::quad::Quad;
-use std::ops::{Neg, Sub, SubAssign};
+use std::ops::{Add, Neg, Sub, SubAssign};
 
 impl Neg for Quad {
     type Output = Quad;
@@ -20,7 +20,7 @@ impl Sub for Quad {
 
     #[inline]
     fn sub(self, other: Quad) -> Quad {
-        Quad::from(self.add_quad(-other))
+        self.add(-other)
     }
 }
 
@@ -29,7 +29,7 @@ impl<'a> Sub<&'a Quad> for Quad {
 
     #[inline]
     fn sub(self, other: &Quad) -> Quad {
-        Quad::from(self.add_quad(-*other))
+        self.add(-*other)
     }
 }
 
@@ -38,29 +38,21 @@ impl<'a> Sub<Quad> for &'a Quad {
 
     #[inline]
     fn sub(self, other: Quad) -> Quad {
-        Quad::from(self.add_quad(-other))
+        (*self).add(-other)
     }
 }
 
 impl SubAssign for Quad {
     #[inline]
     fn sub_assign(&mut self, other: Quad) {
-        let (a, b, c, d) = self.add_quad(-other);
-        self.0 = a;
-        self.1 = b;
-        self.2 = c;
-        self.3 = d;
+        self.assign(self.add(-other).into());
     }
 }
 
 impl<'a> SubAssign<&'a Quad> for Quad {
     #[inline]
     fn sub_assign(&mut self, other: &Quad) {
-        let (a, b, c, d) = self.add_quad(-*other);
-        self.0 = a;
-        self.1 = b;
-        self.2 = c;
-        self.3 = d;
+        self.assign(self.add(-*other).into());
     }
 }
 

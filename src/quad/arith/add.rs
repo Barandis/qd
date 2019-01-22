@@ -5,7 +5,6 @@
 
 use crate::common::basic::*;
 use crate::quad::Quad;
-use std::f64;
 use std::ops::{Add, AddAssign};
 
 // Utility function that returns the quad component with the specified index and then increments
@@ -17,54 +16,41 @@ fn index_and_inc(a: Quad, i: &mut usize) -> f64 {
     r
 }
 
-impl Quad {
+impl Add for Quad {
+    type Output = Quad;
+
     // This function is the real reason indexing was added to quads. Unlike multiplication, where
     // every component has a specific function and appears in a specific place in the algorithm,
     // addition is just a repeated iteration over each successive component.
     #[inline]
-    pub(super) fn add_quad(self, other: Quad) -> (f64, f64, f64, f64) {
+    fn add(self, other: Quad) -> Quad {
         if self.is_infinite() {
             if other.is_infinite() {
                 if self.is_sign_positive() {
                     if other.is_sign_positive() {
-                        (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
+                        Quad::INFINITY
                     } else {
-                        (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
+                        Quad::NAN
                     }
                 } else {
                     if other.is_sign_negative() {
-                        (
-                            f64::NEG_INFINITY,
-                            f64::NEG_INFINITY,
-                            f64::NEG_INFINITY,
-                            f64::NEG_INFINITY,
-                        )
+                        Quad::NEG_INFINITY
                     } else {
-                        (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
+                        Quad::NAN
                     }
                 }
             } else {
                 if self.is_sign_positive() {
-                    (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
+                    Quad::INFINITY
                 } else {
-                    (
-                        f64::NEG_INFINITY,
-                        f64::NEG_INFINITY,
-                        f64::NEG_INFINITY,
-                        f64::NEG_INFINITY,
-                    )
+                    Quad::NEG_INFINITY
                 }
             }
         } else if other.is_infinite() {
             if other.is_sign_positive() {
-                (f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY)
+                Quad::INFINITY
             } else {
-                (
-                    f64::NEG_INFINITY,
-                    f64::NEG_INFINITY,
-                    f64::NEG_INFINITY,
-                    f64::NEG_INFINITY,
-                )
+                Quad::NEG_INFINITY
             }
         } else {
             let mut i = 0;
@@ -125,17 +111,8 @@ impl Quad {
                 x[3] += other[k];
             }
 
-            renorm4(x[0], x[1], x[2], x[3])
+            Quad::from(renorm4(x[0], x[1], x[2], x[3]))
         }
-    }
-}
-
-impl Add for Quad {
-    type Output = Quad;
-
-    #[inline]
-    fn add(self, other: Quad) -> Quad {
-        Quad::from(self.add_quad(other))
     }
 }
 
@@ -144,7 +121,7 @@ impl<'a> Add<&'a Quad> for Quad {
 
     #[inline]
     fn add(self, other: &Quad) -> Quad {
-        Quad::from(self.add_quad(*other))
+        self.add(*other)
     }
 }
 
@@ -153,29 +130,21 @@ impl<'a> Add<Quad> for &'a Quad {
 
     #[inline]
     fn add(self, other: Quad) -> Quad {
-        Quad::from(self.add_quad(other))
+        (*self).add(other)
     }
 }
 
 impl AddAssign for Quad {
     #[inline]
     fn add_assign(&mut self, other: Quad) {
-        let (a, b, c, d) = self.add_quad(other);
-        self.0 = a;
-        self.1 = b;
-        self.2 = c;
-        self.3 = d;
+        self.assign(self.add(other).into());
     }
 }
 
 impl<'a> AddAssign<&'a Quad> for Quad {
     #[inline]
     fn add_assign(&mut self, other: &Quad) {
-        let (a, b, c, d) = self.add_quad(*other);
-        self.0 = a;
-        self.1 = b;
-        self.2 = c;
-        self.3 = d;
+        self.assign(self.add(*other).into());
     }
 }
 

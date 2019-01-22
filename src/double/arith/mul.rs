@@ -5,7 +5,6 @@
 
 use crate::common::basic::{quick_two_sum, two_prod};
 use crate::double::Double;
-use std::f64;
 use std::ops::{Mul, MulAssign};
 
 impl Double {
@@ -23,38 +22,6 @@ impl Double {
     pub fn from_mul(a: f64, b: f64) -> Double {
         Double::from(two_prod(a, b))
     }
-
-    #[inline]
-    fn mul_double(self, other: Double) -> (f64, f64) {
-        if self.is_nan() || other.is_nan() {
-            (f64::NAN, f64::NAN)
-        } else if self.is_zero() {
-            if other.is_infinite() {
-                (f64::NAN, f64::NAN)
-            } else {
-                (0.0, 0.0)
-            }
-        } else if self.is_infinite() {
-            if other.is_zero() {
-                (f64::NAN, f64::NAN)
-            } else {
-                if self.is_sign_positive() == other.is_sign_positive() {
-                    (f64::INFINITY, f64::INFINITY)
-                } else {
-                    (f64::NEG_INFINITY, f64::NEG_INFINITY)
-                }
-            }
-        } else if other.is_infinite() {
-            if self.is_sign_positive() == other.is_sign_positive() {
-                (f64::INFINITY, f64::INFINITY)
-            } else {
-                (f64::NEG_INFINITY, f64::NEG_INFINITY)
-            }
-        } else {
-            let (p, e) = two_prod(self.0, other.0);
-            quick_two_sum(p, e + self.0 * other.1 + self.1 * other.0)
-        }
-    }
 }
 
 impl Mul for Double {
@@ -62,7 +29,34 @@ impl Mul for Double {
 
     #[inline]
     fn mul(self, other: Double) -> Double {
-        Double::from(self.mul_double(other))
+        if self.is_nan() || other.is_nan() {
+            Double::NAN
+        } else if self.is_zero() {
+            if other.is_infinite() {
+                Double::NAN
+            } else if self.is_sign_positive() == other.is_sign_positive() {
+                Double::ZERO
+            } else {
+                Double::NEG_ZERO
+            }
+        } else if self.is_infinite() {
+            if other.is_zero() {
+                Double::NAN
+            } else if self.is_sign_positive() == other.is_sign_positive() {
+                Double::INFINITY
+            } else {
+                Double::NEG_INFINITY
+            }
+        } else if other.is_infinite() {
+            if self.is_sign_positive() == other.is_sign_positive() {
+                Double::INFINITY
+            } else {
+                Double::NEG_INFINITY
+            }
+        } else {
+            let (p, e) = two_prod(self.0, other.0);
+            Double::from(quick_two_sum(p, e + self.0 * other.1 + self.1 * other.0))
+        }
     }
 }
 
@@ -71,7 +65,7 @@ impl<'a> Mul<&'a Double> for Double {
 
     #[inline]
     fn mul(self, other: &Double) -> Double {
-        Double::from(self.mul_double(*other))
+        self.mul(*other)
     }
 }
 
@@ -80,25 +74,21 @@ impl<'a> Mul<Double> for &'a Double {
 
     #[inline]
     fn mul(self, other: Double) -> Double {
-        Double::from(self.mul_double(other))
+        (*self).mul(other)
     }
 }
 
 impl MulAssign for Double {
     #[inline]
     fn mul_assign(&mut self, other: Double) {
-        let (a, b) = self.mul_double(other);
-        self.0 = a;
-        self.1 = b;
+        self.assign(self.mul(other).into());
     }
 }
 
 impl<'a> MulAssign<&'a Double> for Double {
     #[inline]
     fn mul_assign(&mut self, other: &Double) {
-        let (a, b) = self.mul_double(*other);
-        self.0 = a;
-        self.1 = b;
+        self.assign(self.mul(*other).into());
     }
 }
 

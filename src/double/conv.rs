@@ -132,6 +132,13 @@ impl From<&str> for Double {
     }
 }
 
+impl From<Double> for (f64, f64) {
+    #[inline]
+    fn from(a: Double) -> (f64, f64) {
+        (a.0, a.1)
+    }
+}
+
 // #endregion
 
 // #region Miscellaneous conversions
@@ -151,6 +158,17 @@ impl Double {
     #[inline]
     pub fn as_int(self) -> i64 {
         self.0 as i64 + self.1 as i64
+    }
+
+    #[inline]
+    pub fn as_tuple(self) -> (f64, f64) {
+        (self.0, self.1)
+    }
+
+    #[inline]
+    pub fn assign(&mut self, (a, b): (f64, f64)) {
+        self.0 = a;
+        self.1 = b;
     }
 }
 

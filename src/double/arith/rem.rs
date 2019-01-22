@@ -4,14 +4,14 @@
 // https://opensource.org/licenses/MIT
 
 use crate::double::Double;
-use std::ops::{Rem, RemAssign};
+use std::ops::{Div, Rem, RemAssign};
 
 impl Rem for Double {
     type Output = Double;
 
     #[inline]
     fn rem(self, other: Double) -> Double {
-        let n = (self / other).trunc();
+        let n = self.div(other).trunc();
         self - other * n
     }
 }
@@ -21,7 +21,7 @@ impl<'a> Rem<&'a Double> for Double {
 
     #[inline]
     fn rem(self, other: &Double) -> Double {
-        let n = (self / *other).trunc();
+        let n = self.div(*other).trunc();
         self - *other * n
     }
 }
@@ -31,25 +31,21 @@ impl<'a> Rem<Double> for &'a Double {
 
     #[inline]
     fn rem(self, other: Double) -> Double {
-        let n = (self / other).trunc();
-        self - other * n
+        let n = self.div(other).trunc();
+        (*self) - other * n
     }
 }
 
 impl RemAssign for Double {
     #[inline]
     fn rem_assign(&mut self, other: Double) {
-        let a = *self % other;
-        self.0 = a.0;
-        self.1 = a.1;
+        self.assign(self.rem(other).into());
     }
 }
 
 impl<'a> RemAssign<&'a Double> for Double {
     #[inline]
     fn rem_assign(&mut self, other: &Double) {
-        let a = *self % *other;
-        self.0 = a.0;
-        self.1 = a.1;
+        self.assign(self.rem(*other).into());
     }
 }

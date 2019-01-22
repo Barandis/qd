@@ -5,7 +5,6 @@
 
 use crate::common::basic::{quick_two_sum, two_diff};
 use crate::double::Double;
-use std::f64;
 use std::ops::{Neg, Sub, SubAssign};
 
 impl Double {
@@ -23,44 +22,6 @@ impl Double {
     pub fn from_sub(a: f64, b: f64) -> Double {
         Double::from(two_diff(a, b))
     }
-
-    #[inline]
-    fn sub_double(self, other: Double) -> (f64, f64) {
-        if self.is_infinite() {
-            if other.is_infinite() {
-                if self.is_sign_positive() {
-                    if other.is_sign_positive() {
-                        (f64::NAN, f64::NAN)
-                    } else {
-                        (f64::INFINITY, f64::INFINITY)
-                    }
-                } else {
-                    if other.is_sign_negative() {
-                        (f64::NAN, f64::NAN)
-                    } else {
-                        (f64::NEG_INFINITY, f64::NEG_INFINITY)
-                    }
-                }
-            } else {
-                if self.is_sign_positive() {
-                    (f64::INFINITY, f64::INFINITY)
-                } else {
-                    (f64::NEG_INFINITY, f64::NEG_INFINITY)
-                }
-            }
-        } else if other.is_infinite() {
-            if other.is_sign_positive() {
-                (f64::NEG_INFINITY, f64::NEG_INFINITY)
-            } else {
-                (f64::INFINITY, f64::INFINITY)
-            }
-        } else {
-            let (s0, e0) = two_diff(self.0, other.0);
-            let (s1, e1) = two_diff(self.1, other.1);
-            let (s2, e2) = quick_two_sum(s0, s1 + e0);
-            quick_two_sum(s2, e1 + e2)
-        }
-    }
 }
 
 impl Sub for Double {
@@ -68,7 +29,40 @@ impl Sub for Double {
 
     #[inline]
     fn sub(self, other: Double) -> Double {
-        Double::from(self.sub_double(other))
+        if self.is_infinite() {
+            if other.is_infinite() {
+                if self.is_sign_positive() {
+                    if other.is_sign_positive() {
+                        Double::NAN
+                    } else {
+                        Double::INFINITY
+                    }
+                } else {
+                    if other.is_sign_negative() {
+                        Double::NAN
+                    } else {
+                        Double::NEG_INFINITY
+                    }
+                }
+            } else {
+                if self.is_sign_positive() {
+                    Double::INFINITY
+                } else {
+                    Double::NEG_INFINITY
+                }
+            }
+        } else if other.is_infinite() {
+            if other.is_sign_positive() {
+                Double::NEG_INFINITY
+            } else {
+                Double::INFINITY
+            }
+        } else {
+            let (s0, e0) = two_diff(self.0, other.0);
+            let (s1, e1) = two_diff(self.1, other.1);
+            let (s2, e2) = quick_two_sum(s0, s1 + e0);
+            Double::from(quick_two_sum(s2, e1 + e2))
+        }
     }
 }
 
@@ -77,7 +71,7 @@ impl<'a> Sub<&'a Double> for Double {
 
     #[inline]
     fn sub(self, other: &Double) -> Double {
-        Double::from(self.sub_double(*other))
+        self.sub(*other)
     }
 }
 
@@ -86,25 +80,21 @@ impl<'a> Sub<Double> for &'a Double {
 
     #[inline]
     fn sub(self, other: Double) -> Double {
-        Double::from(self.sub_double(other))
+        (*self).sub(other)
     }
 }
 
 impl SubAssign for Double {
     #[inline]
     fn sub_assign(&mut self, other: Double) {
-        let (a, b) = self.sub_double(other);
-        self.0 = a;
-        self.1 = b;
+        self.assign(self.sub(other).into());
     }
 }
 
 impl<'a> SubAssign<&'a Double> for Double {
     #[inline]
     fn sub_assign(&mut self, other: &Double) {
-        let (a, b) = self.sub_double(*other);
-        self.0 = a;
-        self.1 = b;
+        self.assign(self.sub(*other).into());
     }
 }
 
