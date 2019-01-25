@@ -18,7 +18,7 @@ impl Quad {
     /// let expected = qd!("0.5493061443340548456976226184612628523237452789113747258673471668");
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < qd!(1e-30));
+    /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
     pub fn atanh(self) -> Quad {
