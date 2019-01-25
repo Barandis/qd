@@ -38,13 +38,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(dd!("1.8622957433108482198883613251826"), Double::PI.asinh());
         assert_close!(dd!("1.7253825588523150939450979704049"), Double::E.asinh());
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::ZERO, dd!(0.0).asinh());
         assert_exact!(Double::NAN, Double::NAN.asinh());
         assert_exact!(Double::INFINITY, Double::INFINITY.asinh());

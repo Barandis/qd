@@ -55,7 +55,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         let (sinh_pi, cosh_pi) = Quad::PI.sinh_cosh();
         assert_close!(
             qd!("11.54873935725774837797733431538840968449518906639478945523216336"),
@@ -78,7 +78,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Quad::ZERO, qd!(0.0).sinh_cosh().0);
         assert_exact!(Quad::ONE, qd!(0.0).sinh_cosh().1);
 

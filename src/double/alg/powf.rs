@@ -58,7 +58,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(
             dd!("24567.24805421478199532529771567617705237"),
             dd!(11.1).powf(dd!(4.2))
@@ -78,7 +78,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::ONE, dd!(2).powf(dd!(0.0)));
         assert_exact!(Double::ONE, dd!(2).powf(dd!(-0.0)));
         assert_exact!(Double::INFINITY, dd!(0.0).powf(dd!(-2)));

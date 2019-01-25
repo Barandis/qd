@@ -47,13 +47,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(dd!("1.7724538509055160272981674833411"), Double::PI.sqrt());
         assert_close!(dd!("48.135226186234961951944911890074"), dd!(2317).sqrt());
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::ZERO, dd!(0).sqrt());
         assert_exact!(Double::NAN, dd!(-3).sqrt());
     }

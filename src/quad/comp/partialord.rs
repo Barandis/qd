@@ -43,7 +43,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert!(Quad::PI > Quad::E);
         assert!(Quad::PI >= Quad::E);
         assert!(Quad::E < Quad::PI);
@@ -51,7 +51,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert!(Quad::NEG_INFINITY < Quad::INFINITY);
         assert!(Quad::NEG_INFINITY <= Quad::NEG_INFINITY);
         assert!(Quad::NEG_INFINITY >= Quad::NEG_INFINITY);

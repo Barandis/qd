@@ -34,7 +34,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_exact!(dd!(48), dd!(3).ldexp(4));
         assert_close!(dd!(0.078125), dd!(5).ldexp(-6));
         assert_close!(
@@ -48,7 +48,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::NAN, Double::NAN.ldexp(5));
         assert_exact!(Double::INFINITY, Double::INFINITY.ldexp(4));
         assert_exact!(Double::INFINITY, Double::INFINITY.ldexp(-4));

@@ -55,7 +55,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         let (sinh_pi, cosh_pi) = Double::PI.sinh_cosh();
         assert_close!(dd!("11.548739357257748377977334315388"), sinh_pi);
         assert_close!(dd!("11.591953275521520627751752052560"), cosh_pi);
@@ -66,7 +66,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::ZERO, dd!(0.0).sinh_cosh().0);
         assert_exact!(Double::ONE, dd!(0.0).sinh_cosh().1);
 

@@ -39,7 +39,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(
             qd!("1.047197551196597746154214461093167628065723133125035273658314864"),
             qd!(0.5).acos()
@@ -47,7 +47,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Quad::NAN, qd!(1.5).acos());
         assert_exact!(Quad::NAN, qd!(-1.5).acos());
         assert_exact!(Quad::ZERO, qd!(1).acos());

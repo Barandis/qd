@@ -129,7 +129,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(
             qd!("0.4636476090008061162142562314612144020285370542861202638109330887"),
             qd!(1).atan2(qd!(2))
@@ -149,7 +149,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Quad::NAN, qd!(0).atan2(qd!(0)));
         assert_exact!(Quad::ZERO, qd!(0).atan2(qd!(1)));
         assert_close!(Quad::PI, qd!(0).atan2(qd!(-1)));

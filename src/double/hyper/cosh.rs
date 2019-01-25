@@ -37,13 +37,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(dd!("11.591953275521520627751752052560"), Double::PI.cosh());
         assert_close!(dd!("7.6101251386622883634186102301134"), Double::E.cosh());
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::ONE, dd!(0.0).cosh());
         assert_exact!(Double::NAN, Double::NAN.cosh());
         assert_exact!(Double::INFINITY, Double::INFINITY.cosh());

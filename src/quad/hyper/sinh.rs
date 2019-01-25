@@ -57,7 +57,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(
             qd!("11.54873935725774837797733431538840968449518906639478945523216336"),
             Quad::PI.sinh()
@@ -69,7 +69,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Quad::ZERO, qd!(0.0).sinh());
         assert_exact!(Quad::NAN, Quad::NAN.sinh());
         assert_exact!(Quad::INFINITY, Quad::INFINITY.sinh());

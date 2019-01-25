@@ -94,7 +94,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(
             dd!("14.87973172487283411186899301946839578068879752075547683852481232"),
             dd!(2.7).exp()
@@ -106,7 +106,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::ONE, dd!(0).exp());
         assert_exact!(Double::NAN, Double::NAN.exp());
         assert_close!(Double::E, dd!(1).exp());

@@ -77,7 +77,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(dd!("0.84147098480789650665250232163030"), dd!(1).sin());
         assert_close!(
             dd!("0.70710678118654752440084436210485"),
@@ -87,7 +87,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::ZERO, Double::ZERO.sin());
         assert_exact!(Double::ONE, Double::FRAC_PI_2.sin());
         assert_exact!(Double::NAN, Double::INFINITY.sin());

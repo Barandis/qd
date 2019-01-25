@@ -39,12 +39,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(dd!("0.52359877559829887307710723054658"), dd!(0.5).asin());
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::NAN, dd!(1.5).asin());
         assert_exact!(Double::NAN, dd!(-1.5).asin());
         assert_close!(Double::FRAC_PI_2, dd!(1).asin());

@@ -31,7 +31,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(
             qd!("1.623249290397900463220983056572244529451891141976769812643928055"),
             qd!(42).log10()
@@ -43,7 +43,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Quad::ZERO, qd!(1).log10());
         assert_exact!(Quad::NAN, qd!(0).log10());
         assert_exact!(Quad::NAN, qd!(-1).log10());

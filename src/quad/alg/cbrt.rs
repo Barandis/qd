@@ -30,7 +30,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(
             qd!("1.464591887561523263020142527263790391738596855627937174357255937"),
             Quad::PI.cbrt()
@@ -42,7 +42,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Quad::ZERO, qd!(0.0).cbrt());
         assert_exact!(Quad::NEG_ZERO, qd!(-0.0).cbrt());
         assert_exact!(Quad::INFINITY, Quad::INFINITY.cbrt());

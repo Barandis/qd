@@ -39,12 +39,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(dd!("1.0471975511965977461542144610932"), dd!(0.5).acos());
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::NAN, dd!(1.5).acos());
         assert_exact!(Double::NAN, dd!(-1.5).acos());
         assert_exact!(Double::ZERO, dd!(1).acos());

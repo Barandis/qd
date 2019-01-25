@@ -31,7 +31,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(
             qd!("1.557407724654902230506974807458360173087250772381520038383946606"),
             qd!(1).tan()
@@ -41,7 +41,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Quad::ZERO, Quad::ZERO.tan());
         assert!(Quad::FRAC_PI_2.tan().is_infinite());
         assert_exact!(Quad::NAN, Quad::INFINITY.tan());

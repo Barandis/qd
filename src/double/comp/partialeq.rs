@@ -37,13 +37,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert!(Double::PI == Double::PI);
         assert!(Double::PI != Double::E);
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert!(Double::ZERO == Double::NEG_ZERO);
         assert!(Double::INFINITY == Double::INFINITY);
         assert!(Double::NEG_INFINITY == Double::NEG_INFINITY);

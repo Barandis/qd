@@ -64,7 +64,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         let (s, c) = dd!(1).sin_cos();
         assert_close!(dd!("0.84147098480789650665250232163030"), s);
         assert_close!(dd!("0.54030230586813971740093660744298"), c);
@@ -75,7 +75,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::ZERO, Double::ZERO.sin_cos().0);
         assert_exact!(Double::ONE, Double::ZERO.sin_cos().1);
 

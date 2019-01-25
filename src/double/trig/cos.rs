@@ -68,7 +68,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(dd!("0.54030230586813971740093660744298"), dd!(1).cos());
         assert_close!(
             dd!("0.70710678118654752440084436210485"),
@@ -78,7 +78,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::ONE, Double::ZERO.cos());
         assert_exact!(Double::ZERO, Double::FRAC_PI_2.cos());
         assert_exact!(Double::NAN, Double::INFINITY.cos());

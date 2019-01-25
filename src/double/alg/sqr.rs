@@ -36,13 +36,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_exact!(dd!(121), dd!(-11).sqr());
         assert_close!(dd!("9.869604401089358618834490999876"), Double::PI.sqr());
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::NAN, Double::NAN.sqr());
         assert_exact!(Double::ZERO, dd!(0).sqr());
     }

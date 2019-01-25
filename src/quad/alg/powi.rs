@@ -75,7 +75,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(
             qd!("-6.209213230591551744478457134696462611222531992971170622970363425e-6"),
             qd!(-11).powi(-5)
@@ -87,7 +87,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Quad::ONE, qd!(0).powi(0));
         assert_exact!(Quad::ONE, qd!(1).powi(0));
         assert_exact!(Quad::ONE, qd!(2317).powi(0));

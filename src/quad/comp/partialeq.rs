@@ -36,13 +36,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert!(Quad::PI == Quad::PI);
         assert!(Quad::PI != Quad::E);
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert!(Quad::ZERO == Quad::NEG_ZERO);
         assert!(Quad::INFINITY == Quad::INFINITY);
         assert!(Quad::NEG_INFINITY == Quad::NEG_INFINITY);

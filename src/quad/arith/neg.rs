@@ -20,7 +20,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(
             qd!("-3.141592653589793238462643383279502884197169399375105820974944592"),
             -Quad::PI
@@ -32,7 +32,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Quad::NAN, -Quad::NAN);
         assert_exact!(Quad::NEG_INFINITY, -Quad::INFINITY);
         assert_exact!(Quad::INFINITY, -Quad::NEG_INFINITY);

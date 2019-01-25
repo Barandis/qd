@@ -19,13 +19,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(dd!("-3.1415926535897932384626433832795"), -Double::PI);
         assert_close!(dd!("-2.7182818284590452353602874713527"), -Double::E);
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::NAN, -Double::NAN);
         assert_exact!(Double::NEG_INFINITY, -Double::INFINITY);
         assert_exact!(Double::INFINITY, -Double::NEG_INFINITY);

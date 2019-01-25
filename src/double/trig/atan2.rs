@@ -120,7 +120,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(
             dd!("0.46364760900080611621425623146121"),
             dd!(1).atan2(dd!(2))
@@ -140,7 +140,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::NAN, dd!(0).atan2(dd!(0)));
         assert_exact!(Double::ZERO, dd!(0).atan2(dd!(1)));
         assert_close!(Double::PI, dd!(0).atan2(dd!(-1)));

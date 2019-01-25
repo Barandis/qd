@@ -37,7 +37,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert!(Double::PI > Double::E);
         assert!(Double::PI >= Double::E);
         assert!(Double::E < Double::PI);
@@ -45,7 +45,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert!(Double::NEG_INFINITY < Double::INFINITY);
         assert!(Double::NEG_INFINITY <= Double::NEG_INFINITY);
         assert!(Double::NEG_INFINITY >= Double::NEG_INFINITY);

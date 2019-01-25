@@ -35,7 +35,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(
             dd!("0.3297653149566991076178634175552186042701373911406924144029083548"),
             Double::PI.recip().atanh()
@@ -47,7 +47,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::ZERO, dd!(0.0).atanh());
         assert_exact!(Double::NAN, Double::NAN.atanh());
         assert_exact!(Double::NAN, Double::INFINITY.atanh());

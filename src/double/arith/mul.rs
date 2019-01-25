@@ -97,7 +97,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         let expected = dd!("8.5397342226735670654635508695466");
         assert_close!(expected, Double::PI * Double::E);
         assert_close!(expected, Double::PI * &Double::E);
@@ -113,7 +113,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::NAN, Double::NAN * dd!(0));
         assert_exact!(Double::NAN, dd!(0) * Double::NAN);
         assert_exact!(Double::NAN, Double::NAN * dd!(1));

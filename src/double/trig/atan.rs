@@ -30,12 +30,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(dd!("0.98279372324732906798571061101467"), dd!(1.5).atan());
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::ZERO, dd!(0).atan());
         assert_close!(Double::FRAC_PI_4, dd!(1).atan());
         assert_close!(Double::FRAC_PI_2, Double::INFINITY.atan());

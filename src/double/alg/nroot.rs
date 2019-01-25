@@ -77,7 +77,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         assert_close!(Double::PI, Double::PI.nroot(1));
         assert_close!(
             dd!("1.772453850905516027298167483341145182797549456122387128213807790"),
@@ -90,7 +90,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Double::INFINITY, dd!(0.0).nroot(-2));
         assert_exact!(Double::INFINITY, dd!(-0.0).nroot(-2));
         assert_exact!(Double::INFINITY, dd!(0.0).nroot(-3));

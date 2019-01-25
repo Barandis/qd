@@ -155,7 +155,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn calc() {
+    fn basic() {
         let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
         assert_close!(expected, Quad::PI + Quad::E);
         assert_close!(expected, Quad::PI + &Quad::E);
@@ -171,7 +171,7 @@ mod tests {
     }
 
     #[test]
-    fn edge() {
+    fn special() {
         assert_exact!(Quad::NAN, Quad::NAN + qd!(1));
         assert_exact!(Quad::NAN, qd!(1) + Quad::NAN);
         assert_exact!(Quad::INFINITY, Quad::INFINITY + qd!(1));
