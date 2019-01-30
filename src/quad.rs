@@ -88,9 +88,9 @@ mod comp;
 mod consts;
 mod conv;
 mod display;
+mod from_str;
 mod hyper;
 mod misc;
-mod parse;
 mod trans;
 mod trig;
 
@@ -102,7 +102,7 @@ impl Quad {
         Quad(a, b, c, d)
     }
 
-    pub fn norm(a: f64, b: f64, c: f64, d: f64) ->  Quad {
+    pub fn norm(a: f64, b: f64, c: f64, d: f64) -> Quad {
         Quad::from(renorm4(a, b, c, d))
     }
 }
