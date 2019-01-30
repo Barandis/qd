@@ -90,6 +90,7 @@ mod conv;
 mod display;
 mod from_str;
 mod hyper;
+mod iter;
 mod misc;
 mod trans;
 mod trig;
