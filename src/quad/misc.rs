@@ -151,3 +151,32 @@ impl Quad {
 }
 
 // #endregion
+
+// #region Conversions
+
+impl Quad {
+    #[inline]
+    pub fn as_float(self) -> f64 {
+        self.0
+    }
+
+    #[inline]
+    pub fn as_int(self) -> i128 {
+        self.0 as i128 + self.1 as i128 + self.2 as i128 + self.3 as i128
+    }
+
+    #[inline]
+    pub fn as_tuple(self) -> (f64, f64, f64, f64) {
+        (self.0, self.1, self.2, self.3)
+    }
+
+    #[inline]
+    pub fn assign(&mut self, (a, b, c, d): (f64, f64, f64, f64)) {
+        self.0 = a;
+        self.1 = b;
+        self.2 = c;
+        self.3 = d;
+    }
+}
+
+// #endregion

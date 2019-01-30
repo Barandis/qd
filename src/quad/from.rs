@@ -7,8 +7,6 @@ use crate::common::basic::renorm4;
 use crate::double::Double;
 use crate::quad::Quad;
 
-// #region From implementations
-
 fn from_float(n: f64) -> Quad {
     if n == 0.0 {
         if n.is_sign_negative() {
@@ -244,32 +242,5 @@ impl From<Quad> for (f64, f64, f64, f64) {
     #[inline]
     fn from(a: Quad) -> (f64, f64, f64, f64) {
         (a.0, a.1, a.2, a.3)
-    }
-}
-
-// #endregion
-
-impl Quad {
-    #[inline]
-    pub fn as_float(self) -> f64 {
-        self.0
-    }
-
-    #[inline]
-    pub fn as_int(self) -> i128 {
-        self.0 as i128 + self.1 as i128 + self.2 as i128 + self.3 as i128
-    }
-
-    #[inline]
-    pub fn as_tuple(self) -> (f64, f64, f64, f64) {
-        (self.0, self.1, self.2, self.3)
-    }
-
-    #[inline]
-    pub fn assign(&mut self, (a, b, c, d): (f64, f64, f64, f64)) {
-        self.0 = a;
-        self.1 = b;
-        self.2 = c;
-        self.3 = d;
     }
 }
