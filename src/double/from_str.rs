@@ -113,155 +113,132 @@ impl FromStr for Double {
     }
 }
 
-// #region Tests
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    const PI_50: &str = "3.14159265358979323846264338327950288419716939937510";
-    const E_50: &str = "2.71828182845904523536028747135266249775724709369995";
-    const PI_50_3: &str = "3.14159265358979323846264338327950288419716939937510e3";
-    const E_50_NEG_2: &str = "2.71828182845904523536028747135266249775724709369995e-2";
-    const PI_TIMES_10_20: &str = "314159265358979323846";
-    const E_TIMES_10_25: &str = "27182818284590452353602874";
-    const PI_TIMES_10_20_EXP: &str = "3.14159265358979323846e20";
-    const E_TIMES_10_25_EXP: &str = "2.7182818284590452353602874e25";
-
-    fn parse(value: &str) -> Double {
-        value.parse().unwrap()
+    macro_rules! assert_single {
+        ($e:expr, $a:expr) => {
+            assert!($a[0] - $e < 1e-30, "component 0 not equal");
+            assert!($a[1] < 1e-30, "component 1 not equal");
+        };
     }
 
-    fn parse_error(value: &str) -> ParseError {
-        value.parse::<Double>().unwrap_err()
+    fn parse(s: &str) -> Double {
+        s.parse().unwrap()
     }
 
-    #[test]
-    fn nan() {
-        assert!(parse("nan").is_nan());
+    fn parse_err(s: &str) -> ErrorKind {
+        s.parse::<Double>().unwrap_err().kind
     }
 
     #[test]
-    fn inf() {
-        assert_exact!(parse("inf"), Double::INFINITY);
+    fn empty() {
+        assert_eq!(parse_err(""), ErrorKind::Empty);
     }
 
     #[test]
-    fn neg_inf() {
-        assert_exact!(parse("-inf"), Double::NEG_INFINITY);
+    fn invalid() {
+        assert_eq!(parse_err("++2317"), ErrorKind::Invalid);
+        assert_eq!(parse_err("2.31.7"), ErrorKind::Invalid);
+        assert_eq!(parse_err("2-317"), ErrorKind::Invalid);
+        assert_eq!(parse_err("2.317err"), ErrorKind::Invalid);
+        assert_eq!(parse_err("2.3j7"), ErrorKind::Invalid);
     }
 
     #[test]
     fn zero() {
-        assert_exact!(parse("0"), Double::from(0));
-        assert_exact!(parse("-0"), Double::from(-0.0));
+        assert_exact!(Double::ZERO, parse("0"));
+        assert_exact!(Double::ZERO, parse("0.0"));
+        assert_exact!(Double::ZERO, parse("+0"));
+        assert_exact!(Double::ZERO, parse("+0.0"));
+        assert_exact!(Double::NEG_ZERO, parse("-0"));
+        assert_exact!(Double::NEG_ZERO, parse("-0.0"));
     }
 
     #[test]
-    fn integer() {
-        assert_exact!(parse("1729"), Double::from(1729));
-        assert_exact!(parse("16_777_216"), Double::from(16_777_216));
-        assert_exact!(parse("+2317"), Double::from(2317));
-        assert_exact!(parse("-42"), Double::from(-42));
+    fn single_int() {
+        assert_single!(1.0, parse("1"));
+        assert_single!(2317.0, parse("2317"));
+        assert_single!(16777216.0, parse("16_777_216"));
+    }
+
+    // With any number big enough to use more than one component, the half-ulp normalization
+    // requirement and the possibility of having differing floating-point precisions between the
+    // components means that the components will not simply be their part of the whole integer. For
+    // example, in the first test below, one might expect that the components will be
+    //
+    //      1.234567890123456e31
+    //      1.234567890123456e15
+    //
+    // Instead, the real values are
+    //
+    //      1.2345678901234562e31
+    //      -1.064442023724352e15
+    //
+    // This makes it prohibitively difficult to write tests for the exact component values. Instead
+    // we construct one value by parsing a string and construct the other value directly through
+    // math between double-precision values. The components of each should be the same if the
+    // parsing is being done correctly.
+
+    #[test]
+    fn double_int() {
+        let s = parse("12345678901234561234567890123456");
+        let a = dd!(1234567890123456.0);
+
+        let mut n = dd!(a);
+        n *= dd!(10).powi(16);
+        n += dd!(a);
+        assert_exact!(n, s);
+    }
+
+    // The parsed values in the first asserts in each test below are of the form (2ⁿ - 1) / 2ⁿ.
+    // Since this is the same as the sum of the series 1/2⁰ + 1/2¹ + 1/2² + ... 1/2ⁿ, these numbers
+    // are exactly representable in binary.
+    //
+    // The second asserts use numbers in the form (3ⁿ - 1) / 3ⁿ where n = 15, rounded to the correct
+    // number of digits. Since these are not sums of powers of 2, they are *not* exactly
+    // representable in binary.
+    //
+    // Parsing any floating-point number will introduce inexactness just because of the nature of
+    // the math used in parsing. However this error will be less than the best precision offered by
+    // the type (most of them are accurate to about 68 digits when only 63-64 is offered). Therefore
+    // `assert_close` is used rather than `assert_exact`.
+
+    #[test]
+    fn single_float() {
+        // n = 15
+        assert_single!(0.99908447265625, parse("0.99908447265625"));
+        let three_expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
+        assert_precision!(three_expected, parse("0.9999999303082806"), 15);
     }
 
     #[test]
-    fn long_integer() {
-        assert_exact!(
-            parse(PI_TIMES_10_20),
-            (Double::PI * Double::from(10).powi(20)).floor()
+    fn double_float() {
+        // n = 31
+        let s = parse("0.9999999995343387126922607421875");
+        let t = dd!(2).powi(31);
+        let x = (t - dd!(1)) / t;
+        assert_close!(x, s);
+
+        let three_expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
+        assert_precision!(
+            three_expected,
+            parse("0.9999999303082806237436760862691"),
+            30
         );
-        assert_exact!(
-            parse(E_TIMES_10_25),
-            (Double::E * Double::from(10).powi(25)).floor()
-        );
     }
 
     #[test]
-    fn float() {
-        // Using just the first component for comparisons here, because on numbers that don't
-        // need that much precision, there is a notable error component in the parsing calculations
-        // (much less than the precision necessary, but enough that tests would catch it).
-        //
-        // This could easily be checked by formatting an output with the proper precision, but that
-        // would be testing both parsing and precision, and we want to isolate those.
-        assert_exact!(parse("17.29").0, Double::from(17.29).0);
-        assert_exact!(parse(".016_777_216").0, Double::from(0.016_777_216).0);
-        assert_exact!(parse("0.016_777_216").0, Double::from(0.016_777_216).0);
-        assert_exact!(parse("+2.317").0, Double::from(2.317).0);
-        assert_exact!(parse("-0.00042").0, Double::from(-0.00042).0);
-    }
+    fn exponent() {
+        let s = parse("0.9999999995343387126922607421875e100");
+        let t = dd!(2).powi(31);
+        let x = ((t - dd!(1)) / t) * dd!(10).powi(100);
+        assert_close!(x, s);
 
-    #[test]
-    fn long_float() {
-        // Using closeness for comparisons here, because the input numbers are long enough to
-        // warrant it
-        assert_close!(parse(PI_50), Double::PI);
-        assert_close!(parse(E_50), Double::E);
-    }
-
-    #[test]
-    fn exp_integer() {
-        assert_exact!(parse("1729e0"), Double::from(1729));
-        assert_exact!(parse("16_777_216e+1"), Double::from(167772160));
-        assert_exact!(parse("+231700000E-5"), Double::from(2317));
-        assert_exact!(parse("-42E3"), Double::from(-42000));
-    }
-
-    #[test]
-    fn long_exp_integer() {
-        assert_eq!(
-            parse(PI_TIMES_10_20_EXP),
-            (Double::PI * Double::from(10).powi(20)).floor()
-        );
-        assert_eq!(
-            parse(E_TIMES_10_25_EXP),
-            (Double::E * Double::from(10).powi(25)).floor()
-        );
-    }
-
-    #[test]
-    fn exp_float() {
-        assert_close!(parse("17.29e0").0, Double::from(17.29).0);
-        assert_close!(parse("1.6777216e-2").0, Double::from(0.016_777_216).0);
-        assert_close!(parse("0.16777216e-1").0, Double::from(0.016_777_216).0);
-        assert_close!(parse("+2.317E3").0, Double::from(2317).0);
-        assert_close!(parse("-4.2e-4").0, Double::from(-0.00042).0);
-    }
-
-    #[test]
-    fn long_exp_float() {
-        assert_close!(parse(PI_50_3), Double::PI * dd!(1000.0));
-        assert_close!(parse(E_50_NEG_2), Double::E / dd!(100.0));
-    }
-
-    #[test]
-    fn error_empty() {
-        assert_eq!(parse_error("").kind, ErrorKind::Empty);
-    }
-
-    #[test]
-    fn error_misplaced_sign() {
-        assert_eq!(parse_error("2+317").kind, ErrorKind::Invalid);
-    }
-
-    #[test]
-    fn error_duplicate_sign() {
-        assert_eq!(parse_error("+-2317").kind, ErrorKind::Invalid);
-    }
-
-    #[test]
-    fn error_duplicate_point() {
-        assert_eq!(parse_error("2.31.7").kind, ErrorKind::Invalid);
-    }
-
-    #[test]
-    fn error_bad_exponent() {
-        assert_eq!(parse_error("1.729e4e").kind, ErrorKind::Invalid);
-    }
-
-    #[test]
-    fn error_bad_character() {
-        // Not yet!
-        assert_eq!(parse_error("0xcafebabe").kind, ErrorKind::Invalid);
+        let s = parse("0.9999999995343387126922607421875e-100");
+        let t = dd!(2).powi(31);
+        let x = ((t - dd!(1)) / t) * dd!(10).powi(-100);
+        assert_close!(x, s);
     }
 }
