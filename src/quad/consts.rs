@@ -34,12 +34,7 @@ impl Quad {
     );
 
     /// Smallest positive normal `Quad` value.
-    pub const MIN_POSITIVE: Quad = Quad(
-        1.6259745436952323e-260,
-        1.323503361786795e-277,
-        2.5355262916141534e-294,
-        7.9750947698e-312,
-    );
+    pub const MIN_POSITIVE: Quad = Quad(1.6259745436952323e-260, 0e0, 0e0, 0e0);
 
     /// Largest finite `Quad` value.
     pub const MAX: Quad = Quad(

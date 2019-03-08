@@ -12,7 +12,7 @@ impl Quad {
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
+    /// # use qd::Quad;
     /// # fn main() {
     /// assert!(qd!(3).abs() == qd!(3));
     /// assert!(qd!(-3).abs() == qd!(3));
@@ -32,8 +32,8 @@ impl Quad {
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {Absool
+    /// # use qd::Quad;
+    /// # fn main() {
     /// let f = qd!(3.99);
     /// let g = qd!(3.0);
     ///
