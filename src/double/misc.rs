@@ -10,7 +10,7 @@ use std::num::FpCategory;
 // #region Miscellaneous mathematical operations
 
 impl Double {
-    /// Calculates the absolute value of the number.
+    /// Calculates the absolute value of the double-double.
     ///
     /// # Examples
     /// ```
@@ -30,7 +30,7 @@ impl Double {
         }
     }
 
-    /// Returns the largest integer less than or equal to the number.
+    /// Returns the largest integer less than or equal to the double-double.
     ///
     /// # Examples
     /// ```
@@ -55,7 +55,7 @@ impl Double {
         }
     }
 
-    /// Returns the smallest integer greater than or equal to the number.
+    /// Returns the smallest integer greater than or equal to the double-double.
     ///
     /// # Examples
     /// ```
@@ -80,7 +80,8 @@ impl Double {
         }
     }
 
-    /// Returns the nearest integer to the number. Half-way cases are rounded away from `0.0`.
+    /// Returns the nearest integer to the double-double. Half-way cases are rounded away from
+    /// `0.0`.
     ///
     /// # Examples
     /// ```
@@ -110,7 +111,7 @@ impl Double {
         }
     }
 
-    /// Returns the integer part of the number.
+    /// Returns the integer part of the double-double.
     ///
     /// # Examples
     /// ```
@@ -133,7 +134,7 @@ impl Double {
         }
     }
 
-    /// Returns the fractional part of the number.
+    /// Returns the fractional part of the double-double.
     ///
     /// # Examples
     /// ```
@@ -155,11 +156,11 @@ impl Double {
         self - self.trunc()
     }
 
-    /// Returns a number that represents the sign of the number.
+    /// Returns a number that represents the sign of the double-double.
     ///
-    /// * `1.0` if the number is positive, `+0.0`, or [`INFINITY`]
-    /// * `-1.0` if the number is negative, `-0.0`, or [`NEG_INFINITY`]
-    /// *  [`NAN`] if the number is [`NAN`]
+    /// * `1.0` if the double-double is positive, `+0.0`, or [`INFINITY`]
+    /// * `-1.0` if the double-double is negative, `-0.0`, or [`NEG_INFINITY`]
+    /// *  [`NAN`] if the double-double is [`NAN`]
     ///
     /// # Examples
     /// ```
@@ -192,8 +193,8 @@ impl Double {
 // #region Number properties
 
 impl Double {
-    /// Returns the floating point category of the number. If only one property is being tested,
-    /// it's generally faster to use the specific predicate rather than this function.
+    /// Returns the floating point category of the double-double. If only one property is being
+    /// tested, it's generally faster to use the specific predicate rather than this function.
     ///
     /// # Examples
     /// ```
@@ -228,7 +229,7 @@ impl Double {
         }
     }
 
-    /// Returns `true` if the number is neither zero, infinite, subnormal, or `NaN`.
+    /// Returns `true` if the double-double is neither zero, infinite, subnormal, or `NaN`.
     ///
     /// # Examples
     /// ```
@@ -255,7 +256,7 @@ impl Double {
         self.classify() == FpCategory::Normal
     }
 
-    /// Returns `true` if the number is either positive or negative zero.
+    /// Returns `true` if the double-double is either positive or negative zero.
     ///
     /// # Examples
     /// ```
@@ -269,8 +270,8 @@ impl Double {
         self.0 == 0.0
     }
 
-    /// Returns `true` if the number is negative, including negative zero and infinity and `NaN`
-    /// with a negative sign bit.
+    /// Returns `true` if the double-double is negative, including negative zero and infinity and
+    /// `NaN` with a negative sign bit.
     ///
     /// # Examples
     /// ```
@@ -289,8 +290,8 @@ impl Double {
         self.0.is_sign_negative()
     }
 
-    /// Returns `true` if the number is positive, including positive zero and infinity and `NaN`
-    /// with a positive sign bit.
+    /// Returns `true` if the double-double is positive, including positive zero and infinity and
+    /// `NaN` with a positive sign bit.
     ///
     /// # Examples
     /// ```
@@ -309,7 +310,7 @@ impl Double {
         self.0.is_sign_positive()
     }
 
-    /// Returns `true` if this value is `NaN`.
+    /// Returns `true` if the double-double is `NaN`.
     ///
     /// # Examples
     /// ```
@@ -325,7 +326,7 @@ impl Double {
         self.0.is_nan() || self.1.is_nan()
     }
 
-    /// Returns `true` if this number is positive or negative infinity.
+    /// Returns `true` if the double-double is positive or negative infinity.
     ///
     /// # Examples
     /// ```
@@ -343,7 +344,7 @@ impl Double {
         self.0.is_infinite() || self.1.is_infinite()
     }
 
-    /// Returns `true` if this number is neither infinite nor `NaN`.
+    /// Returns `true` if the double-double is neither infinite nor `NaN`.
     ///
     /// # Examples
     /// ```
@@ -367,27 +368,35 @@ impl Double {
 // #region Conversions
 
 impl Double {
-    /// Converts the number into an `f64`.
+    /// Converts the double-double into an `f64`.
+    ///
+    /// There *will* be accuracy loss if the quad-double was more accurate than an `f64` to begin
+    /// with.
     #[inline]
     pub fn as_float(self) -> f64 {
         self.0
     }
 
-    /// Converts the number into an `i64`.
+    /// Converts the double-double into an `i64`.
     ///
     /// While it is possible for a `Double` to be created from a `u64`, whether or not the original
     /// is signed is not recorded (since `Double` itself is signed). The return value of this
-    /// function can be cast to u64 if necessary.
+    /// function can be cast to `u64` if necessary.
     #[inline]
     pub fn as_int(self) -> i64 {
         self.0 as i64 + self.1 as i64
     }
 
+    /// Converts the double-double into a 2-tuple of `f64`s.
+    ///
+    /// The components of the returned tuples are the same numbers used to represent the
+    /// double-double internally.
     #[inline]
     pub fn as_tuple(self) -> (f64, f64) {
         (self.0, self.1)
     }
 
+    /// Assigns the components of a tuple to the components of the double-double.
     #[inline]
     pub fn assign(&mut self, (a, b): (f64, f64)) {
         self.0 = a;
