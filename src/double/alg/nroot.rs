@@ -79,33 +79,41 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn nroot() {
         assert_close!(Double::PI, Double::PI.nroot(1));
         assert_close!(
-            dd!("1.772453850905516027298167483341145182797549456122387128213807790"),
+            dd!("1.77245385090551602729816748334115"),
             Double::PI.nroot(2)
         );
         assert_close!(
-            dd!("1.284025416687741484073420568062436458336280865281463089217507297"),
+            dd!("1.28402541668774148407342056806244"),
             Double::E.nroot(4)
         );
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::INFINITY, dd!(0.0).nroot(-2));
-        assert_exact!(Double::INFINITY, dd!(-0.0).nroot(-2));
-        assert_exact!(Double::INFINITY, dd!(0.0).nroot(-3));
-        assert_exact!(Double::NEG_INFINITY, dd!(-0.0).nroot(-3));
-        assert_exact!(Double::ZERO, dd!(0.0).nroot(4));
-        assert_exact!(Double::ZERO, dd!(-0.0).nroot(4));
-        assert_exact!(Double::ZERO, dd!(0.0).nroot(5));
-        assert_exact!(Double::NEG_ZERO, dd!(-0.0).nroot(4));
-        assert_exact!(Double::NAN, dd!(2).nroot(-2));
+    fn zero() {
+        assert_exact!(Double::ZERO, Double::ZERO.nroot(4));
+        assert_exact!(Double::ZERO, Double::NEG_ZERO.nroot(4));
+        assert_exact!(Double::ZERO, Double::ZERO.nroot(5));
+        assert_exact!(Double::NEG_ZERO, Double::NEG_ZERO.nroot(4));
+        assert_exact!(Double::INFINITY, Double::ZERO.nroot(-2));
+        assert_exact!(Double::INFINITY, Double::NEG_ZERO.nroot(-2));
+        assert_exact!(Double::INFINITY, Double::ZERO.nroot(-3));
+        assert_exact!(Double::NEG_INFINITY, Double::NEG_ZERO.nroot(-3));
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Double::INFINITY, Double::INFINITY.nroot(4));
         assert_exact!(Double::NAN, Double::NEG_INFINITY.nroot(4));
         assert_exact!(Double::INFINITY, Double::INFINITY.nroot(3));
         assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.nroot(3));
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, dd!(2).nroot(-2));
         assert_exact!(Double::NAN, Double::NAN.nroot(3));
     }
 }

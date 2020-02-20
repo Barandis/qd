@@ -35,9 +35,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn ldexp() {
         assert_exact!(dd!(48), dd!(3).ldexp(4));
-        assert_close!(dd!(0.078125), dd!(5).ldexp(-6));
+        assert_close!(dd!(0.078_125), dd!(5).ldexp(-6));
         assert_close!(
             dd!("4.2165742826631309245621820777801e8"),
             Double::PI.ldexp(27)
@@ -49,11 +49,24 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::NAN, Double::NAN.ldexp(5));
+    fn zero() {
+        assert_exact!(Double::ZERO, Double::ZERO.ldexp(2));
+        assert_exact!(Double::NEG_ZERO, Double::NEG_ZERO.ldexp(2));
+        assert_exact!(Double::ONE, Double::ONE.ldexp(0));
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Double::INFINITY, Double::INFINITY.ldexp(4));
         assert_exact!(Double::INFINITY, Double::INFINITY.ldexp(-4));
+        assert_exact!(Double::INFINITY, Double::INFINITY.ldexp(0));
         assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.ldexp(3));
         assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.ldexp(-3));
+        assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.ldexp(0));
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN.ldexp(5));
     }
 }

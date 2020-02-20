@@ -24,6 +24,8 @@ impl Double {
             Double::ZERO
         } else if self.is_sign_negative() {
             Double::NAN
+        } else if self.is_infinite() {
+            Double::INFINITY
         } else {
             // Strategy: use a method developed by Alan Karp and Peter Markstein
             // at HP https://cr.yp.to/bib/1997/karp.pdf
@@ -47,7 +49,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn positive() {
         assert_close!(
             dd!("1.7724538509055160272981674833411"),
             Double::PI.sqrt()
@@ -59,8 +61,23 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::ZERO, dd!(0).sqrt());
+    fn negative() {
         assert_exact!(Double::NAN, dd!(-3).sqrt());
+    }
+
+    #[test]
+    fn zero() {
+        assert_exact!(Double::ZERO, Double::ZERO.sqrt());
+    }
+
+    #[test]
+    fn infinity() {
+        assert_exact!(Double::INFINITY, Double::INFINITY.sqrt());
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.sqrt());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN.sqrt());
     }
 }

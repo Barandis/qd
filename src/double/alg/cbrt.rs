@@ -31,7 +31,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn cbrt() {
         assert_close!(
             dd!("1.4645918875615232630201425272638"),
             Double::PI.cbrt()
@@ -43,11 +43,19 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::ZERO, dd!(0.0).cbrt());
-        assert_exact!(Double::NEG_ZERO, dd!(-0.0).cbrt());
+    fn zero() {
+        assert_exact!(Double::ZERO, Double::ZERO.cbrt());
+        assert_exact!(Double::NEG_ZERO, Double::NEG_ZERO.cbrt());
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Double::INFINITY, Double::INFINITY.cbrt());
         assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.cbrt());
+    }
+
+    #[test]
+    fn nan() {
         assert_exact!(Double::NAN, Double::NAN.cbrt());
     }
 }

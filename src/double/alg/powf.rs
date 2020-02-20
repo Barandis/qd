@@ -60,7 +60,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn powf() {
         assert_close!(
             dd!("24567.24805421478199532529771567617705237"),
             dd!(11.1).powf(dd!(4.2))
@@ -80,32 +80,57 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::ONE, dd!(2).powf(dd!(0.0)));
-        assert_exact!(Double::ONE, dd!(2).powf(dd!(-0.0)));
-        assert_exact!(Double::INFINITY, dd!(0.0).powf(dd!(-2)));
-        assert_exact!(Double::INFINITY, dd!(-0.0).powf(dd!(-2)));
-        assert_exact!(Double::INFINITY, dd!(0.0).powf(Double::NEG_INFINITY));
-        assert_exact!(Double::INFINITY, dd!(-0.0).powf(Double::NEG_INFINITY));
-        assert_exact!(Double::ZERO, dd!(0.0).powf(dd!(3)));
-        assert_exact!(Double::ZERO, dd!(-0.0).powf(dd!(3)));
-        assert_exact!(Double::ZERO, dd!(0.0).powf(Double::INFINITY));
-        assert_exact!(Double::ZERO, dd!(-0.0).powf(Double::INFINITY));
-        assert_exact!(Double::ONE, dd!(1).powf(dd!(2317)));
-        assert_exact!(Double::NAN, dd!(-1).powf(dd!(1)));
-        assert_exact!(Double::NAN, dd!(0.0).powf(dd!(0.0)));
-        assert_exact!(Double::NAN, dd!(-0.0).powf(dd!(0.0)));
-        assert_exact!(Double::NAN, dd!(0.0).powf(dd!(-0.0)));
-        assert_exact!(Double::NAN, dd!(-0.0).powf(dd!(-0.0)));
-        assert_exact!(Double::NAN, Double::INFINITY.powf(dd!(0.0)));
-        assert_exact!(Double::NAN, Double::INFINITY.powf(dd!(-0.0)));
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.powf(dd!(0.0)));
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.powf(dd!(-0.0)));
-        assert_exact!(Double::NAN, dd!(1).powf(Double::INFINITY));
-        assert_exact!(Double::NAN, dd!(1).powf(Double::NEG_INFINITY));
+    fn zero() {
+        assert_exact!(Double::ZERO, Double::ZERO.powf(dd!(3)));
+        assert_exact!(Double::ZERO, Double::NEG_ZERO.powf(dd!(3)));
+        assert_exact!(Double::ZERO, Double::ZERO.powf(Double::INFINITY));
+        assert_exact!(Double::ZERO, Double::NEG_ZERO.powf(Double::INFINITY));
+        assert_exact!(Double::INFINITY, Double::ZERO.powf(dd!(-2)));
+        assert_exact!(Double::INFINITY, Double::NEG_ZERO.powf(dd!(-2)));
+        assert_exact!(
+            Double::INFINITY,
+            Double::ZERO.powf(Double::NEG_INFINITY)
+        );
+        assert_exact!(
+            Double::INFINITY,
+            Double::NEG_ZERO.powf(Double::NEG_INFINITY)
+        );
+    }
+
+    #[test]
+    fn zero_exponent() {
+        assert_exact!(Double::ONE, dd!(2).powf(Double::ZERO));
+        assert_exact!(Double::ONE, dd!(2).powf(Double::NEG_ZERO));
+        assert_exact!(Double::NAN, Double::ZERO.powf(Double::ZERO));
+        assert_exact!(Double::NAN, Double::NEG_ZERO.powf(Double::ZERO));
+        assert_exact!(Double::NAN, Double::ZERO.powf(Double::NEG_ZERO));
+        assert_exact!(Double::NAN, Double::NEG_ZERO.powf(Double::NEG_ZERO));
+    }
+
+    #[test]
+    fn infinity() {
+        assert_exact!(Double::NAN, Double::INFINITY.powf(Double::ZERO));
+        assert_exact!(Double::NAN, Double::INFINITY.powf(Double::NEG_ZERO));
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.powf(Double::ZERO));
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.powf(Double::NEG_ZERO));
+    }
+
+    #[test]
+    fn infinite_exponent() {
         assert_exact!(Double::INFINITY, dd!(2).powf(Double::INFINITY));
         assert_exact!(Double::ZERO, dd!(2).powf(Double::NEG_INFINITY));
+        assert_exact!(Double::NAN, dd!(1).powf(Double::INFINITY));
+        assert_exact!(Double::NAN, dd!(1).powf(Double::NEG_INFINITY));
+    }
+
+    #[test]
+    fn nan() {
         assert_exact!(Double::NAN, Double::NAN.powf(dd!(3)));
         assert_exact!(Double::NAN, dd!(3).powf(Double::NAN));
+    }
+
+    #[test]
+    fn negative() {
+        assert_exact!(Double::NAN, dd!(-1).powf(dd!(1)));
     }
 }

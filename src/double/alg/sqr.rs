@@ -37,7 +37,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn sqr() {
         assert_exact!(dd!(121), dd!(-11).sqr());
         assert_close!(
             dd!("9.869604401089358618834490999876"),
@@ -46,8 +46,12 @@ mod tests {
     }
 
     #[test]
-    fn special() {
+    fn zero() {
+        assert_exact!(Double::ZERO, Double::ZERO.sqr());
+    }
+
+    #[test]
+    fn nan() {
         assert_exact!(Double::NAN, Double::NAN.sqr());
-        assert_exact!(Double::ZERO, dd!(0).sqr());
     }
 }
