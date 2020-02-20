@@ -5,6 +5,7 @@
 
 use crate::common::basic::renorm2;
 use crate::double::Double;
+use std::f64;
 
 fn from_float(n: f64) -> Double {
     if n == 0.0 {
@@ -21,7 +22,7 @@ fn from_float(n: f64) -> Double {
         } else {
             Double::INFINITY
         }
-    } else if n.floor() == n {
+    } else if (n.floor() - n).abs() < f64::EPSILON {
         Double(n, 0.0)
     } else {
         // TODO: This needs investigation. It seems incorrect to double-convert
@@ -144,21 +145,21 @@ mod tests {
 
     #[test]
     fn conv_from_u64() {
-        let a = 0x0123456789abcdefu64;
+        let a = 0x0_123_456_789_abc_defu64;
         let d = dd!(a);
         assert_eq!(format!("{}", a), format!("{}", d));
     }
 
     #[test]
     fn conv_from_i64() {
-        let a = -0x0123456789abcdefi64;
+        let a = -0x0_123_456_789_abc_defi64;
         let d = dd!(a);
         assert_eq!(format!("{}", a), format!("{}", d));
     }
 
     #[test]
     fn conv_from_and_to_i64() {
-        let a = -0x0123456789abcdefi64;
+        let a = -0x0_123_456_789_abc_defi64;
         let d = dd!(a);
         let x = d.as_int();
         assert_eq!(a, x);

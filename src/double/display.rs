@@ -262,7 +262,7 @@ mod tests {
 
     fn close_str(actual: &str, expected: &str) -> bool {
         let len = expected.len() - 1;
-        &actual[0..len] == &expected[0..len]
+        actual[0..len] == expected[0..len]
     }
 
     #[test]
@@ -303,7 +303,7 @@ mod tests {
     fn format_integer_exp() {
         assert_eq!(plain(Double::from(1729e0)), "1729");
         assert_eq!(plain(Double::from(16_777_216e+1)), "167772160");
-        assert_eq!(plain(Double::from(231700000E-5)), "2317");
+        assert_eq!(plain(Double::from(231_700_000E-5)), "2317");
         assert_eq!(plain(Double::from(-42e3)), "-42000");
     }
 
@@ -311,7 +311,7 @@ mod tests {
     fn format_float_exp() {
         assert!(close_str(plain(Double::from(17.29e0)).as_str(), "17.29"));
         assert!(close_str(
-            plain(Double::from(1.6777216e-1)).as_str(),
+            plain(Double::from(1.677_721_6e-1)).as_str(),
             "0.16777216"
         ));
         assert!(close_str(plain(Double::from(2.317e2)).as_str(), "231.7"));
@@ -352,8 +352,7 @@ mod tests {
         let ac_parts: Vec<&str> = actual.split('e').collect();
 
         let len = ex_parts[0].len() - 1;
-        &ac_parts[0][0..len] == &ex_parts[0][0..len]
-            && &ac_parts[1] == &ex_parts[1]
+        ac_parts[0][0..len] == ex_parts[0][0..len] && ac_parts[1] == ex_parts[1]
     }
 
     #[test]
@@ -393,7 +392,7 @@ mod tests {
     fn format_exp_integer_exp() {
         assert_eq!(exp(Double::from(1729e0)), "1.729e3");
         assert_eq!(exp(Double::from(16_777_216e+1)), "1.6777216e8");
-        assert_eq!(exp(Double::from(231700000E-5)), "2.317e3");
+        assert_eq!(exp(Double::from(231_700_000E-5)), "2.317e3");
         assert_eq!(exp(Double::from(-42e3)), "-4.2e4");
     }
 
@@ -401,7 +400,7 @@ mod tests {
     fn format_exp_float_exp() {
         assert!(close_exp(exp(Double::from(17.29e0)).as_str(), "1.729e1"));
         assert!(close_exp(
-            exp(Double::from(1.6777216e-1)).as_str(),
+            exp(Double::from(1.677_721_6e-1)).as_str(),
             "1.6777216e-1"
         ));
         assert!(close_exp(exp(Double::from(2.317e2)).as_str(), "2.317e2"));
@@ -432,7 +431,10 @@ mod tests {
         );
         assert_eq!(format!("{:.0}", Double::from(0.016_777_216)), "0");
         assert_eq!(format!("{:.0}", Double::from(-0.016_777_216)), "-0");
-        assert_eq!(format!("{:.4}", Double::from(0.0000016_777_216)), "0.0000");
+        assert_eq!(
+            format!("{:.4}", Double::from(0.000_001_677_721_6)),
+            "0.0000"
+        );
     }
 
     #[test]
@@ -458,7 +460,7 @@ mod tests {
 
     #[test]
     fn format_width_default_align() {
-        let value = Double::from(123456);
+        let value = Double::from(123_456);
         assert_eq!(format!("{:3}", value), "123456");
         assert_eq!(format!("{:6}", value), "123456");
         assert_eq!(format!("{:10}", value), "    123456");
@@ -468,7 +470,7 @@ mod tests {
 
     #[test]
     fn format_width_right_align() {
-        let value = Double::from(123456);
+        let value = Double::from(123_456);
         assert_eq!(format!("{:>3}", value), "123456");
         assert_eq!(format!("{:>6}", value), "123456");
         assert_eq!(format!("{:>10}", value), "    123456");
@@ -478,7 +480,7 @@ mod tests {
 
     #[test]
     fn format_width_left_align() {
-        let value = Double::from(123456);
+        let value = Double::from(123_456);
         assert_eq!(format!("{:<3}", value), "123456");
         assert_eq!(format!("{:<6}", value), "123456");
         assert_eq!(format!("{:<10}", value), "123456    ");
@@ -488,7 +490,7 @@ mod tests {
 
     #[test]
     fn format_width_center_align() {
-        let value = Double::from(123456);
+        let value = Double::from(123_456);
         assert_eq!(format!("{:^3}", value), "123456");
         assert_eq!(format!("{:^6}", value), "123456");
         assert_eq!(format!("{:^10}", value), "  123456  ");
@@ -499,7 +501,7 @@ mod tests {
 
     #[test]
     fn format_width_fill() {
-        let value = Double::from(123456);
+        let value = Double::from(123_456);
         assert_eq!(format!("{:*^3}", value), "123456");
         assert_eq!(format!("{:*^10}", value), "**123456**");
         assert_eq!(format!("{:*>10}", value), "****123456");
@@ -510,7 +512,7 @@ mod tests {
 
     #[test]
     fn format_width_sign_aware_zero_fill() {
-        let value = Double::from(123456);
+        let value = Double::from(123_456);
         assert_eq!(format!("{:03}", value), "123456");
         assert_eq!(format!("{:010}", value), "0000123456");
         assert_eq!(format!("{:010}", -value), "-000123456");
@@ -524,7 +526,7 @@ mod tests {
 
     #[test]
     fn format_misc_plus_sign() {
-        let value = Double::from(123456);
+        let value = Double::from(123_456);
         assert_eq!(format!("{:+}", value), "+123456");
         assert_eq!(format!("{:+e}", value), "+1.23456e5");
         assert_eq!(format!("{:+12e}", value), "  +1.23456e5");
