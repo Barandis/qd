@@ -5,6 +5,7 @@
 
 use crate::common::basic::renorm2;
 use crate::double::Double;
+use std::f64;
 
 impl Double {
     /// Calculates the absolute value of the double-double.
@@ -45,7 +46,7 @@ impl Double {
     pub fn floor(self) -> Double {
         let hi = self.0.floor();
 
-        if hi == self.0 {
+        if (hi - self.0).abs() < f64::EPSILON {
             Double::norm(hi, self.1.floor())
         } else {
             Double(hi, 0.0)
@@ -70,7 +71,7 @@ impl Double {
     pub fn ceil(self) -> Double {
         let hi = self.0.ceil();
 
-        if hi == self.0 {
+        if (hi - self.0).abs() < f64::EPSILON {
             Double::norm(hi, self.1.ceil())
         } else {
             Double(hi, 0.0)
@@ -96,15 +97,15 @@ impl Double {
     pub fn round(self) -> Double {
         let hi = self.0.round();
 
-        if hi == self.0 {
+        if (hi - self.0).abs() < f64::EPSILON {
             let lo = self.1.round();
             Double::from(renorm2(hi, lo))
+        } else if ((hi - self.0).abs() - 0.5).abs() < f64::EPSILON
+            && self.1 < 0.0
+        {
+            Double(hi - 1.0, 0.0)
         } else {
-            if (hi - self.0).abs() == 0.5 && self.1 < 0.0 {
-                Double(hi - 1.0, 0.0)
-            } else {
-                Double(hi, 0.0)
-            }
+            Double(hi, 0.0)
         }
     }
 
