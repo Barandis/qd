@@ -38,17 +38,32 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    #[allow(clippy::eq_op)]
+    fn equal() {
         assert!(Double::PI == Double::PI);
+    }
+
+    #[test]
+    fn not_equal() {
         assert!(Double::PI != Double::E);
     }
 
     #[test]
-    fn special() {
+    fn zero() {
         assert!(Double::ZERO == Double::NEG_ZERO);
+    }
+
+    #[test]
+    #[allow(clippy::eq_op)]
+    fn infinity() {
         assert!(Double::INFINITY == Double::INFINITY);
         assert!(Double::NEG_INFINITY == Double::NEG_INFINITY);
         assert!(Double::INFINITY != Double::NEG_INFINITY);
+    }
+
+    #[test]
+    #[allow(clippy::eq_op)]
+    fn nan() {
         assert!(Double::NAN != Double::NAN);
     }
 }

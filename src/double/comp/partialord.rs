@@ -39,21 +39,55 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
+    fn gt() {
         assert!(Double::PI > Double::E);
-        assert!(Double::PI >= Double::E);
-        assert!(Double::E < Double::PI);
-        assert!(Double::E <= Double::PI);
+        assert!(!(Double::PI > Double::PI));
+        assert!(!(Double::E > Double::PI));
     }
 
     #[test]
-    fn special() {
+    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
+    fn gte() {
+        assert!(Double::PI >= Double::E);
+        assert!(Double::PI >= Double::PI);
+        assert!(!(Double::E >= Double::PI));
+    }
+
+    #[test]
+    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
+    fn lt() {
+        assert!(Double::E < Double::PI);
+        assert!(!(Double::E < Double::E));
+        assert!(!(Double::PI < Double::E));
+    }
+
+    #[test]
+    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
+    fn lte() {
+        assert!(Double::E <= Double::PI);
+        assert!(Double::E <= Double::E);
+        assert!(!(Double::PI <= Double::E));
+    }
+
+    #[test]
+    fn zero() {
+        assert!(Double::ZERO <= Double::NEG_ZERO);
+        assert!(Double::ZERO >= Double::NEG_ZERO);
+    }
+
+    #[test]
+    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
+    fn infinity() {
         assert!(Double::NEG_INFINITY < Double::INFINITY);
         assert!(Double::NEG_INFINITY <= Double::NEG_INFINITY);
         assert!(Double::NEG_INFINITY >= Double::NEG_INFINITY);
         assert!(!(Double::NEG_INFINITY > Double::NEG_INFINITY));
-        assert!(Double::ZERO <= Double::NEG_ZERO);
-        assert!(Double::ZERO >= Double::NEG_ZERO);
+    }
+
+    #[test]
+    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
+    fn nan() {
         assert!(!(Double::NAN < Double::NAN));
         assert!(!(Double::NAN <= Double::NAN));
         assert!(!(Double::NAN > Double::NAN));
