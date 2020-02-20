@@ -22,6 +22,7 @@ impl Double {
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
+    #[allow(clippy::many_single_char_names)]
     pub fn cos(self) -> Double {
         if self.is_zero() {
             Double::ONE
@@ -68,21 +69,30 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn cos() {
         assert_close!(dd!("0.54030230586813971740093660744298"), dd!(1).cos());
         assert_close!(
             dd!("0.70710678118654752440084436210485"),
             (Double::PI / dd!(4)).cos()
         );
         assert_close!(dd!(0.5), Double::FRAC_PI_3.cos());
+        assert_exact!(Double::ZERO, Double::FRAC_PI_2.cos());
     }
 
     #[test]
-    fn special() {
+    fn zero() {
         assert_exact!(Double::ONE, Double::ZERO.cos());
-        assert_exact!(Double::ZERO, Double::FRAC_PI_2.cos());
+        assert_exact!(Double::ONE, Double::NEG_ZERO.cos());
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Double::NAN, Double::INFINITY.cos());
         assert_exact!(Double::NAN, Double::NEG_INFINITY.cos());
+    }
+
+    #[test]
+    fn nan() {
         assert_exact!(Double::NAN, Double::NAN.cos());
     }
 }

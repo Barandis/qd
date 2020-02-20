@@ -74,12 +74,10 @@ impl Double {
         } else if self.is_infinite() {
             if other.is_infinite() {
                 Double::NAN
+            } else if self.is_sign_positive() {
+                Double::FRAC_PI_2
             } else {
-                if self.is_sign_positive() {
-                    Double::FRAC_PI_2
-                } else {
-                    -Double::FRAC_PI_2
-                }
+                -Double::FRAC_PI_2
             }
         } else if other.is_infinite() {
             Double::ZERO
@@ -123,39 +121,57 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn atan2() {
         assert_close!(
             dd!("0.46364760900080611621425623146121"),
-            dd!(1).atan2(dd!(2))
+            Double::ONE.atan2(dd!(2))
         );
         assert_close!(
             dd!("2.6779450445889871222483871518183"),
-            dd!(1).atan2(dd!(-2))
+            Double::ONE.atan2(dd!(-2))
         );
         assert_close!(
             dd!("-0.46364760900080611621425623146121"),
-            dd!(-1).atan2(dd!(2))
+            -Double::ONE.atan2(dd!(2))
         );
         assert_close!(
             dd!("-2.6779450445889871222483871518183"),
-            dd!(-1).atan2(dd!(-2))
+            -Double::ONE.atan2(dd!(-2))
         );
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::NAN, dd!(0).atan2(dd!(0)));
-        assert_exact!(Double::ZERO, dd!(0).atan2(dd!(1)));
-        assert_close!(Double::PI, dd!(0).atan2(dd!(-1)));
-        assert_close!(Double::FRAC_PI_2, dd!(1).atan2(dd!(0)));
-        assert_close!(-Double::FRAC_PI_2, dd!(-1).atan2(dd!(0)));
-        assert_close!(Double::FRAC_PI_4, dd!(1).atan2(dd!(1)));
-        assert_close!(-Double::FRAC_3_PI_4, dd!(-1).atan2(dd!(-1)));
-        assert_close!(Double::FRAC_3_PI_4, dd!(1).atan2(dd!(-1)));
-        assert_close!(-Double::FRAC_PI_4, dd!(-1).atan2(dd!(1)));
+    fn zero() {
+        assert_exact!(Double::NAN, Double::ZERO.atan2(Double::ZERO));
+        assert_exact!(Double::ZERO, Double::ZERO.atan2(Double::ONE));
+        assert_close!(Double::PI, Double::ZERO.atan2(-Double::ONE));
+        assert_close!(Double::FRAC_PI_2, Double::ONE.atan2(Double::ZERO));
+        assert_close!(-Double::FRAC_PI_2, -Double::ONE.atan2(Double::ZERO));
+    }
+
+    #[test]
+    fn one() {
+        assert_close!(Double::FRAC_PI_4, Double::ONE.atan2(Double::ONE));
+        assert_close!(-Double::FRAC_3_PI_4, -Double::ONE.atan2(-Double::ONE));
+        assert_close!(Double::FRAC_3_PI_4, Double::ONE.atan2(-Double::ONE));
+        assert_close!(-Double::FRAC_PI_4, -Double::ONE.atan2(Double::ONE));
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Double::NAN, Double::INFINITY.atan2(Double::INFINITY));
-        assert_close!(Double::FRAC_PI_2, Double::INFINITY.atan2(dd!(1)));
-        assert_close!(-Double::FRAC_PI_2, Double::NEG_INFINITY.atan2(dd!(1)));
-        assert_exact!(Double::ZERO, dd!(1).atan2(Double::INFINITY));
+        assert_close!(Double::FRAC_PI_2, Double::INFINITY.atan2(Double::ONE));
+        assert_close!(
+            -Double::FRAC_PI_2,
+            Double::NEG_INFINITY.atan2(Double::ONE)
+        );
+        assert_exact!(Double::ZERO, Double::ONE.atan2(Double::INFINITY));
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN.atan2(Double::ONE));
+        assert_exact!(Double::NAN, Double::ONE.atan2(Double::NAN));
+        assert_exact!(Double::NAN, Double::NAN.atan2(Double::NAN));
     }
 }

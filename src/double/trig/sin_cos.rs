@@ -26,6 +26,7 @@ impl Double {
     /// assert!(diff_cos < dd!(1e-30));
     /// # }
     /// ```
+    #[allow(clippy::many_single_char_names)]
     pub fn sin_cos(self) -> (Double, Double) {
         if self.is_zero() {
             (Double::ZERO, Double::ONE)
@@ -64,30 +65,37 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn sin_cos() {
         let (s, c) = dd!(1).sin_cos();
         assert_close!(dd!("0.84147098480789650665250232163030"), s);
         assert_close!(dd!("0.54030230586813971740093660744298"), c);
+
         let (s, c) = dd!(Double::PI / dd!(4)).sin_cos();
         assert_close!(dd!("0.70710678118654752440084436210485"), s);
         assert_close!(dd!("0.70710678118654752440084436210485"), c);
         assert_close!(dd!(0.5), Double::FRAC_PI_6.sin());
-    }
-
-    #[test]
-    fn special() {
-        assert_exact!(Double::ZERO, Double::ZERO.sin_cos().0);
-        assert_exact!(Double::ONE, Double::ZERO.sin_cos().1);
 
         assert_exact!(Double::ONE, Double::FRAC_PI_2.sin_cos().0);
         assert_exact!(Double::ZERO, Double::FRAC_PI_2.sin_cos().1);
+    }
 
+    #[test]
+    fn zero() {
+        assert_exact!(Double::ZERO, Double::ZERO.sin_cos().0);
+        assert_exact!(Double::ONE, Double::ZERO.sin_cos().1);
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Double::NAN, Double::INFINITY.sin_cos().0);
         assert_exact!(Double::NAN, Double::INFINITY.sin_cos().1);
 
         assert_exact!(Double::NAN, Double::NEG_INFINITY.sin_cos().0);
         assert_exact!(Double::NAN, Double::NEG_INFINITY.sin_cos().1);
+    }
 
+    #[test]
+    fn nan() {
         assert_exact!(Double::NAN, Double::NAN.sin_cos().0);
         assert_exact!(Double::NAN, Double::NAN.sin_cos().1);
     }

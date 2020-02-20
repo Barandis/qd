@@ -7,6 +7,7 @@ use crate::double::common::{mul_pwr2, INV_FACTS};
 use crate::double::Double;
 
 // Compute sin a using the Taylor series. This assumes that |a| <= π/32.
+#[allow(clippy::many_single_char_names)]
 pub(super) fn sin_taylor(a: Double) -> Double {
     if a.is_zero() {
         Double::ZERO
@@ -31,6 +32,7 @@ pub(super) fn sin_taylor(a: Double) -> Double {
 }
 
 // Compute cos a using the Taylor series. This assumes that |a| <= π/32.
+#[allow(clippy::many_single_char_names)]
 pub(super) fn cos_taylor(a: Double) -> Double {
     if a.is_zero() {
         Double::ONE
@@ -72,6 +74,7 @@ pub(super) fn sincos_taylor(a: Double) -> (Double, Double) {
 // within the next higher modulo in which the value fell (`j` and `k`, this is
 // the quadrant for `j`).
 #[inline]
+#[allow(clippy::many_single_char_names)]
 pub(super) fn reduce(a: Double) -> (i32, i32, Double) {
     // reduce modulo 2π
     let z = (a / Double::MUL_2_PI).round();

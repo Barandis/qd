@@ -40,18 +40,29 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn asin() {
         assert_close!(
             dd!("0.52359877559829887307710723054658"),
             dd!(0.5).asin()
         );
+        assert_close!(Double::FRAC_PI_2, dd!(1).asin());
+        assert_close!(-Double::FRAC_PI_2, dd!(-1).asin());
     }
 
     #[test]
-    fn special() {
+    fn infinity() {
+        assert_exact!(Double::NAN, Double::INFINITY.asin());
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.asin());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN.asin());
+    }
+
+    #[test]
+    fn out_of_range() {
         assert_exact!(Double::NAN, dd!(1.5).asin());
         assert_exact!(Double::NAN, dd!(-1.5).asin());
-        assert_close!(Double::FRAC_PI_2, dd!(1).asin());
-        assert_close!(-Double::FRAC_PI_2, dd!(-1).asin());
     }
 }

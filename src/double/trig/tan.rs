@@ -34,14 +34,22 @@ mod tests {
     fn basic() {
         assert_close!(dd!("1.5574077246549022305069748074584"), dd!(1).tan());
         assert_close!(dd!(1), Double::FRAC_PI_4.tan());
+        assert!(Double::FRAC_PI_2.tan().is_infinite());
     }
 
     #[test]
-    fn special() {
+    fn zero() {
         assert_exact!(Double::ZERO, Double::ZERO.tan());
-        assert!(Double::FRAC_PI_2.tan().is_infinite());
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Double::NAN, Double::INFINITY.tan());
         assert_exact!(Double::NAN, Double::NEG_INFINITY.tan());
+    }
+
+    #[test]
+    fn nan() {
         assert_exact!(Double::NAN, Double::NAN.tan());
     }
 }
