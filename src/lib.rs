@@ -76,6 +76,9 @@
 //! [1]: http://web.mit.edu/tabbott/Public/quaddouble-debian/qd-2.3.4-old/docs/qd.pdf
 //! [2]: macros.dd.html
 
+#![warn(clippy::all)]
+#![allow(clippy::needless_doctest_main)]
+
 mod common;
 mod double;
 mod quad;
