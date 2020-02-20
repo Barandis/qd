@@ -40,10 +40,10 @@ impl Double {
         // precision.
         if self == Double::ONE {
             Double::ZERO
-        } else if self.is_zero() {
+        } else if self.is_zero() || self.is_sign_negative() {
             Double::NAN
-        } else if self.is_sign_negative() {
-            Double::NAN
+        } else if self.is_infinite() {
+            Double::INFINITY
         } else {
             let mut x = Double::from(self.0.ln()); // initial approximation
             let mut i = 0;
@@ -64,22 +64,32 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
-        assert_close!(
-            dd!("2.302585092994045684017991454684364207601101488628772976033327901"),
-            dd!(10).ln()
-        );
-        assert_close!(
-            dd!("5.493061443340548456976226184612628523237452789113747258673471668"),
-            dd!(243).ln()
-        );
+    fn ln() {
+        assert_close!(dd!("2.30258509299404568401799145468436"), dd!(10).ln());
+        assert_close!(dd!("5.49306144334054845697622618461263"), dd!(243).ln());
+        assert_close!(Double::ONE, Double::E.ln());
+        assert_exact!(Double::ZERO, Double::ONE.ln());
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::ZERO, dd!(1).ln());
-        assert_exact!(Double::NAN, dd!(0).ln());
+    fn zero() {
+        assert_exact!(Double::NAN, Double::ZERO.ln());
+        assert_exact!(Double::NAN, Double::NEG_ZERO.ln());
+    }
+
+    #[test]
+    fn infinity() {
+        assert_exact!(Double::INFINITY, Double::INFINITY.ln());
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.ln());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN.ln());
+    }
+
+    #[test]
+    fn negative() {
         assert_exact!(Double::NAN, dd!(-1).ln());
-        assert_close!(Double::ONE, dd!(Double::E).ln());
     }
 }

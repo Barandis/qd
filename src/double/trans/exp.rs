@@ -21,6 +21,7 @@ impl Double {
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
+    #[allow(clippy::many_single_char_names)]
     pub fn exp(self) -> Double {
         // Strategy, as gleaned from MIT papers and Wikipedia:
         //
@@ -96,22 +97,36 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn exp() {
         assert_close!(
-            dd!("14.87973172487283411186899301946839578068879752075547683852481232"),
+            dd!("14.87973172487283411186899301946840"),
             dd!(2.7).exp()
         );
         assert_close!(
-            dd!("0.001836304777028906825227936299894998089886584890697273635291617797"),
+            dd!("0.0018363047770289068252279362998950"),
             dd!(-6.3).exp()
         );
+        assert_close!(Double::E, Double::ONE.exp());
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::ONE, dd!(0).exp());
+    fn zero() {
+        assert_exact!(Double::ONE, Double::ZERO.exp());
+    }
+
+    #[test]
+    fn infinity() {
+        assert_exact!(Double::INFINITY, Double::INFINITY.exp());
+        assert_exact!(Double::ZERO, Double::NEG_INFINITY.exp());
+    }
+
+    #[test]
+    fn nan() {
         assert_exact!(Double::NAN, Double::NAN.exp());
-        assert_close!(Double::E, dd!(1).exp());
+    }
+
+    #[test]
+    fn over_limit() {
         assert_exact!(Double::ZERO, dd!(-710).exp());
         assert_exact!(Double::INFINITY, dd!(710).exp());
     }

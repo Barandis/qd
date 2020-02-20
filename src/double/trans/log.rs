@@ -37,22 +37,38 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn log() {
         assert_close!(
-            dd!("1.174731503667180022671874948332360514453253860423778048991647180"),
+            dd!("1.17473150366718002267187494833236"),
             dd!(10).log(7.1)
         );
         assert_close!(
-            dd!("4.224809005935378615289228804344351219807607162037233517389353517"),
+            dd!("4.22480900593537861528922880434435"),
             dd!(243).log(3.67)
         );
+        assert_exact!(Double::ZERO, dd!(1).log(6.3));
+        assert_close!(Double::ONE, dd!(3.3).log(3.3));
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::ZERO, dd!(1).log(6.3));
-        assert_exact!(Double::NAN, dd!(0).log(9.2));
+    fn zero() {
+        assert_exact!(Double::NAN, Double::ZERO.log(9.2));
+        assert_exact!(Double::NAN, Double::NEG_ZERO.log(1.8));
+    }
+
+    #[test]
+    fn infinity() {
+        assert_exact!(Double::INFINITY, Double::INFINITY.log(7.3));
+        assert_exact!(Double::NAN, Double::NEG_INFINITY.log(7.3));
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN.log(3.4));
+    }
+
+    #[test]
+    fn negative() {
         assert_exact!(Double::NAN, dd!(-1).log(1.8));
-        assert_close!(Double::ONE, dd!(3.3).log(3.3));
     }
 }
