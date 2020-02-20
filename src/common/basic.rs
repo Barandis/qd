@@ -15,6 +15,8 @@
 //! multiplication instead depends on `f64`'s `mul_add` function, which uses FMA
 //! under the hood if it's available.
 
+#![allow(clippy::many_single_char_names)]
+
 /// The factor used to multiply a number to split it into high and low
 /// components.
 ///
@@ -227,6 +229,7 @@ pub fn six_three_sum(
 }
 
 /// Calculates the sum of nine `f64`s in double-double precision.
+#[allow(clippy::too_many_arguments)]
 #[inline]
 pub fn nine_two_sum(
     a: f64,

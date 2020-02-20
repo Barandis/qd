@@ -52,8 +52,8 @@ pub fn round_vec(digits: &mut Vec<i32>, exp: &mut i32) {
 // assumes that `digit` is between 0 and 9 inclusive. If it's not, there's a bug
 // somewhere, so we WANT to panic; hence the unchecked `unwrap`.
 #[inline]
-pub fn char_from_digit(digit: &i32) -> char {
-    char::from_digit(*digit as u32, 10).unwrap()
+pub fn char_from_digit(digit: i32) -> char {
+    char::from_digit(digit as u32, 10).unwrap()
 }
 
 // Appends "NaN" to the supplied vector.
@@ -159,14 +159,14 @@ pub fn push_fixed_digits(
         if offset > 0 {
             let offset = offset as usize;
             for digit in &digits[..offset] {
-                chars.push(char_from_digit(digit));
+                chars.push(char_from_digit(*digit));
             }
             match precision {
                 Some(p) => {
                     if p > 0 {
                         chars.push('.');
                         for digit in &digits[offset..offset + p] {
-                            chars.push(char_from_digit(digit));
+                            chars.push(char_from_digit(*digit));
                         }
                     }
                 }
@@ -175,7 +175,7 @@ pub fn push_fixed_digits(
                         chars.push('.');
                         // limit to 31 characters, whatever that precision is
                         for digit in &digits[offset..def_precision] {
-                            chars.push(char_from_digit(digit));
+                            chars.push(char_from_digit(*digit));
                         }
                     }
                 }
@@ -190,7 +190,7 @@ pub fn push_fixed_digits(
             }
             let max = (offset + pr_value as i32) as usize;
             for digit in &digits[..max] {
-                chars.push(char_from_digit(digit));
+                chars.push(char_from_digit(*digit));
             }
         }
     }
@@ -203,17 +203,17 @@ pub fn push_fixed_digits(
 #[inline]
 pub fn push_exp_digits(
     chars: &mut Vec<char>,
-    digits: &Vec<i32>,
+    digits: &[i32],
     precision: Option<usize>,
     def_precision: usize,
 ) {
     let precision = precision.unwrap_or(def_precision);
-    chars.push(char_from_digit(&digits[0]));
+    chars.push(char_from_digit(digits[0]));
     if precision > 0 {
         chars.push('.');
     }
-    for digit in &digits[1..precision + 1] {
-        chars.push(char_from_digit(digit));
+    for digit in &digits[1..=precision] {
+        chars.push(char_from_digit(*digit));
     }
 }
 
@@ -223,19 +223,14 @@ pub fn push_exp_digits(
 // needs minus the trailing zeros.
 #[inline]
 pub fn drop_trailing_zeros(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
-    if let None = formatter.precision() {
-        if chars.contains(&'.') {
-            if let Some(index) =
-                chars.clone().into_iter().rposition(|c| c != '0')
-            {
-                // Drop the decimal point itself if everything after it is a
-                // zero
-                let new_length = match chars[index] {
-                    '.' => index,
-                    _ => index + 1,
-                };
-                chars.truncate(new_length);
-            }
+    if formatter.precision().is_none() && chars.contains(&'.') {
+        if let Some(index) = chars.clone().into_iter().rposition(|c| c != '0') {
+            // Drop the decimal point itself if everything after it is a zero
+            let new_length = match chars[index] {
+                '.' => index,
+                _ => index + 1,
+            };
+            chars.truncate(new_length);
         }
     }
 }
