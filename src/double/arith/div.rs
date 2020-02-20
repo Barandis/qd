@@ -50,6 +50,7 @@ impl Double {
     }
 }
 
+#[allow(clippy::suspicious_arithmetic_impl)]
 impl Div for Double {
     type Output = Double;
 
@@ -129,41 +130,70 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn num_num() {
         let expected = dd!("1.1557273497909217179100931833127");
         assert_close!(expected, Double::PI / Double::E);
-        assert_close!(expected, Double::PI / &Double::E);
-        assert_close!(expected, &Double::PI / Double::E);
+    }
 
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn num_ref() {
+        let expected = dd!("1.1557273497909217179100931833127");
+        assert_close!(expected, Double::PI / &Double::E);
+    }
+
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn ref_num() {
+        let expected = dd!("1.1557273497909217179100931833127");
+        assert_close!(expected, &Double::PI / Double::E);
+    }
+
+    #[test]
+    fn assign_num() {
+        let expected = dd!("1.1557273497909217179100931833127");
         let mut a = Double::PI;
         a /= Double::E;
         assert_close!(expected, a);
+    }
 
+    #[test]
+    fn assign_ref() {
+        let expected = dd!("1.1557273497909217179100931833127");
         let mut b = Double::PI;
         b /= &Double::E;
         assert_close!(expected, b);
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::NAN, Double::NAN / dd!(0));
-        assert_exact!(Double::NAN, dd!(0) / Double::NAN);
-        assert_exact!(Double::NAN, Double::NAN / dd!(1));
-        assert_exact!(Double::NAN, dd!(1) / Double::NAN);
-        assert_exact!(Double::INFINITY, Double::INFINITY / dd!(1));
-        assert_exact!(Double::ZERO, dd!(1) / Double::INFINITY);
-        assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY / dd!(1));
-        assert_exact!(Double::NEG_ZERO, dd!(1) / Double::NEG_INFINITY);
-        assert_exact!(Double::NAN, Double::INFINITY / Double::INFINITY);
-        assert_exact!(Double::NAN, Double::INFINITY / Double::NEG_INFINITY);
-        assert_exact!(Double::NAN, Double::NEG_INFINITY / Double::INFINITY);
-        assert_exact!(Double::NAN, Double::NEG_INFINITY / Double::NEG_INFINITY);
-        assert_exact!(Double::INFINITY, Double::INFINITY / Double::ZERO);
+    fn zero() {
         assert_exact!(Double::ZERO, Double::ZERO / Double::INFINITY);
+        assert_exact!(Double::NEG_ZERO, Double::ZERO / Double::NEG_INFINITY);
+        assert_exact!(Double::INFINITY, Double::INFINITY / Double::ZERO);
         assert_exact!(
             Double::NEG_INFINITY,
             Double::NEG_INFINITY / Double::ZERO
         );
-        assert_exact!(Double::NEG_ZERO, Double::ZERO / Double::NEG_INFINITY);
+        assert_exact!(Double::NAN, Double::NAN / Double::ZERO);
+        assert_exact!(Double::NAN, Double::ZERO / Double::NAN);
+    }
+
+    #[test]
+    #[allow(clippy::eq_op)]
+    fn infinity() {
+        assert_exact!(Double::ZERO, Double::ONE / Double::INFINITY);
+        assert_exact!(Double::NEG_ZERO, Double::ONE / Double::NEG_INFINITY);
+        assert_exact!(Double::INFINITY, Double::INFINITY / Double::ONE);
+        assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY / Double::ONE);
+        assert_exact!(Double::NAN, Double::INFINITY / Double::INFINITY);
+        assert_exact!(Double::NAN, Double::INFINITY / Double::NEG_INFINITY);
+        assert_exact!(Double::NAN, Double::NEG_INFINITY / Double::INFINITY);
+        assert_exact!(Double::NAN, Double::NEG_INFINITY / Double::NEG_INFINITY);
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN / Double::ONE);
+        assert_exact!(Double::NAN, Double::ONE / Double::NAN);
     }
 }
