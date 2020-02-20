@@ -57,7 +57,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn product() {
         let actual: Double =
             [dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().product();
         assert_exact!(dd!(120), actual);
@@ -80,13 +80,13 @@ mod tests {
     }
 
     #[test]
-    fn special() {
+    fn empty() {
         let actual: Double = vec![].iter().product();
         assert_exact!(Double::ONE, actual);
+    }
 
-        let actual: Double = vec![dd!(1), dd!(2), Double::NAN].iter().product();
-        assert_exact!(Double::NAN, actual);
-
+    #[test]
+    fn infinity() {
         let actual: Double =
             vec![dd!(1), Double::INFINITY, dd!(3)].iter().product();
         assert_exact!(Double::INFINITY, actual);
@@ -99,5 +99,11 @@ mod tests {
             .iter()
             .product();
         assert_exact!(Double::NEG_INFINITY, actual);
+    }
+
+    #[test]
+    fn nan() {
+        let actual: Double = vec![dd!(1), dd!(2), Double::NAN].iter().product();
+        assert_exact!(Double::NAN, actual);
     }
 }
