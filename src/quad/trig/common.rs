@@ -61,9 +61,9 @@ pub(super) fn cos_taylor(a: Quad) -> Quad {
     }
 }
 
-// Computes both the sine and cosine of a using the Taylor series. This is a bit quicker than
-// calling the two functions above separately, since if you have one of them you can calculate the
-// other more efficiently.
+// Computes both the sine and cosine of a using the Taylor series. This is a bit
+// quicker than calling the two functions above separately, since if you have
+// one of them you can calculate the other more efficiently.
 pub(super) fn sincos_taylor(a: Quad) -> (Quad, Quad) {
     if a.is_zero() {
         (Quad::ZERO, Quad::ONE)
@@ -73,9 +73,10 @@ pub(super) fn sincos_taylor(a: Quad) -> (Quad, Quad) {
     }
 }
 
-// Helper function to reduce the input to a value whose sin/cos can be calculated via Taylor series.
-// It firsts reduces modulo 2π, then π/2, then π/1024. Aside from returning the reduced value (`t`),
-// it also returns the group within the next higher modulo in which the value fell (`j` and `k`,
+// Helper function to reduce the input to a value whose sin/cos can be
+// calculated via Taylor series. It firsts reduces modulo 2π, then π/2, then
+// π/1024. Aside from returning the reduced value (`t`), it also returns the
+// group within the next higher modulo in which the value fell (`j` and `k`,
 // this is the quadrant for `j`).
 #[inline]
 pub(super) fn reduce(a: Quad) -> (i32, i32, Quad) {

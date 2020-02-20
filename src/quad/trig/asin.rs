@@ -6,8 +6,9 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Computes the arcsine of the number. The return value is in the range [-π/2, π/2] for any
-    /// number in the range [-1, 1]. Otherwise the return value is `NaN`.
+    /// Computes the arcsine of the number. The return value is in the range
+    /// [-π/2, π/2] for any number in the range [-1, 1]. Otherwise the return
+    /// value is `NaN`.
     ///
     /// # Examples
     /// ```

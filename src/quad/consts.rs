@@ -7,8 +7,8 @@ use crate::quad::Quad;
 use std::f64;
 
 impl Quad {
-    /// The radix or base of the internal representation of `Double`. This is the same as the
-    /// representation in the underlying f64.
+    /// The radix or base of the internal representation of `Double`. This is
+    /// the same as the representation in the underlying f64.
     pub const RADIX: u32 = 2;
 
     /// Number of significant digits in base 2.
@@ -19,11 +19,12 @@ impl Quad {
 
     /// [Machine epsilon] value for `Quad`.
     ///
-    /// This is the difference between `1.0` and the next largest representable number.
+    /// This is the difference between `1.0` and the next largest representable
+    /// number.
     ///
-    /// [Machine epsilon]: https://en.wikipedia.org/wiki/Machine_epsilon
-    // 2^-209
-    pub const EPSILON: Quad = Quad(1.2154326714572542e-63, 4.2261844194902035e-129, 0e0, 0e0);
+    /// [Machine epsilon]: https://en.wikipedia.org/wiki/Machine_epsilon 2^-209
+    pub const EPSILON: Quad =
+        Quad(1.2154326714572542e-63, 4.2261844194902035e-129, 0e0, 0e0);
 
     /// Smallest finite `Quad` value.
     pub const MIN: Quad = Quad(
@@ -60,7 +61,8 @@ impl Quad {
     pub const NAN: Quad = Quad(f64::NAN, f64::NAN, f64::NAN, f64::NAN);
 
     /// Infinity (∞).
-    pub const INFINITY: Quad = Quad(f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY);
+    pub const INFINITY: Quad =
+        Quad(f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY);
 
     /// Negative infinity (-∞).
     pub const NEG_INFINITY: Quad = Quad(

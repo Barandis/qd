@@ -23,9 +23,10 @@ impl Quad {
     pub fn ln(self) -> Quad {
         // Strategy:
         //
-        // The Taylor series for logarithms converges much more slowly than that of exp because of
-        // the lack of a factorial term in the denominator. Hence this routine instead tries to
-        // determine the root of the function
+        // The Taylor series for logarithms converges much more slowly than that
+        // of exp because of the lack of a factorial term in the denominator.
+        // Hence this routine instead tries to determine the root of the
+        // function
         //
         //      f(x) = exp(x) - a
         //
@@ -35,7 +36,8 @@ impl Quad {
         //         = x - (1 - a * exp(-x))
         //         = x + a * exp(-x) - 1
         //
-        // Testing has shown that it requires two iterations to get the required precision.
+        // Testing has shown that it requires two iterations to get the required
+        // precision.
         if self == Quad::ONE {
             Quad::ZERO
         } else if self.is_zero() {

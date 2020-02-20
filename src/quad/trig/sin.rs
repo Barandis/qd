@@ -29,9 +29,10 @@ impl Quad {
         //
         //      x = s + aπ/2 + bπ/1024
         //
-        // where |s| <= π/2048. Using a precomputed table of sin (kπ/1024) and cos (kπ/1024), we can
-        // compute sin x from sin s and cos s. This greatly increases the convergence of the Taylor
-        // series for sine and cosine.
+        // where |s| <= π/2048. Using a precomputed table of sin (kπ/1024) and
+        // cos (kπ/1024), we can compute sin x from sin s and cos s. This
+        // greatly increases the convergence of the Taylor series for sine and
+        // cosine.
         if self.is_zero() {
             Quad::ZERO
         } else if !self.is_finite() {

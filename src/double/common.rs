@@ -5,7 +5,8 @@
 
 use crate::double::Double;
 
-/// Reciprocals of factorials, rendered as Doubles. These are used in Taylor series calculations.
+/// Reciprocals of factorials, rendered as Doubles. These are used in Taylor
+/// series calculations.
 pub const INV_FACTS: [Double; 15] = [
     Double(1.6666666666666666e-1, 9.25185853854297e-18),
     Double(4.1666666666666664e-2, 2.3129646346357427e-18),
@@ -24,8 +25,9 @@ pub const INV_FACTS: [Double; 15] = [
     Double(2.8114572543455206e-15, 1.6508842730861433e-31),
 ];
 
-/// Helper function that efficiently multiplies a Double by a power of 2. This is -much-
-/// faster than regular multiplication but only works with powers of 2.
+/// Helper function that efficiently multiplies a Double by a power of 2. This
+/// is -much- faster than regular multiplication but only works with powers of
+/// 2.
 #[inline]
 pub fn mul_pwr2(a: Double, b: f64) -> Double {
     Double(a.0 * b, a.1 * b)

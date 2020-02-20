@@ -98,8 +98,8 @@ pub const INV_FACTS: [Quad; 15] = [
     ),
 ];
 
-/// Helper function that efficiently multiplies a Quad by a power of 2. This is -much- faster than
-/// regular multiplication but only works with powers of 2.
+/// Helper function that efficiently multiplies a Quad by a power of 2. This is
+/// -much- faster than regular multiplication but only works with powers of 2.
 #[inline]
 pub fn mul_pwr2(a: Quad, b: f64) -> Quad {
     Quad(a.0 * b, a.1 * b, a.2 * b, a.3 * b)

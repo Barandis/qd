@@ -7,8 +7,9 @@ use crate::quad::Quad;
 use std::num::FpCategory;
 
 impl Quad {
-    /// Returns the floating point category of the quad-double. If only one property is being
-    /// tested, it's generally faster to use the specific predicate rather than this function.
+    /// Returns the floating point category of the quad-double. If only one
+    /// property is being tested, it's generally faster to use the specific
+    /// predicate rather than this function.
     ///
     /// # Examples
     /// ```
@@ -34,9 +35,17 @@ impl Quad {
 
         if c0 == Zero && c1 == Zero && c2 == Zero && c3 == Zero {
             Zero
-        } else if c0 == Subnormal || c1 == Subnormal || c2 == Subnormal || c3 == Subnormal {
+        } else if c0 == Subnormal
+            || c1 == Subnormal
+            || c2 == Subnormal
+            || c3 == Subnormal
+        {
             Subnormal
-        } else if c0 == Infinite || c1 == Infinite || c2 == Infinite || c3 == Infinite {
+        } else if c0 == Infinite
+            || c1 == Infinite
+            || c2 == Infinite
+            || c3 == Infinite
+        {
             Infinite
         } else if c0 == Nan || c1 == Nan || c2 == Nan || c3 == Nan {
             Nan
@@ -45,7 +54,8 @@ impl Quad {
         }
     }
 
-    /// Returns `true` if the quad-double is neither zero, infinite, subnormal, or `NaN`.
+    /// Returns `true` if the quad-double is neither zero, infinite, subnormal,
+    /// or `NaN`.
     ///
     /// # Examples
     /// ```
@@ -86,8 +96,8 @@ impl Quad {
         self.0 == 0.0
     }
 
-    /// Returns `true` if the quad-double is negative, including negative zero and infinity and
-    /// `NaN` with a negative sign bit.
+    /// Returns `true` if the quad-double is negative, including negative zero
+    /// and infinity and `NaN` with a negative sign bit.
     ///
     /// # Examples
     /// ```
@@ -106,8 +116,8 @@ impl Quad {
         self.0.is_sign_negative()
     }
 
-    /// Returns `true` if the quad-double is positive, including positive zero and infinity and
-    /// `NaN` with a positive sign bit.
+    /// Returns `true` if the quad-double is positive, including positive zero
+    /// and infinity and `NaN` with a positive sign bit.
     ///
     /// # Examples
     /// ```
@@ -157,7 +167,10 @@ impl Quad {
     /// ```
     #[inline]
     pub fn is_infinite(self) -> bool {
-        self.0.is_infinite() || self.1.is_infinite() || self.2.is_infinite() || self.3.is_infinite()
+        self.0.is_infinite()
+            || self.1.is_infinite()
+            || self.2.is_infinite()
+            || self.3.is_infinite()
     }
 
     /// Returns `true` if the quad-double is neither infinite nor `NaN`.
@@ -175,6 +188,9 @@ impl Quad {
     /// ```
     #[inline]
     pub fn is_finite(self) -> bool {
-        self.0.is_finite() && self.1.is_finite() && self.2.is_finite() && self.3.is_finite()
+        self.0.is_finite()
+            && self.1.is_finite()
+            && self.2.is_finite()
+            && self.3.is_finite()
     }
 }

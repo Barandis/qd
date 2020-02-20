@@ -6,7 +6,8 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Computes the arctangent of the number. The return value is in the range [-π/2, π/2].
+    /// Computes the arctangent of the number. The return value is in the range
+    /// [-π/2, π/2].
     ///
     /// # Examples
     /// ```

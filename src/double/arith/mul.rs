@@ -55,7 +55,10 @@ impl Mul for Double {
             }
         } else {
             let (p, e) = two_prod(self.0, other.0);
-            Double::from(quick_two_sum(p, e + self.0 * other.1 + self.1 * other.0))
+            Double::from(quick_two_sum(
+                p,
+                e + self.0 * other.1 + self.1 * other.0,
+            ))
         }
     }
 }

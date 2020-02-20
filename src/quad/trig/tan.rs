@@ -37,7 +37,6 @@ mod tests {
             qd!(1).tan()
         );
         assert_close!(qd!(1), Quad::FRAC_PI_4.tan());
-
     }
 
     #[test]

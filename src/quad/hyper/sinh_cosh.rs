@@ -9,8 +9,8 @@ use crate::quad::Quad;
 impl Quad {
     /// Simultaneously computes the hyperbolic sine and cosine of the number.
     ///
-    /// This method is more efficient to run than [`sinh`] and [`cosh`] individually and is useful
-    /// when both numbers are needed.
+    /// This method is more efficient to run than [`sinh`] and [`cosh`]
+    /// individually and is useful when both numbers are needed.
     ///
     /// # Examples
     /// ```
@@ -29,8 +29,7 @@ impl Quad {
     /// # }
     /// ```
     ///
-    /// [`sinh`]: #method.sinh
-    /// [`cosh`]: #method.cosh
+    /// [`sinh`]: #method.sinh [`cosh`]: #method.cosh
     pub fn sinh_cosh(self) -> (Quad, Quad) {
         if self.is_nan() {
             (Quad::NAN, Quad::NAN)
@@ -92,4 +91,3 @@ mod tests {
         assert_exact!(Quad::INFINITY, Quad::NEG_INFINITY.sinh_cosh().1);
     }
 }
-

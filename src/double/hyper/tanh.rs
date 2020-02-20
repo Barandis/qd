@@ -44,8 +44,14 @@ mod tests {
 
     #[test]
     fn basic() {
-        assert_close!(dd!("0.99627207622074994426469058001254"), Double::PI.tanh());
-        assert_close!(dd!("0.99132891580059983779555761569968"), Double::E.tanh());
+        assert_close!(
+            dd!("0.99627207622074994426469058001254"),
+            Double::PI.tanh()
+        );
+        assert_close!(
+            dd!("0.99132891580059983779555761569968"),
+            Double::E.tanh()
+        );
     }
 
     #[test]

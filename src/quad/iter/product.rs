@@ -58,23 +58,27 @@ mod tests {
 
     #[test]
     fn basic() {
-        let actual: Quad = [qd!(1), qd!(2), qd!(3), qd!(4), qd!(5)].into_iter().product();
+        let actual: Quad =
+            [qd!(1), qd!(2), qd!(3), qd!(4), qd!(5)].iter().product();
         assert_exact!(qd!(120), actual);
 
-        let actual: Quad = vec![Quad::FRAC_PI_2, Quad::FRAC_PI_3, Quad::FRAC_PI_4]
-            .into_iter()
-            .product();
+        let actual: Quad =
+            vec![Quad::FRAC_PI_2, Quad::FRAC_PI_3, Quad::FRAC_PI_4]
+                .into_iter()
+                .product();
         assert_close!(
             qd!("1.291928195012492507311513127795891466759387023578546153922689088"),
             actual
         );
 
-        let actual: Quad = [qd!(1), qd!(2), qd!(3), qd!(4), qd!(5)].iter().product();
+        let actual: Quad =
+            [qd!(1), qd!(2), qd!(3), qd!(4), qd!(5)].iter().product();
         assert_exact!(qd!(120), actual);
 
-        let actual: Quad = vec![Quad::FRAC_PI_2, Quad::FRAC_PI_3, Quad::FRAC_PI_4]
-            .iter()
-            .product();
+        let actual: Quad =
+            vec![Quad::FRAC_PI_2, Quad::FRAC_PI_3, Quad::FRAC_PI_4]
+                .iter()
+                .product();
         assert_close!(
             qd!("1.291928195012492507311513127795891466759387023578546153922689088"),
             actual
@@ -89,13 +93,16 @@ mod tests {
         let actual: Quad = vec![qd!(1), qd!(2), Quad::NAN].iter().product();
         assert_exact!(Quad::NAN, actual);
 
-        let actual: Quad = vec![qd!(1), Quad::INFINITY, qd!(3)].iter().product();
+        let actual: Quad =
+            vec![qd!(1), Quad::INFINITY, qd!(3)].iter().product();
         assert_exact!(Quad::INFINITY, actual);
 
-        let actual: Quad = vec![qd!(1), Quad::NEG_INFINITY, qd!(3)].iter().product();
+        let actual: Quad =
+            vec![qd!(1), Quad::NEG_INFINITY, qd!(3)].iter().product();
         assert_exact!(Quad::NEG_INFINITY, actual);
 
-        let actual: Quad = vec![Quad::INFINITY, Quad::NEG_INFINITY].iter().product();
+        let actual: Quad =
+            vec![Quad::INFINITY, Quad::NEG_INFINITY].iter().product();
         assert_exact!(Quad::NEG_INFINITY, actual);
     }
 }

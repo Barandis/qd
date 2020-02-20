@@ -77,8 +77,8 @@ impl Double {
         }
     }
 
-    /// Returns the nearest integer to the double-double. Half-way cases are rounded away from
-    /// `0.0`.
+    /// Returns the nearest integer to the double-double. Half-way cases are
+    /// rounded away from `0.0`.
     ///
     /// # Examples
     /// ```

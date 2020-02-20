@@ -24,12 +24,13 @@ fn from_float(n: f64) -> Double {
     } else if n.floor() == n {
         Double(n, 0.0)
     } else {
-        // TODO: This needs investigation. It seems incorrect to double-convert a value, once to a
-        // string and then back again, but parsing a number as a string might be the most sensible
-        // way to do it in this particular case.
+        // TODO: This needs investigation. It seems incorrect to double-convert
+        // a value, once to a string and then back again, but parsing a number
+        // as a string might be the most sensible way to do it in this
+        // particular case.
 
-        // `unwrap` is safe because `n.to_string` will never return a string that can't be parsed
-        // into a Double
+        // `unwrap` is safe because `n.to_string` will never return a string
+        // that can't be parsed into a Double
         n.to_string().parse().unwrap()
     }
 }
@@ -119,10 +120,10 @@ impl From<i64> for Double {
 impl From<&str> for Double {
     /// Converts a string representation of a number into a `Double`.
     ///
-    /// `parse` from [`FromStr`] is a safer way to make this conversion, as it returns a type
-    /// (`Result`) that allows for error checking. This function returns `NaN` in the case of a
-    /// parse error, which is indistinguishable from a legitimately-returned `NaN`. Take care when
-    /// using this function.
+    /// `parse` from [`FromStr`] is a safer way to make this conversion, as it
+    /// returns a type (`Result`) that allows for error checking. This function
+    /// returns `NaN` in the case of a parse error, which is indistinguishable
+    /// from a legitimately-returned `NaN`. Take care when using this function.
     ///
     /// [`FromStr`]: #impl-FromStr
     fn from(s: &str) -> Double {

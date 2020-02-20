@@ -28,19 +28,21 @@ impl Double {
         //
         //      exp(kr + m * ln(2)) = 2^m * exp(r)^k
         //
-        // where m and k are arbitary integers. By choosing m appropriately we can make |kr| <=
-        // ln(2) / 2 = 0.347. Then exp(r) is evaluated using a Taylor series, which is actually
-        // reasonably easy to figure out for the exponential function:
+        // where m and k are arbitary integers. By choosing m appropriately we
+        // can make |kr| <= ln(2) / 2 = 0.347. Then exp(r) is evaluated using a
+        // Taylor series, which is actually reasonably easy to figure out for
+        // the exponential function:
         //
         //      exp(x) = 1 + x + x^2/2! + x^3/3! + x^4/4! ...
         //
-        // Reducing x substantially speeds up the convergence, so we have to use fewer terms to
-        // reach the required precision.
+        // Reducing x substantially speeds up the convergence, so we have to use
+        // fewer terms to reach the required precision.
 
         let k = 512.0;
         let inv_k = 1.0 / k;
 
-        // Common cases, including numbers too big or small to be represented with Doubles
+        // Common cases, including numbers too big or small to be represented
+        // with Doubles
         if self.0 <= -709.0 {
             Double::ZERO
         } else if self.0 >= 709.0 {

@@ -9,8 +9,9 @@ use crate::quad::Quad;
 impl Quad {
     /// Calculates the square of the number.
     ///
-    /// This method takes advantage of optimizations in multiplication that are available when the
-    /// two numbers being multiplied are the same, so it is more efficient than bare multiplication.
+    /// This method takes advantage of optimizations in multiplication that are
+    /// available when the two numbers being multiplied are the same, so it is
+    /// more efficient than bare multiplication.
     ///
     /// # Examples
     /// ```
@@ -23,15 +24,16 @@ impl Quad {
     /// ```
     #[inline]
     pub fn sqr(self) -> Quad {
-        // A considerable simplification over simply multiplying the number by itself, with the
-        // simplifications possible because the two numbers being multiplied are in fact equal.
+        // A considerable simplification over simply multiplying the number by
+        // itself, with the simplifications possible because the two numbers
+        // being multiplied are in fact equal.
         //
         // The result is a simpler calculation:
         //
         //      a0² + 2a0a1 + 2a0a2 + a1² + 2a0a3 + 2a1a2
         //
-        // where any further terms, including the low words of the final two terms, are unnecessary
-        // to achieve the desired accuracy.
+        // where any further terms, including the low words of the final two
+        // terms, are unnecessary to achieve the desired accuracy.
 
         let (h0, l0) = two_sqr(self.0);
         let (h1, l1) = two_prod(2.0 * self.0, self.1);
@@ -40,8 +42,8 @@ impl Quad {
         let h4 = 2.0 * self.0 * self.3;
         let h5 = 2.0 * self.1 * self.2;
 
-        // Less primitive functions are not used here because there are steps in them that can be
-        // skipped.
+        // Less primitive functions are not used here because there are steps in
+        // them that can be skipped.
 
         let r0 = h0;
 

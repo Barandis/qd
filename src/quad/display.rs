@@ -10,12 +10,14 @@ use std::fmt;
 const DEFAULT_PRECISION: usize = 63;
 const TEN: Quad = Quad(10.0, 0.0, 0.0, 0.0);
 
-// Calculates the exponent of the supplied quad-double, adjusting the quad-double to fall
-// somewhere in the range [1, 10) (i.e., to have a single non-zero digit before the decimal point).
+// Calculates the exponent of the supplied quad-double, adjusting the
+// quad-double to fall somewhere in the range [1, 10) (i.e., to have a single
+// non-zero digit before the decimal point).
 #[inline]
 fn calculate_exponent(r: &mut Quad) -> i32 {
-    // Quick calculation of exponent based on the first component of `r`. This could turn out to be
-    // off by 1 either direction depending on the second component.
+    // Quick calculation of exponent based on the first component of `r`. This
+    // could turn out to be off by 1 either direction depending on the second
+    // component.
     let mut exp = r.0.abs().log10().floor() as i32;
 
     // Adjust `r` based on that exponent approximation
@@ -30,7 +32,8 @@ fn calculate_exponent(r: &mut Quad) -> i32 {
         *r /= TEN.powi(exp);
     }
 
-    // If `r` is outside the range [1, 10), then the exponent was off by 1. Adjust both it and `r`.
+    // If `r` is outside the range [1, 10), then the exponent was off by 1.
+    // Adjust both it and `r`.
     if *r >= TEN {
         *r /= TEN;
         exp += 1;
@@ -42,12 +45,12 @@ fn calculate_exponent(r: &mut Quad) -> i32 {
     exp
 }
 
-// Extracts the digits of `r` into a vector of integers. These integers will fall in the range [-9,
-// 9]. Even if `r` is always positive as a whole, its second component can be negative which will
-// generate negative 'digits'.
+// Extracts the digits of `r` into a vector of integers. These integers will
+// fall in the range [-9, 9]. Even if `r` is always positive as a whole, its
+// second component can be negative which will generate negative 'digits'.
 //
-// `r` is modified throughout to extract the digits and contains nothing of value when this function
-// is complete.
+// `r` is modified throughout to extract the digits and contains nothing of
+// value when this function is complete.
 #[inline]
 fn extract_digits(r: &mut Quad, precision: usize) -> Vec<i32> {
     let mut digits = Vec::with_capacity(precision);
@@ -60,14 +63,15 @@ fn extract_digits(r: &mut Quad, precision: usize) -> Vec<i32> {
     digits
 }
 
-// Turns a quad-double into a vector of digits and an exponent. Sign is ignored, and no decimal
-// appears in the vector; the exponent is calculated based on having the decimal point after the
-// first digit.
+// Turns a quad-double into a vector of digits and an exponent. Sign is ignored,
+// and no decimal appears in the vector; the exponent is calculated based on
+// having the decimal point after the first digit.
 //
-// This function returns a vector of signed integers even though unsigned would make more logical
-// sense. That's because internally (with the call to `extract_digits`) the vector has to deal with
-// signed integers, and it's more efficient to let the caller cast them to unsigned as needed than
-// it is to create a new vector of unsigned integers and copy them over.
+// This function returns a vector of signed integers even though unsigned would
+// make more logical sense. That's because internally (with the call to
+// `extract_digits`) the vector has to deal with signed integers, and it's more
+// efficient to let the caller cast them to unsigned as needed than it is to
+// create a new vector of unsigned integers and copy them over.
 fn to_digits(r: &Quad, precision: usize) -> (Vec<i32>, i32) {
     let mut r = r.abs();
 
@@ -76,7 +80,8 @@ fn to_digits(r: &Quad, precision: usize) -> (Vec<i32>, i32) {
     }
 
     let mut exp = calculate_exponent(&mut r);
-    // We pass one more than the actual precision to leave an extra digit at the end to do rounding
+    // We pass one more than the actual precision to leave an extra digit at the
+    // end to do rounding
     let mut digits = extract_digits(&mut r, precision + 1);
     correct_range(&mut digits);
     round_vec(&mut digits, &mut exp);
@@ -84,10 +89,15 @@ fn to_digits(r: &Quad, precision: usize) -> (Vec<i32>, i32) {
     (digits, exp)
 }
 
-// Potentially pushes a sign character to the supplied vector. Returns whether or not a character
-// was actually added, information that is used later in formatting.
+// Potentially pushes a sign character to the supplied vector. Returns whether
+// or not a character was actually added, information that is used later in
+// formatting.
 #[inline]
-fn push_sign(chars: &mut Vec<char>, value: &Quad, formatter: &fmt::Formatter) -> bool {
+fn push_sign(
+    chars: &mut Vec<char>,
+    value: &Quad,
+    formatter: &fmt::Formatter,
+) -> bool {
     let mut sign = true;
     if value.is_sign_negative() {
         chars.push('-');
@@ -116,14 +126,16 @@ fn format_fixed(value: &Quad, f: &mut fmt::Formatter) -> fmt::Result {
         } else if value.is_zero() {
             push_zero(&mut result, f);
         } else {
-            let width = precision as i32 + value.abs().log10().floor().as_int() as i32 + 1;
-            // Higher than the max-length number + max precision so that users can do
-            // their format!("{:.60}", Quad::from_str("999999999999999999999999999999...")) in
-            // peace
+            let width = precision as i32
+                + value.abs().log10().floor().as_int() as i32
+                + 1;
+            // Higher than the max-length number + max precision so that users
+            // can do their format!("{:.60}",
+            // Quad::from_str("999999999999999999999999999999...")) in peace
             let extra = width.max(130);
 
-            // Special case: zero precision, |value| < 1.0
-            // In this case a number greater than 0.5 prints 0 and should print 1
+            // Special case: zero precision, |value| < 1.0 In this case a number
+            // greater than 0.5 prints 0 and should print 1
             if precision == 0 && value.abs().as_float() < 1.0 {
                 result.push(if value.abs().as_float() >= 0.5 {
                     '1'
@@ -155,7 +167,11 @@ fn format_fixed(value: &Quad, f: &mut fmt::Formatter) -> fmt::Result {
 
 // Formats `value` as a exponential number, with the format defined by `f`.
 #[inline]
-fn format_exp(value: &Quad, f: &mut fmt::Formatter, upper: bool) -> fmt::Result {
+fn format_exp(
+    value: &Quad,
+    f: &mut fmt::Formatter,
+    upper: bool,
+) -> fmt::Result {
     let mut result = Vec::new();
     let mut sign = true;
     let mut exp = 0;
@@ -173,7 +189,12 @@ fn format_exp(value: &Quad, f: &mut fmt::Formatter, upper: bool) -> fmt::Result 
             let width = f.precision().unwrap_or(DEFAULT_PRECISION) + 1;
             let (digits, e) = to_digits(value, width);
             exp = e;
-            push_exp_digits(&mut result, &digits, f.precision(), DEFAULT_PRECISION);
+            push_exp_digits(
+                &mut result,
+                &digits,
+                f.precision(),
+                DEFAULT_PRECISION,
+            );
         }
 
         if !value.is_infinite() {

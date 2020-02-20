@@ -7,8 +7,9 @@ use crate::common::basic::*;
 use crate::quad::Quad;
 use std::ops::{Add, AddAssign};
 
-// Utility function that returns the quad component with the specified index and then increments
-// the index. This is how we do `a[i++]` without the `++` operator.
+// Utility function that returns the quad component with the specified index and
+// then increments the index. This is how we do `a[i++]` without the `++`
+// operator.
 #[inline]
 fn index_and_inc(a: Quad, i: &mut usize) -> f64 {
     let r = a[*i];
@@ -19,9 +20,10 @@ fn index_and_inc(a: Quad, i: &mut usize) -> f64 {
 impl Add for Quad {
     type Output = Quad;
 
-    // This function is the real reason indexing was added to quads. Unlike multiplication, where
-    // every component has a specific function and appears in a specific place in the algorithm,
-    // addition is just a repeated iteration over each successive component.
+    // This function is the real reason indexing was added to quads. Unlike
+    // multiplication, where every component has a specific function and appears
+    // in a specific place in the algorithm, addition is just a repeated
+    // iteration over each successive component.
     #[inline]
     fn add(self, other: Quad) -> Quad {
         if self.is_nan() || other.is_nan() {
@@ -61,9 +63,10 @@ impl Add for Quad {
 
             let mut x = [0.0, 0.0, 0.0, 0.0];
 
-            // These two assignments, along with the reassignments of the same variables in the
-            // `accumulate` call below, act as a merge sort. The largest component between the two quads
-            // is operated on first, then the second largest, and so on.
+            // These two assignments, along with the reassignments of the same
+            // variables in the `accumulate` call below, act as a merge sort.
+            // The largest component between the two quads is operated on first,
+            // then the second largest, and so on.
             let u = if self[i].abs() > other[j].abs() {
                 index_and_inc(self, &mut i)
             } else {
@@ -156,7 +159,9 @@ mod tests {
 
     #[test]
     fn basic() {
-        let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
+        let expected = qd!(
+            "5.859874482048838473822930854632165381954416493075065395941912220"
+        );
         assert_close!(expected, Quad::PI + Quad::E);
         assert_close!(expected, Quad::PI + &Quad::E);
         assert_close!(expected, &Quad::PI + Quad::E);
@@ -179,7 +184,10 @@ mod tests {
         assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY + qd!(1));
         assert_exact!(Quad::NEG_INFINITY, qd!(1) + Quad::NEG_INFINITY);
         assert_exact!(Quad::INFINITY, Quad::INFINITY + Quad::INFINITY);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY + Quad::NEG_INFINITY);
+        assert_exact!(
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY + Quad::NEG_INFINITY
+        );
         assert_exact!(Quad::NAN, Quad::INFINITY + Quad::NEG_INFINITY);
         assert_exact!(Quad::NAN, Quad::NEG_INFINITY + Quad::INFINITY);
         assert_exact!(Quad::NAN, Quad::INFINITY + Quad::NAN);

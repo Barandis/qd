@@ -38,8 +38,14 @@ mod tests {
 
     #[test]
     fn basic() {
-        assert_close!(dd!("11.591953275521520627751752052560"), Double::PI.cosh());
-        assert_close!(dd!("7.6101251386622883634186102301134"), Double::E.cosh());
+        assert_close!(
+            dd!("11.591953275521520627751752052560"),
+            Double::PI.cosh()
+        );
+        assert_close!(
+            dd!("7.6101251386622883634186102301134"),
+            Double::E.cosh()
+        );
     }
 
     #[test]

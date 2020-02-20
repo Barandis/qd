@@ -94,9 +94,10 @@ impl FromStr for Double {
                 exp -= digits - point;
             }
             if exp != 0 {
-                // Do this in two stages if the exponent is too small
-                // For exmaple, a number with 30 digits could have an exponent as low as -337 and
-                // still not overflow, but doing the -337 all at once WOULD overflow
+                // Do this in two stages if the exponent is too small For
+                // exmaple, a number with 30 digits could have an exponent as
+                // low as -337 and still not overflow, but doing the -337 all at
+                // once WOULD overflow
                 if exp < -307 {
                     let adjust = exp + 307;
                     result *= TEN.powi(adjust);
@@ -163,10 +164,12 @@ mod tests {
         assert_single!(16777216.0, parse("16_777_216"));
     }
 
-    // With any number big enough to use more than one component, the half-ulp normalization
-    // requirement and the possibility of having differing floating-point precisions between the
-    // components means that the components will not simply be their part of the whole integer. For
-    // example, in the first test below, one might expect that the components will be
+    // With any number big enough to use more than one component, the half-ulp
+    // normalization requirement and the possibility of having differing
+    // floating-point precisions between the components means that the
+    // components will not simply be their part of the whole integer. For
+    // example, in the first test below, one might expect that the components
+    // will be
     //
     //      1.234567890123456e31
     //      1.234567890123456e15
@@ -176,10 +179,11 @@ mod tests {
     //      1.2345678901234562e31
     //      -1.064442023724352e15
     //
-    // This makes it prohibitively difficult to write tests for the exact component values. Instead
-    // we construct one value by parsing a string and construct the other value directly through
-    // math between double-precision values. The components of each should be the same if the
-    // parsing is being done correctly.
+    // This makes it prohibitively difficult to write tests for the exact
+    // component values. Instead we construct one value by parsing a string and
+    // construct the other value directly through math between double-precision
+    // values. The components of each should be the same if the parsing is being
+    // done correctly.
 
     #[test]
     fn double_int() {
@@ -192,17 +196,19 @@ mod tests {
         assert_exact!(n, s);
     }
 
-    // The parsed values in the first asserts in each test below are of the form (2ⁿ - 1) / 2ⁿ.
-    // Since this is the same as the sum of the series 1/2⁰ + 1/2¹ + 1/2² + ... 1/2ⁿ, these numbers
-    // are exactly representable in binary.
+    // The parsed values in the first asserts in each test below are of the form
+    // (2ⁿ - 1) / 2ⁿ. Since this is the same as the sum of the series 1/2⁰ +
+    // 1/2¹ + 1/2² + ... 1/2ⁿ, these numbers are exactly representable in
+    // binary.
     //
-    // The second asserts use numbers in the form (3ⁿ - 1) / 3ⁿ where n = 15, rounded to the correct
-    // number of digits. Since these are not sums of powers of 2, they are *not* exactly
-    // representable in binary.
+    // The second asserts use numbers in the form (3ⁿ - 1) / 3ⁿ where n = 15,
+    // rounded to the correct number of digits. Since these are not sums of
+    // powers of 2, they are *not* exactly representable in binary.
     //
-    // Parsing any floating-point number will introduce inexactness just because of the nature of
-    // the math used in parsing. However this error will be less than the best precision offered by
-    // the type (most of them are accurate to about 68 digits when only 63-64 is offered). Therefore
+    // Parsing any floating-point number will introduce inexactness just because
+    // of the nature of the math used in parsing. However this error will be
+    // less than the best precision offered by the type (most of them are
+    // accurate to about 68 digits when only 63-64 is offered). Therefore
     // `assert_close` is used rather than `assert_exact`.
 
     #[test]

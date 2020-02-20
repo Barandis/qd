@@ -8,10 +8,11 @@ use crate::quad::Quad;
 impl Quad {
     /// Calculates the number times 2<sup>`n`</sup>.
     ///
-    /// Though this is not an everyday operation, it is often used in more advanced mathematical
-    /// calculations (including several within this library). Therefore an implementation that is
-    /// much more efficient than calculating it through multiplication and [`powi`] is offered
-    /// despite it not being part of the `f64` API.
+    /// Though this is not an everyday operation, it is often used in more
+    /// advanced mathematical calculations (including several within this
+    /// library). Therefore an implementation that is much more efficient than
+    /// calculating it through multiplication and [`powi`] is offered despite it
+    /// not being part of the `f64` API.
     ///
     /// [`powi`]: #method.powi
     ///

@@ -32,7 +32,10 @@ mod tests {
 
     #[test]
     fn basic() {
-        assert_close!(dd!("1.4645918875615232630201425272638"), Double::PI.cbrt());
+        assert_close!(
+            dd!("1.4645918875615232630201425272638"),
+            Double::PI.cbrt()
+        );
         assert_close!(
             dd!("-1.3956124250860895286281253196026"),
             (-Double::E).cbrt()

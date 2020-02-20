@@ -12,10 +12,12 @@ impl Mul for Quad {
 
     // This is complicated.
     //
-    // It closely follows the process described on pp. 11-16 of "Library for Double-Double and
-    // Quad-Double Arithmetic" by Y. Hida, X.S. Li, and D.H. Bailey which can be found at
-    // http://web.mit.edu/tabbott/Public/quaddouble-debian/qd-2.3.4-old/docs/qd.pdf. You should be
-    // able to see the way the source code works from the diagrams there.
+    // It closely follows the process described on pp. 11-16 of "Library for
+    // Double-Double and Quad-Double Arithmetic" by Y. Hida, X.S. Li, and D.H.
+    // Bailey which can be found at
+    // http://web.mit.edu/tabbott/Public/quaddouble-debian/qd-2.3.4-old/docs/qd.pdf.
+    // You should be able to see the way the source code works from the diagrams
+    // there.
     //
     // TERMS (a = self, b = other):
     // Order   Components   Group (hx, lx)
@@ -33,8 +35,9 @@ impl Mul for Quad {
     //         a2 * b2      b  (high word only)
     //         a3 * b1      c  (high word only)
     //
-    // Other terms, including the remaining O(ε⁴) terms and the low words of the O(ε⁴) that are
-    // calculated, are not necessary to provide 212 bits of accuracy.
+    // Other terms, including the remaining O(ε⁴) terms and the low words of the
+    // O(ε⁴) that are calculated, are not necessary to provide 212 bits of
+    // accuracy.
     #[inline]
     fn mul(self, other: Quad) -> Quad {
         if self.is_nan() || other.is_nan() {
@@ -80,14 +83,16 @@ impl Mul for Quad {
             let (h8, l8) = two_prod(self.2, other.1);
             let (h9, l9) = two_prod(self.3, other.0);
 
-            // O(ε⁴) terms - the low words aren't necessary for the accuracy we need
+            // O(ε⁴) terms - the low words aren't necessary for the accuracy we
+            // need
             let ha = self.1 * other.3;
             let hb = self.2 * other.2;
             let hc = self.3 * other.1;
 
-            // Each calculation takes all of the high words for the terms of that level, whatever
-            // intermediate words are specified by the algorithm, and whatever low words fit in the
-            // remaining input space.
+            // Each calculation takes all of the high words for the terms of
+            // that level, whatever intermediate words are specified by the
+            // algorithm, and whatever low words fit in the remaining input
+            // space.
 
             // O(1) calculation (pass-through)
             let r0 = h0;
@@ -100,7 +105,8 @@ impl Mul for Quad {
             // O(ε⁴) calculation (nine_one_sum)
             let r4 = t3 + t4 + ha + hb + hc + l6 + l7 + l8 + l9;
 
-            // Results of the prior calculations are renormalized into four f64s.
+            // Results of the prior calculations are renormalized into four
+            // f64s.
             Quad::from(renorm5(r0, r1, r2, r3, r4))
         }
     }
@@ -144,7 +150,9 @@ mod tests {
 
     #[test]
     fn basic() {
-        let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
+        let expected = qd!(
+            "8.539734222673567065463550869546574495034888535765114961879601130"
+        );
         assert_close!(expected, Quad::PI * Quad::E);
         assert_close!(expected, Quad::PI * &Quad::E);
         assert_close!(expected, &Quad::PI * Quad::E);

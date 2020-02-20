@@ -7,9 +7,10 @@ use crate::common::basic::{quick_two_sum, renorm3, two_diff, two_prod};
 use crate::double::Double;
 use std::ops::{Div, DivAssign};
 
-// Helper function needed to avoid the only place in this arithmetic where Double::from must be
-// called on a non-tuple, non-integer number. With the current parsing of floats, calling
-// Double::from this way in the basic arithmetic would cause a stack overflow.
+// Helper function needed to avoid the only place in this arithmetic where
+// Double::from must be called on a non-tuple, non-integer number. With the
+// current parsing of floats, calling Double::from this way in the basic
+// arithmetic would cause a stack overflow.
 #[inline]
 fn mul_f64(a: Double, b: f64) -> Double {
     let (p, e) = two_prod(a.0, b);
@@ -159,7 +160,10 @@ mod tests {
         assert_exact!(Double::NAN, Double::NEG_INFINITY / Double::NEG_INFINITY);
         assert_exact!(Double::INFINITY, Double::INFINITY / Double::ZERO);
         assert_exact!(Double::ZERO, Double::ZERO / Double::INFINITY);
-        assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY / Double::ZERO);
+        assert_exact!(
+            Double::NEG_INFINITY,
+            Double::NEG_INFINITY / Double::ZERO
+        );
         assert_exact!(Double::NEG_ZERO, Double::ZERO / Double::NEG_INFINITY);
     }
 }

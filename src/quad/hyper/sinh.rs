@@ -30,8 +30,8 @@ impl Quad {
             let a = self.exp();
             mul_pwr2(a - a.recip(), 0.5)
         } else {
-            // The above formula is not accurate enough with very small numbers. Use a Taylor
-            // series instead.
+            // The above formula is not accurate enough with very small numbers.
+            // Use a Taylor series instead.
             let mut s = self;
             let mut t = self;
             let r = t.sqr();

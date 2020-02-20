@@ -21,7 +21,9 @@ pub enum ErrorKind {
 impl fmt::Display for ParseError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let description = match self.kind {
-            ErrorKind::Empty => "cannot parse composite double from empty string",
+            ErrorKind::Empty => {
+                "cannot parse composite double from empty string"
+            }
             ErrorKind::Invalid => "invalid composite double literal",
         };
         description.fmt(f)

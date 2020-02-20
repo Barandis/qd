@@ -3,11 +3,6 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// Copyright (c) 2019 Thomas Otterson
-//
-// This software is released under the MIT License.
-// https://opensource.org/licenses/MIT
-
 use crate::quad::Quad;
 use std::ops::{Div, Rem, RemAssign};
 

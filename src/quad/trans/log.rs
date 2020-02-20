@@ -8,13 +8,11 @@ use crate::quad::Quad;
 impl Quad {
     /// Calculates the base `b` logarithm (log<sub>`b`</sub>) of the number.
     ///
-    /// If the goal is to calculate the base *e*, base 2, or base 10 logarithms of `self`, the
-    /// specialized functions for those purposes([`ln`], [`log2`], and [`log10`] respectively) will
-    /// be more efficient.
+    /// If the goal is to calculate the base *e*, base 2, or base 10 logarithms
+    /// of `self`, the specialized functions for those purposes([`ln`],
+    /// [`log2`], and [`log10`] respectively) will be more efficient.
     ///
-    /// [`ln`]: #method.ln
-    /// [`log2`]: #method.log2
-    /// [`log10`]: #method.log10
+    /// [`ln`]: #method.ln [`log2`]: #method.log2 [`log10`]: #method.log10
     ///
     /// # Examples
     /// ```

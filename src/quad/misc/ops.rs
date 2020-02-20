@@ -97,7 +97,8 @@ impl Quad {
         }
     }
 
-    /// Returns the nearest integer to the quad-double. Half-way cases are rounded away from `0.0`.
+    /// Returns the nearest integer to the quad-double. Half-way cases are
+    /// rounded away from `0.0`.
     ///
     /// # Examples
     /// ```
@@ -206,9 +207,8 @@ impl Quad {
     /// # }
     /// ```
     ///
-    /// [`INFINITY`]: #associatedconstant.INFINITY
-    /// [`NEG_INFINITY`]: #associatedconstant.NEG_INFINITY
-    /// [`NAN`]: #associatedconstant.NAN
+    /// [`INFINITY`]: #associatedconstant.INFINITY [`NEG_INFINITY`]:
+    /// #associatedconstant.NEG_INFINITY [`NAN`]: #associatedconstant.NAN
     #[inline]
     pub fn signum(self) -> Quad {
         if self.is_nan() {

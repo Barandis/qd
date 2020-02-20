@@ -11,14 +11,15 @@ use std::ops::{Index, IndexMut};
 mod macros {
     /// Creates a new double-double from another number or from a string.
     ///
-    /// The argument can be any expression that evaluates to a type that this library defines a
-    /// `From` implementation for. This includes `&str`, `Double`, any primitive number that is not
-    /// a `u128` or `i128`, and 2-tuples of any of those primitive number types.
+    /// The argument can be any expression that evaluates to a type that this
+    /// library defines a `From` implementation for. This includes `&str`,
+    /// `Double`, any primitive number that is not a `u128` or `i128`, and
+    /// 2-tuples of any of those primitive number types.
     ///
     /// # Panics
     ///
-    /// Passing an expression that evaluates to a type that does not have a `From` implementation
-    /// will cause a panic.
+    /// Passing an expression that evaluates to a type that does not have a
+    /// `From` implementation will cause a panic.
     ///
     /// # Examples
     /// ```
@@ -96,8 +97,8 @@ mod misc;
 mod trans;
 mod trig;
 
-/// A 128-bit floating-point number implemented as the unevaluated sum of two 64-bit floating-point
-/// numbers.
+/// A 128-bit floating-point number implemented as the unevaluated sum of two
+/// 64-bit floating-point numbers.
 ///
 /// There are several ways to create a new `Double`:
 ///
@@ -109,24 +110,21 @@ mod trig;
 ///
 /// See the [module-level documentation] (index.html) for more information.
 ///
-/// [`new`]: #method.new
-/// [`norm`]: #method.norm
-/// [`from_add`]: #method.from_add
-/// [`from_sub`]: #method.from_sub
-/// [`from_mul`]: #method.from_mul
-/// [`from_div`]: #method.from_div
-/// [`dd`]: macro.dd.html
-/// [module-level documentation]: index.html
+/// [`new`]: #method.new [`norm`]: #method.norm [`from_add`]: #method.from_add
+/// [`from_sub`]: #method.from_sub [`from_mul`]: #method.from_mul [`from_div`]:
+/// #method.from_div [`dd`]: macro.dd.html [module-level documentation]:
+/// index.html
 #[derive(Clone, Copy)]
 pub struct Double(f64, f64);
 
 impl Double {
     /// Creates a `Double` with the two arguments as the internal components.
     ///
-    /// This function is only useful in the simplest of cases, as it does not do normalization and
-    /// therefore does not account for floating-point error in the first component (meaning the user
-    /// has to). One of its primary functions is declaration of `Double` constants that have
-    /// been pre-computed.
+    /// This function is only useful in the simplest of cases, as it does not do
+    /// normalization and therefore does not account for floating-point error in
+    /// the first component (meaning the user has to). One of its primary
+    /// functions is declaration of `Double` constants that have been
+    /// pre-computed.
     ///
     /// # Examples
     /// ```
@@ -140,9 +138,10 @@ impl Double {
 
     /// Creates a `Double` by normalizing the sum of two arguments.
     ///
-    /// This is a quick and efficient function, but it carries the restriction that the absolute
-    /// value of `a` must be greater than or equal to the absolute value of `b`. If that cannot be
-    /// guaranteed, it would be better to use the slightly slower but more robust
+    /// This is a quick and efficient function, but it carries the restriction
+    /// that the absolute value of `a` must be greater than or equal to the
+    /// absolute value of `b`. If that cannot be guaranteed, it would be better
+    /// to use the slightly slower but more robust
     /// [`from_add`](#method.from_add) instead.
     ///
     /// # Examples
