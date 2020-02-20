@@ -57,7 +57,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn sinh() {
         assert_close!(
             dd!("11.548739357257748377977334315388"),
             Double::PI.sinh()
@@ -69,10 +69,18 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::ZERO, dd!(0.0).sinh());
-        assert_exact!(Double::NAN, Double::NAN.sinh());
+    fn zero() {
+        assert_exact!(Double::ZERO, Double::ZERO.sinh());
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Double::INFINITY, Double::INFINITY.sinh());
         assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.sinh());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN.sinh());
     }
 }

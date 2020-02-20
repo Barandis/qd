@@ -43,7 +43,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn tanh() {
         assert_close!(
             dd!("0.99627207622074994426469058001254"),
             Double::PI.tanh()
@@ -55,10 +55,18 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::ZERO, dd!(0.0).tanh());
-        assert_exact!(Double::NAN, Double::NAN.tanh());
+    fn zero() {
+        assert_exact!(Double::ZERO, Double::ZERO.tanh());
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Double::ONE, Double::INFINITY.tanh());
         assert_exact!(-Double::ONE, Double::NEG_INFINITY.tanh());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN.tanh());
     }
 }

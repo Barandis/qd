@@ -54,7 +54,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn sinh_cosh() {
         let (sinh_pi, cosh_pi) = Double::PI.sinh_cosh();
         assert_close!(dd!("11.548739357257748377977334315388"), sinh_pi);
         assert_close!(dd!("11.591953275521520627751752052560"), cosh_pi);
@@ -65,17 +65,23 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::ZERO, dd!(0.0).sinh_cosh().0);
-        assert_exact!(Double::ONE, dd!(0.0).sinh_cosh().1);
+    fn zero() {
+        assert_exact!(Double::ZERO, Double::ZERO.sinh_cosh().0);
+        assert_exact!(Double::ONE, Double::ZERO.sinh_cosh().1);
+    }
 
-        assert_exact!(Double::NAN, Double::NAN.sinh_cosh().0);
-        assert_exact!(Double::NAN, Double::NAN.sinh_cosh().1);
-
+    #[test]
+    fn infinity() {
         assert_exact!(Double::INFINITY, Double::INFINITY.sinh_cosh().0);
         assert_exact!(Double::INFINITY, Double::INFINITY.sinh_cosh().1);
 
         assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.sinh_cosh().0);
         assert_exact!(Double::INFINITY, Double::NEG_INFINITY.sinh_cosh().1);
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN.sinh_cosh().0);
+        assert_exact!(Double::NAN, Double::NAN.sinh_cosh().1);
     }
 }

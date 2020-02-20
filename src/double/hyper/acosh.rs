@@ -36,22 +36,30 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn acosh() {
         assert_close!(
-            dd!("1.811526272460853107021852049305420510220702081057922474861595623"),
+            dd!("1.81152627246085310702185204930542"),
             Double::PI.acosh()
         );
         assert_close!(
-            dd!("1.657454454153077272593828742280534739158392762033676825848582209"),
+            dd!("1.65745445415307727259382874228053"),
             Double::E.acosh()
         );
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::NAN, dd!(0.0).acosh());
-        assert_exact!(Double::NAN, Double::NAN.acosh());
+    fn zero() {
+        assert_exact!(Double::NAN, Double::ZERO.acosh());
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Double::INFINITY, Double::INFINITY.acosh());
         assert_exact!(Double::NAN, Double::NEG_INFINITY.acosh());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN.acosh());
     }
 }

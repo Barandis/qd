@@ -38,7 +38,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn asinh() {
         assert_close!(
             dd!("1.8622957433108482198883613251826"),
             Double::PI.asinh()
@@ -50,10 +50,18 @@ mod tests {
     }
 
     #[test]
-    fn special() {
+    fn zero() {
         assert_exact!(Double::ZERO, dd!(0.0).asinh());
-        assert_exact!(Double::NAN, Double::NAN.asinh());
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Double::INFINITY, Double::INFINITY.asinh());
         assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.asinh());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN.asinh());
     }
 }

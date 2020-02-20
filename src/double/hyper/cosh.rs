@@ -37,7 +37,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn cosh() {
         assert_close!(
             dd!("11.591953275521520627751752052560"),
             Double::PI.cosh()
@@ -49,10 +49,18 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Double::ONE, dd!(0.0).cosh());
-        assert_exact!(Double::NAN, Double::NAN.cosh());
+    fn one() {
+        assert_exact!(Double::ONE, Double::ZERO.cosh());
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Double::INFINITY, Double::INFINITY.cosh());
         assert_exact!(Double::INFINITY, Double::NEG_INFINITY.cosh());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Double::NAN, Double::NAN.cosh());
     }
 }
