@@ -163,7 +163,7 @@ mod tests {
     fn single_int() {
         assert_single!(1.0, parse("1"));
         assert_single!(2317.0, parse("2317"));
-        assert_single!(16777216.0, parse("16_777_216"));
+        assert_single!(16_777_216.0, parse("16_777_216"));
     }
 
     // With any number big enough to use more than one component, the half-ulp
@@ -190,7 +190,7 @@ mod tests {
     #[test]
     fn double_int() {
         let s = parse("12345678901234561234567890123456");
-        let a = qd!(1234567890123456.0);
+        let a = qd!(1_234_567_890_123_456.0);
 
         let mut n = qd!(a);
         n *= qd!(10).powi(16);
@@ -201,7 +201,7 @@ mod tests {
     #[test]
     fn triple_int() {
         let s = parse("123456789012345612345678901234561234567890123456");
-        let a = qd!(1234567890123456.0);
+        let a = qd!(1_234_567_890_123_456.0);
 
         let mut n = qd!(a) * qd!(10).powi(32);
         n += qd!(a) * qd!(10).powi(16);
@@ -214,7 +214,7 @@ mod tests {
         let s = parse(
             "1234567890123456123456789012345612345678901234561234567890123456",
         );
-        let a = qd!(1234567890123456.0);
+        let a = qd!(1_234_567_890_123_456.0);
 
         let mut n = qd!(a) * qd!(10).powi(48);
         n += qd!(a) * qd!(10).powi(32);
@@ -241,7 +241,7 @@ mod tests {
     #[test]
     fn single_float() {
         // n = 15
-        assert_single!(0.99908447265625, parse("0.99908447265625"));
+        assert_single!(0.999_084_472_656_25, parse("0.99908447265625"));
         let three_expected = (qd!(3).powi(15) - qd!(1)) / qd!(3).powi(15);
         assert_precision!(three_expected, parse("0.9999999303082806"), 15);
     }

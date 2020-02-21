@@ -6,6 +6,7 @@
 use crate::common::basic::renorm4;
 use crate::double::Double;
 use crate::quad::Quad;
+use std::f64;
 
 fn from_float(n: f64) -> Quad {
     if n == 0.0 {
@@ -22,7 +23,7 @@ fn from_float(n: f64) -> Quad {
         } else {
             Quad::INFINITY
         }
-    } else if n.floor() == n {
+    } else if (n.floor() - n).abs() < f64::EPSILON {
         Quad(n, 0.0, 0.0, 0.0)
     } else {
         n.to_string().parse().unwrap()
@@ -47,7 +48,7 @@ fn from_components(a: f64, b: f64, c: f64, d: f64) -> Quad {
         } else {
             Quad::INFINITY
         }
-    } else if a.floor() == a {
+    } else if (a.floor() - a).abs() < f64::EPSILON {
         Quad(a, b, c, d)
     } else {
         Quad(a, b, c, d).to_string().parse().unwrap()
@@ -72,6 +73,7 @@ fn split_u64(a: u64) -> (u32, u32) {
 }
 
 #[inline]
+#[allow(clippy::many_single_char_names)]
 fn split_u128(a: u128) -> (u32, u32, u32, u32) {
     let w = (a >> 96) as u32;
     let x = (a >> 64) as u32;
@@ -97,6 +99,7 @@ fn from_i64(a: i64) -> Quad {
     }
 }
 
+#[allow(clippy::many_single_char_names)]
 fn from_u128(a: u128) -> Quad {
     let (w, x, y, z) = split_u128(a);
     Quad::from(renorm4(
@@ -107,6 +110,7 @@ fn from_u128(a: u128) -> Quad {
     ))
 }
 
+#[allow(clippy::many_single_char_names)]
 fn from_i128(a: i128) -> Quad {
     let sign = a.signum();
     let a = a.abs() as u128;
