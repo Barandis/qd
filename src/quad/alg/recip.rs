@@ -43,10 +43,19 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::INFINITY, qd!(0.0).recip());
-        assert_exact!(Quad::NEG_INFINITY, qd!(-0.0).recip());
+    fn zero() {
+        assert_exact!(Quad::INFINITY, Quad::ZERO.recip());
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_ZERO.recip());
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Quad::ZERO, Quad::INFINITY.recip());
         assert_exact!(Quad::NEG_ZERO, Quad::NEG_INFINITY.recip());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Quad::NAN, Quad::NAN.recip());
     }
 }

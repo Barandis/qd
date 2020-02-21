@@ -81,7 +81,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn nroot() {
         assert_close!(Quad::PI, Quad::PI.nroot(1));
         assert_close!(
             qd!("1.772453850905516027298167483341145182797549456122387128213807790"),
@@ -94,20 +94,28 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::INFINITY, qd!(0.0).nroot(-2));
-        assert_exact!(Quad::INFINITY, qd!(-0.0).nroot(-2));
-        assert_exact!(Quad::INFINITY, qd!(0.0).nroot(-3));
-        assert_exact!(Quad::NEG_INFINITY, qd!(-0.0).nroot(-3));
-        assert_exact!(Quad::ZERO, qd!(0.0).nroot(4));
-        assert_exact!(Quad::ZERO, qd!(-0.0).nroot(4));
-        assert_exact!(Quad::ZERO, qd!(0.0).nroot(5));
-        assert_exact!(Quad::NEG_ZERO, qd!(-0.0).nroot(4));
-        assert_exact!(Quad::NAN, qd!(2).nroot(-2));
+    fn zero() {
+        assert_exact!(Quad::ZERO, Quad::ZERO.nroot(4));
+        assert_exact!(Quad::ZERO, Quad::NEG_ZERO.nroot(4));
+        assert_exact!(Quad::ZERO, Quad::ZERO.nroot(5));
+        assert_exact!(Quad::NEG_ZERO, Quad::NEG_ZERO.nroot(4));
+        assert_exact!(Quad::INFINITY, Quad::ZERO.nroot(-2));
+        assert_exact!(Quad::INFINITY, Quad::NEG_ZERO.nroot(-2));
+        assert_exact!(Quad::INFINITY, Quad::ZERO.nroot(-3));
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_ZERO.nroot(-3));
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Quad::INFINITY, Quad::INFINITY.nroot(4));
         assert_exact!(Quad::NAN, Quad::NEG_INFINITY.nroot(4));
         assert_exact!(Quad::INFINITY, Quad::INFINITY.nroot(3));
         assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.nroot(3));
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Quad::NAN, qd!(2).nroot(-2));
         assert_exact!(Quad::NAN, Quad::NAN.nroot(3));
     }
 }

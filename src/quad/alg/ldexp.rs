@@ -42,9 +42,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn ldexp() {
         assert_exact!(qd!(48), qd!(3).ldexp(4));
-        assert_close!(qd!(0.078125), qd!(5).ldexp(-6));
+        assert_close!(qd!(0.078_125), qd!(5).ldexp(-6));
         assert_close!(
             qd!("4.216574282663130924562182077780080660863911808152513230508318081e8"),
             Quad::PI.ldexp(27)
@@ -56,11 +56,24 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::NAN, Quad::NAN.ldexp(5));
+    fn zero() {
+        assert_exact!(Quad::ZERO, Quad::ZERO.ldexp(2));
+        assert_exact!(Quad::NEG_ZERO, Quad::NEG_ZERO.ldexp(2));
+        assert_exact!(Quad::ONE, Quad::ONE.ldexp(0));
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Quad::INFINITY, Quad::INFINITY.ldexp(4));
         assert_exact!(Quad::INFINITY, Quad::INFINITY.ldexp(-4));
+        assert_exact!(Quad::INFINITY, Quad::INFINITY.ldexp(0));
         assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.ldexp(3));
         assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.ldexp(-3));
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.ldexp(0));
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Quad::NAN, Quad::NAN.ldexp(5));
     }
 }

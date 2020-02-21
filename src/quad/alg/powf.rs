@@ -6,7 +6,7 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates the number raised to a quad-double power.
+    /// Calculates the number raised to a quad-Quad power.
     ///
     /// This function is implemented using the logarithm of the number being
     /// raised, which means it will not work for negatives even though raising a
@@ -60,7 +60,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn powf() {
         assert_close!(
             qd!("24567.24805421478199532529771567617705237167216222778116359595012"),
             qd!(11.1).powf(qd!(4.2))
@@ -80,32 +80,57 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::ONE, qd!(2).powf(qd!(0.0)));
-        assert_exact!(Quad::ONE, qd!(2).powf(qd!(-0.0)));
-        assert_exact!(Quad::INFINITY, qd!(0.0).powf(qd!(-2)));
-        assert_exact!(Quad::INFINITY, qd!(-0.0).powf(qd!(-2)));
-        assert_exact!(Quad::INFINITY, qd!(0.0).powf(Quad::NEG_INFINITY));
-        assert_exact!(Quad::INFINITY, qd!(-0.0).powf(Quad::NEG_INFINITY));
-        assert_exact!(Quad::ZERO, qd!(0.0).powf(qd!(3)));
-        assert_exact!(Quad::ZERO, qd!(-0.0).powf(qd!(3)));
-        assert_exact!(Quad::ZERO, qd!(0.0).powf(Quad::INFINITY));
-        assert_exact!(Quad::ZERO, qd!(-0.0).powf(Quad::INFINITY));
-        assert_exact!(Quad::ONE, qd!(1).powf(qd!(2317)));
-        assert_exact!(Quad::NAN, qd!(-1).powf(qd!(1)));
-        assert_exact!(Quad::NAN, qd!(0.0).powf(qd!(0.0)));
-        assert_exact!(Quad::NAN, qd!(-0.0).powf(qd!(0.0)));
-        assert_exact!(Quad::NAN, qd!(0.0).powf(qd!(-0.0)));
-        assert_exact!(Quad::NAN, qd!(-0.0).powf(qd!(-0.0)));
-        assert_exact!(Quad::NAN, Quad::INFINITY.powf(qd!(0.0)));
-        assert_exact!(Quad::NAN, Quad::INFINITY.powf(qd!(-0.0)));
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.powf(qd!(0.0)));
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.powf(qd!(-0.0)));
-        assert_exact!(Quad::NAN, qd!(1).powf(Quad::INFINITY));
-        assert_exact!(Quad::NAN, qd!(1).powf(Quad::NEG_INFINITY));
+    fn zero() {
+        assert_exact!(Quad::ZERO, Quad::ZERO.powf(qd!(3)));
+        assert_exact!(Quad::ZERO, Quad::NEG_ZERO.powf(qd!(3)));
+        assert_exact!(Quad::ZERO, Quad::ZERO.powf(Quad::INFINITY));
+        assert_exact!(Quad::ZERO, Quad::NEG_ZERO.powf(Quad::INFINITY));
+        assert_exact!(Quad::INFINITY, Quad::ZERO.powf(qd!(-2)));
+        assert_exact!(Quad::INFINITY, Quad::NEG_ZERO.powf(qd!(-2)));
+        assert_exact!(
+            Quad::INFINITY,
+            Quad::ZERO.powf(Quad::NEG_INFINITY)
+        );
+        assert_exact!(
+            Quad::INFINITY,
+            Quad::NEG_ZERO.powf(Quad::NEG_INFINITY)
+        );
+    }
+
+    #[test]
+    fn zero_exponent() {
+        assert_exact!(Quad::ONE, qd!(2).powf(Quad::ZERO));
+        assert_exact!(Quad::ONE, qd!(2).powf(Quad::NEG_ZERO));
+        assert_exact!(Quad::NAN, Quad::ZERO.powf(Quad::ZERO));
+        assert_exact!(Quad::NAN, Quad::NEG_ZERO.powf(Quad::ZERO));
+        assert_exact!(Quad::NAN, Quad::ZERO.powf(Quad::NEG_ZERO));
+        assert_exact!(Quad::NAN, Quad::NEG_ZERO.powf(Quad::NEG_ZERO));
+    }
+
+    #[test]
+    fn infinity() {
+        assert_exact!(Quad::NAN, Quad::INFINITY.powf(Quad::ZERO));
+        assert_exact!(Quad::NAN, Quad::INFINITY.powf(Quad::NEG_ZERO));
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.powf(Quad::ZERO));
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.powf(Quad::NEG_ZERO));
+    }
+
+    #[test]
+    fn infinite_exponent() {
         assert_exact!(Quad::INFINITY, qd!(2).powf(Quad::INFINITY));
         assert_exact!(Quad::ZERO, qd!(2).powf(Quad::NEG_INFINITY));
+        assert_exact!(Quad::NAN, qd!(1).powf(Quad::INFINITY));
+        assert_exact!(Quad::NAN, qd!(1).powf(Quad::NEG_INFINITY));
+    }
+
+    #[test]
+    fn nan() {
         assert_exact!(Quad::NAN, Quad::NAN.powf(qd!(3)));
         assert_exact!(Quad::NAN, qd!(3).powf(Quad::NAN));
+    }
+
+    #[test]
+    fn negative() {
+        assert_exact!(Quad::NAN, qd!(-1).powf(qd!(1)));
     }
 }

@@ -26,6 +26,8 @@ impl Quad {
             Quad::ZERO
         } else if self.is_sign_negative() {
             Quad::NAN
+        } else if self.is_infinite() {
+            Quad::INFINITY
         } else {
             // Strategy: use Newton's iteration.
             //
@@ -33,8 +35,8 @@ impl Quad {
             //
             //      x' = x + (1 - ax²) * x / 2
             //
-            // which converges to 1/√a, starting with a double-precision
-            // approximation of 1/√a. Newton's iteration more or less doubles
+            // which converges to 1/√a, starting with a Quad-precision
+            // approximation of 1/√a. Newton's iteration more or less Quads
             // the precision with each pass, so performing it three times should
             // be enough.
 
@@ -57,7 +59,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn positive() {
         assert_close!(
             qd!("1.772453850905516027298167483341145182797549456122387128213807790"),
             Quad::PI.sqrt()
@@ -69,8 +71,23 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::ZERO, qd!(0).sqrt());
+    fn negative() {
         assert_exact!(Quad::NAN, qd!(-3).sqrt());
+    }
+
+    #[test]
+    fn zero() {
+        assert_exact!(Quad::ZERO, Quad::ZERO.sqrt());
+    }
+
+    #[test]
+    fn infinity() {
+        assert_exact!(Quad::INFINITY, Quad::INFINITY.sqrt());
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.sqrt());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Quad::NAN, Quad::NAN.sqrt());
     }
 }
