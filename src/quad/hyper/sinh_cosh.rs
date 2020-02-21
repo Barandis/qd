@@ -54,7 +54,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn sinh_cosh() {
         let (sinh_pi, cosh_pi) = Quad::PI.sinh_cosh();
         assert_close!(
             qd!("11.54873935725774837797733431538840968449518906639478945523216336"),
@@ -77,17 +77,23 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::ZERO, qd!(0.0).sinh_cosh().0);
-        assert_exact!(Quad::ONE, qd!(0.0).sinh_cosh().1);
+    fn zero() {
+        assert_exact!(Quad::ZERO, Quad::ZERO.sinh_cosh().0);
+        assert_exact!(Quad::ONE, Quad::ZERO.sinh_cosh().1);
+    }
 
-        assert_exact!(Quad::NAN, Quad::NAN.sinh_cosh().0);
-        assert_exact!(Quad::NAN, Quad::NAN.sinh_cosh().1);
-
+    #[test]
+    fn infinity() {
         assert_exact!(Quad::INFINITY, Quad::INFINITY.sinh_cosh().0);
         assert_exact!(Quad::INFINITY, Quad::INFINITY.sinh_cosh().1);
 
         assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.sinh_cosh().0);
         assert_exact!(Quad::INFINITY, Quad::NEG_INFINITY.sinh_cosh().1);
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Quad::NAN, Quad::NAN.sinh_cosh().0);
+        assert_exact!(Quad::NAN, Quad::NAN.sinh_cosh().1);
     }
 }

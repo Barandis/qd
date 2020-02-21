@@ -57,7 +57,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn sinh() {
         assert_close!(
             qd!("11.54873935725774837797733431538840968449518906639478945523216336"),
             Quad::PI.sinh()
@@ -69,10 +69,18 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::ZERO, qd!(0.0).sinh());
-        assert_exact!(Quad::NAN, Quad::NAN.sinh());
+    fn zero() {
+        assert_exact!(Quad::ZERO, Quad::ZERO.sinh());
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Quad::INFINITY, Quad::INFINITY.sinh());
         assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.sinh());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Quad::NAN, Quad::NAN.sinh());
     }
 }
