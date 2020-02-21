@@ -5,6 +5,7 @@
 
 use crate::common::basic::renorm4;
 use crate::quad::Quad;
+use std::f64;
 
 impl Quad {
     /// Calculates the absolute value of the quad-double.
@@ -48,11 +49,11 @@ impl Quad {
         let mut c = 0.0;
         let mut d = 0.0;
 
-        if a == self.0 {
+        if (a - self.0).abs() < f64::EPSILON {
             b = self.1.floor();
-            if b == self.1 {
+            if (b - self.1).abs() < f64::EPSILON {
                 c = self.2.floor();
-                if c == self.2 {
+                if (c - self.2).abs() < f64::EPSILON {
                     d = self.3.floor();
                 }
             }
@@ -83,11 +84,11 @@ impl Quad {
         let mut c = 0.0;
         let mut d = 0.0;
 
-        if a == self.0 {
+        if (a - self.0).abs() < f64::EPSILON {
             b = self.1.ceil();
-            if b == self.1 {
+            if (b - self.1).abs() < f64::EPSILON {
                 c = self.2.ceil();
-                if c == self.2 {
+                if (c - self.2).abs() < f64::EPSILON {
                     d = self.3.ceil();
                 }
             }
@@ -115,33 +116,33 @@ impl Quad {
     #[inline]
     pub fn round(self) -> Quad {
         let a = self.0.round();
-        if a == self.0 {
+        if (a - self.0).abs() < f64::EPSILON {
             let b = self.1.round();
-            if b == self.1 {
+            if (b - self.1).abs() < f64::EPSILON {
                 let c = self.2.round();
-                if c == self.2 {
+                if (c - self.2).abs() < f64::EPSILON {
                     let d = self.3.round();
                     Quad::from(renorm4(a, b, c, d))
+                } else if ((c - self.2).abs() - 0.5).abs() < f64::EPSILON
+                    && self.3 < 0.0
+                {
+                    Quad(a, b, c - 1.0, 0.0)
                 } else {
-                    if (c - self.2).abs() == 0.5 && self.3 < 0.0 {
-                        Quad(a, b, c - 1.0, 0.0)
-                    } else {
-                        Quad(a, b, c, 0.0)
-                    }
+                    Quad(a, b, c, 0.0)
                 }
+            } else if ((b - self.1).abs() - 0.5).abs() < f64::EPSILON
+                && self.2 < 0.0
+            {
+                Quad(a, b - 1.0, 0.0, 0.0)
             } else {
-                if (b - self.1).abs() == 0.5 && self.2 < 0.0 {
-                    Quad(a, b - 1.0, 0.0, 0.0)
-                } else {
-                    Quad(a, b, 0.0, 0.0)
-                }
+                Quad(a, b, 0.0, 0.0)
             }
+        } else if ((a - self.0).abs() - 0.5).abs() < f64::EPSILON
+            && self.1 < 0.0
+        {
+            Quad(a - 1.0, 0.0, 0.0, 0.0)
         } else {
-            if (a - self.0).abs() == 0.5 && self.1 < 0.0 {
-                Quad(a - 1.0, 0.0, 0.0, 0.0)
-            } else {
-                Quad(a, 0.0, 0.0, 0.0)
-            }
+            Quad(a, 0.0, 0.0, 0.0)
         }
     }
 
