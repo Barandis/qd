@@ -8,7 +8,7 @@ use std::cmp::Ordering;
 
 impl PartialOrd for Quad {
     /// Implements the `<`, `>`, `<=`, and `>=` operators, testing two
-    /// quad-doubles for ordering.
+    /// quad-Quads for ordering.
     ///
     /// Ordering works the same as it does for system floating-point numbers,
     /// including `NaN` returning false for any of these operators (including
@@ -45,21 +45,55 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
+    fn gt() {
         assert!(Quad::PI > Quad::E);
-        assert!(Quad::PI >= Quad::E);
-        assert!(Quad::E < Quad::PI);
-        assert!(Quad::E <= Quad::PI);
+        assert!(!(Quad::PI > Quad::PI));
+        assert!(!(Quad::E > Quad::PI));
     }
 
     #[test]
-    fn special() {
+    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
+    fn gte() {
+        assert!(Quad::PI >= Quad::E);
+        assert!(Quad::PI >= Quad::PI);
+        assert!(!(Quad::E >= Quad::PI));
+    }
+
+    #[test]
+    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
+    fn lt() {
+        assert!(Quad::E < Quad::PI);
+        assert!(!(Quad::E < Quad::E));
+        assert!(!(Quad::PI < Quad::E));
+    }
+
+    #[test]
+    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
+    fn lte() {
+        assert!(Quad::E <= Quad::PI);
+        assert!(Quad::E <= Quad::E);
+        assert!(!(Quad::PI <= Quad::E));
+    }
+
+    #[test]
+    fn zero() {
+        assert!(Quad::ZERO <= Quad::NEG_ZERO);
+        assert!(Quad::ZERO >= Quad::NEG_ZERO);
+    }
+
+    #[test]
+    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
+    fn infinity() {
         assert!(Quad::NEG_INFINITY < Quad::INFINITY);
         assert!(Quad::NEG_INFINITY <= Quad::NEG_INFINITY);
         assert!(Quad::NEG_INFINITY >= Quad::NEG_INFINITY);
         assert!(!(Quad::NEG_INFINITY > Quad::NEG_INFINITY));
-        assert!(Quad::ZERO <= Quad::NEG_ZERO);
-        assert!(Quad::ZERO >= Quad::NEG_ZERO);
+    }
+
+    #[test]
+    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
+    fn nan() {
         assert!(!(Quad::NAN < Quad::NAN));
         assert!(!(Quad::NAN <= Quad::NAN));
         assert!(!(Quad::NAN > Quad::NAN));
