@@ -24,11 +24,15 @@ impl Double {
     /// ```
     #[inline]
     pub fn sqr(self) -> Double {
-        let (p, e) = two_sqr(self.0);
-        Double::from(quick_two_sum(
-            p,
-            e + 2.0 * self.0 * self.1 + self.1 * self.1,
-        ))
+        if self.is_infinite() {
+            Double::INFINITY
+        } else {
+            let (p, e) = two_sqr(self.0);
+            Double::from(quick_two_sum(
+                p,
+                e + 2.0 * self.0 * self.1 + self.1 * self.1,
+            ))
+        }
     }
 }
 
@@ -48,6 +52,13 @@ mod tests {
     #[test]
     fn zero() {
         assert_exact!(Double::ZERO, Double::ZERO.sqr());
+        assert_exact!(Double::ZERO, Double::NEG_ZERO.sqr());
+    }
+
+    #[test]
+    fn infinity() {
+        assert_exact!(Double::INFINITY, Double::INFINITY.sqr());
+        assert_exact!(Double::INFINITY, Double::NEG_INFINITY.sqr());
     }
 
     #[test]
