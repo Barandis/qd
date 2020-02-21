@@ -37,7 +37,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn log() {
         assert_close!(
             qd!("1.174731503667180022671874948332360514453253860423778048991647180"),
             qd!(10).log(7.1)
@@ -46,13 +46,29 @@ mod tests {
             qd!("4.224809005935378615289228804344351219807607162037233517389353517"),
             qd!(243).log(3.67)
         );
+        assert_exact!(Quad::ZERO, qd!(1).log(6.3));
+        assert_close!(Quad::ONE, qd!(3.3).log(3.3));
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::ZERO, qd!(1).log(6.3));
-        assert_exact!(Quad::NAN, qd!(0).log(9.2));
+    fn zero() {
+        assert_exact!(Quad::NAN, Quad::ZERO.log(9.2));
+        assert_exact!(Quad::NAN, Quad::NEG_ZERO.log(1.8));
+    }
+
+    #[test]
+    fn infinity() {
+        assert_exact!(Quad::INFINITY, Quad::INFINITY.log(7.3));
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.log(7.3));
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Quad::NAN, Quad::NAN.log(3.4));
+    }
+
+    #[test]
+    fn negative() {
         assert_exact!(Quad::NAN, qd!(-1).log(1.8));
-        assert_close!(Quad::ONE, qd!(3.3).log(3.3));
     }
 }

@@ -40,10 +40,10 @@ impl Quad {
         // precision.
         if self == Quad::ONE {
             Quad::ZERO
-        } else if self.is_zero() {
+        } else if self.is_zero() || self.is_sign_negative() {
             Quad::NAN
-        } else if self.is_sign_negative() {
-            Quad::NAN
+        } else if self.is_infinite() {
+            Quad::INFINITY
         } else {
             let mut x = Quad::from(self.0.ln()); // initial approximation
             let mut i = 0;
@@ -64,7 +64,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn ln() {
         assert_close!(
             qd!("2.302585092994045684017991454684364207601101488628772976033327901"),
             qd!(10).ln()
@@ -73,13 +73,29 @@ mod tests {
             qd!("5.493061443340548456976226184612628523237452789113747258673471668"),
             qd!(243).ln()
         );
+        assert_exact!(Quad::ZERO, Quad::ONE.ln());
+        assert_close!(Quad::ONE, Quad::E.ln());
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::ZERO, qd!(1).ln());
-        assert_exact!(Quad::NAN, qd!(0).ln());
+    fn zero() {
+        assert_exact!(Quad::NAN, Quad::ZERO.ln());
+        assert_exact!(Quad::NAN, Quad::NEG_ZERO.ln());
+    }
+
+    #[test]
+    fn infinity() {
+        assert_exact!(Quad::INFINITY, Quad::INFINITY.ln());
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.ln());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Quad::NAN, Quad::NAN.ln());
+    }
+
+    #[test]
+    fn negative() {
         assert_exact!(Quad::NAN, qd!(-1).ln());
-        assert_close!(Quad::ONE, qd!(Quad::E).ln());
     }
 }

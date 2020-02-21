@@ -21,6 +21,7 @@ impl Quad {
     /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
+    #[allow(clippy::many_single_char_names)]
     pub fn exp(self) -> Quad {
         // Strategy, as gleaned from MIT papers and Wikipedia:
         //
@@ -104,7 +105,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn exp() {
         assert_close!(
             qd!("14.87973172487283411186899301946839578068879752075547683852481232"),
             qd!(2.7).exp()
@@ -113,13 +114,27 @@ mod tests {
             qd!("0.001836304777028906825227936299894998089886584890697273635291617797"),
             qd!(-6.3).exp()
         );
+        assert_close!(Quad::E, Quad::ONE.exp());
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::ONE, qd!(0).exp());
+    fn zero() {
+        assert_exact!(Quad::ONE, Quad::ZERO.exp());
+    }
+
+    #[test]
+    fn infinity() {
+        assert_exact!(Quad::INFINITY, Quad::INFINITY.exp());
+        assert_exact!(Quad::ZERO, Quad::NEG_INFINITY.exp());
+    }
+
+    #[test]
+    fn nan() {
         assert_exact!(Quad::NAN, Quad::NAN.exp());
-        assert_close!(Quad::E, qd!(1).exp());
+    }
+
+    #[test]
+    fn over_limit() {
         assert_exact!(Quad::ZERO, qd!(-710).exp());
         assert_exact!(Quad::INFINITY, qd!(710).exp());
     }

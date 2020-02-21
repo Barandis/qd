@@ -40,13 +40,29 @@ mod tests {
             qd!("2.385606273598312186475139516275576546000644320953479324149328202"),
             qd!(243).log10()
         );
+        assert_exact!(Quad::ZERO, qd!(1).log10());
+        assert_close!(Quad::ONE, qd!(10).log10());
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::ZERO, qd!(1).log10());
-        assert_exact!(Quad::NAN, qd!(0).log10());
+    fn zero() {
+        assert_exact!(Quad::NAN, Quad::ZERO.log10());
+        assert_exact!(Quad::NAN, Quad::NEG_ZERO.log10());
+    }
+
+    #[test]
+    fn infinity() {
+        assert_exact!(Quad::INFINITY, Quad::INFINITY.log10());
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.log10());
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Quad::NAN, Quad::NAN.log10());
+    }
+
+    #[test]
+    fn negative() {
         assert_exact!(Quad::NAN, qd!(-1).log10());
-        assert_close!(Quad::ONE, qd!(10).log10());
     }
 }
