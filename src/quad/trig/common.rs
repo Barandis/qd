@@ -7,13 +7,14 @@ use crate::quad::common::{mul_pwr2, INV_FACTS};
 use crate::quad::Quad;
 
 const FRAC_PI_1024: Quad = Quad(
-    3.0679615757712823e-3,
-    1.195944139792337e-19,
-    -2.924579892303066e-36,
-    1.0863810750618759e-52,
+    3.067_961_575_771_282_3e-3,
+    1.195_944_139_792_337e-19,
+    -2.924_579_892_303_066e-36,
+    1.086_381_075_061_875_9e-52,
 );
 
 // Compute sin a using the Taylor series. This assumes that |a| <= π/2048.
+#[allow(clippy::many_single_char_names)]
 pub(super) fn sin_taylor(a: Quad) -> Quad {
     if a.is_zero() {
         Quad::ZERO
@@ -38,6 +39,7 @@ pub(super) fn sin_taylor(a: Quad) -> Quad {
 }
 
 // Compute cos a using the Taylor series. This assumes that |a| <= π/2048.
+#[allow(clippy::many_single_char_names)]
 pub(super) fn cos_taylor(a: Quad) -> Quad {
     if a.is_zero() {
         Quad::ONE
@@ -79,6 +81,7 @@ pub(super) fn sincos_taylor(a: Quad) -> (Quad, Quad) {
 // group within the next higher modulo in which the value fell (`j` and `k`,
 // this is the quadrant for `j`).
 #[inline]
+#[allow(clippy::many_single_char_names)]
 pub(super) fn reduce(a: Quad) -> (i32, i32, Quad) {
     // reduce modulo 2π
     let z = (a / Quad::MUL_2_PI).round();

@@ -26,6 +26,7 @@ impl Quad {
     /// assert!(diff_cos < qd!(1e-60));
     /// # }
     /// ```
+    #[allow(clippy::many_single_char_names)]
     pub fn sin_cos(self) -> (Quad, Quad) {
         if self.is_zero() {
             (Quad::ZERO, Quad::ONE)
@@ -64,7 +65,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn sin_cos() {
         let (s, c) = qd!(1).sin_cos();
         assert_close!(
             qd!("0.8414709848078965066525023216302989996225630607983710656727517100"),
@@ -84,22 +85,28 @@ mod tests {
             c
         );
         assert_close!(qd!(0.5), Quad::FRAC_PI_6.sin());
-    }
-
-    #[test]
-    fn special() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.sin_cos().0);
-        assert_exact!(Quad::ONE, Quad::ZERO.sin_cos().1);
 
         assert_exact!(Quad::ONE, Quad::FRAC_PI_2.sin_cos().0);
         assert_exact!(Quad::ZERO, Quad::FRAC_PI_2.sin_cos().1);
+    }
 
+    #[test]
+    fn zero() {
+        assert_exact!(Quad::ZERO, Quad::ZERO.sin_cos().0);
+        assert_exact!(Quad::ONE, Quad::ZERO.sin_cos().1);
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Quad::NAN, Quad::INFINITY.sin_cos().0);
         assert_exact!(Quad::NAN, Quad::INFINITY.sin_cos().1);
 
         assert_exact!(Quad::NAN, Quad::NEG_INFINITY.sin_cos().0);
         assert_exact!(Quad::NAN, Quad::NEG_INFINITY.sin_cos().1);
+    }
 
+    #[test]
+    fn nan() {
         assert_exact!(Quad::NAN, Quad::NAN.sin_cos().0);
         assert_exact!(Quad::NAN, Quad::NAN.sin_cos().1);
     }

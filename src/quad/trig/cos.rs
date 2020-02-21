@@ -22,6 +22,7 @@ impl Quad {
     /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
+    #[allow(clippy::many_single_char_names)]
     pub fn cos(self) -> Quad {
         if self.is_zero() {
             Quad::ONE
@@ -68,7 +69,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn cos() {
         assert_close!(
             qd!("0.5403023058681397174009366074429766037323104206179222276700972554"),
             qd!(1).cos()
@@ -78,14 +79,23 @@ mod tests {
             (Quad::PI / qd!(4)).cos()
         );
         assert_close!(qd!(0.5), Quad::FRAC_PI_3.cos());
+        assert_exact!(Quad::ZERO, Quad::FRAC_PI_2.cos());
     }
 
     #[test]
-    fn special() {
+    fn zero() {
         assert_exact!(Quad::ONE, Quad::ZERO.cos());
-        assert_exact!(Quad::ZERO, Quad::FRAC_PI_2.cos());
+        assert_exact!(Quad::ONE, Quad::NEG_ZERO.cos());
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Quad::NAN, Quad::INFINITY.cos());
         assert_exact!(Quad::NAN, Quad::NEG_INFINITY.cos());
+    }
+
+    #[test]
+    fn nan() {
         assert_exact!(Quad::NAN, Quad::NAN.cos());
     }
 }

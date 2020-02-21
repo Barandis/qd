@@ -31,19 +31,27 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn atan() {
         assert_close!(
             qd!("0.9827937232473290679857106110146660144968774536316285567614250883"),
             qd!(1.5).atan()
         );
+        assert_close!(Quad::FRAC_PI_4, qd!(1).atan());
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::ZERO, qd!(0).atan());
-        assert_close!(Quad::FRAC_PI_4, qd!(1).atan());
+    fn zero() {
+        assert_exact!(Quad::ZERO, Quad::ZERO.atan());
+    }
+
+    #[test]
+    fn infinity() {
         assert_close!(Quad::FRAC_PI_2, Quad::INFINITY.atan());
         assert_close!(-Quad::FRAC_PI_2, Quad::NEG_INFINITY.atan());
+    }
+
+    #[test]
+    fn nan() {
         assert_exact!(Quad::NAN, Quad::NAN.atan());
     }
 }

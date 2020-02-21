@@ -74,12 +74,10 @@ impl Quad {
         } else if self.is_infinite() {
             if other.is_infinite() {
                 Quad::NAN
+            } else if self.is_sign_positive() {
+                Quad::FRAC_PI_2
             } else {
-                if self.is_sign_positive() {
-                    Quad::FRAC_PI_2
-                } else {
-                    -Quad::FRAC_PI_2
-                }
+                -Quad::FRAC_PI_2
             }
         } else if other.is_infinite() {
             Quad::ZERO
@@ -132,7 +130,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn atan2() {
         assert_close!(
             qd!("0.4636476090008061162142562314612144020285370542861202638109330887"),
             qd!(1).atan2(qd!(2))
@@ -152,19 +150,34 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::NAN, qd!(0).atan2(qd!(0)));
-        assert_exact!(Quad::ZERO, qd!(0).atan2(qd!(1)));
-        assert_close!(Quad::PI, qd!(0).atan2(qd!(-1)));
-        assert_close!(Quad::FRAC_PI_2, qd!(1).atan2(qd!(0)));
-        assert_close!(-Quad::FRAC_PI_2, qd!(-1).atan2(qd!(0)));
-        assert_close!(Quad::FRAC_PI_4, qd!(1).atan2(qd!(1)));
-        assert_close!(-Quad::FRAC_3_PI_4, qd!(-1).atan2(qd!(-1)));
-        assert_close!(Quad::FRAC_3_PI_4, qd!(1).atan2(qd!(-1)));
-        assert_close!(-Quad::FRAC_PI_4, qd!(-1).atan2(qd!(1)));
+    fn zero() {
+        assert_exact!(Quad::NAN, Quad::ZERO.atan2(Quad::ZERO));
+        assert_exact!(Quad::ZERO, Quad::ZERO.atan2(Quad::ONE));
+        assert_close!(Quad::PI, Quad::ZERO.atan2(-Quad::ONE));
+        assert_close!(Quad::FRAC_PI_2, Quad::ONE.atan2(Quad::ZERO));
+        assert_close!(-Quad::FRAC_PI_2, -Quad::ONE.atan2(Quad::ZERO));
+    }
+
+    #[test]
+    fn one() {
+        assert_close!(Quad::FRAC_PI_4, Quad::ONE.atan2(Quad::ONE));
+        assert_close!(-Quad::FRAC_3_PI_4, -Quad::ONE.atan2(-Quad::ONE));
+        assert_close!(Quad::FRAC_3_PI_4, Quad::ONE.atan2(-Quad::ONE));
+        assert_close!(-Quad::FRAC_PI_4, -Quad::ONE.atan2(Quad::ONE));
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Quad::NAN, Quad::INFINITY.atan2(Quad::INFINITY));
-        assert_close!(Quad::FRAC_PI_2, Quad::INFINITY.atan2(qd!(1)));
-        assert_close!(-Quad::FRAC_PI_2, Quad::NEG_INFINITY.atan2(qd!(1)));
-        assert_exact!(Quad::ZERO, qd!(1).atan2(Quad::INFINITY));
+        assert_close!(Quad::FRAC_PI_2, Quad::INFINITY.atan2(Quad::ONE));
+        assert_close!(-Quad::FRAC_PI_2, Quad::NEG_INFINITY.atan2(Quad::ONE));
+        assert_exact!(Quad::ZERO, Quad::ONE.atan2(Quad::INFINITY));
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Quad::NAN, Quad::NAN.atan2(Quad::ONE));
+        assert_exact!(Quad::NAN, Quad::ONE.atan2(Quad::NAN));
+        assert_exact!(Quad::NAN, Quad::NAN.atan2(Quad::NAN));
     }
 }

@@ -22,6 +22,7 @@ impl Quad {
     /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
+    #[allow(clippy::many_single_char_names)]
     pub fn sin(self) -> Quad {
         // Strategy:
         //
@@ -78,7 +79,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn sin() {
         assert_close!(
             qd!("0.8414709848078965066525023216302989996225630607983710656727517100"),
             qd!(1).sin()
@@ -88,14 +89,22 @@ mod tests {
             (Quad::PI / qd!(4)).sin()
         );
         assert_close!(qd!(0.5), Quad::FRAC_PI_6.sin());
+        assert_exact!(Quad::ONE, Quad::FRAC_PI_2.sin());
     }
 
     #[test]
-    fn special() {
+    fn zero() {
         assert_exact!(Quad::ZERO, Quad::ZERO.sin());
-        assert_exact!(Quad::ONE, Quad::FRAC_PI_2.sin());
+    }
+
+    #[test]
+    fn infinity() {
         assert_exact!(Quad::NAN, Quad::INFINITY.sin());
         assert_exact!(Quad::NAN, Quad::NEG_INFINITY.sin());
+    }
+
+    #[test]
+    fn nan() {
         assert_exact!(Quad::NAN, Quad::NAN.sin());
     }
 }
