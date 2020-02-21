@@ -52,15 +52,47 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
-        let expected = qd!("0.4233108251307480031023559119268403864399223056751462460079769646");
+    fn num_num() {
+        let expected = qd!(
+            "0.423310825130748003102355911926840386439922305675146246007976965"
+        );
         assert_close!(expected, Quad::PI - Quad::E);
+    }
+
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn num_ref() {
+        let expected = qd!(
+            "0.423310825130748003102355911926840386439922305675146246007976965"
+        );
         assert_close!(expected, Quad::PI - &Quad::E);
+    }
+
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn ref_num() {
+        let expected = qd!(
+            "0.423310825130748003102355911926840386439922305675146246007976965"
+        );
         assert_close!(expected, &Quad::PI - Quad::E);
+    }
+
+    #[test]
+    fn assign_num() {
+        let expected = qd!(
+            "0.423310825130748003102355911926840386439922305675146246007976965"
+        );
 
         let mut a = Quad::PI;
         a -= Quad::E;
         assert_close!(expected, a);
+    }
+
+    #[test]
+    fn assign_ref() {
+        let expected = qd!(
+            "0.423310825130748003102355911926840386439922305675146246007976965"
+        );
 
         let mut b = Quad::PI;
         b -= &Quad::E;
@@ -68,16 +100,23 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::NAN, Quad::NAN - qd!(1));
-        assert_exact!(Quad::NAN, qd!(1) - Quad::NAN);
-        assert_exact!(Quad::INFINITY, Quad::INFINITY - qd!(1));
-        assert_exact!(Quad::NEG_INFINITY, qd!(1) - Quad::INFINITY);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY - qd!(1));
-        assert_exact!(Quad::INFINITY, qd!(1) - Quad::NEG_INFINITY);
-        assert_exact!(Quad::NAN, Quad::INFINITY - Quad::INFINITY);
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY - Quad::NEG_INFINITY);
+    fn infinity() {
+        assert_exact!(Quad::INFINITY, Quad::INFINITY - Quad::ONE);
+        assert_exact!(Quad::NEG_INFINITY, Quad::ONE - Quad::INFINITY);
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY - Quad::ONE);
+        assert_exact!(Quad::INFINITY, Quad::ONE - Quad::NEG_INFINITY);
         assert_exact!(Quad::INFINITY, Quad::INFINITY - Quad::NEG_INFINITY);
         assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY - Quad::INFINITY);
+    }
+
+    #[test]
+    #[allow(clippy::eq_op)]
+    fn nan() {
+        assert_exact!(Quad::NAN, Quad::NAN - Quad::ONE);
+        assert_exact!(Quad::NAN, Quad::ONE - Quad::NAN);
+        assert_exact!(Quad::NAN, Quad::NAN - Quad::INFINITY);
+        assert_exact!(Quad::NAN, Quad::INFINITY - Quad::NAN);
+        assert_exact!(Quad::NAN, Quad::INFINITY - Quad::INFINITY);
+        assert_exact!(Quad::NAN, Quad::NEG_INFINITY - Quad::NEG_INFINITY);
     }
 }

@@ -35,6 +35,7 @@ impl Div for Quad {
     type Output = Quad;
 
     #[inline]
+    #[allow(clippy::suspicious_arithmetic_impl)]
     fn div(self, other: Quad) -> Quad {
         if self.is_nan() || other.is_nan() {
             Quad::NAN
@@ -49,12 +50,10 @@ impl Div for Quad {
         } else if self.is_infinite() {
             if other.is_infinite() {
                 Quad::NAN
+            } else if self.is_sign_positive() == other.is_sign_positive() {
+                Quad::INFINITY
             } else {
-                if self.is_sign_positive() == other.is_sign_positive() {
-                    Quad::INFINITY
-                } else {
-                    Quad::NEG_INFINITY
-                }
+                Quad::NEG_INFINITY
             }
         } else if other.is_infinite() {
             if self.is_sign_positive() == other.is_sign_positive() {
@@ -126,17 +125,47 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn num_num() {
         let expected = qd!(
             "1.155727349790921717910093183312696299120851023164415820499706535"
         );
         assert_close!(expected, Quad::PI / Quad::E);
+    }
+
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn num_ref() {
+        let expected = qd!(
+            "1.155727349790921717910093183312696299120851023164415820499706535"
+        );
         assert_close!(expected, Quad::PI / &Quad::E);
+    }
+
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn ref_num() {
+        let expected = qd!(
+            "1.155727349790921717910093183312696299120851023164415820499706535"
+        );
         assert_close!(expected, &Quad::PI / Quad::E);
+    }
+
+    #[test]
+    fn assign_num() {
+        let expected = qd!(
+            "1.155727349790921717910093183312696299120851023164415820499706535"
+        );
 
         let mut a = Quad::PI;
         a /= Quad::E;
         assert_close!(expected, a);
+    }
+
+    #[test]
+    fn assign_ref() {
+        let expected = qd!(
+            "1.155727349790921717910093183312696299120851023164415820499706535"
+        );
 
         let mut b = Quad::PI;
         b /= &Quad::E;
@@ -144,22 +173,31 @@ mod tests {
     }
 
     #[test]
-    fn special() {
-        assert_exact!(Quad::NAN, Quad::NAN / qd!(0));
-        assert_exact!(Quad::NAN, qd!(0) / Quad::NAN);
-        assert_exact!(Quad::NAN, Quad::NAN / qd!(1));
-        assert_exact!(Quad::NAN, qd!(1) / Quad::NAN);
-        assert_exact!(Quad::INFINITY, Quad::INFINITY / qd!(1));
-        assert_exact!(Quad::ZERO, qd!(1) / Quad::INFINITY);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY / qd!(1));
-        assert_exact!(Quad::NEG_ZERO, qd!(1) / Quad::NEG_INFINITY);
+    fn zero() {
+        assert_exact!(Quad::ZERO, Quad::ZERO / Quad::INFINITY);
+        assert_exact!(Quad::NEG_ZERO, Quad::ZERO / Quad::NEG_INFINITY);
+        assert_exact!(Quad::INFINITY, Quad::INFINITY / Quad::ZERO);
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY / Quad::ZERO);
+        assert_exact!(Quad::NAN, Quad::NAN / Quad::ZERO);
+        assert_exact!(Quad::NAN, Quad::ZERO / Quad::NAN);
+    }
+
+    #[test]
+    #[allow(clippy::eq_op)]
+    fn infinity() {
+        assert_exact!(Quad::ZERO, Quad::ONE / Quad::INFINITY);
+        assert_exact!(Quad::NEG_ZERO, Quad::ONE / Quad::NEG_INFINITY);
+        assert_exact!(Quad::INFINITY, Quad::INFINITY / Quad::ONE);
+        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY / Quad::ONE);
         assert_exact!(Quad::NAN, Quad::INFINITY / Quad::INFINITY);
         assert_exact!(Quad::NAN, Quad::INFINITY / Quad::NEG_INFINITY);
         assert_exact!(Quad::NAN, Quad::NEG_INFINITY / Quad::INFINITY);
         assert_exact!(Quad::NAN, Quad::NEG_INFINITY / Quad::NEG_INFINITY);
-        assert_exact!(Quad::INFINITY, Quad::INFINITY / Quad::ZERO);
-        assert_exact!(Quad::ZERO, Quad::ZERO / Quad::INFINITY);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY / Quad::ZERO);
-        assert_exact!(Quad::NEG_ZERO, Quad::ZERO / Quad::NEG_INFINITY);
+    }
+
+    #[test]
+    fn nan() {
+        assert_exact!(Quad::NAN, Quad::NAN / Quad::ONE);
+        assert_exact!(Quad::NAN, Quad::ONE / Quad::NAN);
     }
 }
