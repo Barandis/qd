@@ -86,13 +86,13 @@ mod tests {
     }
 
     #[test]
-    fn special() {
+    fn empty() {
         let actual: Quad = vec![].iter().product();
         assert_exact!(Quad::ONE, actual);
+    }
 
-        let actual: Quad = vec![qd!(1), qd!(2), Quad::NAN].iter().product();
-        assert_exact!(Quad::NAN, actual);
-
+    #[test]
+    fn infinity() {
         let actual: Quad =
             vec![qd!(1), Quad::INFINITY, qd!(3)].iter().product();
         assert_exact!(Quad::INFINITY, actual);
@@ -104,5 +104,11 @@ mod tests {
         let actual: Quad =
             vec![Quad::INFINITY, Quad::NEG_INFINITY].iter().product();
         assert_exact!(Quad::NEG_INFINITY, actual);
+    }
+
+    #[test]
+    fn nan() {
+        let actual: Quad = vec![qd!(1), qd!(2), Quad::NAN].iter().product();
+        assert_exact!(Quad::NAN, actual);
     }
 }
