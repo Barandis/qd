@@ -30,8 +30,8 @@ impl Double {
             let a = self.exp();
             mul_pwr2(a - a.recip(), 0.5)
         } else {
-            // The above formula is not accurate enough with very small numbers. Use a Taylor
-            // series instead.
+            // The above formula is not accurate enough with very small numbers. Use a
+            // Taylor series instead.
             let mut s = self;
             let mut t = self;
             let r = t.sqr();
@@ -58,14 +58,8 @@ mod tests {
 
     #[test]
     fn sinh() {
-        assert_close!(
-            dd!("11.548739357257748377977334315388"),
-            Double::PI.sinh()
-        );
-        assert_close!(
-            dd!("7.5441371028169758263418200425165"),
-            Double::E.sinh()
-        );
+        assert_close!(dd!("11.548739357257748377977334315388"), Double::PI.sinh());
+        assert_close!(dd!("7.5441371028169758263418200425165"), Double::E.sinh());
     }
 
     #[test]

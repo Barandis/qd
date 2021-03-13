@@ -8,8 +8,8 @@ use crate::double::Double;
 impl Double {
     /// Calculates the number raised to an integral power.
     ///
-    /// This function correctly handles the special inputs defined in IEEE 754.
-    /// In particular:
+    /// This function correctly handles the special inputs defined in IEEE 754. In
+    /// particular:
     ///
     /// * `x.powi(0)` is `1` for any `x` (including `0`, `NaN`, or infinity)
     /// * `x.powi(n)` is ±∞ for `x == ±0` and any odd negative `n`
@@ -93,10 +93,7 @@ mod tests {
             dd!("-6.2092132305915517444784571346965e-6"),
             dd!(-11).powi(-5)
         );
-        assert_close!(
-            dd!("97.409091034002437236440332688705"),
-            Double::PI.powi(4)
-        );
+        assert_close!(dd!("97.409091034002437236440332688705"), Double::PI.powi(4));
     }
 
     #[test]

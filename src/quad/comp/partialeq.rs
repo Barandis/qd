@@ -29,10 +29,7 @@ impl PartialEq for Quad {
     /// ```
     #[inline]
     fn eq(&self, other: &Quad) -> bool {
-        self.0 == other.0
-            && self.1 == other.1
-            && self.2 == other.2
-            && self.3 == other.3
+        self.0 == other.0 && self.1 == other.1 && self.2 == other.2 && self.3 == other.3
     }
 }
 

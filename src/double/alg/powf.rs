@@ -8,14 +8,14 @@ use crate::double::Double;
 impl Double {
     /// Calculates the number raised to a double-double power.
     ///
-    /// This function is implemented using the logarithm of the number being
-    /// raised, which means it will not work for negatives even though raising a
-    /// negative number to a non-integer power is defined. It has been extended
-    /// to handle zero in accordance with the IEEE 754 specification.
+    /// This function is implemented using the logarithm of the number being raised, which
+    /// means it will not work for negatives even though raising a negative number to a
+    /// non-integer power is defined. It has been extended to handle zero in accordance with
+    /// the IEEE 754 specification.
     ///
-    /// It is possible that a new algorithm will eventually remove this
-    /// restriction, though this is a surprisingly hard problem (see [this libm
-    /// implementation][1], for example).
+    /// It is possible that a new algorithm will eventually remove this restriction, though
+    /// this is a surprisingly hard problem (see [this libm implementation][1], for
+    /// example).
     ///
     /// [1]: http://www.netlib.org/fdlibm/e_pow.c
     ///
@@ -87,10 +87,7 @@ mod tests {
         assert_exact!(Double::ZERO, Double::NEG_ZERO.powf(Double::INFINITY));
         assert_exact!(Double::INFINITY, Double::ZERO.powf(dd!(-2)));
         assert_exact!(Double::INFINITY, Double::NEG_ZERO.powf(dd!(-2)));
-        assert_exact!(
-            Double::INFINITY,
-            Double::ZERO.powf(Double::NEG_INFINITY)
-        );
+        assert_exact!(Double::INFINITY, Double::ZERO.powf(Double::NEG_INFINITY));
         assert_exact!(
             Double::INFINITY,
             Double::NEG_ZERO.powf(Double::NEG_INFINITY)

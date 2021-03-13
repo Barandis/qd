@@ -6,12 +6,10 @@
 use crate::double::Double;
 
 impl Double {
-    /// Computes the 2-argument arctangent of the number (`y`) and `other` (`x`)
-    /// in radians.
+    /// Computes the 2-argument arctangent of the number (`y`) and `other` (`x`) in radians.
     ///
-    /// The second argument allows the avoidance of ambiguities in the
-    /// single-argument [`atan`] function, notably allowing the determination of
-    /// quadrant.
+    /// The second argument allows the avoidance of ambiguities in the single-argument
+    /// [`atan`] function, notably allowing the determination of quadrant.
     ///
     /// # Examples
     /// ```
@@ -49,13 +47,12 @@ impl Double {
         //
         // where r = √(x² + y²).
         //
-        // The iteration is given by z' = z + (y - sin z) / cos z
-        //      (for the first equation) z' = z - (x - cos z) / sin z
-        //      (for the second equation)
+        // The iteration is given by 
+        //      z' = z + (y - sin z) / cos z   (for the first equation) 
+        //      z' = z - (x - cos z) / sin z   (for the second equation)
         //
-        // Here, x and y are normalized so that x² + y² = 1. If |x| > |y|, the
-        // first iteration is used since the denominator is larger. Otherwise
-        // the second is used.
+        // Here, x and y are normalized so that x² + y² = 1. If |x| > |y|, the first
+        // iteration is used since the denominator is larger. Otherwise the second is used.
 
         if other.is_zero() {
             if self.is_zero() {
@@ -161,10 +158,7 @@ mod tests {
     fn infinity() {
         assert_exact!(Double::NAN, Double::INFINITY.atan2(Double::INFINITY));
         assert_close!(Double::FRAC_PI_2, Double::INFINITY.atan2(Double::ONE));
-        assert_close!(
-            -Double::FRAC_PI_2,
-            Double::NEG_INFINITY.atan2(Double::ONE)
-        );
+        assert_close!(-Double::FRAC_PI_2, Double::NEG_INFINITY.atan2(Double::ONE));
         assert_exact!(Double::ZERO, Double::ONE.atan2(Double::INFINITY));
     }
 

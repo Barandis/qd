@@ -87,14 +87,8 @@ mod tests {
         assert_exact!(Quad::ZERO, Quad::NEG_ZERO.powf(Quad::INFINITY));
         assert_exact!(Quad::INFINITY, Quad::ZERO.powf(qd!(-2)));
         assert_exact!(Quad::INFINITY, Quad::NEG_ZERO.powf(qd!(-2)));
-        assert_exact!(
-            Quad::INFINITY,
-            Quad::ZERO.powf(Quad::NEG_INFINITY)
-        );
-        assert_exact!(
-            Quad::INFINITY,
-            Quad::NEG_ZERO.powf(Quad::NEG_INFINITY)
-        );
+        assert_exact!(Quad::INFINITY, Quad::ZERO.powf(Quad::NEG_INFINITY));
+        assert_exact!(Quad::INFINITY, Quad::NEG_ZERO.powf(Quad::NEG_INFINITY));
     }
 
     #[test]

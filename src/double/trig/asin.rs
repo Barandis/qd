@@ -6,9 +6,8 @@
 use crate::double::Double;
 
 impl Double {
-    /// Computes the arcsine of the number. The return value is in the range
-    /// [-π/2, π/2] for any number in the range [-1, 1]. Otherwise the return
-    /// value is `NaN`.
+    /// Computes the arcsine of the number. The return value is in the range [-π/2, π/2] for
+    /// any number in the range [-1, 1]. Otherwise the return value is `NaN`.
     ///
     /// # Examples
     /// ```
@@ -41,10 +40,7 @@ mod tests {
 
     #[test]
     fn asin() {
-        assert_close!(
-            dd!("0.52359877559829887307710723054658"),
-            dd!(0.5).asin()
-        );
+        assert_close!(dd!("0.52359877559829887307710723054658"), dd!(0.5).asin());
         assert_close!(Double::FRAC_PI_2, dd!(1).asin());
         assert_close!(-Double::FRAC_PI_2, dd!(-1).asin());
     }

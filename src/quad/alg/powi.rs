@@ -8,8 +8,8 @@ use crate::quad::Quad;
 impl Quad {
     /// Calculates the number raised to an integral power.
     ///
-    /// This function correctly handles the special inputs defined in IEEE 754.
-    /// In particular:
+    /// This function correctly handles the special inputs defined in IEEE 754. In
+    /// particular:
     ///
     /// * `x.powi(0)` is `1` for any `x` (including `0`, `NaN`, or infinity)
     /// * `x.powi(n)` is ±∞ for `x == ±0` and any odd negative `n`

@@ -8,11 +8,13 @@ use crate::double::Double;
 impl Double {
     /// Calculates the base `b` logarithm (log<sub>`b`</sub>) of the number.
     ///
-    /// If the goal is to calculate the base *e*, base 2, or base 10 logarithms
-    /// of `self`, the specialized functions for those purposes([`ln`],
-    /// [`log2`], and [`log10`] respectively) will be more efficient.
+    /// If the goal is to calculate the base *e*, base 2, or base 10 logarithms of `self`,
+    /// the specialized functions for those purposes([`ln`], [`log2`], and [`log10`]
+    /// respectively) will be more efficient.
     ///
-    /// [`ln`]: #method.ln [`log2`]: #method.log2 [`log10`]: #method.log10
+    /// [`ln`]: #method.ln 
+    /// [`log2`]: #method.log2 
+    /// [`log10`]: #method.log10
     ///
     /// # Examples
     /// ```
@@ -38,10 +40,7 @@ mod tests {
 
     #[test]
     fn log() {
-        assert_close!(
-            dd!("1.17473150366718002267187494833236"),
-            dd!(10).log(7.1)
-        );
+        assert_close!(dd!("1.17473150366718002267187494833236"), dd!(10).log(7.1));
         assert_close!(
             dd!("4.22480900593537861528922880434435"),
             dd!(243).log(3.67)

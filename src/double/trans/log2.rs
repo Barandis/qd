@@ -32,14 +32,8 @@ mod tests {
 
     #[test]
     fn log2() {
-        assert_close!(
-            dd!("3.32192809488736234787031942948939"),
-            dd!(10).log2()
-        );
-        assert_close!(
-            dd!("7.92481250360578090726869471973908"),
-            dd!(243).log2()
-        );
+        assert_close!(dd!("3.32192809488736234787031942948939"), dd!(10).log2());
+        assert_close!(dd!("7.92481250360578090726869471973908"), dd!(243).log2());
         assert_exact!(Double::ZERO, dd!(1).log2());
         assert_close!(Double::ONE, dd!(2).log2());
     }

@@ -9,9 +9,9 @@ use crate::double::Double;
 impl Double {
     /// Calculates the square of the number.
     ///
-    /// This method takes advantage of optimizations in multiplication that are
-    /// available when the two numbers being multiplied are the same, so it is
-    /// more efficient than bare multiplication.
+    /// This method takes advantage of optimizations in multiplication that are available
+    /// when the two numbers being multiplied are the same, so it is more efficient than
+    /// bare multiplication.
     ///
     /// # Examples
     /// ```
@@ -43,10 +43,7 @@ mod tests {
     #[test]
     fn sqr() {
         assert_exact!(dd!(121), dd!(-11).sqr());
-        assert_close!(
-            dd!("9.869604401089358618834490999876"),
-            Double::PI.sqr()
-        );
+        assert_close!(dd!("9.869604401089358618834490999876"), Double::PI.sqr());
     }
 
     #[test]

@@ -143,10 +143,7 @@ mod tests {
         assert_exact!(Double::NEG_INFINITY, Double::ONE - Double::INFINITY);
         assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY - Double::ONE);
         assert_exact!(Double::INFINITY, Double::ONE - Double::NEG_INFINITY);
-        assert_exact!(
-            Double::INFINITY,
-            Double::INFINITY - Double::NEG_INFINITY
-        );
+        assert_exact!(Double::INFINITY, Double::INFINITY - Double::NEG_INFINITY);
         assert_exact!(
             Double::NEG_INFINITY,
             Double::NEG_INFINITY - Double::INFINITY

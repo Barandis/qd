@@ -27,16 +27,16 @@ impl Double {
         } else if self.is_infinite() {
             Double::INFINITY
         } else {
-            // Strategy: use a method developed by Alan Karp and Peter Markstein
-            // at HP https://cr.yp.to/bib/1997/karp.pdf
+            // Strategy: use a method developed by Alan Karp and Peter Markstein at HP
+            // https://cr.yp.to/bib/1997/karp.pdf
             //
             // If x is an approximation of sqrt(a), then
             //
             //      sqrt(a) ≈ ax + (a - (ax)^2)x / 2
             //
-            // The approximation is accurate to twice the accuracy of x. This
-            // can be repeated an arbitrary number of times, but this method
-            // when used on double-doubles only requires one iteration.
+            // The approximation is accurate to twice the accuracy of x. This can be
+            // repeated an arbitrary number of times, but this method when used on
+            // double-doubles only requires one iteration.
             let x = Double::from_div(1.0, self.0.sqrt());
             let ax = self * x;
             ax + (self - ax.sqr()) * mul_pwr2(x, 0.5)
@@ -50,14 +50,8 @@ mod tests {
 
     #[test]
     fn positive() {
-        assert_close!(
-            dd!("1.7724538509055160272981674833411"),
-            Double::PI.sqrt()
-        );
-        assert_close!(
-            dd!("48.135226186234961951944911890074"),
-            dd!(2317).sqrt()
-        );
+        assert_close!(dd!("1.7724538509055160272981674833411"), Double::PI.sqrt());
+        assert_close!(dd!("48.135226186234961951944911890074"), dd!(2317).sqrt());
     }
 
     #[test]

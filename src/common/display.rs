@@ -6,9 +6,9 @@
 use std::char;
 use std::fmt;
 
-// Adjusts the range of integers in the supplied vector from [9, -9] to [0, 9].
-// (This function will handle 'digits' up to 19, but I don't believe in this
-// application that they're ever over 9.)
+// Adjusts the range of integers in the supplied vector from [9, -9] to [0, 9]. (This
+// function will handle 'digits' up to 19, but I don't believe in this application that
+// they're ever over 9.)
 #[inline]
 pub fn correct_range(digits: &mut Vec<i32>) {
     for i in (1..digits.len()).rev() {
@@ -22,10 +22,10 @@ pub fn correct_range(digits: &mut Vec<i32>) {
     }
 }
 
-// Rounds the second-to-last digit of an i32 vector based on the value of the
-// last digit. This rounding is standard round-to-even in the case of a final
-// digit of 5. Any necessary carrying is propagated as far as it needs to,
-// adjusting the exponent if the carry goes all the way to the first digit.
+// Rounds the second-to-last digit of an i32 vector based on the value of the last digit.
+// This rounding is standard round-to-even in the case of a final digit of 5. Any necessary
+// carrying is propagated as far as it needs to, adjusting the exponent if the carry goes
+// all the way to the first digit.
 #[inline]
 pub fn round_vec(digits: &mut Vec<i32>, exp: &mut i32) {
     let len = digits.len();
@@ -39,8 +39,8 @@ pub fn round_vec(digits: &mut Vec<i32>, exp: &mut i32) {
         }
     }
 
-    // If the first digit requires carry, insert one more digit to turn 9 into
-    // 10 and adjust the exponent
+    // If the first digit requires carry, insert one more digit to turn 9 into 10 and adjust
+    // the exponent
     if digits[0] > 9 {
         *exp += 1;
         digits[0] = 0;
@@ -48,9 +48,9 @@ pub fn round_vec(digits: &mut Vec<i32>, exp: &mut i32) {
     }
 }
 
-// Converts an integer into a character representation of that integer. This
-// assumes that `digit` is between 0 and 9 inclusive. If it's not, there's a bug
-// somewhere, so we WANT to panic; hence the unchecked `unwrap`.
+// Converts an integer into a character representation of that integer. This assumes that
+// `digit` is between 0 and 9 inclusive. If it's not, there's a bug somewhere, so we WANT to
+// panic; hence the unchecked `unwrap`.
 #[inline]
 pub fn char_from_digit(digit: i32) -> char {
     char::from_digit(digit as u32, 10).unwrap()
@@ -68,9 +68,8 @@ pub fn push_inf(chars: &mut Vec<char>) {
     chars.append(&mut "inf".chars().collect());
 }
 
-// Pushes the number zero to the supplied vector. If the formatter has a
-// precision set, then it will add that many zeros behind the decimal; if none
-// is set, it'll just push "0.0".
+// Pushes the number zero to the supplied vector. If the formatter has a precision set, then
+// it will add that many zeros behind the decimal; if none is set, it'll just push "0.0".
 #[inline]
 pub fn push_zero(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
     match formatter.precision() {
@@ -87,17 +86,17 @@ pub fn push_zero(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
     }
 }
 
-// Rounds a vector of digits based on the precision. This is -almost- identical
-// to `round_vec` above except that it rounds to precision (not to one past
-// precision). It is necessary because fixed- point numbers are calculated (and
-// rounded) at greater than their needed precision for accuracy. Hence they need
-// to be rounded to the correct number of digits after they return.
+// Rounds a vector of digits based on the precision. This is -almost- identical to
+// `round_vec` above except that it rounds to precision (not to one past precision). It is
+// necessary because fixed- point numbers are calculated (and rounded) at greater than their
+// needed precision for accuracy. Hence they need to be rounded to the correct number of
+// digits after they return.
 //
-// `offset` + `precision` is presumed to be positive. If not,
-// `push_fixed_digits` won't call this function.
+// `offset` + `precision` is presumed to be positive. If not, `push_fixed_digits` won't call
+// this function.
 //
-// TODO: This can be made more efficient. Exponentials are rounded in
-// `round_vec`; fixed are rounded there unnecessarily and then here as well.
+// TODO: This can be made more efficient. Exponentials are rounded in `round_vec`; fixed are
+// rounded there unnecessarily and then here as well.
 #[inline]
 pub fn round_fixed_digits(
     digits: &mut Vec<i32>,
@@ -120,8 +119,8 @@ pub fn round_fixed_digits(
         }
     }
 
-    // If the first digit requires carry, insert one more digit to turn 9 into
-    // 10 and adjust the offset
+    // If the first digit requires carry, insert one more digit to turn 9 into 10 and adjust
+    // the offset
     if digits[0] > 9 {
         digits[0] = 0;
         digits.insert(0, 1);
@@ -129,10 +128,9 @@ pub fn round_fixed_digits(
     }
 }
 
-// Converts all of the digits, up to the number indicated by `precision`, into
-// characters and pushes them onto the supplied character vector. `offset`
-// determines where the decimal point is placed. This is used to create a
-// fixed-point output format.
+// Converts all of the digits, up to the number indicated by `precision`, into characters
+// and pushes them onto the supplied character vector. `offset` determines where the decimal
+// point is placed. This is used to create a fixed-point output format.
 #[inline]
 pub fn push_fixed_digits(
     chars: &mut Vec<char>,
@@ -196,10 +194,10 @@ pub fn push_fixed_digits(
     }
 }
 
-// Converts all of the digits, up to the number indicated by `precision`, into
-// characters and pushes them onto the supplied character vector. If there is a
-// decimal point (i.e, if `precision` is not 0), it will always be after the
-// first digit. This is used to create an exponential output format.
+// Converts all of the digits, up to the number indicated by `precision`, into characters
+// and pushes them onto the supplied character vector. If there is a decimal point (i.e, if
+// `precision` is not 0), it will always be after the first digit. This is used to create an
+// exponential output format.
 #[inline]
 pub fn push_exp_digits(
     chars: &mut Vec<char>,
@@ -217,10 +215,9 @@ pub fn push_exp_digits(
     }
 }
 
-// Drops trailing zeros after the decimal point (and the decimal point as well,
-// if necessary). This happens only if no precision was supplied to the
-// formatter. In that case the number is given as many decimal places as it
-// needs minus the trailing zeros.
+// Drops trailing zeros after the decimal point (and the decimal point as well, if
+// necessary). This happens only if no precision was supplied to the formatter. In that case
+// the number is given as many decimal places as it needs minus the trailing zeros.
 #[inline]
 pub fn drop_trailing_zeros(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
     if formatter.precision().is_none() && chars.contains(&'.') {
@@ -235,22 +232,18 @@ pub fn drop_trailing_zeros(chars: &mut Vec<char>, formatter: &fmt::Formatter) {
     }
 }
 
-// Pushes the exponent to the supplied character vector. It includes a leading
-// marker character, which should be either 'e' or 'E'.
+// Pushes the exponent to the supplied character vector. It includes a leading marker
+// character, which should be either 'e' or 'E'.
 #[inline]
 pub fn push_exponent(chars: &mut Vec<char>, marker: char, exp: i32) {
     chars.push(marker);
     chars.append(&mut exp.to_string().chars().collect());
 }
 
-// Adjusts the character vector for width, precision, alignment, and fill
-// characters. The vector is expanded as needed to accomodate the width.
+// Adjusts the character vector for width, precision, alignment, and fill characters. The
+// vector is expanded as needed to accomodate the width.
 #[inline]
-pub fn align_and_fill(
-    chars: &mut Vec<char>,
-    formatter: &mut fmt::Formatter,
-    sign: bool,
-) {
+pub fn align_and_fill(chars: &mut Vec<char>, formatter: &mut fmt::Formatter, sign: bool) {
     if let Some(width) = formatter.width() {
         let len = chars.len();
         if len < width {

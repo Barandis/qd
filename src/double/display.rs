@@ -10,14 +10,13 @@ use std::fmt;
 const DEFAULT_PRECISION: usize = 31;
 const TEN: Double = Double(10.0, 0.0);
 
-// Calculates the exponent of the supplied double-double, adjusting the
-// double-double to fall somewhere in the range [1, 10) (i.e., to have a single
-// non-zero digit before the decimal point).
+// Calculates the exponent of the supplied double-double, adjusting the double-double to
+// fall somewhere in the range [1, 10) (i.e., to have a single non-zero digit before the
+// decimal point).
 #[inline]
 fn calculate_exponent(r: &mut Double) -> i32 {
-    // Quick calculation of exponent based on the first component of `r`. This
-    // could turn out to be off by 1 either direction depending on the second
-    // component.
+    // Quick calculation of exponent based on the first component of `r`. This could turn
+    // out to be off by 1 either direction depending on the second component.
     let mut exp = r.0.abs().log10().floor() as i32;
 
     // Adjust `r` based on that exponent approximation
@@ -32,8 +31,8 @@ fn calculate_exponent(r: &mut Double) -> i32 {
         *r /= TEN.powi(exp);
     }
 
-    // If `r` is outside the range [1, 10), then the exponent was off by 1.
-    // Adjust both it and `r`.
+    // If `r` is outside the range [1, 10), then the exponent was off by 1. Adjust both it
+    // and `r`.
     if *r >= TEN {
         *r /= TEN;
         exp += 1;
@@ -45,12 +44,12 @@ fn calculate_exponent(r: &mut Double) -> i32 {
     exp
 }
 
-// Extracts the digits of `r` into a vector of integers. These integers will
-// fall in the range [-9, 9]. Even if `r` is always positive as a whole, its
-// second component can be negative which will generate negative 'digits'.
+// Extracts the digits of `r` into a vector of integers. These integers will fall in the
+// range [-9, 9]. Even if `r` is always positive as a whole, its second component can be
+// negative which will generate negative 'digits'.
 //
-// `r` is modified throughout to extract the digits and contains nothing of
-// value when this function is complete.
+// `r` is modified throughout to extract the digits and contains nothing of value when this
+// function is complete.
 #[inline]
 fn extract_digits(r: &mut Double, precision: usize) -> Vec<i32> {
     let mut digits = Vec::with_capacity(precision);
@@ -63,15 +62,15 @@ fn extract_digits(r: &mut Double, precision: usize) -> Vec<i32> {
     digits
 }
 
-// Turns a double-double into a vector of digits and an exponent. Sign is
-// ignored, and no decimal appears in the vector; the exponent is calculated
-// based on having the decimal point after the first digit.
+// Turns a double-double into a vector of digits and an exponent. Sign is ignored, and no
+// decimal appears in the vector; the exponent is calculated based on having the decimal
+// point after the first digit.
 //
-// This function returns a vector of signed integers even though unsigned would
-// make more logical sense. That's because internally (with the call to
-// `extract_digits`) the vector has to deal with signed integers, and it's more
-// efficient to let the caller cast them to unsigned as needed than it is to
-// create a new vector of unsigned integers and copy them over.
+// This function returns a vector of signed integers even though unsigned would make more
+// logical sense. That's because internally (with the call to `extract_digits`) the vector
+// has to deal with signed integers, and it's more efficient to let the caller cast them to
+// unsigned as needed than it is to create a new vector of unsigned integers and copy them
+// over.
 fn to_digits(r: &Double, precision: usize) -> (Vec<i32>, i32) {
     let mut r = r.abs();
 
@@ -80,8 +79,8 @@ fn to_digits(r: &Double, precision: usize) -> (Vec<i32>, i32) {
     }
 
     let mut exp = calculate_exponent(&mut r);
-    // We pass one more than the actual precision to leave an extra digit at the
-    // end to do rounding
+    // We pass one more than the actual precision to leave an extra digit at the end to do
+    // rounding
     let mut digits = extract_digits(&mut r, precision + 1);
     correct_range(&mut digits);
     round_vec(&mut digits, &mut exp);
@@ -89,15 +88,10 @@ fn to_digits(r: &Double, precision: usize) -> (Vec<i32>, i32) {
     (digits, exp)
 }
 
-// Potentially pushes a sign character to the supplied vector. Returns whether
-// or not a character was actually added, information that is used later in
-// formatting.
+// Potentially pushes a sign character to the supplied vector. Returns whether or not a
+// character was actually added, information that is used later in formatting.
 #[inline]
-fn push_sign(
-    chars: &mut Vec<char>,
-    value: &Double,
-    formatter: &fmt::Formatter,
-) -> bool {
+fn push_sign(chars: &mut Vec<char>, value: &Double, formatter: &fmt::Formatter) -> bool {
     let mut sign = true;
     if value.is_sign_negative() {
         chars.push('-');
@@ -126,12 +120,10 @@ fn format_fixed(value: &Double, f: &mut fmt::Formatter) -> fmt::Result {
         } else if value.is_zero() {
             push_zero(&mut result, f);
         } else {
-            let width = precision as i32
-                + value.abs().log10().floor().as_int() as i32
-                + 1;
-            // Higher than the max-length number + max precision so that users
-            // can do their format!("{:.30}",
-            // Double::from_str("999999999999999999999999999999")) in peace
+            let width = precision as i32 + value.abs().log10().floor().as_int() as i32 + 1;
+            // Higher than the max-length number + max precision so that users can do their
+            // format!("{:.30}", Double::from_str("999999999999999999999999999999")) in
+            // peace
             let extra = width.max(65);
 
             // Special case: zero precision, |value| < 1.0
@@ -167,11 +159,7 @@ fn format_fixed(value: &Double, f: &mut fmt::Formatter) -> fmt::Result {
 
 // Formats `value` as a exponential number, with the format defined by `f`.
 #[inline]
-fn format_exp(
-    value: &Double,
-    f: &mut fmt::Formatter,
-    upper: bool,
-) -> fmt::Result {
+fn format_exp(value: &Double, f: &mut fmt::Formatter, upper: bool) -> fmt::Result {
     let mut result = Vec::new();
     let mut sign = true;
     let mut exp = 0;
@@ -189,12 +177,7 @@ fn format_exp(
             let width = f.precision().unwrap_or(DEFAULT_PRECISION) + 1;
             let (digits, e) = to_digits(value, width);
             exp = e;
-            push_exp_digits(
-                &mut result,
-                &digits,
-                f.precision(),
-                DEFAULT_PRECISION,
-            );
+            push_exp_digits(&mut result, &digits, f.precision(), DEFAULT_PRECISION);
         }
 
         if !value.is_infinite() {
@@ -286,10 +269,9 @@ mod tests {
 
     #[test]
     fn format_float() {
-        // Floating point error will keep these from being displayed exactly
-        // when no precision is defined, because the default precision will
-        // extend into the deep bits of these numbers. So we're checking to see
-        // if they're close.
+        // Floating point error will keep these from being displayed exactly when no
+        // precision is defined, because the default precision will extend into the deep
+        // bits of these numbers. So we're checking to see if they're close.
         assert!(close_str(plain(Double::from(17.29)).as_str(), "17.29"));
         assert!(close_str(
             plain(Double::from(0.016_777_216)).as_str(),
@@ -318,15 +300,13 @@ mod tests {
         assert!(close_str(plain(Double::from(-4.2e-4)).as_str(), "-0.00042"));
     }
 
-    // This is a test for an issue that I have seen mentioned nowhere except in
-    // the source code of the MIT library source code. It claims that for
-    // numbers of the form 10^x - 1, the decimal point can be printed in the
-    // wrong place.
+    // This is a test for an issue that I have seen mentioned nowhere except in the source
+    // code of the MIT library source code. It claims that for numbers of the form 10^x - 1,
+    // the decimal point can be printed in the wrong place.
     //
-    // I have not seen evidence of this, and it's one otherwise-unmentioned
-    // block of code in software that was written more than a decade ago. The
-    // "fix" has been taken out of the code but I'm leaving in the test just in
-    // case.
+    // I have not seen evidence of this, and it's one otherwise-unmentioned block of code in
+    // software that was written more than a decade ago. The "fix" has been taken out of the
+    // code but I'm leaving in the test just in case.
     #[test]
     fn format_offset_10_x_minus_1() {
         assert_eq!(
@@ -375,10 +355,9 @@ mod tests {
 
     #[test]
     fn format_exp_float() {
-        // Floating point error will keep these from being displayed exactly
-        // when no precision is defined, because the default precision will
-        // extend into the deep bits of these numbers. So we're checking to see
-        // if they're close.
+        // Floating point error will keep these from being displayed exactly when no
+        // precision is defined, because the default precision will extend into the deep
+        // bits of these numbers. So we're checking to see if they're close.
         assert!(close_exp(exp(Double::from(17.29)).as_str(), "1.729e1"));
         assert!(close_exp(
             exp(Double::from(0.016_777_216)).as_str(),
@@ -538,9 +517,9 @@ mod tests {
     #[test]
     fn format_misc_big_number() {
         let value = Double::from_str("123456789012345678901234567890").unwrap();
-        // Not checking the value here because we don't even do 60 digits of
-        // precision, just checking that formatting will actually print out 60
-        // digits (and the decimal point)
+        // Not checking the value here because we don't even do 60 digits of precision, just
+        // checking that formatting will actually print out 60 digits (and the decimal
+        // point)
         assert_eq!(format!("{:.30}", value).len(), 61);
     }
 

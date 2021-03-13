@@ -35,10 +35,9 @@ impl Quad {
             //
             //      x' = x + (1 - ax²) * x / 2
             //
-            // which converges to 1/√a, starting with a Quad-precision
-            // approximation of 1/√a. Newton's iteration more or less Quads
-            // the precision with each pass, so performing it three times should
-            // be enough.
+            // which converges to 1/√a, starting with a Quad-precision approximation of
+            // 1/√a. Newton's iteration more or less quadruples the precision with each
+            // pass, so performing it three times should be enough.
 
             let mut r = Quad::ONE / Quad::from(self.0.sqrt());
             let h = mul_pwr2(self, 0.5);

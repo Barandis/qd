@@ -48,9 +48,8 @@ impl Double {
         } else if n == 2 {
             self.sqrt() // use the more specialized method in sqrt
         } else {
-            // Strategy: the square root method is specialized for square roots,
-            // but the traditional way of finding roots is using Newton's
-            // iteration for the function
+            // Strategy: the square root method is specialized for square roots, but the
+            // traditional way of finding roots is using Newton's iteration for the function
             //
             //      f(x) = x^(-n) - a
             //
@@ -58,8 +57,8 @@ impl Double {
             //
             //      x' = x + x * (1 - a * x^n) / n
             //
-            // This converges quadratically, which is pretty fast. We can then
-            // find a^(1/n) by taking the reciprocal.
+            // This converges quadratically, which is pretty fast. We can then find a^(1/n)
+            // by taking the reciprocal.
 
             let r = self.abs();
             // a^(-1/n) = exp(-ln(a) / n)

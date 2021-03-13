@@ -10,15 +10,14 @@ use std::ops::{Index, IndexMut};
 mod macros {
     /// Creates a new quad-double from another number or from a string.
     ///
-    /// The argument can be any expression that evaluates to a type that this
-    /// library defines a `From` implementation for. This includes `&str`,
-    /// `Double`, `Quad`, any primitive number, and 2-, 3-, and 4-tuples of any
-    /// of those primitive number types.
+    /// The argument can be any expression that evaluates to a type that this library
+    /// defines a `From` implementation for. This includes `&str`, `Double`, `Quad`, any
+    /// primitive number, and 2-, 3-, and 4-tuples of any of those primitive number types.
     ///
     /// # Panics
     ///
-    /// Passing an expression that evaluates to a type that does not have a
-    /// `From` implementation will cause a panic.
+    /// Passing an expression that evaluates to a type that does not have a `From`
+    /// implementation will cause a panic.
     ///
     /// # Examples
     /// ```
@@ -52,7 +51,11 @@ mod tests {
             let epsilon = Quad(10.0, 0.0, 0.0, 0.0).powi(mag - $digits);
             let diff = (expected - actual).abs();
             let message = format!(
-                "\nExpected: {0}\n          ({0:?})\nActual:   {1}\n          ({1:?})\nDelta:    {2:e}",
+                "\nExpected: {0}\n\
+                          ({0:?})\n\
+                Actual:   {1}\n\
+                          ({1:?})\n\
+                Delta:    {2:e}",
                 expected, actual, diff
             );
             assert!(diff < epsilon, message);

@@ -7,9 +7,9 @@ use crate::double::Double;
 use std::num::FpCategory;
 
 impl Double {
-    /// Returns the floating point category of the double-double. If only one
-    /// property is being tested, it's generally faster to use the specific
-    /// predicate rather than this function.
+    /// Returns the floating point category of the double-double. If only one property is
+    /// being tested, it's generally faster to use the specific predicate rather than this
+    /// function.
     ///
     /// # Examples
     /// ```
@@ -44,8 +44,7 @@ impl Double {
         }
     }
 
-    /// Returns `true` if the double-double is neither zero, infinite,
-    /// subnormal, or `NaN`.
+    /// Returns `true` if the double-double is neither zero, infinite, subnormal, or `NaN`.
     ///
     /// # Examples
     /// ```
@@ -86,8 +85,8 @@ impl Double {
         self.0 == 0.0
     }
 
-    /// Returns `true` if the double-double is negative, including negative zero
-    /// and infinity and `NaN` with a negative sign bit.
+    /// Returns `true` if the double-double is negative, including negative zero and
+    /// infinity and `NaN` with a negative sign bit.
     ///
     /// # Examples
     /// ```
@@ -106,8 +105,8 @@ impl Double {
         self.0.is_sign_negative()
     }
 
-    /// Returns `true` if the double-double is positive, including positive zero
-    /// and infinity and `NaN` with a positive sign bit.
+    /// Returns `true` if the double-double is positive, including positive zero and
+    /// infinity and `NaN` with a positive sign bit.
     ///
     /// # Examples
     /// ```

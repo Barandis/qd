@@ -35,17 +35,9 @@ impl Quad {
 
         if c0 == Zero && c1 == Zero && c2 == Zero && c3 == Zero {
             Zero
-        } else if c0 == Subnormal
-            || c1 == Subnormal
-            || c2 == Subnormal
-            || c3 == Subnormal
-        {
+        } else if c0 == Subnormal || c1 == Subnormal || c2 == Subnormal || c3 == Subnormal {
             Subnormal
-        } else if c0 == Infinite
-            || c1 == Infinite
-            || c2 == Infinite
-            || c3 == Infinite
-        {
+        } else if c0 == Infinite || c1 == Infinite || c2 == Infinite || c3 == Infinite {
             Infinite
         } else if c0 == Nan || c1 == Nan || c2 == Nan || c3 == Nan {
             Nan
@@ -167,10 +159,7 @@ impl Quad {
     /// ```
     #[inline]
     pub fn is_infinite(self) -> bool {
-        self.0.is_infinite()
-            || self.1.is_infinite()
-            || self.2.is_infinite()
-            || self.3.is_infinite()
+        self.0.is_infinite() || self.1.is_infinite() || self.2.is_infinite() || self.3.is_infinite()
     }
 
     /// Returns `true` if the quad-double is neither infinite nor `NaN`.
@@ -188,9 +177,6 @@ impl Quad {
     /// ```
     #[inline]
     pub fn is_finite(self) -> bool {
-        self.0.is_finite()
-            && self.1.is_finite()
-            && self.2.is_finite()
-            && self.3.is_finite()
+        self.0.is_finite() && self.1.is_finite() && self.2.is_finite() && self.3.is_finite()
     }
 }

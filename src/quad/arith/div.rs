@@ -7,14 +7,14 @@ use crate::common::basic::*;
 use crate::quad::Quad;
 use std::ops::{Div, DivAssign};
 
-// Quad x f64 analogue of full quad x quad multiplication above. This is here
-// because we don't want to depend on any Quad::from(x), where x is a single f64
-// (i.e., a non-tuple), in arithmetic. Doing so will create infinite loops
-// because arithmetic is used to parse the f64s into quads in the first place.
-// Multiplying the f64s directly into Quads bypasses this.
+// Quad x f64 analogue of full quad x quad multiplication above. This is here because we
+// don't want to depend on any Quad::from(x), where x is a single f64 (i.e., a non-tuple),
+// in arithmetic. Doing so will create infinite loops because arithmetic is used to parse
+// the f64s into quads in the first place. Multiplying the f64s directly into Quads bypasses
+// this.
 //
-// Division is the only place where this is necessary, so this multiplication
-// function is dropped nearby.
+// Division is the only place where this is necessary, so this multiplication function is
+// dropped nearby.
 #[inline]
 fn mul_f64(a: Quad, b: f64) -> Quad {
     let (h0, l0) = two_prod(a.0, b);
@@ -64,11 +64,10 @@ impl Div for Quad {
         } else {
             // Strategy:
             //
-            // Divide the first component of `self` by the first component of
-            // `other`. Then divide the first component of the remainder by the
-            // first component of `other`, then the first component of -that-
-            // remainder by the first component of `other`, and so on until we
-            // have five terms we can renormalize.
+            // Divide the first component of `self` by the first component of `other`. Then
+            // divide the first component of the remainder by the first component of
+            // `other`, then the first component of -that- remainder by the first component
+            // of `other`, and so on until we have five terms we can renormalize.
             let q0 = self.0 / other.0;
             let mut r = self - mul_f64(other, q0);
 
@@ -126,35 +125,27 @@ mod tests {
 
     #[test]
     fn num_num() {
-        let expected = qd!(
-            "1.155727349790921717910093183312696299120851023164415820499706535"
-        );
+        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
         assert_close!(expected, Quad::PI / Quad::E);
     }
 
     #[test]
     #[allow(clippy::op_ref)]
     fn num_ref() {
-        let expected = qd!(
-            "1.155727349790921717910093183312696299120851023164415820499706535"
-        );
+        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
         assert_close!(expected, Quad::PI / &Quad::E);
     }
 
     #[test]
     #[allow(clippy::op_ref)]
     fn ref_num() {
-        let expected = qd!(
-            "1.155727349790921717910093183312696299120851023164415820499706535"
-        );
+        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
         assert_close!(expected, &Quad::PI / Quad::E);
     }
 
     #[test]
     fn assign_num() {
-        let expected = qd!(
-            "1.155727349790921717910093183312696299120851023164415820499706535"
-        );
+        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
 
         let mut a = Quad::PI;
         a /= Quad::E;
@@ -163,9 +154,7 @@ mod tests {
 
     #[test]
     fn assign_ref() {
-        let expected = qd!(
-            "1.155727349790921717910093183312696299120851023164415820499706535"
-        );
+        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
 
         let mut b = Quad::PI;
         b /= &Quad::E;

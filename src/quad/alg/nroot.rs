@@ -48,8 +48,8 @@ impl Quad {
         } else if n == 2 {
             self.sqrt() // use the more specialized method in sqrt
         } else {
-            // Strategy: the traditional way of finding roots is using Newton's
-            // iteration for the function
+            // Strategy: the traditional way of finding roots is using Newton's iteration
+            // for the function
             //
             //      f(x) = x^(-n) - a
             //
@@ -57,12 +57,12 @@ impl Quad {
             //
             //      x' = x + x * (1 - a * x^n) / n
             //
-            // This converges quadratically, which is pretty fast. After
-            // performing a small number of iterations, we can then find a^(1/n)
-            // by taking the reciprocal.
+            // This converges quadratically, which is pretty fast. After performing a small
+            // number of iterations, we can then find a^(1/n) by taking the reciprocal.
 
             let r = self.abs();
-            let mut x: Quad = (-(r.0.ln()) / n as f64).exp().into(); // a^(-1/n) = exp(-ln(a) / n)
+            // a^(-1/n) = exp(-ln(a) / n)
+            let mut x: Quad = (-(r.0.ln()) / n as f64).exp().into();
 
             let qd_n = Quad::from(n);
             x += x * (Quad::ONE - r * x.powi(n)) / qd_n;

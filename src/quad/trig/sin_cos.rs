@@ -8,8 +8,8 @@ use super::tables::{COSINES, SINES};
 use crate::quad::Quad;
 
 impl Quad {
-    /// Simultaneously computes the sine and the cosine of the number. This is
-    /// more efficient if you need both numbers. Returns `(sin(x), cos(x))`.
+    /// Simultaneously computes the sine and the cosine of the number. This is more
+    /// efficient if you need both numbers. Returns `(sin(x), cos(x))`.
     ///
     /// # Examples
     /// ```

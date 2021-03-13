@@ -78,8 +78,8 @@ impl Double {
         }
     }
 
-    /// Returns the nearest integer to the double-double. Half-way cases are
-    /// rounded away from `0.0`.
+    /// Returns the nearest integer to the double-double. Half-way cases are rounded away
+    /// from `0.0`.
     ///
     /// # Examples
     /// ```
@@ -100,9 +100,7 @@ impl Double {
         if (hi - self.0).abs() < f64::EPSILON {
             let lo = self.1.round();
             Double::from(renorm2(hi, lo))
-        } else if ((hi - self.0).abs() - 0.5).abs() < f64::EPSILON
-            && self.1 < 0.0
-        {
+        } else if ((hi - self.0).abs() - 0.5).abs() < f64::EPSILON && self.1 < 0.0 {
             Double(hi - 1.0, 0.0)
         } else {
             Double(hi, 0.0)

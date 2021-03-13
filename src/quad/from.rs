@@ -231,10 +231,10 @@ impl From<Double> for Quad {
 impl From<&str> for Quad {
     /// Converts a string representation of a number into a `Quad`.
     ///
-    /// `parse` from [`FromStr`] is a safer way to make this conversion, as it
-    /// returns a type (`Result`) that allows for error checking. This function
-    /// returns `NaN` in the case of a parse error, which is indistinguishable
-    /// from a legitimately-returned `NaN`. Take care when using this function.
+    /// `parse` from [`FromStr`] is a safer way to make this conversion, as it returns a
+    /// type (`Result`) that allows for error checking. This function returns `NaN` in the
+    /// case of a parse error, which is indistinguishable from a legitimately-returned
+    /// `NaN`. Take care when using this function.
     ///
     /// [`FromStr`]: #impl-FromStr
     fn from(s: &str) -> Quad {

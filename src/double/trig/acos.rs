@@ -6,9 +6,8 @@
 use crate::double::Double;
 
 impl Double {
-    /// Computes the arccosine of the number. The return value is in the range
-    /// [0, π] for any number in the range [-1, 1]. Otherwise the return value
-    /// is `NaN`.
+    /// Computes the arccosine of the number. The return value is in the range [0, π] for
+    /// any number in the range [-1, 1]. Otherwise the return value is `NaN`.
     ///
     /// # Examples
     /// ```
@@ -41,10 +40,7 @@ mod tests {
 
     #[test]
     fn acos() {
-        assert_close!(
-            dd!("1.0471975511965977461542144610932"),
-            dd!(0.5).acos()
-        );
+        assert_close!(dd!("1.0471975511965977461542144610932"), dd!(0.5).acos());
         assert_exact!(Double::ZERO, dd!(1).acos());
         assert_close!(Double::PI, dd!(-1).acos());
     }

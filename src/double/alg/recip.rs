@@ -36,10 +36,7 @@ mod tests {
             dd!("0.31830988618379067153776752674503"),
             Double::PI.recip()
         );
-        assert_close!(
-            dd!("0.36787944117144232159552377016146"),
-            Double::E.recip()
-        );
+        assert_close!(dd!("0.36787944117144232159552377016146"), Double::E.recip());
     }
 
     #[test]

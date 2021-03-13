@@ -56,9 +56,9 @@ pub(super) fn cos_taylor(a: Double) -> Double {
     }
 }
 
-// Computes both the sine and cosine of a using the Taylor series. This is a bit
-// quicker than calling the two functions above separately, since if you have
-// one of them you can calculate the other more efficiently.
+// Computes both the sine and cosine of a using the Taylor series. This is a bit quicker
+// than calling the two functions above separately, since if you have one of them you can
+// calculate the other more efficiently.
 pub(super) fn sincos_taylor(a: Double) -> (Double, Double) {
     if a.is_zero() {
         (Double::ZERO, Double::ONE)
@@ -68,11 +68,10 @@ pub(super) fn sincos_taylor(a: Double) -> (Double, Double) {
     }
 }
 
-// Helper function to reduce the input to a value whose sin/cos can be
-// calculated via Taylor series. It firsts reduces modulo 2π, then π/2, then
-// π/16. Aside from returning the reduced value (`t`), it also returns the group
-// within the next higher modulo in which the value fell (`j` and `k`, this is
-// the quadrant for `j`).
+// Helper function to reduce the input to a value whose sin/cos can be calculated via Taylor
+// series. It firsts reduces modulo 2π, then π/2, then π/16. Aside from returning the
+// reduced value (`t`), it also returns the group within the next higher modulo in which the
+// value fell (`j` and `k`, this is the quadrant for `j`).
 #[inline]
 #[allow(clippy::many_single_char_names)]
 pub(super) fn reduce(a: Double) -> (i32, i32, Double) {

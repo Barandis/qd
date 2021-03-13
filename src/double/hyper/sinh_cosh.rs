@@ -9,8 +9,8 @@ use crate::double::Double;
 impl Double {
     /// Simultaneously computes the hyperbolic sine and cosine of the number.
     ///
-    /// This method is more efficient to run than [`sinh`] and [`cosh`]
-    /// individually and is useful when both numbers are needed.
+    /// This method is more efficient to run than [`sinh`] and [`cosh`] individually and is
+    /// useful when both numbers are needed.
     ///
     /// # Examples
     /// ```

@@ -58,24 +58,20 @@ mod tests {
 
     #[test]
     fn product() {
-        let actual: Double =
-            [dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().product();
+        let actual: Double = [dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().product();
         assert_exact!(dd!(120), actual);
 
-        let actual: Double =
-            vec![Double::FRAC_PI_2, Double::FRAC_PI_3, Double::FRAC_PI_4]
-                .into_iter()
-                .product();
+        let actual: Double = vec![Double::FRAC_PI_2, Double::FRAC_PI_3, Double::FRAC_PI_4]
+            .into_iter()
+            .product();
         assert_close!(dd!("1.2919281950124925073115131277959"), actual);
 
-        let actual: Double =
-            [dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().product();
+        let actual: Double = [dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().product();
         assert_exact!(dd!(120), actual);
 
-        let actual: Double =
-            vec![Double::FRAC_PI_2, Double::FRAC_PI_3, Double::FRAC_PI_4]
-                .iter()
-                .product();
+        let actual: Double = vec![Double::FRAC_PI_2, Double::FRAC_PI_3, Double::FRAC_PI_4]
+            .iter()
+            .product();
         assert_close!(dd!("1.2919281950124925073115131277959"), actual);
     }
 
@@ -87,12 +83,10 @@ mod tests {
 
     #[test]
     fn infinity() {
-        let actual: Double =
-            vec![dd!(1), Double::INFINITY, dd!(3)].iter().product();
+        let actual: Double = vec![dd!(1), Double::INFINITY, dd!(3)].iter().product();
         assert_exact!(Double::INFINITY, actual);
 
-        let actual: Double =
-            vec![dd!(1), Double::NEG_INFINITY, dd!(3)].iter().product();
+        let actual: Double = vec![dd!(1), Double::NEG_INFINITY, dd!(3)].iter().product();
         assert_exact!(Double::NEG_INFINITY, actual);
 
         let actual: Double = vec![Double::INFINITY, Double::NEG_INFINITY]

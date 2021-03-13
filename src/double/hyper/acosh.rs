@@ -41,10 +41,7 @@ mod tests {
             dd!("1.81152627246085310702185204930542"),
             Double::PI.acosh()
         );
-        assert_close!(
-            dd!("1.65745445415307727259382874228053"),
-            Double::E.acosh()
-        );
+        assert_close!(dd!("1.65745445415307727259382874228053"), Double::E.acosh());
     }
 
     #[test]

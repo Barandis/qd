@@ -30,9 +30,9 @@ impl Double {
         //
         //      x = s + aπ/2 + bπ/16
         //
-        // where |s| <= π/32. Using a precomputed table of sin (kπ/16) and cos
-        // (kπ/16), we can compute sin x from sin s and cos s. This greatly
-        // increases the convergence of the Taylor series for sine and cosine.
+        // where |s| <= π/32. Using a precomputed table of sin (kπ/16) and cos (kπ/16), we
+        // can compute sin x from sin s and cos s. This greatly increases the convergence of
+        // the Taylor series for sine and cosine.
         if self.is_zero() {
             Double::ZERO
         } else if !self.is_finite() {
