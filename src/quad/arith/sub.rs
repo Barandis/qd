@@ -15,7 +15,7 @@ impl Sub for Quad {
     }
 }
 
-impl<'a> Sub<&'a Quad> for Quad {
+impl Sub<&Quad> for Quad {
     type Output = Quad;
 
     #[inline]
@@ -24,7 +24,7 @@ impl<'a> Sub<&'a Quad> for Quad {
     }
 }
 
-impl<'a> Sub<Quad> for &'a Quad {
+impl Sub<Quad> for &Quad {
     type Output = Quad;
 
     #[inline]
@@ -40,7 +40,7 @@ impl SubAssign for Quad {
     }
 }
 
-impl<'a> SubAssign<&'a Quad> for Quad {
+impl SubAssign<&Quad> for Quad {
     #[inline]
     fn sub_assign(&mut self, other: &Quad) {
         self.assign(self.add(-*other).into());

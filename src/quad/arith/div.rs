@@ -87,7 +87,7 @@ impl Div for Quad {
     }
 }
 
-impl<'a> Div<&'a Quad> for Quad {
+impl Div<&Quad> for Quad {
     type Output = Quad;
 
     #[inline]
@@ -96,7 +96,7 @@ impl<'a> Div<&'a Quad> for Quad {
     }
 }
 
-impl<'a> Div<Quad> for &'a Quad {
+impl Div<Quad> for &Quad {
     type Output = Quad;
 
     #[inline]
@@ -112,7 +112,7 @@ impl DivAssign for Quad {
     }
 }
 
-impl<'a> DivAssign<&'a Quad> for Quad {
+impl DivAssign<&Quad> for Quad {
     #[inline]
     fn div_assign(&mut self, other: &Quad) {
         self.assign(self.div(*other).into());

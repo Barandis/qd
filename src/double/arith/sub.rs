@@ -65,7 +65,7 @@ impl Sub for Double {
     }
 }
 
-impl<'a> Sub<&'a Double> for Double {
+impl Sub<&Double> for Double {
     type Output = Double;
 
     #[inline]
@@ -74,7 +74,7 @@ impl<'a> Sub<&'a Double> for Double {
     }
 }
 
-impl<'a> Sub<Double> for &'a Double {
+impl Sub<Double> for &Double {
     type Output = Double;
 
     #[inline]
@@ -90,7 +90,7 @@ impl SubAssign for Double {
     }
 }
 
-impl<'a> SubAssign<&'a Double> for Double {
+impl SubAssign<&Double> for Double {
     #[inline]
     fn sub_assign(&mut self, other: &Double) {
         self.assign(self.sub(*other).into());

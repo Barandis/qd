@@ -16,7 +16,7 @@ impl Rem for Quad {
     }
 }
 
-impl<'a> Rem<&'a Quad> for Quad {
+impl Rem<&Quad> for Quad {
     type Output = Quad;
 
     #[inline]
@@ -25,7 +25,7 @@ impl<'a> Rem<&'a Quad> for Quad {
     }
 }
 
-impl<'a> Rem<Quad> for &'a Quad {
+impl Rem<Quad> for &Quad {
     type Output = Quad;
 
     #[inline]
@@ -41,7 +41,7 @@ impl RemAssign for Quad {
     }
 }
 
-impl<'a> RemAssign<&'a Quad> for Quad {
+impl RemAssign<&Quad> for Quad {
     #[inline]
     fn rem_assign(&mut self, other: &Quad) {
         self.assign(self.rem(*other).into());

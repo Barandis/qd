@@ -65,7 +65,7 @@ impl Add for Double {
     }
 }
 
-impl<'a> Add<&'a Double> for Double {
+impl Add<&Double> for Double {
     type Output = Double;
 
     #[inline]
@@ -74,7 +74,7 @@ impl<'a> Add<&'a Double> for Double {
     }
 }
 
-impl<'a> Add<Double> for &'a Double {
+impl Add<Double> for &Double {
     type Output = Double;
 
     #[inline]
@@ -90,7 +90,7 @@ impl AddAssign for Double {
     }
 }
 
-impl<'a> AddAssign<&'a Double> for Double {
+impl AddAssign<&Double> for Double {
     #[inline]
     fn add_assign(&mut self, other: &Double) {
         self.assign(self.add(*other).into())

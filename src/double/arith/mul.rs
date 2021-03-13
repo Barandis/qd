@@ -61,7 +61,7 @@ impl Mul for Double {
     }
 }
 
-impl<'a> Mul<&'a Double> for Double {
+impl Mul<&Double> for Double {
     type Output = Double;
 
     #[inline]
@@ -70,7 +70,7 @@ impl<'a> Mul<&'a Double> for Double {
     }
 }
 
-impl<'a> Mul<Double> for &'a Double {
+impl Mul<Double> for &Double {
     type Output = Double;
 
     #[inline]
@@ -86,7 +86,7 @@ impl MulAssign for Double {
     }
 }
 
-impl<'a> MulAssign<&'a Double> for Double {
+impl MulAssign<&Double> for Double {
     #[inline]
     fn mul_assign(&mut self, other: &Double) {
         self.assign(self.mul(*other).into());

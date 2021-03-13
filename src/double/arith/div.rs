@@ -92,7 +92,7 @@ impl Div for Double {
     }
 }
 
-impl<'a> Div<&'a Double> for Double {
+impl Div<&Double> for Double {
     type Output = Double;
 
     #[inline]
@@ -101,7 +101,7 @@ impl<'a> Div<&'a Double> for Double {
     }
 }
 
-impl<'a> Div<Double> for &'a Double {
+impl Div<Double> for &Double {
     type Output = Double;
 
     #[inline]
@@ -117,7 +117,7 @@ impl DivAssign for Double {
     }
 }
 
-impl<'a> DivAssign<&'a Double> for Double {
+impl DivAssign<&Double> for Double {
     #[inline]
     fn div_assign(&mut self, other: &Double) {
         self.assign(self.div(*other).into());

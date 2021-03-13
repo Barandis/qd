@@ -114,7 +114,7 @@ impl Add for Quad {
     }
 }
 
-impl<'a> Add<&'a Quad> for Quad {
+impl Add<&Quad> for Quad {
     type Output = Quad;
 
     #[inline]
@@ -123,7 +123,7 @@ impl<'a> Add<&'a Quad> for Quad {
     }
 }
 
-impl<'a> Add<Quad> for &'a Quad {
+impl Add<Quad> for &Quad {
     type Output = Quad;
 
     #[inline]
@@ -139,7 +139,7 @@ impl AddAssign for Quad {
     }
 }
 
-impl<'a> AddAssign<&'a Quad> for Quad {
+impl AddAssign<&Quad> for Quad {
     #[inline]
     fn add_assign(&mut self, other: &Quad) {
         self.assign(self.add(*other).into());

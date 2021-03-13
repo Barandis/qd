@@ -113,7 +113,7 @@ impl Mul for Quad {
     }
 }
 
-impl<'a> Mul<&'a Quad> for Quad {
+impl Mul<&Quad> for Quad {
     type Output = Quad;
 
     #[inline]
@@ -122,7 +122,7 @@ impl<'a> Mul<&'a Quad> for Quad {
     }
 }
 
-impl<'a> Mul<Quad> for &'a Quad {
+impl Mul<Quad> for &Quad {
     type Output = Quad;
 
     #[inline]
@@ -138,7 +138,7 @@ impl MulAssign for Quad {
     }
 }
 
-impl<'a> MulAssign<&'a Quad> for Quad {
+impl MulAssign<&Quad> for Quad {
     #[inline]
     fn mul_assign(&mut self, other: &Quad) {
         self.assign(self.mul(*other).into());

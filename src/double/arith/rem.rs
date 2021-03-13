@@ -16,7 +16,7 @@ impl Rem for Double {
     }
 }
 
-impl<'a> Rem<&'a Double> for Double {
+impl Rem<&Double> for Double {
     type Output = Double;
 
     #[inline]
@@ -26,7 +26,7 @@ impl<'a> Rem<&'a Double> for Double {
     }
 }
 
-impl<'a> Rem<Double> for &'a Double {
+impl Rem<Double> for &Double {
     type Output = Double;
 
     #[inline]
@@ -43,7 +43,7 @@ impl RemAssign for Double {
     }
 }
 
-impl<'a> RemAssign<&'a Double> for Double {
+impl RemAssign<&Double> for Double {
     #[inline]
     fn rem_assign(&mut self, other: &Double) {
         self.assign(self.rem(*other).into());
