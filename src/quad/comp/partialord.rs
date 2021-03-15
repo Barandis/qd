@@ -7,12 +7,12 @@ use crate::quad::Quad;
 use std::cmp::Ordering;
 
 impl PartialOrd for Quad {
-    /// Implements the `<`, `>`, `<=`, and `>=` operators, testing two
-    /// quad-Quads for ordering.
+    /// Implements the `<`, `>`, `<=`, and `>=` operators, testing two quad-doubles for
+    /// ordering.
     ///
-    /// Ordering works the same as it does for system floating-point numbers,
-    /// including `NaN` returning false for any of these operators (including
-    /// when comparing it to itself).
+    /// Ordering works the same as it does for system floating-point numbers, including
+    /// `NaN` returning false for any of these operators (including when comparing it to
+    /// itself).
     ///
     /// # Examples
     /// ```

@@ -29,7 +29,8 @@ impl Double {
     /// # }
     /// ```
     ///
-    /// [`sinh`]: #method.sinh [`cosh`]: #method.cosh
+    /// [`sinh`]: #method.sinh
+    /// [`cosh`]: #method.cosh
     pub fn sinh_cosh(self) -> (Double, Double) {
         if self.is_nan() {
             (Double::NAN, Double::NAN)

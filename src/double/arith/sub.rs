@@ -28,7 +28,6 @@ impl Double {
 impl Sub for Double {
     type Output = Double;
 
-    #[inline]
     fn sub(self, other: Double) -> Double {
         if self.is_nan() || other.is_nan() {
             Double::NAN

@@ -169,6 +169,7 @@ mod tests {
         assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY / Quad::ZERO);
         assert_exact!(Quad::NAN, Quad::NAN / Quad::ZERO);
         assert_exact!(Quad::NAN, Quad::ZERO / Quad::NAN);
+        assert_exact!(Quad::NAN, Quad::ZERO / Quad::ZERO);
     }
 
     #[test]
@@ -182,6 +183,8 @@ mod tests {
         assert_exact!(Quad::NAN, Quad::INFINITY / Quad::NEG_INFINITY);
         assert_exact!(Quad::NAN, Quad::NEG_INFINITY / Quad::INFINITY);
         assert_exact!(Quad::NAN, Quad::NEG_INFINITY / Quad::NEG_INFINITY);
+        assert_exact!(Quad::INFINITY, Quad::ONE / Quad::ZERO);
+        assert_exact!(Quad::NEG_INFINITY, -Quad::ONE / Quad::ZERO);
     }
 
     #[test]

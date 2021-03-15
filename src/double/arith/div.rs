@@ -53,7 +53,6 @@ impl Double {
 impl Div for Double {
     type Output = Double;
 
-    #[inline]
     fn div(self, other: Double) -> Double {
         if self.is_nan() || other.is_nan() {
             Double::NAN
@@ -172,6 +171,7 @@ mod tests {
         assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY / Double::ZERO);
         assert_exact!(Double::NAN, Double::NAN / Double::ZERO);
         assert_exact!(Double::NAN, Double::ZERO / Double::NAN);
+        assert_exact!(Double::NAN, Double::ZERO / Double::ZERO);
     }
 
     #[test]
@@ -185,6 +185,8 @@ mod tests {
         assert_exact!(Double::NAN, Double::INFINITY / Double::NEG_INFINITY);
         assert_exact!(Double::NAN, Double::NEG_INFINITY / Double::INFINITY);
         assert_exact!(Double::NAN, Double::NEG_INFINITY / Double::NEG_INFINITY);
+        assert_exact!(Double::INFINITY, Double::ONE / Double::ZERO);
+        assert_exact!(Double::NEG_INFINITY, -Double::ONE / Double::ZERO);
     }
 
     #[test]

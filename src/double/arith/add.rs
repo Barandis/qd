@@ -28,7 +28,6 @@ impl Double {
 impl Add for Double {
     type Output = Double;
 
-    #[inline]
     fn add(self, other: Double) -> Double {
         if self.is_nan() || other.is_nan() {
             Double::NAN

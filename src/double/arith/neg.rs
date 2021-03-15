@@ -9,6 +9,7 @@ use std::ops::Neg;
 impl Neg for Double {
     type Output = Double;
 
+    #[inline]
     fn neg(self) -> Double {
         Double(-self.0, -self.1)
     }

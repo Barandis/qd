@@ -138,7 +138,7 @@ impl Double {
     /// ```
     #[inline]
     pub fn is_nan(self) -> bool {
-        self.0.is_nan() || self.1.is_nan()
+        self.0.is_nan()
     }
 
     /// Returns `true` if the double-double is positive or negative infinity.
@@ -156,7 +156,7 @@ impl Double {
     /// ```
     #[inline]
     pub fn is_infinite(self) -> bool {
-        self.0.is_infinite() || self.1.is_infinite()
+        self.0.is_infinite()
     }
 
     /// Returns `true` if the double-double is neither infinite nor `NaN`.
@@ -174,6 +174,6 @@ impl Double {
     /// ```
     #[inline]
     pub fn is_finite(self) -> bool {
-        self.0.is_finite() && self.1.is_finite()
+        self.0.is_finite()
     }
 }
