@@ -3,9 +3,9 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic::renorm2;
+use crate::common::basic::two_sum;
 use std::f64;
-use std::ops::{Index, IndexMut};
+use std::ops::Index;
 
 #[macro_use]
 mod macros {
@@ -123,39 +123,45 @@ pub struct Double(f64, f64);
 impl Double {
     /// Creates a `Double` with the two arguments as the internal components.
     ///
-    /// This function is only useful in the simplest of cases, as it does not do
-    /// normalization and therefore does not account for floating-point error in the first
-    /// component (meaning the user has to). One of its primary functions is declaration of
-    /// `Double` constants that have been pre-computed.
+    /// **Be sure you know what you're doing if you use this function.** It does not
+    /// normalize its components, meaning that if they aren't already normalized by the
+    /// caller, this number will not work the way one would expect (it'll fail equality
+    /// tests that it should pass, it may be classified incorrectly, etc.).
+    ///
+    /// This function is primarily for creating constants where the normalization is
+    /// obviously unnecessary. For example, if a `Double` version of the number `10` is
+    /// needed, `Double::raw(10.0, 0.0)` is a good way to do it in order to save the cost
+    /// of the normalization that is obviously not needed.
     ///
     /// # Examples
     /// ```
     /// # use qd::Double;
-    /// let dd = Double::new(0.0, 0.0);
+    /// let dd = Double::raw(0.0, 0.0);
     /// assert!(dd.is_zero());
     /// ```
-    pub fn new(a: f64, b: f64) -> Double {
+    pub fn raw(a: f64, b: f64) -> Double {
         Double(a, b)
     }
 
     /// Creates a `Double` by normalizing the sum of two arguments.
     ///
-    /// This is a quick and efficient function, but it carries the restriction that the
-    /// absolute value of `a` must be greater than or equal to the absolute value of `b`. If
-    /// that cannot be guaranteed, it would be better to use the slightly slower but more
-    /// robust [`from_add`](#method.from_add) instead.
+    /// This function normalizes its components (if this is obviously unnecessary, use
+    /// [`raw`](#fn.raw) instead). The normalization is effective no matter the values of
+    /// the components; while it's possible to have more efficient normalization if we know
+    /// that |`a`| >= |`b`|, the "safe" normalization is still less expensive than the
+    /// conditional required to know whether the quick one can be used.
     ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let dd = Double::norm(2.0, 1.0);
+    /// let dd = Double::new(2.0, 1.0);
     /// assert!(dd == dd!(3.0));
     /// # }
     /// ```
-    pub fn norm(a: f64, b: f64) -> Double {
-        Double::from(renorm2(a, b))
+    pub fn new(a: f64, b: f64) -> Double {
+        Double::from(two_sum(a, b))
     }
 }
 
@@ -166,19 +172,6 @@ impl Index<usize> for Double {
         match idx {
             0 => &self.0,
             1 => &self.1,
-            _ => panic!(
-                "Index of double-double out of range (must be in range [0, 1]): {}",
-                idx
-            ),
-        }
-    }
-}
-
-impl IndexMut<usize> for Double {
-    fn index_mut(&mut self, idx: usize) -> &mut f64 {
-        match idx {
-            0 => &mut self.0,
-            1 => &mut self.1,
             _ => panic!(
                 "Index of double-double out of range (must be in range [0, 1]): {}",
                 idx

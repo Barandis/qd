@@ -47,7 +47,7 @@ impl Double {
         let hi = self.0.floor();
 
         if (hi - self.0).abs() < f64::EPSILON {
-            Double::norm(hi, self.1.floor())
+            Double::new(hi, self.1.floor())
         } else {
             Double(hi, 0.0)
         }
@@ -72,7 +72,7 @@ impl Double {
         let hi = self.0.ceil();
 
         if (hi - self.0).abs() < f64::EPSILON {
-            Double::norm(hi, self.1.ceil())
+            Double::new(hi, self.1.ceil())
         } else {
             Double(hi, 0.0)
         }

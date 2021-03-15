@@ -3,6 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+use crate::common::basic::two_sum;
 use crate::double::Double;
 
 impl Double {
@@ -37,7 +38,8 @@ impl Double {
     /// Assigns the components of a tuple to the components of the double-double.
     #[inline]
     pub fn assign(&mut self, (a, b): (f64, f64)) {
-        self.0 = a;
-        self.1 = b;
+        let (s, e) = two_sum(a, b);
+        self.0 = s;
+        self.1 = e;
     }
 }

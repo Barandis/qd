@@ -22,22 +22,26 @@
 //!
 //! Fortunately, while a lot of applications need more than the language-provided precision,
 //! they don't need as much as arbitrary-precision has to offer. For those cases there is
-//! another choice: representing high-precision numbers as sums of lower-precision numbers.
-//! This choice will give precision in multiples of system-provided number precisions, and
-//! while math with these numbers is slower than with regular numbers, it's much faster than
-//! arbitrary precision. These sorts of numbers are what this library provides.
+//! another choice: representing high-precision numbers as unevaluated sums of
+//! lower-precision numbers. This choice will give precision in multiples of system-provided
+//! number precisions, and while math with these numbers is slower than with regular
+//! numbers, it's much faster than arbitrary precision. These sorts of numbers are what this
+//! library provides.
 //!
 //! # Double-double and quad-double numbers
 //!
 //! The numbers provided by this library are double-doubles, represented by two `f64`s, and
-//! quad-doubles, represented by four `f64`s. Every effort has been put into making them
+//! quad-doubles, represented by four `f64`s. The names "double-double" and "quad-double"
+//! come from IEEE-754 double-precision floating point numbers and are the names used for
+//! these numbers the most in literature. Therefore those names are retained even though
+//! Rust represents *its* doubles with `f64`. Every effort has been put into making them
 //! work as much like `f64`s as possible.
 //!
-//! The `Double` type has 106 bits of significand, meaning about 31 decimal digits, while
-//! the `Quad` type has 212 bits (about 63 decimal digits). However, the exponents remain
-//! the same as in `f64`, so the range of each type is similar to `f64` (max value of around
-//! ~10<sup>308</sup>). These types don't make *bigger* numbers, they make *more precise*
-//! numbers.
+//! The `Double` type (double-double) has 106 bits of significand, meaning about 31 decimal
+//! digits, while the `Quad` type (quad-double) has 212 bits (about 63 decimal digits).
+//! However, the exponents remain the same as in `f64`, so the range of each type is similar
+//! to `f64` (max value of around ~10<sup>308</sup>). These types don't make *bigger*
+//! numbers, they make *more precise* numbers.
 //!
 //! For those who are interested, a paper from MIT called [Library for Double-Double and
 //! Quad-Double Arithmetic][1] explains the algorithms for working with these numbers in

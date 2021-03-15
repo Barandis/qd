@@ -103,11 +103,11 @@ mod trig;
 pub struct Quad(f64, f64, f64, f64);
 
 impl Quad {
-    pub fn new(a: f64, b: f64, c: f64, d: f64) -> Quad {
+    pub fn raw(a: f64, b: f64, c: f64, d: f64) -> Quad {
         Quad(a, b, c, d)
     }
 
-    pub fn norm(a: f64, b: f64, c: f64, d: f64) -> Quad {
+    pub fn new(a: f64, b: f64, c: f64, d: f64) -> Quad {
         Quad::from(renorm4(a, b, c, d))
     }
 }
