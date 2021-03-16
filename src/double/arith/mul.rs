@@ -28,6 +28,22 @@ impl Double {
 impl Mul for Double {
     type Output = Double;
 
+    /// Multiplies this `Double` by another, producing a new `Double` as a result.
+    ///
+    /// This implements the `*` operator between two `Double`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = Double::E * Double::PI;
+    /// let expected = dd!("8.539734222673567065463550869547");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     fn mul(self, other: Double) -> Double {
         if self.is_nan() || other.is_nan() {
             Double::NAN
@@ -60,9 +76,52 @@ impl Mul for Double {
     }
 }
 
+impl Mul for &Double {
+    type Output = Double;
+
+    /// Multiplies a reference to this `Double` by another, producing a new `Double` as a
+    /// result.
+    ///
+    /// This implements the `*` operator between two references to `Double`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = &Double::E * &Double::PI;
+    /// let expected = dd!("8.539734222673567065463550869547");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
+    #[inline]
+    fn mul(self, other: &Double) -> Double {
+        (*self).mul(*other)
+    }
+}
+
 impl Mul<&Double> for Double {
     type Output = Double;
 
+    /// Multiplies this `Double` by a reference to another, producing a new `Double` as a
+    /// result.
+    ///
+    /// This implements the `*` operator between a `Double` and a reference to a `Double`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = Double::E * &Double::PI;
+    /// let expected = dd!("8.539734222673567065463550869547");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn mul(self, other: &Double) -> Double {
         self.mul(*other)
@@ -72,6 +131,23 @@ impl Mul<&Double> for Double {
 impl Mul<Double> for &Double {
     type Output = Double;
 
+    /// Multiplies a reference to this `Double` by another `Double`, producing a new
+    /// `Double` as a result.
+    ///
+    /// This implements the `*` operator between a reference to a `Double` and a `Double`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = &Double::E * Double::PI;
+    /// let expected = dd!("8.539734222673567065463550869547");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn mul(self, other: Double) -> Double {
         (*self).mul(other)
@@ -79,16 +155,55 @@ impl Mul<Double> for &Double {
 }
 
 impl MulAssign for Double {
+    /// Multiples this `Double` by another one, modifying this one to equal the result.
+    ///
+    /// This implements the `*=` operator between two `Double`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let mut x = Double::E;
+    /// x *= Double::PI;
+    /// let expected = dd!("8.539734222673567065463550869547");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn mul_assign(&mut self, other: Double) {
-        self.assign(self.mul(other).into());
+        let (a, b) = self.mul(other).into();
+        self.0 = a;
+        self.1 = b;
     }
 }
 
 impl MulAssign<&Double> for Double {
+    /// Multiples this `Double` by a reference to another one, modifying this one to equal
+    /// the result.
+    ///
+    /// This implements the `*=` operator between a `Double` and a reference to a `Double`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let mut x = Double::E;
+    /// x *= &Double::PI;
+    /// let expected = dd!("8.539734222673567065463550869547");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn mul_assign(&mut self, other: &Double) {
-        self.assign(self.mul(*other).into());
+        let (a, b) = self.mul(*other).into();
+        self.0 = a;
+        self.1 = b;
     }
 }
 
