@@ -102,21 +102,31 @@ mod trans;
 mod trig;
 
 /// A 128-bit floating-point number implemented as the unevaluated sum of two 64-bit
-/// floating-point numbers.
+/// floating-point numbers. Discarding the bits used for exponents, this makes for about
+/// 112 bits of accuracy, or around 31 decimal digits.
 ///
 /// There are several ways to create a new `Double`:
 ///
-/// * calling the [`new`] or [`norm`] functions
+/// * calling the [`new`] or [`raw`] functions
 /// * calling `Double::from` and passing a type that has a `From` implementation
 /// * calling `parse` on a string
 /// * calling [`from_add`], [`from_sub`], [`from_mul`], or [`from_div`]
-/// * using the [`dd`] macro
+/// * using the [`dd!`] macro
+/// 
+/// If a `Double` is created directly from an `f32` or an `f64` (which can be done either
+/// with `Double::from` or [`dd!`]), then floating-point error is calculated and accounted
+/// for. This is slower, as the `f32`/`f64` needs to be parsed digit by digit, but it is
+/// vital to accuracy.
 ///
-/// See the [module-level documentation] (index.html) for more information.
+/// See the [module-level documentation](index.html) for more information.
 ///
-/// [`new`]: #method.new [`norm`]: #method.norm [`from_add`]: #method.from_add [`from_sub`]:
-/// #method.from_sub [`from_mul`]: #method.from_mul [`from_div`]: #method.from_div [`dd`]:
-/// macro.dd.html [module-level documentation]: index.html
+/// [`new`]: #method.new
+/// [`raw`]: #method.raw
+/// [`from_add`]: #method.from_add
+/// [`from_sub`]: #method.from_sub
+/// [`from_mul`]: #method.from_mul
+/// [`from_div`]: #method.from_div
+/// [`dd!`]: macro.dd.html
 #[derive(Clone, Copy)]
 pub struct Double(f64, f64);
 
@@ -136,8 +146,8 @@ impl Double {
     /// # Examples
     /// ```
     /// # use qd::Double;
-    /// let dd = Double::raw(0.0, 0.0);
-    /// assert!(dd.is_zero());
+    /// let d = Double::raw(0.0, 0.0);
+    /// assert!(d.is_zero());
     /// ```
     pub fn raw(a: f64, b: f64) -> Double {
         Double(a, b)
@@ -146,9 +156,9 @@ impl Double {
     /// Creates a `Double` by normalizing the sum of two arguments.
     ///
     /// This function normalizes its components (if this is obviously unnecessary, use
-    /// [`raw`](#fn.raw) instead). The normalization is effective no matter the values of
-    /// the components; while it's possible to have more efficient normalization if we know
-    /// that |`a`| >= |`b`|, the "safe" normalization is still less expensive than the
+    /// [`raw`](#method.raw) instead). The normalization is effective no matter the values
+    /// of the components; while it's possible to have more efficient normalization if we
+    /// know that |`a`| >= |`b`|, the "safe" normalization is still less expensive than the
     /// conditional required to know whether the quick one can be used.
     ///
     /// # Examples
@@ -156,8 +166,8 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let dd = Double::new(2.0, 1.0);
-    /// assert!(dd == dd!(3.0));
+    /// let d = Double::new(2.0, 1.0);
+    /// assert!(d == dd!(3.0));
     /// # }
     /// ```
     pub fn new(a: f64, b: f64) -> Double {

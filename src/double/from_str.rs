@@ -94,7 +94,7 @@ impl FromStr for Double {
                 exp -= digits - point;
             }
             if exp != 0 {
-                // Do this in two stages if the exponent is too small For exmaple, a number
+                // Do this in two stages if the exponent is too small. For exmaple, a number
                 // with 30 digits could have an exponent as low as -337 and still not
                 // overflow, but doing the -337 all at once WOULD overflow
                 if exp < -307 {

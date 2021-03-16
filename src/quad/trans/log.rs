@@ -12,7 +12,9 @@ impl Quad {
     /// of `self`, the specialized functions for those purposes([`ln`],
     /// [`log2`], and [`log10`] respectively) will be more efficient.
     ///
-    /// [`ln`]: #method.ln [`log2`]: #method.log2 [`log10`]: #method.log10
+    /// [`ln`]: #method.ln
+    /// [`log2`]: #method.log2
+    /// [`log10`]: #method.log10
     ///
     /// # Examples
     /// ```

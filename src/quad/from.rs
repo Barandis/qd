@@ -8,6 +8,18 @@ use crate::double::Double;
 use crate::quad::Quad;
 use std::f64;
 
+// Determines whether a number is exact (true) or has floating-point error (false)
+fn is_dyadic(n: f64) -> bool {
+    let f = n.fract();
+    if f == 0.0 {
+        true
+    } else {
+        let len = f.to_string().len() - 2; // ignore the leading "0."
+        let base = 2f64.powi(-(len as i32));
+        f % base == 0.0
+    }
+}
+
 fn from_float(n: f64) -> Quad {
     if n == 0.0 {
         if n.is_sign_negative() {
@@ -23,9 +35,20 @@ fn from_float(n: f64) -> Quad {
         } else {
             Quad::INFINITY
         }
-    } else if (n.floor() - n).abs() < f64::EPSILON {
+    } else if is_dyadic(n){
         Quad(n, 0.0, 0.0, 0.0)
     } else {
+        // Yes, this converts an f64 to a string and then parses it. After a lot of study,
+        // doing it decimal-digit-by-decimal-digit seems to be the only way to do this
+        // accurately, because doing it as a whole f64 causes floating-point error to cancel
+        // itself out. And parsing from a string is the most reasonable way to do it
+        // digit-by-digit.
+        //
+        // I'm concerned about the effect on the speed of math functions that use it, like
+        // `log` and `exp` and `powf`, but the answer seems to be to optimize the parsing.
+        //
+        // `unwrap` is safe because `n.to_string` will never return a string that can't be
+        // parsed into a Quad.
         n.to_string().parse().unwrap()
     }
 }
@@ -246,5 +269,60 @@ impl From<Quad> for (f64, f64, f64, f64) {
     #[inline]
     fn from(a: Quad) -> (f64, f64, f64, f64) {
         (a.0, a.1, a.2, a.3)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn conv_from_u64() {
+        let a = 0x0_123_456_789_abc_defu64;
+        let q = qd!(a);
+        assert_eq!(format!("{}", a), format!("{}", q));
+    }
+
+    #[test]
+    fn conv_from_i64() {
+        let a = -0x0_123_456_789_abc_defi64;
+        let q = qd!(a);
+        assert_eq!(format!("{}", a), format!("{}", q));
+    }
+
+    #[test]
+    fn conv_from_and_to_i128() {
+        let a = -0x0_123_456_789_abc_defi128;
+        let q = qd!(a);
+        let x = q.as_int();
+        assert_eq!(a, x);
+    }
+
+    #[test]
+    fn dyadic() {
+        assert!(is_dyadic(1.0));
+        assert!(is_dyadic(1.5));
+        assert!(is_dyadic(1.75));
+        assert!(is_dyadic(1.625));
+        assert!(is_dyadic(1.8125));
+        assert!(is_dyadic(1.40625));
+        assert!(is_dyadic(1.203125));
+        assert!(is_dyadic(1.1015625));
+        assert!(is_dyadic(1.14453125));
+        assert!(is_dyadic(1.0005645751953125));
+        assert!(!is_dyadic(1.1));
+    }
+
+    #[test]
+    fn conv_from_f64() {
+        assert_exact!(qd!(1.0), Quad(1.0, 0.0, 0.0, 0.0));
+        assert_exact!(qd!(1.203125), Quad(1.203125, 0.0, 0.0, 0.0));
+        assert_exact!(qd!(1.0005645751953125), Quad(1.0005645751953125, 0.0, 0.0, 0.0));
+        assert_ne!(qd!(1.1).1, 0.0);
+        assert_exact!(qd!(0), Quad::ZERO);
+        assert_exact!(qd!(-0.0), Quad::NEG_ZERO);
+        assert_exact!(qd!(std::f64::INFINITY), Quad::INFINITY);
+        assert_exact!(qd!(std::f64::NEG_INFINITY), Quad::NEG_INFINITY);
+        assert_exact!(qd!(std::f64::NAN), Quad::NAN);
     }
 }

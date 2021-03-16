@@ -1,74 +1,89 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `qd` crate."><meta name="keywords" content="rust, rustlang, rust-lang, qd"><title>qd - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Crate qd</p><div class="sidebar-elems"><a id='all-types' href='all.html'><p>See all qd's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'qd', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/qd/lib.rs.html#6-73' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>qd</a></span></h1><div class='docblock'><p>Rust implementation of double-double and quad-double high-precision floating point numbers.</p>
-<p>The most precise floating-point type in Rust (and most languages) is 64 bits, which gives around
-15 decimal digits of precision. This is fine for nearly all applications, but sometimes a little
-more is needed.</p>
-<p>The choices are limited for higher-precision floating-point numbers. One choice is to use
-128-bit floating-point numbers, but Rust (and most languages outside Fortran and a few C++
-flavors) doesn't have them.</p>
-<p>A second choice is an arbitary-precision library. These are fantastic in that they can do
-computations in any precision you choose, even into the thousands or millions of digits. Their
-downside is that internally they use something like character arrays to represent numbers, so
-they have to essentially re-implement math for that internal representation. This is slow.</p>
-<p>Fortunately, while a lot of applications need more than the language-provided precision, they
-don't need as much as arbitrary-precision has to offer. For those cases there is another choice:
-representing high-precision numbers as sums of lower-precision numbers. This choice will give
-precision in multiples of system-provided number precisions, and while math with these numbers
-is slower than with regular numbers, it's much faster than arbitrary precision. These sorts of
-numbers are what this library provides.</p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `qd` crate."><meta name="keywords" content="rust, rustlang, rust-lang, qd"><title>qd - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../qd/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><p class="location">Crate qd</p><div class="block version"><p>Version 0.2.0-alpha</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all qd's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li></ul></div><p class="location"></p><script>window.sidebarCurrent = {name: "qd", ty: "mod", relpath: "../"};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/qd/lib.rs.html#6-119" title="goto source code">[src]</a></span><span class="in-band">Crate <a class="mod" href="">qd</a></span></h1><div class="docblock"><p>Rust implementation of double-double and quad-double high-precision floating point
+numbers.</p>
+<p>The most precise floating-point type in Rust (and most languages) is 64 bits, which
+gives around 15 decimal digits of precision. This is fine for nearly all applications,
+but sometimes a little more is needed.</p>
+<p>The choices are limited for higher-precision floating-point numbers. One choice is to
+use 128-bit floating-point numbers, but Rust (and most languages outside Fortran and a
+few C++ flavors) doesn't have them.</p>
+<p>A second choice is an arbitary-precision library. These are fantastic in that they can
+do computations in any precision you choose, even into the thousands or millions of
+digits. Their downside is that internally they use something like character arrays to
+represent numbers, so they have to essentially re-implement math for that internal
+representation. This is slow.</p>
+<p>Fortunately, while a lot of applications need more than the language-provided precision,
+they don't need as much as arbitrary-precision has to offer. For those cases there is
+another choice: representing high-precision numbers as unevaluated sums of
+lower-precision numbers. This choice will give precision in multiples of system-provided
+number precisions, and while math with these numbers is slower than with regular
+numbers, it's much faster than arbitrary precision. These sorts of numbers are what this
+library provides.</p>
 <h1 id="double-double-and-quad-double-numbers" class="section-header"><a href="#double-double-and-quad-double-numbers">Double-double and quad-double numbers</a></h1>
 <p>The numbers provided by this library are double-doubles, represented by two <code>f64</code>s, and
-quad-doubles, represented by four <code>f64</code>s. Every effort has been put into making them work as
-much like <code>f64</code>s as possible.</p>
-<p>The <code>Double</code> type has 106 bits of significand, meaning about 31 decimal digits, while the <code>Quad</code>
-type has 212 bits (about 63 decimal digits). However, the exponents remain the same as in <code>f64</code>,
-so the range of each type is similar to <code>f64</code> (max value of around ~10<sup>308</sup>). These
-types don't make <em>bigger</em> numbers, they make <em>more precise</em> numbers.</p>
-<p>For those who are interested, a paper from MIT called <a href="http://web.mit.edu/tabbott/Public/quaddouble-debian/qd-2.3.4-old/docs/qd.pdf">Library for Double-Double and Quad-Double
-Arithmetic</a> explains the algorithms for working with these numbers in great detail, and that
-paper plus their C++ implementation were absolutely invaluable in writing this library.</p>
+quad-doubles, represented by four <code>f64</code>s. The names &quot;double-double&quot; and &quot;quad-double&quot;
+come from IEEE-754 double-precision floating point numbers and are the names used for
+these numbers the most in literature. Therefore those names are retained even though
+Rust represents <em>its</em> doubles with <code>f64</code>. Every effort has been put into making them
+work as much like <code>f64</code>s as possible.</p>
+<p>The <code>Double</code> type (double-double) has 106 bits of significand, meaning about 31 decimal
+digits, while the <code>Quad</code> type (quad-double) has 212 bits (about 63 decimal digits).
+However, the exponents remain the same as in <code>f64</code>, so the range of each type is similar
+to <code>f64</code> (max value of around ~10<sup>308</sup>). These types don't make <em>bigger</em>
+numbers, they make <em>more precise</em> numbers.</p>
+<p>For those who are interested, a paper from MIT called <a href="http://web.mit.edu/tabbott/Public/quaddouble-debian/qd-2.3.4-old/docs/qd.pdf">Library for Double-Double and
+Quad-Double Arithmetic</a> explains the algorithms for working with these numbers in
+great detail, and that paper plus their C++ implementation were absolutely invaluable in
+writing this library.</p>
 <h1 id="using-double-double-and-quad-double-numbers" class="section-header"><a href="#using-double-double-and-quad-double-numbers">Using double-double and quad-double numbers</a></h1>
-<p><code>qd</code> provides a pair of macros, <a href="macros.dd.html"><code>dd!</code></a> and <code>qd!</code>, which can be used to create double-doubles
-and quad-doubles, respectively. These macros will take any primitive number type (<code>dd!</code> cannot
-take <code>u128</code> or <code>i128</code>, as there would be a <em>loss</em> of precision to turn those into
-double-doubles) or a string containing a number that can be represented (if the string contains
-more digits than can be accurately represented by the type, the extra digits will be ignored).</p>
-<p>Once you have a double-double or a quad-double, you can use it just like you would an <code>f64</code>: all
-of the mathematical operators work on them, the vast majority of methods work, etc. (see the
-rest of this documentation for the full API). Each type has a full <code>Display</code> implementation,
-meaning that you can use formatting strings with <code>format!</code>, <code>println!</code> and the like with all of
-the formatting options that are available with <code>f64</code>.</p>
-<p>It's important to note that double-doubles and quad-doubles are incompatible with each other and
-with other numbers, short of options to directly convert one to another. In other words, you
-can't add an <code>f64</code> to a <code>Double</code> (though you can convert the <code>f64</code> to a <code>Double</code> and then add
-them), and you can't multiply a <code>Quad</code> by an <code>i32</code> (though once again, you can convert the <code>i32</code>
-to a <code>Quad</code> and then do it). This is typical of type casting in Rust (you also can't add an
-<code>f64</code> and an <code>f32</code> together) and actually makes it less insanity-inducing when reading code with
-a lot of different number types.</p>
-</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class="mod" href="error/index.html"
-                                  title='mod qd::error'>error</a></td>
-                           <td class='docblock-short'>
-                                
-                           </td>
-                       </tr></table><h2 id='macros' class='section-header'><a href="#macros">Macros</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class="macro" href="macro.dd.html"
-                                  title='macro qd::dd'>dd</a></td>
-                           <td class='docblock-short'>
-                                <p>Creates a new double-double from another number or from a string.</p>
-
-                           </td>
-                       </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.Double.html"
-                                  title='struct qd::Double'>Double</a></td>
-                           <td class='docblock-short'>
-                                <p>A 128-bit floating-point number implemented as the unevaluated sum of two 64-bit floating-point
-numbers.</p>
-
-                           </td>
-                       </tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../";window.currentCrate = "qd";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>
+<p><code>qd</code> provides a pair of macros, <a href="macros.dd.html"><code>dd!</code></a> and <a href="macros.qd.html"><code>qd!</code></a>, which can be used to create
+double-doubles and quad-doubles, respectively. These macros will take any primitive
+number type (<code>dd!</code> cannot take <code>u128</code> or <code>i128</code>, as there would be a <em>loss</em> of precision
+to turn those into double-doubles) or a string containing a number that can be
+represented (if the string contains more digits than can be accurately represented by
+the type, the extra digits will be ignored).</p>
+<p>Once you have a double-double or a quad-double, you can use it just like you would an
+<code>f64</code>: all of the mathematical operators work on them, the vast majority of methods
+work, etc. (see the rest of this documentation for the full API). Each type has a full
+<code>Display</code> implementation, meaning that you can use formatting strings with <code>format!</code>,
+<code>println!</code> and the like with all of the formatting options that are available with
+<code>f64</code>.</p>
+<p>It's important to note that double-doubles and quad-doubles are incompatible with each
+other and with other numbers, short of options to directly convert one to another. In
+other words, you can't add an <code>f64</code> to a <code>Double</code> (though you can convert the <code>f64</code> to a
+<code>Double</code> and then add them), and you can't multiply a <code>Quad</code> by an <code>i32</code> (though once
+again, you can convert the <code>i32</code> to a <code>Quad</code> and then do it). This is typical of type
+casting in Rust (you also can't add an <code>f64</code> and an <code>f32</code> together) and actually makes
+it less insanity-inducing when reading code with a lot of different number types.</p>
+<h1 id="normalization" class="section-header"><a href="#normalization">Normalization</a></h1>
+<p>Since double-doubles and quad-doubles are represented as sums, there is actually an
+infinite number of ways to represent any of them. For example, 0 could be represented
+as (0, 0), (1, -1), (π, -π), or any other such pair.</p>
+<p>This creates a problem if for no other reason than that figuring out what number is
+equal to whatever other number becomes really hard when an infinite number of pairs all
+might be equal (there are plenty of other reasons, too). For that reason, we normalize
+all double-doubles and quad-doubles.</p>
+<p>Normalizing a number ensures that each component after the first has an absolute value
+of 0.5 times the lowest-placed unit of the component before it (ULP, unit in the last
+place) or less. For example, the first component of π is 3.141592653589793. The ULP of
+this number is 10<sup>-15</sup>, as that final 3 is 15 places after the decimal. The
+next component must therefore have an absolute value less than or equal to half that, or
+5 × 10<sup>-16</sup>. Indeed, the second component of π is 1.2246467991473532
+× 10<sup>-16</sup>.</p>
+<p>Each number's normalized form is unique. The number 0 as a double-double is (0, 0).
+There is no other pair of components that satisfies the criteria for normalization.
+Since the form is now unique, comparisons can be made easily, arithmetic can be done
+efficiently, and generally everything works better.</p>
+<p><em>Nearly</em> every function in qd normalizes when necessary. The sole exceptions are
+<a href="struct.Double.html#methods.raw"><code>Double::raw</code></a> and <a href="struct.Quad.html:methods.raw"><code>Quad::raw</code></a>, which specifically skip normalization and
+should only be used on numbers that are already known to be normalized.</p>
+</div><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
+<table><tr class="module-item"><td><a class="mod" href="error/index.html" title="qd::error mod">error</a></td><td class="docblock-short"></td></tr></table><h2 id="macros" class="section-header"><a href="#macros">Macros</a></h2>
+<table><tr class="module-item"><td><a class="macro" href="macro.dd.html" title="qd::dd macro">dd</a></td><td class="docblock-short"><p>Creates a new double-double from another number or from a string.</p>
+</td></tr><tr class="module-item"><td><a class="macro" href="macro.qd.html" title="qd::qd macro">qd</a></td><td class="docblock-short"><p>Creates a new quad-double from another number or from a string.</p>
+</td></tr></table><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2>
+<table><tr class="module-item"><td><a class="struct" href="struct.Double.html" title="qd::Double struct">Double</a></td><td class="docblock-short"><p>A 128-bit floating-point number implemented as the unevaluated sum of two 64-bit
+floating-point numbers.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.Quad.html" title="qd::Quad struct">Quad</a></td><td class="docblock-short"></td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "qd";</script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

@@ -123,23 +123,17 @@ impl Quad {
                 if (c - self.2).abs() < f64::EPSILON {
                     let d = self.3.round();
                     Quad::from(renorm4(a, b, c, d))
-                } else if ((c - self.2).abs() - 0.5).abs() < f64::EPSILON
-                    && self.3 < 0.0
-                {
+                } else if ((c - self.2).abs() - 0.5).abs() < f64::EPSILON && self.3 < 0.0 {
                     Quad(a, b, c - 1.0, 0.0)
                 } else {
                     Quad(a, b, c, 0.0)
                 }
-            } else if ((b - self.1).abs() - 0.5).abs() < f64::EPSILON
-                && self.2 < 0.0
-            {
+            } else if ((b - self.1).abs() - 0.5).abs() < f64::EPSILON && self.2 < 0.0 {
                 Quad(a, b - 1.0, 0.0, 0.0)
             } else {
                 Quad(a, b, 0.0, 0.0)
             }
-        } else if ((a - self.0).abs() - 0.5).abs() < f64::EPSILON
-            && self.1 < 0.0
-        {
+        } else if ((a - self.0).abs() - 0.5).abs() < f64::EPSILON && self.1 < 0.0 {
             Quad(a - 1.0, 0.0, 0.0, 0.0)
         } else {
             Quad(a, 0.0, 0.0, 0.0)
@@ -208,8 +202,9 @@ impl Quad {
     /// # }
     /// ```
     ///
-    /// [`INFINITY`]: #associatedconstant.INFINITY [`NEG_INFINITY`]:
-    /// #associatedconstant.NEG_INFINITY [`NAN`]: #associatedconstant.NAN
+    /// [`INFINITY`]: #associatedconstant.INFINITY
+    /// [`NEG_INFINITY`]: #associatedconstant.NEG_INFINITY
+    /// [`NAN`]: #associatedconstant.NAN
     #[inline]
     pub fn signum(self) -> Quad {
         if self.is_nan() {

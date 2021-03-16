@@ -3,9 +3,21 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic::renorm2;
+use crate::common::basic;
 use crate::double::Double;
 use std::f64;
+
+// Determines whether a number is exact (true) or has floating-point error (false)
+fn is_dyadic(n: f64) -> bool {
+    let f = n.fract();
+    if f == 0.0 {
+        true
+    } else {
+        let len = f.to_string().len() - 2; // ignore the leading "0."
+        let base = 2f64.powi(-(len as i32));
+        f % base == 0.0
+    }
+}
 
 fn from_float(n: f64) -> Double {
     if n == 0.0 {
@@ -22,15 +34,20 @@ fn from_float(n: f64) -> Double {
         } else {
             Double::INFINITY
         }
-    } else if (n.floor() - n).abs() < f64::EPSILON {
+    } else if is_dyadic(n) {
         Double(n, 0.0)
     } else {
-        // TODO: This needs investigation. It seems incorrect to double-convert a value,
-        // once to a string and then back again, but parsing a number as a string might be
-        // the most sensible way to do it in this particular case.
-
-        // `unwrap` is safe because `n.to_string` will never return a string
-        // that can't be parsed into a Double
+        // Yes, this converts an f64 to a string and then parses it. After a lot of study,
+        // doing it decimal-digit-by-decimal-digit seems to be the only way to do this
+        // accurately, because doing it as a whole f64 causes floating-point error to cancel
+        // itself out. And parsing from a string is the most reasonable way to do it
+        // digit-by-digit.
+        //
+        // I'm concerned about the effect on the speed of math functions that use it, like
+        // `log` and `exp` and `powf`, but the answer seems to be to optimize the parsing.
+        //
+        // `unwrap` is safe because `n.to_string` will never return a string that can't be
+        // parsed into a Double.
         n.to_string().parse().unwrap()
     }
 }
@@ -44,14 +61,14 @@ fn split_u64(a: u64) -> (u32, u32) {
 
 fn from_u64(a: u64) -> Double {
     let (x, y) = split_u64(a);
-    Double::from(renorm2(x as f64 * 2f64.powi(32), y as f64))
+    Double::from(basic::renorm2(x as f64 * 2f64.powi(32), y as f64))
 }
 
 fn from_i64(a: i64) -> Double {
     let sign = a.signum();
     let a = a.abs() as u64;
     let (x, y) = split_u64(a);
-    let d = Double::from(renorm2(x as f64 * 2f64.powi(32), y as f64));
+    let d = Double::from(basic::renorm2(x as f64 * 2f64.powi(32), y as f64));
     if sign == -1 {
         -d
     } else {
@@ -162,5 +179,33 @@ mod tests {
         let d = dd!(a);
         let x = d.as_int();
         assert_eq!(a, x);
+    }
+
+    #[test]
+    fn dyadic() {
+        assert!(is_dyadic(1.0));
+        assert!(is_dyadic(1.5));
+        assert!(is_dyadic(1.75));
+        assert!(is_dyadic(1.625));
+        assert!(is_dyadic(1.8125));
+        assert!(is_dyadic(1.40625));
+        assert!(is_dyadic(1.203125));
+        assert!(is_dyadic(1.1015625));
+        assert!(is_dyadic(1.14453125));
+        assert!(is_dyadic(1.0005645751953125));
+        assert!(!is_dyadic(1.1));
+    }
+
+    #[test]
+    fn conv_from_f64() {
+        assert_exact!(dd!(1.0), Double(1.0, 0.0));
+        assert_exact!(dd!(1.203125), Double(1.203125, 0.0));
+        assert_exact!(dd!(1.0005645751953125), Double(1.0005645751953125, 0.0));
+        assert_ne!(dd!(1.1).1, 0.0);
+        assert_exact!(dd!(0), Double::ZERO);
+        assert_exact!(dd!(-0.0), Double::NEG_ZERO);
+        assert_exact!(dd!(std::f64::INFINITY), Double::INFINITY);
+        assert_exact!(dd!(std::f64::NEG_INFINITY), Double::NEG_INFINITY);
+        assert_exact!(dd!(std::f64::NAN), Double::NAN);
     }
 }

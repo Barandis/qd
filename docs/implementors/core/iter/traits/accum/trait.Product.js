@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["qd"] = [{"text":"impl Product&lt;Double&gt; for Double","synthetic":false,"types":[]},{"text":"impl&lt;'a&gt; Product&lt;&amp;'a Double&gt; for Double","synthetic":false,"types":[]},{"text":"impl Product&lt;Quad&gt; for Quad","synthetic":false,"types":[]},{"text":"impl&lt;'a&gt; Product&lt;&amp;'a Quad&gt; for Quad","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

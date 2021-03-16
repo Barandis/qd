@@ -50,7 +50,7 @@
 //!
 //! # Using double-double and quad-double numbers
 //!
-//! `qd` provides a pair of macros, [`dd!`][2] and `qd!`, which can be used to create
+//! `qd` provides a pair of macros, [`dd!`][2] and [`qd!`][3], which can be used to create
 //! double-doubles and quad-doubles, respectively. These macros will take any primitive
 //! number type (`dd!` cannot take `u128` or `i128`, as there would be a *loss* of precision
 //! to turn those into double-doubles) or a string containing a number that can be
@@ -72,8 +72,39 @@
 //! casting in Rust (you also can't add an `f64` and an `f32` together) and actually makes
 //! it less insanity-inducing when reading code with a lot of different number types.
 //!
+//! # Normalization
+//!
+//! Since double-doubles and quad-doubles are represented as sums, there is actually an
+//! infinite number of ways to represent any of them. For example, 0 could be represented
+//! as (0, 0), (1, -1), (π, -π), or any other such pair.
+//!
+//! This creates a problem if for no other reason than that figuring out what number is
+//! equal to whatever other number becomes really hard when an infinite number of pairs all
+//! might be equal (there are plenty of other reasons, too). For that reason, we normalize
+//! all double-doubles and quad-doubles.
+//!
+//! Normalizing a number ensures that each component after the first has an absolute value
+//! of 0.5 times the lowest-placed unit of the component before it (ULP, unit in the last
+//! place) or less. For example, the first component of π is 3.141592653589793. The ULP of
+//! this number is 10<sup>-15</sup>, as that final 3 is 15 places after the decimal. The
+//! next component must therefore have an absolute value less than or equal to half that, or
+//! 5 &times; 10<sup>-16</sup>. Indeed, the second component of π is 1.2246467991473532
+//! &times; 10<sup>-16</sup>.
+//!
+//! Each number's normalized form is unique. The number 0 as a double-double is (0, 0).
+//! There is no other pair of components that satisfies the criteria for normalization.
+//! Since the form is now unique, comparisons can be made easily, arithmetic can be done
+//! efficiently, and generally everything works better.
+//! 
+//! *Nearly* every function in qd normalizes when necessary. The sole exceptions are
+//! [`Double::raw`][4] and [`Quad::raw`][5], which specifically skip normalization and
+//! should only be used on numbers that are already known to be normalized.
+//!
 //! [1]: http://web.mit.edu/tabbott/Public/quaddouble-debian/qd-2.3.4-old/docs/qd.pdf
 //! [2]: macros.dd.html
+//! [3]: macros.qd.html
+//! [4]: struct.Double.html#methods.raw
+//! [5]: struct.Quad.html:methods.raw
 
 #![warn(clippy::all)]
 #![allow(clippy::needless_doctest_main)]

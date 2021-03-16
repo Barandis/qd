@@ -29,7 +29,8 @@ impl Quad {
     /// # }
     /// ```
     ///
-    /// [`sinh`]: #method.sinh [`cosh`]: #method.cosh
+    /// [`sinh`]: #method.sinh
+    /// [`cosh`]: #method.cosh
     pub fn sinh_cosh(self) -> (Quad, Quad) {
         if self.is_nan() {
             (Quad::NAN, Quad::NAN)

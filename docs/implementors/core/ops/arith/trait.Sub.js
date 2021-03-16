@@ -1,10 +1,3 @@
 (function() {var implementors = {};
-implementors["qd"] = [{text:"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html\" title=\"trait core::ops::arith::Sub\">Sub</a>&lt;<a class=\"struct\" href=\"qd/struct.Double.html\" title=\"struct qd::Double\">Double</a>&gt; for <a class=\"struct\" href=\"qd/struct.Double.html\" title=\"struct qd::Double\">Double</a>",synthetic:false,types:["qd::double::Double"]},{text:"impl&lt;'a&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html\" title=\"trait core::ops::arith::Sub\">Sub</a>&lt;&amp;'a <a class=\"struct\" href=\"qd/struct.Double.html\" title=\"struct qd::Double\">Double</a>&gt; for <a class=\"struct\" href=\"qd/struct.Double.html\" title=\"struct qd::Double\">Double</a>",synthetic:false,types:["qd::double::Double"]},{text:"impl&lt;'a&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html\" title=\"trait core::ops::arith::Sub\">Sub</a>&lt;<a class=\"struct\" href=\"qd/struct.Double.html\" title=\"struct qd::Double\">Double</a>&gt; for &amp;'a <a class=\"struct\" href=\"qd/struct.Double.html\" title=\"struct qd::Double\">Double</a>",synthetic:false,types:["qd::double::Double"]},];
-
-            if (window.register_implementors) {
-                window.register_implementors(implementors);
-            } else {
-                window.pending_implementors = implementors;
-            }
-        
-})()
+implementors["qd"] = [{"text":"impl Sub&lt;Double&gt; for Double","synthetic":false,"types":[]},{"text":"impl Sub&lt;&amp;'_ Double&gt; for Double","synthetic":false,"types":[]},{"text":"impl Sub&lt;Double&gt; for &amp;Double","synthetic":false,"types":[]},{"text":"impl Sub&lt;Quad&gt; for Quad","synthetic":false,"types":[]},{"text":"impl Sub&lt;&amp;'_ Quad&gt; for Quad","synthetic":false,"types":[]},{"text":"impl Sub&lt;Quad&gt; for &amp;Quad","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
