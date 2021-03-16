@@ -28,6 +28,22 @@ impl Double {
 impl Sub for Double {
     type Output = Double;
 
+    /// Subtracts another `Double` from this one, producing a new `Double` as a result.
+    /// 
+    /// This implements the binary `-` operator between two `Double`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = Double::E - Double::PI;
+    /// let expected = dd!("-0.4233108251307480031023559119268");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     fn sub(self, other: Double) -> Double {
         if self.is_nan() || other.is_nan() {
             Double::NAN
@@ -64,9 +80,52 @@ impl Sub for Double {
     }
 }
 
+impl Sub for &Double {
+    type Output = Double;
+
+    /// Subtracts another reference to a `Double` from this one, producing a new `Double` as
+    /// a result.
+    ///
+    /// This implements the binary `-` operator between two references to `Double`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = &Double::E - &Double::PI;
+    /// let expected = dd!("-0.4233108251307480031023559119268");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    #[inline]
+    fn sub(self, other: &Double) -> Double {
+        (*self).sub(*other)
+    }
+}
+
 impl Sub<&Double> for Double {
     type Output = Double;
 
+    /// Subtracts another reference to a `Double` from this `Double`, producing a new
+    /// `Double` as a result.
+    ///
+    /// This implements the binary `-` operator between a `Double` and a reference to a
+    /// `Double`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = Double::E - &Double::PI;
+    /// let expected = dd!("-0.4233108251307480031023559119268");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn sub(self, other: &Double) -> Double {
         self.sub(*other)
@@ -76,6 +135,24 @@ impl Sub<&Double> for Double {
 impl Sub<Double> for &Double {
     type Output = Double;
 
+    /// Subtracts another `Double` from a reference to this one, producing a new `Double` as
+    /// a result.
+    ///
+    /// This implements the binary `-` operator between a reference to a `Double` and a
+    /// `Double`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = &Double::E - Double::PI;
+    /// let expected = dd!("-0.4233108251307480031023559119268");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn sub(self, other: Double) -> Double {
         (*self).sub(other)
@@ -83,6 +160,23 @@ impl Sub<Double> for &Double {
 }
 
 impl SubAssign for Double {
+    /// Subtracts another `Double` from this one, modifying this one to equal the result.
+    /// 
+    /// This implements the `-=` operator between two `Double`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let mut x = Double::E;
+    /// x -= Double::PI;
+    /// let expected = dd!("-0.4233108251307480031023559119268");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn sub_assign(&mut self, other: Double) {
         self.assign(self.sub(other).into());
@@ -90,6 +184,24 @@ impl SubAssign for Double {
 }
 
 impl SubAssign<&Double> for Double {
+    /// Subtracts a reference to another `Double` from this one, modifying this one to equal
+    /// the result.
+    ///
+    /// This implements the `-=` operator between a `Double` and a reference to a `Double`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let mut x = Double::E;
+    /// x -= &Double::PI;
+    /// let expected = dd!("-0.4233108251307480031023559119268");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn sub_assign(&mut self, other: &Double) {
         self.assign(self.sub(*other).into());
