@@ -9,6 +9,23 @@ use std::ops::{Div, Rem, RemAssign};
 impl Rem for Double {
     type Output = Double;
 
+    /// Divides this `Double` by another, producing a new `Double` of the remainder as a
+    /// result.
+    ///
+    /// This implements the `%` operator between two `Double`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = Double::PI % Double::E;
+    /// let expected = dd!("0.4233108251307480031023559119268");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn rem(self, other: Double) -> Double {
         let n = self.div(other).trunc();
@@ -16,9 +33,53 @@ impl Rem for Double {
     }
 }
 
+impl Rem for &Double {
+    type Output = Double;
+
+    /// Divides a reference to this `Double` by another, producing a new `Double` of the
+    /// remainder as a result.
+    ///
+    /// This implements the `%` operator between two references to `Double`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = &Double::PI % &Double::E;
+    /// let expected = dd!("0.4233108251307480031023559119268");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
+    #[inline]
+    fn rem(self, other: &Double) -> Double {
+        let n = self.div(*other).trunc();
+        *self - *other * n
+    }
+}
+
 impl Rem<&Double> for Double {
     type Output = Double;
 
+    /// Divides this `Double` by a reference to another, producing a new `Double` of the
+    /// remainder as a result.
+    ///
+    /// This implements the `%` operator between a `Double` and a reference to a `Double`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = Double::PI % &Double::E;
+    /// let expected = dd!("0.4233108251307480031023559119268");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn rem(self, other: &Double) -> Double {
         let n = self.div(*other).trunc();
@@ -29,24 +90,80 @@ impl Rem<&Double> for Double {
 impl Rem<Double> for &Double {
     type Output = Double;
 
+    /// Divides a reference to this `Double` by another `Double`, producing a new `Double`
+    /// of the remainder as a result.
+    ///
+    /// This implements the `%` operator between a reference to a `Double`s and a `Double`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = &Double::PI % Double::E;
+    /// let expected = dd!("0.4233108251307480031023559119268");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn rem(self, other: Double) -> Double {
         let n = self.div(other).trunc();
-        (*self) - other * n
+        *self - other * n
     }
 }
 
 impl RemAssign for Double {
+    /// Divides this `Double` by another, modifying this one to equal the remainder.
+    /// 
+    /// This implements the `%=` operator between two `Double`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let mut x = Double::PI;
+    /// x %= Double::E;
+    /// let expected = dd!("0.4233108251307480031023559119268");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn rem_assign(&mut self, other: Double) {
-        self.assign(self.rem(other).into());
+        let (a, b) = self.rem(other).into();
+        self.0 = a;
+        self.1 = b;
     }
 }
 
 impl RemAssign<&Double> for Double {
+    /// Divides this `Double` by a reference to another, modifying this one to equal the
+    /// remainder.
+    ///
+    /// This implements the `%=` operator between a `Double` and a reference to a `Double`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let mut x = Double::PI;
+    /// x %= &Double::E;
+    /// let expected = dd!("0.4233108251307480031023559119268");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn rem_assign(&mut self, other: &Double) {
-        self.assign(self.rem(*other).into());
+        let (a, b) = self.rem(*other).into();
+        self.0 = a;
+        self.1 = b;
     }
 }
 
