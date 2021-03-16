@@ -247,6 +247,12 @@ mod tests {
     }
 
     #[test]
+    fn ref_ref() {
+        let expected = dd!("1.1557273497909217179100931833127");
+        assert_close!(expected, &Double::PI / &Double::E);
+    }
+
+    #[test]
     #[allow(clippy::op_ref)]
     fn num_ref() {
         let expected = dd!("1.1557273497909217179100931833127");

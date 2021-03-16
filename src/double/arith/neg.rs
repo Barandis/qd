@@ -67,6 +67,12 @@ mod tests {
     }
 
     #[test]
+    fn neg_ref() {
+        assert_close!(dd!("-3.1415926535897932384626433832795"), -&Double::PI);
+        assert_close!(dd!("-2.7182818284590452353602874713527"), -&Double::E);
+    }
+
+    #[test]
     fn zero() {
         assert_exact!(Double::NEG_ZERO, -Double::ZERO);
         assert_exact!(Double::ZERO, -Double::NEG_ZERO);
