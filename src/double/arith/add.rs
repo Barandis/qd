@@ -28,6 +28,20 @@ impl Double {
 impl Add for Double {
     type Output = Double;
 
+    /// Adds this `Double` to another, producing a new `Double` as a result.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = Double::E + Double::PI;
+    /// let expected = dd!("5.859874482048838473822930854632");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     fn add(self, other: Double) -> Double {
         if self.is_nan() || other.is_nan() {
             Double::NAN
@@ -64,9 +78,47 @@ impl Add for Double {
     }
 }
 
+impl Add for &Double {
+    type Output = Double;
+
+    /// Adds a reference to this `Double` to another, producing a new `Double` as a result.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = &Double::E + &Double::PI;
+    /// let expected = dd!("5.859874482048838473822930854632");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
+    #[inline]
+    fn add(self, other: &Double) -> Double {
+        (*self).add(*other)
+    }
+}
+
 impl Add<&Double> for Double {
     type Output = Double;
 
+    /// Adds this `Double` to a reference to another `Double`, producing a new `Double` as a
+    /// result.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = Double::E + &Double::PI;
+    /// let expected = dd!("5.859874482048838473822930854632");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn add(self, other: &Double) -> Double {
         self.add(*other)
@@ -76,6 +128,21 @@ impl Add<&Double> for Double {
 impl Add<Double> for &Double {
     type Output = Double;
 
+    /// Adds a reference to this `Double` to another `Double`, producing a new `Double` as a
+    /// result.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = &Double::E + Double::PI;
+    /// let expected = dd!("5.859874482048838473822930854632");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn add(self, other: Double) -> Double {
         (*self).add(other)
@@ -83,16 +150,51 @@ impl Add<Double> for &Double {
 }
 
 impl AddAssign for Double {
+    /// Adds another `Double` to this one, modifying this one to equal the result.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let mut x = Double::E;
+    /// x += Double::PI;
+    /// let expected = dd!("5.859874482048838473822930854632");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn add_assign(&mut self, other: Double) {
-        self.assign(self.add(other).into());
+        let (a, b) = self.add(other).into();
+        self.0 = a;
+        self.1 = b;
     }
 }
 
 impl AddAssign<&Double> for Double {
+    /// Adds a reference to another `Double` to this `Double`, modifying this one to equal
+    /// the result.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let mut x = Double::E;
+    /// x += &Double::PI;
+    /// let expected = dd!("5.859874482048838473822930854632");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn add_assign(&mut self, other: &Double) {
-        self.assign(self.add(*other).into())
+        let (a, b) = self.add(*other).into();
+        self.0 = a;
+        self.1 = b;
     }
 }
 

@@ -207,5 +207,7 @@ mod tests {
         assert_exact!(dd!(std::f64::INFINITY), Double::INFINITY);
         assert_exact!(dd!(std::f64::NEG_INFINITY), Double::NEG_INFINITY);
         assert_exact!(dd!(std::f64::NAN), Double::NAN);
+        println!("{:.32}", Double(1.1, 0.0));
+        println!("{:?}", Double::from(1.1));
     }
 }

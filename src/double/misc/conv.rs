@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic::two_sum;
+use crate::common::basic;
 use crate::double::Double;
 
 impl Double {
@@ -28,10 +28,12 @@ impl Double {
 
     /// Converts the double-double into an `i64`.
     ///
+    /// This will obviously lose precision if the double-double isn't an integer.
+    ///
     /// While it is possible for a `Double` to be created from a `u64`, whether or not the
     /// original is signed is not recorded (since `Double` itself is signed). The return
     /// value of this function can be cast to `u64` if necessary.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -50,7 +52,7 @@ impl Double {
     ///
     /// The components of the returned tuples are the same numbers used to represent the
     /// double-double internally.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -67,10 +69,10 @@ impl Double {
     }
 
     /// Assigns the components of a tuple to the components of the double-double.
-    /// 
+    ///
     /// The parameters will be normalized before being assigned to the double-double's
     /// components.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -82,7 +84,11 @@ impl Double {
     /// # }
     #[inline]
     pub fn assign(&mut self, (a, b): (f64, f64)) {
-        let (s, e) = two_sum(a, b);
+        let (s, e) = if a.abs() > b.abs() {
+            basic::quick_two_sum(a, b)
+        } else {
+            basic::quick_two_sum(b, a)
+        };
         self.0 = s;
         self.1 = e;
     }
