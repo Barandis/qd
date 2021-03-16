@@ -230,9 +230,9 @@ impl fmt::Debug for Quad {
         }
         r.push_str(format!("{:e}", self.3).as_str());
         if alt {
-            r.push_str("\n");
+            r.push('\n');
         }
-        r.push_str(")");
+        r.push(')');
         write!(f, "{}", r)
     }
 }

@@ -222,9 +222,9 @@ impl fmt::Debug for Double {
         }
         r.push_str(format!("{:e}", self.1).as_str());
         if alt {
-            r.push_str("\n");
+            r.push('\n');
         }
-        r.push_str(")");
+        r.push(')');
         write!(f, "{}", r)
     }
 }
