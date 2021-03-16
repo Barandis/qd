@@ -30,6 +30,8 @@ impl Add for Double {
 
     /// Adds this `Double` to another, producing a new `Double` as a result.
     /// 
+    /// This implements the `+` operator between two `Double`s.
+    /// 
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -82,6 +84,8 @@ impl Add for &Double {
     type Output = Double;
 
     /// Adds a reference to this `Double` to another, producing a new `Double` as a result.
+    /// 
+    /// This implements the `+` operator between two references to `Double`s.
     ///
     /// # Examples
     /// ```
@@ -106,6 +110,8 @@ impl Add<&Double> for Double {
 
     /// Adds this `Double` to a reference to another `Double`, producing a new `Double` as a
     /// result.
+    /// 
+    /// This implements the `+` operator between a `Double` and a reference to a `Double`.
     ///
     /// # Examples
     /// ```
@@ -130,6 +136,8 @@ impl Add<Double> for &Double {
 
     /// Adds a reference to this `Double` to another `Double`, producing a new `Double` as a
     /// result.
+    /// 
+    /// This implements the `+` operator between a refernce to a `Double` and a `Double`.
     ///
     /// # Examples
     /// ```
@@ -151,6 +159,8 @@ impl Add<Double> for &Double {
 
 impl AddAssign for Double {
     /// Adds another `Double` to this one, modifying this one to equal the result.
+    /// 
+    /// This implements the `+=` operator between two `Double`s.
     /// 
     /// # Examples
     /// ```
@@ -176,6 +186,8 @@ impl AddAssign for Double {
 impl AddAssign<&Double> for Double {
     /// Adds a reference to another `Double` to this `Double`, modifying this one to equal
     /// the result.
+    /// 
+    /// This implements the `+=` operator between a `Double` and a reference to a `Double`.
     ///
     /// # Examples
     /// ```

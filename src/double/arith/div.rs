@@ -53,6 +53,22 @@ impl Double {
 impl Div for Double {
     type Output = Double;
 
+    /// Divides this `Double` by another, producing a new `Double` as a result.
+    /// 
+    /// This implements the `/` operator between two `Double`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = Double::E / Double::PI;
+    /// let expected = dd!("0.8652559794322650872177747896461");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     fn div(self, other: Double) -> Double {
         if self.is_nan() || other.is_nan() {
             Double::NAN
@@ -91,9 +107,50 @@ impl Div for Double {
     }
 }
 
+impl Div for &Double {
+    type Output = Double;
+
+    /// Divides a reference to this `Double` by another, producing a new `Double` as a result.
+    /// 
+    /// This implements the `/` operator between two references to `Double`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = &Double::E / &Double::PI;
+    /// let expected = dd!("0.8652559794322650872177747896461");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
+    fn div(self, other: &Double) -> Double {
+        (*self).div(*other)
+    }
+}
+
 impl Div<&Double> for Double {
     type Output = Double;
 
+    /// Divides this `Double` by a reference to another `Double`, producing a new `Double`
+    /// as a result.
+    ///
+    /// This implements the `/` operator between a `Double` and a reference to a `Double`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = Double::E / &Double::PI;
+    /// let expected = dd!("0.8652559794322650872177747896461");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn div(self, other: &Double) -> Double {
         self.div(*other)
@@ -103,6 +160,23 @@ impl Div<&Double> for Double {
 impl Div<Double> for &Double {
     type Output = Double;
 
+    /// Divides a reference to this `Double` by another `Double`, producing a new `Double`
+    /// as a result.
+    ///
+    /// This implements the `/` operator between a reference to a `Double` and a `Double`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = &Double::E / Double::PI;
+    /// let expected = dd!("0.8652559794322650872177747896461");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn div(self, other: Double) -> Double {
         (*self).div(other)
@@ -110,16 +184,55 @@ impl Div<Double> for &Double {
 }
 
 impl DivAssign for Double {
+    /// Divides this `Double` by another, modifying this one to equal the result.
+    /// 
+    /// This implements the `/=` operator between two `Double`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let mut x = Double::E;
+    /// x /= Double::PI;
+    /// let expected = dd!("0.8652559794322650872177747896461");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn div_assign(&mut self, other: Double) {
-        self.assign(self.div(other).into());
+        let (a, b) = self.div(other).into();
+        self.0 = a;
+        self.1 = b;
     }
 }
 
 impl DivAssign<&Double> for Double {
+    /// Divides this `Double` by a reference to another, modifying this one to equal the
+    /// result.
+    ///
+    /// This implements the `/=` operator between a `Double` and a reference to a `Double`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let mut x = Double::E;
+    /// x /= &Double::PI;
+    /// let expected = dd!("0.8652559794322650872177747896461");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn div_assign(&mut self, other: &Double) {
-        self.assign(self.div(*other).into());
+        let (a, b) = self.div(*other).into();
+        self.0 = a;
+        self.1 = b;
     }
 }
 
