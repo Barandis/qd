@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic::renorm2;
+use crate::common::basic;
 use crate::double::Double;
 use std::f64;
 
@@ -99,7 +99,7 @@ impl Double {
 
         if (hi - self.0).abs() < f64::EPSILON {
             let lo = self.1.round();
-            Double::from(renorm2(hi, lo))
+            Double::from(basic::renorm2(hi, lo))
         } else if ((hi - self.0).abs() - 0.5).abs() < f64::EPSILON && self.1 < 0.0 {
             Double(hi - 1.0, 0.0)
         } else {

@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::double::common::mul_pwr2;
+use crate::double::common;
 use crate::double::Double;
 
 impl Double {
@@ -39,7 +39,7 @@ impl Double {
             // double-doubles only requires one iteration.
             let x = Double::from_div(1.0, self.0.sqrt());
             let ax = self * x;
-            ax + (self - ax.sqr()) * mul_pwr2(x, 0.5)
+            ax + (self - ax.sqr()) * common::mul_pwr2(x, 0.5)
         }
     }
 }

@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::double::common::mul_pwr2;
+use crate::double::common;
 use crate::double::Double;
 
 impl Double {
@@ -43,8 +43,8 @@ impl Double {
         } else {
             let a = self.exp();
             let inv_a = a.recip();
-            let s = mul_pwr2(a - inv_a, 0.5);
-            let c = mul_pwr2(a + inv_a, 0.5);
+            let s = common::mul_pwr2(a - inv_a, 0.5);
+            let c = common::mul_pwr2(a + inv_a, 0.5);
             (s, c)
         }
     }

@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::double::common::{mul_pwr2, INV_FACTS};
+use crate::double::common;
 use crate::double::Double;
 
 // Compute sin a using the Taylor series. This assumes that |a| <= π/32.
@@ -12,7 +12,7 @@ pub(super) fn sin_taylor(a: Double) -> Double {
     if a.is_zero() {
         Double::ZERO
     } else {
-        let threshold = mul_pwr2(a.abs() * Double::EPSILON, 0.5);
+        let threshold = common::mul_pwr2(a.abs() * Double::EPSILON, 0.5);
         let x = -a.sqr();
         let mut s = a;
         let mut r = a;
@@ -20,10 +20,10 @@ pub(super) fn sin_taylor(a: Double) -> Double {
 
         loop {
             r *= x;
-            let t = r * INV_FACTS[i];
+            let t = r * common::INV_FACTS[i];
             s += t;
             i += 2;
-            if i >= INV_FACTS.len() || t.abs() <= threshold {
+            if i >= common::INV_FACTS.len() || t.abs() <= threshold {
                 break;
             }
         }
@@ -37,18 +37,18 @@ pub(super) fn cos_taylor(a: Double) -> Double {
     if a.is_zero() {
         Double::ONE
     } else {
-        let threshold = mul_pwr2(Double::EPSILON, 0.5);
+        let threshold = common::mul_pwr2(Double::EPSILON, 0.5);
         let x = -a.sqr();
         let mut r = x;
-        let mut s = Double::ONE + mul_pwr2(r, 0.5);
+        let mut s = Double::ONE + common::mul_pwr2(r, 0.5);
         let mut i = 1;
 
         loop {
             r *= x;
-            let t = r * INV_FACTS[i];
+            let t = r * common::INV_FACTS[i];
             s += t;
             i += 2;
-            if i >= INV_FACTS.len() || t.abs() <= threshold {
+            if i >= common::INV_FACTS.len() || t.abs() <= threshold {
                 break;
             }
         }

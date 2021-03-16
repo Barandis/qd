@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic::{quick_two_sum, two_prod};
+use crate::common::basic;
 use crate::double::Double;
 use std::ops::{Mul, MulAssign};
 
@@ -20,7 +20,7 @@ impl Double {
     /// # }
     /// ```
     pub fn from_mul(a: f64, b: f64) -> Double {
-        Double::from(two_prod(a, b))
+        Double::from(basic::two_prod(a, b))
     }
 }
 
@@ -70,8 +70,8 @@ impl Mul for Double {
                 Double::NEG_INFINITY
             }
         } else {
-            let (p, e) = two_prod(self.0, other.0);
-            Double::from(quick_two_sum(p, e + self.0 * other.1 + self.1 * other.0))
+            let (p, e) = basic::two_prod(self.0, other.0);
+            Double::from(basic::quick_two_sum(p, e + self.0 * other.1 + self.1 * other.0))
         }
     }
 }

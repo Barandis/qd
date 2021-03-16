@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use super::common::{reduce, sincos_taylor};
-use super::tables::{COSINES, SINES};
+use super::common;
+use super::tables;
 use crate::double::Double;
 
 impl Double {
@@ -33,16 +33,16 @@ impl Double {
         } else if !self.is_finite() {
             (Double::NAN, Double::NAN)
         } else {
-            let (j, k, t) = reduce(self);
+            let (j, k, t) = common::reduce(self);
             let abs_k = k.abs() as usize;
 
-            let (sin_t, cos_t) = sincos_taylor(t);
+            let (sin_t, cos_t) = common::sincos_taylor(t);
 
             let (s, c) = if k == 0 {
                 (sin_t, cos_t)
             } else {
-                let u = COSINES[abs_k - 1];
-                let v = SINES[abs_k - 1];
+                let u = tables::COSINES[abs_k - 1];
+                let v = tables::SINES[abs_k - 1];
                 if k > 0 {
                     (u * sin_t + v * cos_t, u * cos_t - v * sin_t)
                 } else {

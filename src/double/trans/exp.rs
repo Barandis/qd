@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::double::common::{mul_pwr2, INV_FACTS};
+use crate::double::common;
 use crate::double::Double;
 
 impl Double {
@@ -54,19 +54,19 @@ impl Double {
             Double::E
         } else {
             let m = (self.0 / Double::LN_2.0 + 0.5).floor();
-            let r = mul_pwr2(self - Double::LN_2 * Double::from(m), inv_k);
+            let r = common::mul_pwr2(self - Double::LN_2 * Double::from(m), inv_k);
 
             let mut p = r.sqr();
-            let mut s = r + mul_pwr2(p, 0.5);
+            let mut s = r + common::mul_pwr2(p, 0.5);
             p *= r;
-            let mut t = p * INV_FACTS[0];
+            let mut t = p * common::INV_FACTS[0];
             let mut i = 0;
 
             loop {
                 s += t;
                 p *= r;
                 i += 1;
-                t = p * INV_FACTS[i];
+                t = p * common::INV_FACTS[i];
                 if i >= 5 || t.abs() <= Double::from(inv_k) * Double::EPSILON {
                     break;
                 }
@@ -74,15 +74,15 @@ impl Double {
 
             s += t;
 
-            s = mul_pwr2(s, 2.0) + s.sqr();
-            s = mul_pwr2(s, 2.0) + s.sqr();
-            s = mul_pwr2(s, 2.0) + s.sqr();
-            s = mul_pwr2(s, 2.0) + s.sqr();
-            s = mul_pwr2(s, 2.0) + s.sqr();
-            s = mul_pwr2(s, 2.0) + s.sqr();
-            s = mul_pwr2(s, 2.0) + s.sqr();
-            s = mul_pwr2(s, 2.0) + s.sqr();
-            s = mul_pwr2(s, 2.0) + s.sqr();
+            s = common::mul_pwr2(s, 2.0) + s.sqr();
+            s = common::mul_pwr2(s, 2.0) + s.sqr();
+            s = common::mul_pwr2(s, 2.0) + s.sqr();
+            s = common::mul_pwr2(s, 2.0) + s.sqr();
+            s = common::mul_pwr2(s, 2.0) + s.sqr();
+            s = common::mul_pwr2(s, 2.0) + s.sqr();
+            s = common::mul_pwr2(s, 2.0) + s.sqr();
+            s = common::mul_pwr2(s, 2.0) + s.sqr();
+            s = common::mul_pwr2(s, 2.0) + s.sqr();
             s += Double::ONE;
 
             s.ldexp(m as i32)

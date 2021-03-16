@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic::{quick_two_sum, renorm3, two_diff, two_prod};
+use crate::common::basic;
 use crate::double::Double;
 use std::ops::{Div, DivAssign};
 
@@ -12,8 +12,8 @@ use std::ops::{Div, DivAssign};
 // Double::from this way in the basic arithmetic would cause a stack overflow.
 #[inline]
 fn mul_f64(a: Double, b: f64) -> Double {
-    let (p, e) = two_prod(a.0, b);
-    Double::from(quick_two_sum(p, e + a.1 * b))
+    let (p, e) = basic::two_prod(a.0, b);
+    Double::from(basic::quick_two_sum(p, e + a.1 * b))
 }
 
 impl Double {
@@ -40,11 +40,11 @@ impl Double {
         } else {
             let q1 = a / b;
 
-            let (p1, p2) = two_prod(q1, b);
-            let (s, e) = two_diff(a, p1);
+            let (p1, p2) = basic::two_prod(q1, b);
+            let (s, e) = basic::two_diff(a, p1);
 
             let q2 = (s + e - p2) / b;
-            Double::from(quick_two_sum(q1, q2))
+            Double::from(basic::quick_two_sum(q1, q2))
         }
     }
 }
@@ -102,7 +102,7 @@ impl Div for Double {
             r -= mul_f64(other, q2);
 
             let q3 = r.0 / other.0;
-            Double::from(renorm3(q1, q2, q3))
+            Double::from(basic::renorm3(q1, q2, q3))
         }
     }
 }
