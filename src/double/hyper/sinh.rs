@@ -7,7 +7,9 @@ use crate::double::common;
 use crate::double::Double;
 
 impl Double {
-    /// Computes the hyperbolic sine of the number.
+    /// Computes the hyperbolic sine (sinh) of the number.
+    /// 
+    /// The domain and range of this function are both (-∞, ∞).
     ///
     /// # Examples
     /// ```

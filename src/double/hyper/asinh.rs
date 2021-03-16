@@ -6,7 +6,9 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the inverse hyperbolic sine of the number.
+    /// Calculates the inverse hyperbolic sine (sinh<sup>-1</sup>) of the number.
+    /// 
+    /// The domain of the function is (-∞, ∞) and the range is (-∞, ∞).
     ///
     /// # Examples
     /// ```
@@ -21,7 +23,9 @@ impl Double {
     /// # }
     /// ```
     pub fn asinh(self) -> Double {
-        if self.is_infinite() {
+        if self.is_zero() {
+            self
+        } else if self.is_infinite() {
             if self.is_sign_positive() {
                 Double::INFINITY
             } else {
@@ -46,6 +50,7 @@ mod tests {
     #[test]
     fn zero() {
         assert_exact!(Double::ZERO, dd!(0.0).asinh());
+        assert_exact!(Double::NEG_ZERO, dd!(-0.0).asinh());
     }
 
     #[test]

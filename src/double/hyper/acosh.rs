@@ -6,7 +6,10 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the inverse hyperbolic cosine of the number.
+    /// Calculates the inverse hyperbolic cosine (cosh<sup>-1</sup>) of the number.
+    /// 
+    /// The domain of the function is [1, ∞) and the range is [0, ∞). Any argument outside
+    /// the range will result in `Double::NAN`.
     ///
     /// # Examples
     /// ```
@@ -23,6 +26,8 @@ impl Double {
     pub fn acosh(self) -> Double {
         if self < Double::ONE {
             Double::NAN
+        } else if self == Double::ONE {
+            Double::ZERO
         } else if self.is_infinite() {
             Double::INFINITY
         } else {
@@ -47,6 +52,11 @@ mod tests {
     #[test]
     fn zero() {
         assert_exact!(Double::NAN, Double::ZERO.acosh());
+    }
+
+    #[test]
+    fn one() {
+        assert_exact!(Double::ZERO, Double::ONE.acosh());
     }
 
     #[test]

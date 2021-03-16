@@ -7,7 +7,9 @@ use crate::double::common;
 use crate::double::Double;
 
 impl Double {
-    /// Computes the hyperbolic cosine of the number.
+    /// Computes the hyperbolic cosine (cosh) of the number.
+    /// 
+    /// The domain of this function is (-∞, ∞), and the range is [1, ∞).
     ///
     /// # Examples
     /// ```

@@ -7,7 +7,12 @@ use crate::double::common;
 use crate::double::Double;
 
 impl Double {
-    /// Simultaneously computes the hyperbolic sine and cosine of the number.
+    /// Simultaneously computes the hyperbolic sine and cosine (sinh and cosh) of the
+    /// number.
+    /// 
+    /// The domain of this function is (-∞, ∞), and the range is (-∞, ∞) for the first
+    /// component of the answer (the hyperbolic sine) and [1, ∞) for the second (the
+    /// hyperbolic cosine).
     ///
     /// This method is more efficient to run than [`sinh`] and [`cosh`] individually and is
     /// useful when both numbers are needed.
@@ -29,8 +34,7 @@ impl Double {
     /// # }
     /// ```
     ///
-    /// [`sinh`]: #method.sinh
-    /// [`cosh`]: #method.cosh
+    /// [`sinh`]: #method.sinh [`cosh`]: #method.cosh
     pub fn sinh_cosh(self) -> (Double, Double) {
         if self.is_nan() {
             (Double::NAN, Double::NAN)
