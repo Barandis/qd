@@ -9,9 +9,50 @@ use std::ops::Neg;
 impl Neg for Double {
     type Output = Double;
 
+    /// Negates this `Double`, producing a new `Double`.
+    /// 
+    /// This implements the unary `-` operator for `Double`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = -Double::PI;
+    /// let expected = dd!("-3.1415926535897932384626433832795");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(x < dd!(1e-30));
+    /// # }
+    /// ```
     #[inline]
     fn neg(self) -> Double {
         Double(-self.0, -self.1)
+    }
+}
+
+impl Neg for &Double {
+    type Output = Double;
+
+    /// Negates a reference to this `Double`, producing a new `Double`.
+    /// 
+    /// This implements the unary `-` operator for references to `Double`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = -&Double::PI;
+    /// let expected = dd!("-3.1415926535897932384626433832795");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(x < dd!(1e-30));
+    /// # }
+    /// ```
+    #[inline]
+    fn neg(self) -> Double {
+        Double(-(*self).0, -(*self).1)
     }
 }
 
