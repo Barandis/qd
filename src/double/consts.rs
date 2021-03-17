@@ -46,13 +46,13 @@ impl Double {
     pub const MAX_10_EXP: i32 = 308;
 
     /// Not a Number (NaN).
-    pub const NAN: Double = Double(f64::NAN, f64::NAN);
+    pub const NAN: Double = Double(f64::NAN, 0.0);
 
     /// Infinity (∞).
-    pub const INFINITY: Double = Double(f64::INFINITY, f64::INFINITY);
+    pub const INFINITY: Double = Double(f64::INFINITY, 0.0);
 
     /// Negative infinity (-∞).
-    pub const NEG_INFINITY: Double = Double(f64::NEG_INFINITY, f64::NEG_INFINITY);
+    pub const NEG_INFINITY: Double = Double(f64::NEG_INFINITY, 0.0);
 
     /// Zero (0)
     pub const ZERO: Double = Double(0.0, 0.0);

@@ -166,8 +166,7 @@ impl From<Double> for f64 {
 impl From<Double> for (f64, f64) {
     /// Converts a `Double` into a 2-tuple of `f64`s.
     /// 
-    /// The components of the resulting tuple are simply the components of the `Double`
-    /// 
+    /// The components of the resulting tuple are simply the components of the `Double`.
     #[inline]
     fn from(a: Double) -> (f64, f64) {
         (a.0, a.1)

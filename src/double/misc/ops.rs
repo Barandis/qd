@@ -37,9 +37,11 @@ impl Double {
     /// # fn main() {
     /// let f = dd!(3.99);
     /// let g = dd!(3.0);
+    /// let h = dd!(-3.99);
     ///
     /// assert!(f.floor() == dd!(3));
     /// assert!(g.floor() == dd!(3));
+    /// assert!(h.floor() == dd!(-4));
     /// # }
     /// ```
     #[inline]
@@ -62,9 +64,11 @@ impl Double {
     /// # fn main() {
     /// let f = dd!(3.01);
     /// let g = dd!(4.0);
+    /// let h = dd!(-3.01);
     ///
     /// assert!(f.ceil() == dd!(4));
     /// assert!(g.ceil() == dd!(4));
+    /// assert!(h.ceil() == dd!(-3));
     /// # }
     /// ```
     #[inline]
@@ -79,7 +83,7 @@ impl Double {
     }
 
     /// Returns the nearest integer to the double-double. Half-way cases are rounded away
-    /// from `0.0`.
+    /// from `0.0`, per the behavior of `f64`'s `round` method.
     ///
     /// # Examples
     /// ```
@@ -87,10 +91,12 @@ impl Double {
     /// # use qd::Double;
     /// # fn main() {
     /// let f = dd!(3.3);
-    /// let g = dd!(-3.3);
+    /// let g = dd!(3.5);
+    /// let h = dd!(-3.3);
     ///
     /// assert!(f.round() == dd!(3));
-    /// assert!(g.round() == dd!(-3));
+    /// assert!(g.round() == dd!(4));
+    /// assert!(h.round() == dd!(-3));
     /// # }
     /// ```
     #[inline]
@@ -181,5 +187,232 @@ impl Double {
         } else {
             Double::ONE
         }
+    }
+
+    /// Assigns the components of a tuple to the components of the double-double.
+    ///
+    /// The parameters will be normalized before being assigned to the double-double's
+    /// components.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let mut x = dd!(10);
+    /// x.assign((Double::PI[1], Double::PI[0])); // reversed to show normalization
+    /// assert!(x == Double::PI);
+    /// # }
+    #[inline]
+    pub fn assign(&mut self, (a, b): (f64, f64)) {
+        let (s, e) = if a.abs() > b.abs() {
+            basic::quick_two_sum(a, b)
+        } else {
+            basic::quick_two_sum(b, a)
+        };
+        self.0 = s;
+        self.1 = e;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn abs() {
+        assert_exact!((-Double::PI).abs(), Double::PI);
+        assert_exact!(Double::PI.abs(), Double::PI);
+    }
+
+    #[test]
+    fn abs_zero() {
+        assert_exact!(Double::ZERO.abs(), Double::ZERO);
+        assert_exact!(Double::NEG_ZERO.abs(), Double::ZERO);
+    }
+
+    #[test]
+    fn abs_infinity() {
+        assert_exact!(Double::INFINITY.abs(), Double::INFINITY);
+        assert_exact!(Double::NEG_INFINITY.abs(), Double::INFINITY);
+    }
+
+    #[test]
+    fn abs_nan() {
+        assert!(Double::NAN.abs().is_nan());
+    }
+
+    #[test]
+    fn floor() {
+        assert_exact!(Double::PI.floor(), dd!(3));
+        assert_exact!(Double::E.floor(), dd!(2));
+        assert_exact!((-Double::PI).floor(), dd!(-4));
+        assert_exact!((-Double::E).floor(), dd!(-3));
+        assert_exact!(dd!(2).floor(), dd!(2));
+    }
+
+    #[test]
+    fn floor_zero() {
+        assert_exact!(Double::ZERO.floor(), Double::ZERO);
+        assert_exact!(Double::NEG_ZERO.floor(), Double::NEG_ZERO);
+    }
+
+    #[test]
+    fn floor_infinity() {
+        assert_exact!(Double::INFINITY.floor(), Double::INFINITY);
+        assert_exact!(Double::NEG_INFINITY.floor(), Double::NEG_INFINITY);
+    }
+
+    #[test]
+    fn floor_nan() {
+        assert!(Double::NAN.floor().is_nan());
+    }
+
+    #[test]
+    fn ceil() {
+        assert_exact!(Double::PI.ceil(), dd!(4));
+        assert_exact!(Double::E.ceil(), dd!(3));
+        assert_exact!((-Double::PI).ceil(), dd!(-3));
+        assert_exact!((-Double::E).ceil(), dd!(-2));
+        assert_exact!(dd!(2).ceil(), dd!(2));
+    }
+
+    #[test]
+    fn ceil_zero() {
+        assert_exact!(Double::ZERO.ceil(), Double::ZERO);
+        assert_exact!(Double::NEG_ZERO.ceil(), Double::NEG_ZERO);
+    }
+
+    #[test]
+    fn ceil_infinity() {
+        assert_exact!(Double::INFINITY.ceil(), Double::INFINITY);
+        assert_exact!(Double::NEG_INFINITY.ceil(), Double::NEG_INFINITY);
+    }
+
+    #[test]
+    fn ceil_nan() {
+        assert!(Double::NAN.ceil().is_nan());
+    }
+
+    #[test]
+    fn round() {
+        assert_exact!(Double::PI.round(), dd!(3));
+        assert_exact!(Double::E.round(), dd!(3));
+        assert_exact!((-Double::PI).round(), dd!(-3));
+        assert_exact!((-Double::E).round(), dd!(-3));
+        assert_exact!(dd!(2).round(), dd!(2));
+        assert_exact!(dd!(2.5).round(), dd!(3));
+        assert_exact!(dd!(-3.5).round(), dd!(-4));
+    }
+
+    #[test]
+    fn round_zero() {
+        assert_exact!(Double::ZERO.round(), Double::ZERO);
+        assert_exact!(Double::NEG_ZERO.round(), Double::NEG_ZERO);
+    }
+
+    #[test]
+    fn round_infinity() {
+        assert_exact!(Double::INFINITY.round(), Double::INFINITY);
+        assert_exact!(Double::NEG_INFINITY.round(), Double::NEG_INFINITY);
+    }
+
+    #[test]
+    fn round_nan() {
+        assert!(Double::NAN.round().is_nan());
+    }
+
+    #[test]
+    fn trunc() {
+        assert_exact!(Double::PI.trunc(), dd!(3));
+        assert_exact!(Double::E.trunc(), dd!(2));
+        assert_exact!((-Double::PI).trunc(), dd!(-3));
+        assert_exact!((-Double::E).trunc(), dd!(-2));
+        assert_exact!(dd!(2).trunc(), dd!(2));
+        assert_exact!(dd!(2.5).trunc(), dd!(2));
+        assert_exact!(dd!(-3.5).trunc(), dd!(-3));
+    }
+
+    #[test]
+    fn trunc_zero() {
+        assert_exact!(Double::ZERO.trunc(), Double::ZERO);
+        assert_exact!(Double::NEG_ZERO.trunc(), Double::NEG_ZERO);
+    }
+
+    #[test]
+    fn trunc_infinity() {
+        assert_exact!(Double::INFINITY.trunc(), Double::INFINITY);
+        assert_exact!(Double::NEG_INFINITY.trunc(), Double::NEG_INFINITY);
+    }
+
+    #[test]
+    fn trunc_nan() {
+        assert!(Double::NAN.trunc().is_nan());
+    }
+
+    #[test]
+    fn fract() {
+        assert_close!(Double::PI.fract(), Double::PI - dd!(3));
+        assert_close!(Double::E.fract(), Double::E - dd!(2));
+        assert_close!((-Double::PI).fract(), -Double::PI + dd!(3));
+        assert_close!((-Double::E).fract(), -Double::E + dd!(2));
+        assert_exact!(dd!(2).fract(), Double::ZERO);
+        assert_exact!(dd!(2.5).fract(), dd!(0.5));
+        assert_exact!(dd!(-3.5).fract(), dd!(-0.5));
+    }
+
+    #[test]
+    fn fract_zero() {
+        assert_exact!(Double::ZERO.fract(), Double::ZERO);
+        assert_exact!(Double::NEG_ZERO.fract(), Double::NEG_ZERO);
+    }
+
+    #[test]
+    fn fract_infinity() {
+        assert_exact!(Double::INFINITY.fract(), Double::NAN);
+        assert_exact!(Double::NEG_INFINITY.fract(), Double::NAN);
+    }
+
+    #[test]
+    fn fract_nan() {
+        assert!(Double::NAN.fract().is_nan());
+    }
+
+    #[test]
+    fn signum() {
+        assert_exact!(Double::PI.signum(), Double::ONE);
+        assert_exact!(Double::E.signum(), Double::ONE);
+        assert_exact!((-Double::PI).signum(), -Double::ONE);
+        assert_exact!((-Double::E).signum(), -Double::ONE);
+        assert_exact!(dd!(2).signum(), Double::ONE);
+        assert_exact!(dd!(2.5).signum(), Double::ONE);
+        assert_exact!(dd!(-3.5).signum(), -Double::ONE);
+    }
+
+    #[test]
+    fn signum_zero() {
+        assert_exact!(Double::ZERO.signum(), Double::ONE);
+        assert_exact!(Double::NEG_ZERO.signum(), -Double::ONE);
+    }
+
+    #[test]
+    fn signum_infinity() {
+        assert_exact!(Double::INFINITY.signum(), Double::ONE);
+        assert_exact!(Double::NEG_INFINITY.signum(), -Double::ONE);
+    }
+
+    #[test]
+    fn signum_nan() {
+        assert!(Double::NAN.signum().is_nan());
+    }
+
+    #[test]
+    fn assign() {
+        let mut a = Double::ZERO;
+        a.assign(Double::PI.into());
+        assert_close!(a, Double::PI);
+
+        a.assign((Double::PI[1], Double::PI[0]));
+        assert_close!(a, Double::PI);
     }
 }
