@@ -120,7 +120,7 @@ fn format_fixed(value: &Double, f: &mut fmt::Formatter) -> fmt::Result {
         } else if value.is_zero() {
             display::push_zero(&mut result, f);
         } else {
-            let width = precision as i32 + value.abs().log10().floor().as_int() as i32 + 1;
+            let width = precision as i32 + f64::from(value.abs().log10().floor()) as i32 + 1;
             // Higher than the max-length number + max precision so that users can do their
             // format!("{:.30}", Double::from_str("999999999999999999999999999999")) in
             // peace
@@ -128,8 +128,8 @@ fn format_fixed(value: &Double, f: &mut fmt::Formatter) -> fmt::Result {
 
             // Special case: zero precision, |value| < 1.0
             // In this case a number greater than 0.5 prints 0 and should print 1
-            if precision == 0 && value.abs().as_float() < 1.0 {
-                result.push(if value.abs().as_float() >= 0.5 {
+            if precision == 0 && f64::from(value.abs()) < 1.0 {
+                result.push(if f64::from(value.abs()) >= 0.5 {
                     '1'
                 } else {
                     '0'

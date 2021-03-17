@@ -29,7 +29,7 @@ impl Double {
             Double::ZERO
         } else if self.is_infinite() {
             self.signum() * Double::ONE
-        } else if self.abs().as_float() > 0.05 {
+        } else if self.abs().0 > 0.05 {
             let a = self.exp();
             let inv_a = a.recip();
             (a - inv_a) / (a + inv_a)

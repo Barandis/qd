@@ -34,13 +34,14 @@ impl Double {
     /// # }
     /// ```
     ///
-    /// [`sinh`]: #method.sinh [`cosh`]: #method.cosh
+    /// [`sinh`]: #method.sinh
+    /// [`cosh`]: #method.cosh
     pub fn sinh_cosh(self) -> (Double, Double) {
         if self.is_nan() {
             (Double::NAN, Double::NAN)
         } else if self.is_zero() {
             (Double::ZERO, Double::ONE)
-        } else if self.abs().as_float() <= 0.05 {
+        } else if self.abs().0 <= 0.05 {
             let s = self.sinh();
             let c = (Double::ONE + s.sqr()).sqrt();
             (s, c)

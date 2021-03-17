@@ -49,7 +49,7 @@ mod tests {
         ($expected:expr, $actual:expr, $digits:expr) => {
             let expected = Double::from($expected);
             let actual = Double::from($actual);
-            let mag = expected.abs().log10().floor().as_int() as i32;
+            let mag = f64::from(expected.abs().log10().floor()) as i32;
             let epsilon = Double(10.0, 0.0).powi(mag - $digits);
             let diff = (expected - actual).abs();
             let message = format!(
@@ -145,7 +145,7 @@ mod trig;
 /// [`from_mul`]: #method.from_mul
 /// [`from_div`]: #method.from_div
 /// [`dd!`]: macro.dd.html
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct Double(f64, f64);
 
 impl Double {
@@ -203,6 +203,31 @@ impl Double {
             basic::quick_two_sum(b, a)
         };
         Double(s, e)
+    }
+
+    /// Assigns the components of a tuple to the components of the double-double.
+    ///
+    /// The parameters will be normalized before being assigned to the double-double's
+    /// components.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let mut x = dd!(10);
+    /// x.assign((Double::PI[1], Double::PI[0])); // reversed to show normalization
+    /// assert!(x == Double::PI);
+    /// # }
+    #[inline]
+    pub fn assign(&mut self, (a, b): (f64, f64)) {
+        let (s, e) = if a.abs() > b.abs() {
+            basic::quick_two_sum(a, b)
+        } else {
+            basic::quick_two_sum(b, a)
+        };
+        self.0 = s;
+        self.1 = e;
     }
 }
 

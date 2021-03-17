@@ -28,7 +28,7 @@ impl Double {
             Double::NAN
         } else if self.is_zero() {
             Double::ZERO
-        } else if self.abs().as_float() > 0.05 {
+        } else if self.abs().0 > 0.05 {
             let a = self.exp();
             common::mul_pwr2(a - a.recip(), 0.5)
         } else {

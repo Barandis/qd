@@ -148,7 +148,26 @@ impl From<&str> for Double {
     }
 }
 
+impl From<Double> for f64 {
+    /// Converts a `Double` into an `f64`.
+    /// 
+    /// This will lose precision if the second component of the `Double` is not 0, but it
+    /// will not lose range.
+    /// 
+    /// No other conversions from `Double` to numeric types are provided, as every other one
+    /// has the capability of losing range. Casts can be made from the `f64` provided by
+    /// this function to other numeric types as needed.
+    #[inline]
+    fn from(a: Double) -> f64 {
+        a.0
+    }
+}
+
 impl From<Double> for (f64, f64) {
+    /// Converts a `Double` into a 2-tuple of `f64`s.
+    /// 
+    /// The components of the resulting tuple are simply the components of the `Double`
+    /// 
     #[inline]
     fn from(a: Double) -> (f64, f64) {
         (a.0, a.1)
@@ -171,14 +190,6 @@ mod tests {
         let a = -0x0_123_456_789_abc_defi64;
         let d = dd!(a);
         assert_eq!(format!("{}", a), format!("{}", d));
-    }
-
-    #[test]
-    fn conv_from_and_to_i64() {
-        let a = -0x0_123_456_789_abc_defi64;
-        let d = dd!(a);
-        let x = d.as_int();
-        assert_eq!(a, x);
     }
 
     #[test]
