@@ -19,8 +19,8 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x = dd!(3);
-    /// assert!(x.ldexp(3) == dd!(24)); // 3 * 2^3
+    /// let x = dd!(5);
+    /// assert!(x.ldexp(3) == dd!(40)); // 5 * 2^3
     /// # }
     /// ```
     #[inline]
