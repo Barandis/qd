@@ -3,16 +3,16 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::error::{ErrorKind, ParseError};
+use crate::error::{ErrorKind, ParseQuadError};
 use crate::quad::Quad;
 use std::str::FromStr;
 
 const TEN: Quad = Quad(10.0, 0.0, 0.0, 0.0);
 
 impl FromStr for Quad {
-    type Err = ParseError;
+    type Err = ParseQuadError;
 
-    fn from_str(s: &str) -> Result<Quad, ParseError> {
+    fn from_str(s: &str) -> Result<Quad, ParseQuadError> {
         let mut result = Quad::ZERO;
         let mut digits = 0;
         let mut point = -1;
@@ -22,7 +22,7 @@ impl FromStr for Quad {
         let s = s.trim().to_ascii_lowercase();
 
         if s.is_empty() {
-            Err(ParseError {
+            Err(ParseQuadError {
                 kind: ErrorKind::Empty,
             })
         } else if s == "nan" {
@@ -42,7 +42,7 @@ impl FromStr for Quad {
                     None => match ch {
                         '.' => {
                             if point >= 0 {
-                                return Err(ParseError {
+                                return Err(ParseQuadError {
                                     kind: ErrorKind::Invalid,
                                 });
                             }
@@ -50,7 +50,7 @@ impl FromStr for Quad {
                         }
                         '-' => {
                             if sign != 0 || digits > 0 {
-                                return Err(ParseError {
+                                return Err(ParseQuadError {
                                     kind: ErrorKind::Invalid,
                                 });
                             }
@@ -58,7 +58,7 @@ impl FromStr for Quad {
                         }
                         '+' => {
                             if sign != 0 || digits > 0 {
-                                return Err(ParseError {
+                                return Err(ParseQuadError {
                                     kind: ErrorKind::Invalid,
                                 });
                             }
@@ -72,7 +72,7 @@ impl FromStr for Quad {
                                     break;
                                 }
                                 Err(_) => {
-                                    return Err(ParseError {
+                                    return Err(ParseQuadError {
                                         kind: ErrorKind::Invalid,
                                     });
                                 }
@@ -82,7 +82,7 @@ impl FromStr for Quad {
                             // just continue; _ is a no-op but not an error
                         }
                         _ => {
-                            return Err(ParseError {
+                            return Err(ParseQuadError {
                                 kind: ErrorKind::Invalid,
                             });
                         }

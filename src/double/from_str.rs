@@ -4,15 +4,52 @@
 // https://opensource.org/licenses/MIT
 
 use crate::double::Double;
-use crate::error::{ErrorKind, ParseError};
+use crate::error::{ErrorKind, ParseDoubleError};
 use std::str::FromStr;
 
 const TEN: Double = Double(10.0, 0.0);
 
 impl FromStr for Double {
-    type Err = ParseError;
+    type Err = ParseDoubleError;
 
-    fn from_str(s: &str) -> Result<Double, ParseError> {
+    /// Parses a string to create a `Double`.
+    /// 
+    /// 
+    ///
+    /// The parser works pretty similarly to parsers for `f32` and `f64`. It will fail if
+    /// characters are present that are not digits, decimal points, signs, or exponent
+    /// markers. It will also fail if there are multiples of these or if they're in the
+    /// wrong places; two decimal points or a negative sign after the number will both be
+    /// rejected, for instance.
+    ///
+    /// Failure will return a [`ParseDoubleError`] of some kind.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// use std::str::FromStr;
+    /// 
+    /// # fn main() {
+    /// let expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
+    /// 
+    /// let x1 = Double::from_str("0.9999999303082806237436760862691").unwrap();
+    /// // `parse` calls `from_str` in the background, so this is equivalent. In fact it's
+    /// // probably preferred because it doesn't require importing `FromStr`. The turbofish
+    /// // (or type annotation on x2, if you prefer) is required instead if the type can't
+    /// // otherwise be inferred.
+    /// let x2 = "0.9999999303082806237436760862691".parse::<Double>().unwrap();
+    /// 
+    /// let diff1 = (x1 - expected).abs();
+    /// assert!(diff1 < dd!(1e-30));
+    /// 
+    /// let diff2 = (x2 - expected).abs();
+    /// assert!(diff2 < dd!(1e-30));
+    /// # }
+    /// ```
+    /// 
+    /// [`ParseDoubleError`]: error/struct.ParseDoubleError.html
+    fn from_str(s: &str) -> Result<Double, ParseDoubleError> {
         let mut result = Double::ZERO;
         let mut digits = 0;
         let mut point = -1;
@@ -22,7 +59,7 @@ impl FromStr for Double {
         let s = s.trim().to_ascii_lowercase();
 
         if s.is_empty() {
-            Err(ParseError {
+            Err(ParseDoubleError {
                 kind: ErrorKind::Empty,
             })
         } else if s == "nan" {
@@ -42,7 +79,7 @@ impl FromStr for Double {
                     None => match ch {
                         '.' => {
                             if point >= 0 {
-                                return Err(ParseError {
+                                return Err(ParseDoubleError {
                                     kind: ErrorKind::Invalid,
                                 });
                             }
@@ -50,7 +87,7 @@ impl FromStr for Double {
                         }
                         '-' => {
                             if sign != 0 || digits > 0 {
-                                return Err(ParseError {
+                                return Err(ParseDoubleError {
                                     kind: ErrorKind::Invalid,
                                 });
                             }
@@ -58,7 +95,7 @@ impl FromStr for Double {
                         }
                         '+' => {
                             if sign != 0 || digits > 0 {
-                                return Err(ParseError {
+                                return Err(ParseDoubleError {
                                     kind: ErrorKind::Invalid,
                                 });
                             }
@@ -72,7 +109,7 @@ impl FromStr for Double {
                                     break;
                                 }
                                 Err(_) => {
-                                    return Err(ParseError {
+                                    return Err(ParseDoubleError {
                                         kind: ErrorKind::Invalid,
                                     });
                                 }
@@ -82,7 +119,7 @@ impl FromStr for Double {
                             // just continue; _ is a no-op but not an error
                         }
                         _ => {
-                            return Err(ParseError {
+                            return Err(ParseDoubleError {
                                 kind: ErrorKind::Invalid,
                             });
                         }
