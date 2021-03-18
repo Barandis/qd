@@ -188,6 +188,8 @@ impl Double {
     /// assert!(dd!(1e-308).is_subnormal());
     /// # }
     /// ```
+    /// 
+    /// [`Double::MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE
     #[inline]
     pub fn is_subnormal(self) -> bool {
         self.classify() == FpCategory::Subnormal

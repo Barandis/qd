@@ -5,7 +5,7 @@
 
 use crate::common::display;
 use crate::double::Double;
-use std::fmt;
+use std::fmt::{Debug, Display, Formatter, LowerExp, Result, UpperExp};
 
 const DEFAULT_PRECISION: usize = 31;
 const TEN: Double = Double(10.0, 0.0);
@@ -91,7 +91,7 @@ fn to_digits(r: &Double, precision: usize) -> (Vec<i32>, i32) {
 // Potentially pushes a sign character to the supplied vector. Returns whether or not a
 // character was actually added, information that is used later in formatting.
 #[inline]
-fn push_sign(chars: &mut Vec<char>, value: &Double, formatter: &fmt::Formatter) -> bool {
+fn push_sign(chars: &mut Vec<char>, value: &Double, formatter: &Formatter) -> bool {
     let mut sign = true;
     if value.is_sign_negative() {
         chars.push('-');
@@ -105,7 +105,7 @@ fn push_sign(chars: &mut Vec<char>, value: &Double, formatter: &fmt::Formatter) 
 
 // Formats `value` as a fixed-point number, with the format defined by `f`.
 #[inline]
-fn format_fixed(value: &Double, f: &mut fmt::Formatter) -> fmt::Result {
+fn format_fixed(value: &Double, f: &mut Formatter) -> Result {
     let mut result = Vec::new();
     let mut sign = true;
     let precision = f.precision().unwrap_or(DEFAULT_PRECISION);
@@ -159,7 +159,7 @@ fn format_fixed(value: &Double, f: &mut fmt::Formatter) -> fmt::Result {
 
 // Formats `value` as a exponential number, with the format defined by `f`.
 #[inline]
-fn format_exp(value: &Double, f: &mut fmt::Formatter, upper: bool) -> fmt::Result {
+fn format_exp(value: &Double, f: &mut Formatter, upper: bool) -> Result {
     let mut result = Vec::new();
     let mut sign = true;
     let mut exp = 0;
@@ -191,26 +191,101 @@ fn format_exp(value: &Double, f: &mut fmt::Formatter, upper: bool) -> fmt::Resul
     write!(f, "{}", result.into_iter().collect::<String>())
 }
 
-impl fmt::Display for Double {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl Display for Double {
+    /// Formats a double-double number for display.
+    /// 
+    /// All formatting options that are shown in [`std::fmt`] are supported *except* for
+    /// ones that are typically meant only for integers (hexadecimal, binary, octal, and
+    /// pointer formats). Because of this, the "alternate" (`#`) flag is only recognized
+    /// along with `?`, pretty-printing the `Debug` output.
+    /// 
+    /// By default, numbers are printed with 31 digits but drop trailing zeros.
+    /// 
+    /// This function also provides the formatting for [`to_string`], which renders the
+    /// number as if formatted with an empty format specifier (`"{}"`).
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// assert!(format!("{}", dd!(1.5)) == "1.5");
+    /// 
+    /// // The next digit in π is 0, which is why it's one digit shorter than e
+    /// assert!(format!("{}", Double::PI) == "3.14159265358979323846264338328");
+    /// assert!(format!("{}", Double::E) == "2.718281828459045235360287471353");
+    /// 
+    /// // to_string renders as if formatted with "{}"
+    /// assert!(Double::PI.to_string() == "3.14159265358979323846264338328");
+    /// 
+    /// // debug
+    /// assert!(format!("{:?}", Double::PI) ==
+    ///     "Double(3.141592653589793e0, 1.2246467991473532e-16)");
+    /// assert!(format!("{:#?}", Double::PI) ==
+    /// "Double(
+    ///     3.141592653589793e0, 
+    ///     1.2246467991473532e-16
+    /// )");
+    /// 
+    /// // precision and exponents
+    /// let value = dd!(0.016_777_216);
+    /// assert!(format!("{:.0}", value) == "0");
+    /// assert!(format!("{:.5}", value) == "0.01678");
+    /// assert!(format!("{:.12}", value) == "0.016777216000");
+    /// assert!(format!("{:.3e}", value) == "1.678e-2");
+    /// assert!(format!("{:.*e}", 3, value) == "1.678e-2");
+    /// assert!(format!("{0:.1$E}", value, 4) == "1.6777E-2");
+    /// assert!(format!("{:.prec$E}", value, prec = 10) == "1.6777216000E-2");
+    /// 
+    /// // width, alignment, and fill
+    /// let value = dd!(123_456);
+    /// assert!(format!("{:10}", value) == "    123456"); // right-align is the default
+    /// assert!(format!("{:>10}", value) == "    123456");
+    /// assert!(format!("{:<10}", value) == "123456    ");
+    /// assert!(format!("{:^10}", value) == "  123456  ");
+    /// assert!(format!("{:0>10}", value) == "0000123456");
+    /// assert!(format!("{:*<10}", value) == "123456****");
+    /// assert!(format!("{:'^10}", value) == "''123456''");
+    /// 
+    /// // plus sign and sign-aware zero fill
+    /// let value = dd!(123_456);
+    /// assert!(format!("{:+}", value) == "+123456");
+    /// assert!(format!("{:0>10}", -value) == "000-123456");
+    /// assert!(format!("{:010}", -value) == "-000123456");
+    /// assert!(format!("{:+012e}", value) == "+001.23456e5");
+    /// # }
+    /// ```
+    /// 
+    /// [`std::fmt`]: https://doc.rust-lang.org/std/fmt/index.html
+    /// [`to_string`]: #tymethod.to_string
+    fn fmt(&self, f: &mut Formatter) -> Result {
         format_fixed(self, f)
     }
 }
 
-impl fmt::LowerExp for Double {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl LowerExp for Double {
+    /// Formats a double-double for display when the "`e`" formatting option is specified.
+    /// 
+    /// See [`Display::fmt`](#method.fmt-1) for more information.
+    fn fmt(&self, f: &mut Formatter) -> Result {
         format_exp(self, f, false)
     }
 }
 
-impl fmt::UpperExp for Double {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl UpperExp for Double {
+    /// Formats a double-double for display when the "`E`" formatting option is specified.
+    /// 
+    /// See [`Display::fmt`](#method.fmt-1) for more information.
+    fn fmt(&self, f: &mut Formatter) -> Result {
         format_exp(self, f, true)
     }
 }
 
-impl fmt::Debug for Double {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl Debug for Double {
+    /// Formats a double-double for display when the "`?`" formatting option is specified.
+    /// 
+    /// See [`Display::fmt`](#method.fmt-1) for more information.
+    fn fmt(&self, f: &mut Formatter) -> Result {
         let alt = f.alternate();
         let mut r = String::from("Double(");
         if alt {
