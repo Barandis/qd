@@ -14,8 +14,6 @@ impl FromStr for Double {
 
     /// Parses a string to create a `Double`.
     /// 
-    /// 
-    ///
     /// The parser works pretty similarly to parsers for `f32` and `f64`. It will fail if
     /// characters are present that are not digits, decimal points, signs, or exponent
     /// markers. It will also fail if there are multiples of these or if they're in the
