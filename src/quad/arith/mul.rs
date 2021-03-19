@@ -12,12 +12,10 @@ impl Mul for Quad {
 
     // This is complicated.
     //
-    // It closely follows the process described on pp. 11-16 of "Library for
-    // Quad-Quad and Quad-Quad Arithmetic" by Y. Hida, X.S. Li, and D.H.
-    // Bailey which can be found at
-    // http://web.mit.edu/tabbott/Public/quadQuad-debian/qd-2.3.4-old/docs/qd.pdf.
-    // You should be able to see the way the source code works from the diagrams
-    // there.
+    // It closely follows the process described on pp. 11-16 of "Library for Double-Double
+    // and  Quad-Double Arithmetic" by Y. Hida, X.S. Li, and D.H. Bailey which can be found
+    // at http://web.mit.edu/tabbott/Public/quadQuad-debian/qd-2.3.4-old/docs/qd.pdf. You
+    // should be able to see the way the source code works from the diagrams there.
     //
     // TERMS (a = self, b = other):
     // Order   Components   Group (hx, lx)
@@ -35,10 +33,25 @@ impl Mul for Quad {
     //         a2 * b2      b  (high word only)
     //         a3 * b1      c  (high word only)
     //
-    // Other terms, including the remaining O(ε⁴) terms and the low words of the
-    // O(ε⁴) that are calculated, are not necessary to provide 212 bits of
-    // accuracy.
-    #[inline]
+    // Other terms, including the remaining O(ε⁴) terms and the low words of the O(ε⁴) that
+    // are calculated, are not necessary to provide 212 bits of accuracy.
+
+    /// Multiplies this `Quad` by another, producing a new `Quad` as a result.
+    ///
+    /// This implements the `*` operator between two `Quad`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = Quad::E * Quad::PI;
+    /// let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[allow(clippy::suspicious_arithmetic_impl)]
     fn mul(self, other: Quad) -> Quad {
         if self.is_nan() || other.is_nan() {
@@ -84,16 +97,14 @@ impl Mul for Quad {
             let (h8, l8) = core::two_prod(self.2, other.1);
             let (h9, l9) = core::two_prod(self.3, other.0);
 
-            // O(ε⁴) terms - the low words aren't necessary for the accuracy we
-            // need
+            // O(ε⁴) terms - the low words aren't necessary for the accuracy we need
             let ha = self.1 * other.3;
             let hb = self.2 * other.2;
             let hc = self.3 * other.1;
 
-            // Each calculation takes all of the high words for the terms of
-            // that level, whatever intermediate words are specified by the
-            // algorithm, and whatever low words fit in the remaining input
-            // space.
+            // Each calculation takes all of the high words for the terms of that level,
+            // whatever intermediate words are specified by the algorithm, and whatever low
+            // words fit in the remaining input space.
 
             // O(1) calculation (pass-through)
             let r0 = h0;
@@ -106,16 +117,58 @@ impl Mul for Quad {
             // O(ε⁴) calculation (nine_one_sum)
             let r4 = t3 + t4 + ha + hb + hc + l6 + l7 + l8 + l9;
 
-            // Results of the prior calculations are renormalized into four
-            // f64s.
+            // Results of the prior calculations are renormalized into four f64s.
             Quad::from(core::renorm5(r0, r1, r2, r3, r4))
         }
+    }
+}
+
+impl Mul for &Quad {
+    type Output = Quad;
+
+    /// Multiplies a reference to this `Quad` by another, producing a new `Quad` as a
+    /// result.
+    ///
+    /// This implements the `*` operator between two references to `Quad`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = &Quad::E * &Quad::PI;
+    /// let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
+    #[inline]
+    fn mul(self, other: &Quad) -> Quad {
+        (*self).mul(*other)
     }
 }
 
 impl Mul<&Quad> for Quad {
     type Output = Quad;
 
+    /// Multiplies this `Quad` by a reference to another, producing a new `Quad` as a
+    /// result.
+    ///
+    /// This implements the `*` operator between a `Quad` and a reference to a `Quad`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = Quad::E * &Quad::PI;
+    /// let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn mul(self, other: &Quad) -> Quad {
         self.mul(*other)
@@ -125,6 +178,23 @@ impl Mul<&Quad> for Quad {
 impl Mul<Quad> for &Quad {
     type Output = Quad;
 
+    /// Multiplies a reference to this `Quad` by another `Quad`, producing a new `Quad` as a
+    /// result.
+    ///
+    /// This implements the `*` operator between a reference to a `Quad` and a `Quad`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = &Quad::E * Quad::PI;
+    /// let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn mul(self, other: Quad) -> Quad {
         (*self).mul(other)
@@ -132,6 +202,23 @@ impl Mul<Quad> for &Quad {
 }
 
 impl MulAssign for Quad {
+    /// Multiples this `Quad` by another one, modifying this one to equal the result.
+    ///
+    /// This implements the `*=` operator between two `Quad`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let mut x = Quad::E;
+    /// x *= Quad::PI;
+    /// let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn mul_assign(&mut self, other: Quad) {
         self.assign(self.mul(other).into());
@@ -139,6 +226,24 @@ impl MulAssign for Quad {
 }
 
 impl MulAssign<&Quad> for Quad {
+    /// Multiples this `Quad` by a reference to another one, modifying this one to equal the
+    /// result.
+    ///
+    /// This implements the `*=` operator between a `Quad` and a reference to a `Quad`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let mut x = Quad::E;
+    /// x *= &Quad::PI;
+    /// let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn mul_assign(&mut self, other: &Quad) {
         self.assign(self.mul(*other).into());
@@ -153,6 +258,12 @@ mod tests {
     fn num_num() {
         let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
         assert_close!(expected, Quad::PI * Quad::E);
+    }
+
+    #[test]
+    fn ref_ref() {
+        let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
+        assert_close!(expected, &Quad::PI * &Quad::E);
     }
 
     #[test]
