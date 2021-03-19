@@ -7,7 +7,7 @@ use crate::double::Double;
 use std::iter::Sum;
 
 impl Sum for Double {
-    /// Sums all of the values in an iterator.
+    /// Sums all of the values in an iterator of `Double`s.
     ///
     /// # Examples
     /// ```
@@ -30,7 +30,7 @@ impl Sum for Double {
 }
 
 impl<'a> Sum<&'a Double> for Double {
-    /// Sums all of the referenced values in an iterator.
+    /// Sums all of the referenced values in an iterator of `Double`s.
     ///
     /// # Examples
     /// ```

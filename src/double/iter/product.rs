@@ -7,7 +7,7 @@ use crate::double::Double;
 use std::iter::Product;
 
 impl Product for Double {
-    /// Multiplies all of the values in an iterator.
+    /// Multiplies all of the values in an iterator of `Double`s.
     ///
     /// # Examples
     /// ```
@@ -30,7 +30,7 @@ impl Product for Double {
 }
 
 impl<'a> Product<&'a Double> for Double {
-    /// Multiples all of the referenced values in an iterator.
+    /// Multiples all of the referenced values in an iterator of `Double`s.
     ///
     /// # Examples
     /// ```

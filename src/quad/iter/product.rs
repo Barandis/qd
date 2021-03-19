@@ -7,7 +7,7 @@ use crate::quad::Quad;
 use std::iter::Product;
 
 impl Product for Quad {
-    /// Multiplies all of the values in an iterator.
+    /// Multiplies all of the values in an iterator of `Quad`s.
     ///
     /// # Examples
     /// ```
@@ -30,7 +30,7 @@ impl Product for Quad {
 }
 
 impl<'a> Product<&'a Quad> for Quad {
-    /// Multiples all of the referenced values in an iterator.
+    /// Multiples all of the referenced values in an iterator of `Quad`s.
     ///
     /// # Examples
     /// ```

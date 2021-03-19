@@ -7,7 +7,7 @@ use crate::quad::Quad;
 use std::iter::Sum;
 
 impl Sum for Quad {
-    /// Sums all of the values in an iterator.
+    /// Sums all of the values in an iterator of `Quad`s.
     ///
     /// # Examples
     /// ```
@@ -30,7 +30,7 @@ impl Sum for Quad {
 }
 
 impl<'a> Sum<&'a Quad> for Quad {
-    /// Sums all of the referenced values in an iterator.
+    /// Sums all of the referenced values in an iterator of `Quad`s.
     ///
     /// # Examples
     /// ```
