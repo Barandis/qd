@@ -8,7 +8,7 @@ use crate::double::Double;
 use std::ops::{Sub, SubAssign};
 
 impl Double {
-    /// Creates a new double-double representing the difference of two floats.
+    /// Creates a new `Double` representing the difference of two floats.
     ///
     /// # Examples
     /// ```

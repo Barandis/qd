@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the number raised to a double-double power.
+    /// Calculates the `Double` raised to a `Double` power.
     ///
     /// This function is implemented using the logarithm of the number being raised, which
     /// means it will not work for negatives even though raising a negative number to a

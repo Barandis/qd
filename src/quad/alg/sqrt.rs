@@ -7,7 +7,7 @@ use crate::quad::common;
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates the square root of the number.
+    /// Calculates the square root of the `Quad`.
     ///
     /// # Examples
     /// ```

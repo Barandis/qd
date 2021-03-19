@@ -17,7 +17,7 @@ fn mul_f64(a: Double, b: f64) -> Double {
 }
 
 impl Double {
-    /// Creates a new double-double representing the quotient of two floats.
+    /// Creates a new `Double` representing the quotient of two floats.
     ///
     /// # Examples
     /// ```

@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the number times 2<sup>`n`</sup>.
+    /// Calculates x · 2<sup>n</sup>, where *x* is the `Double` and *n* is an integer.
     ///
     /// Though this is not an everyday operation, it is often used in more advanced
     /// mathematical calculations (including several within this library). Therefore an

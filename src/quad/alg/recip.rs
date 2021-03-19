@@ -6,7 +6,7 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates the reciprocal of the number, or 1/x.
+    /// Calculates the reciprocal of the `Quad`.
     ///
     /// # Examples
     /// ```

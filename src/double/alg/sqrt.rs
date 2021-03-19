@@ -7,7 +7,7 @@ use crate::double::common;
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the square root of the number.
+    /// Calculates the square root of the `Double`.
     ///
     /// # Examples
     /// ```

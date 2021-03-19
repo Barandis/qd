@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the `n`th root of the number.
+    /// Calculates the *n*th root of the `Double`.
     ///
     /// # Examples
     /// ```

@@ -7,7 +7,7 @@ use crate::common::core;
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates the square of the number.
+    /// Calculates the square of the `Quad`.
     ///
     /// This method takes advantage of optimizations in multiplication that are available
     /// when the two numbers being multiplied are the same, so it is more efficient than

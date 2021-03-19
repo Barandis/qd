@@ -9,7 +9,7 @@ impl Double {
     /// Calculates the inverse hyperbolic cosine (cosh<sup>-1</sup>) of the number.
     /// 
     /// The domain of the function is [1, ∞) and the range is [0, ∞). Any argument outside
-    /// the range will result in [`Double::NAN`].
+    /// the range will result in [`NAN`].
     ///
     /// # Examples
     /// ```
@@ -24,7 +24,7 @@ impl Double {
     /// # }
     /// ```
     /// 
-    /// [`Double::NAN`]: #associatedconstant.NAN
+    /// [`NAN`]: #associatedconstant.NAN
     pub fn acosh(self) -> Double {
         if self < Double::ONE {
             Double::NAN

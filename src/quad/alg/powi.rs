@@ -6,7 +6,7 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates the number raised to an integral power.
+    /// Calculates the `Quad` raised to an integer power.
     ///
     /// This function correctly handles the special inputs defined in IEEE 754. In
     /// particular:

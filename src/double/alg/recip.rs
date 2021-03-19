@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the reciprocal of the number, or 1/x.
+    /// Calculates the reciprocal of the `Double`.
     ///
     /// # Examples
     /// ```

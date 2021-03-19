@@ -8,7 +8,7 @@ use crate::double::Double;
 use std::ops::{Mul, MulAssign};
 
 impl Double {
-    /// Creates a new double-double representing the product of two floats.
+    /// Creates a new `Double` representing the product of two floats.
     ///
     /// # Examples
     /// ```

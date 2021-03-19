@@ -7,10 +7,11 @@ use crate::double::Double;
 use std::cmp::Ordering;
 
 impl PartialOrd for Double {
-    /// Implements the `<`, `>`, `<=`, and `>=` operators, testing two `Quad`s for ordering.
+    /// Implements the `<`, `>`, `<=`, and `>=` operators, testing two `Double`s for
+    /// ordering.
     ///
     /// Ordering works the same as it does for system floating-point numbers, including
-    /// `NaN` returning false for any of these operators (including when comparing it to
+    /// [`NAN`] returning false for any of these operators (including when comparing it to
     /// itself).
     ///
     /// # Examples
@@ -24,6 +25,7 @@ impl PartialOrd for Double {
     /// # }
     /// ```
     ///
+    /// [`NAN`]: #associatedconstant.NAN
     #[inline]
     fn partial_cmp(&self, other: &Double) -> Option<Ordering> {
         match self.0.partial_cmp(&other.0) {

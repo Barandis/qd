@@ -7,7 +7,7 @@ use crate::common::core;
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the square of the number.
+    /// Calculates the square of the `Double`.
     ///
     /// This method takes advantage of optimizations in multiplication that are available
     /// when the two numbers being multiplied are the same, so it is more efficient than

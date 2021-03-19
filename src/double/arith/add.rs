@@ -8,7 +8,7 @@ use crate::double::Double;
 use std::ops::{Add, AddAssign};
 
 impl Double {
-    /// Creates a new double-double representing the sum of two floats.
+    /// Creates a new `Double` representing the sum of two floats.
     ///
     /// # Examples
     /// ```

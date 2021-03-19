@@ -6,7 +6,7 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates the cube root of the number.
+    /// Calculates the cube root of the `Quad`.
     ///
     /// # Examples
     /// ```

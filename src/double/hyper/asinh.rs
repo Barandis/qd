@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the inverse hyperbolic sine (sinh<sup>-1</sup>) of the number.
+    /// Calculates the inverse hyperbolic sine (sinh<sup>-1</sup>) of the `Double`.
     /// 
     /// The domain and range of this function are both (-∞, ∞).
     ///

@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the number raised to an integral power.
+    /// Calculates the `Double` raised to an integer power.
     ///
     /// This function correctly handles the special inputs defined in IEEE 754. In
     /// particular:

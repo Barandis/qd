@@ -6,7 +6,10 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates the inverse hyperbolic cosine of the number.
+    /// Calculates the inverse hyperbolic cosine (cosh<sup>-1</sup>) of the number.
+    /// 
+    /// The domain of the function is [1, ∞) and the range is [0, ∞). Any argument outside
+    /// the range will result in [`NAN`].
     ///
     /// # Examples
     /// ```
@@ -20,6 +23,8 @@ impl Quad {
     /// assert!(diff < qd!(1e-30));
     /// # }
     /// ```
+    /// 
+    /// [`NAN`]: #associatedconstant.NAN
     pub fn acosh(self) -> Quad {
         if self < Quad::ONE {
             Quad::NAN

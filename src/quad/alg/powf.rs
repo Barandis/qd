@@ -6,7 +6,7 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates the number raised to a quad-Quad power.
+    /// Calculates the `Quad` raised to a `Quad` power.
     ///
     /// This function is implemented using the logarithm of the number being raised, which
     /// means it will not work for negatives even though raising a negative number to a

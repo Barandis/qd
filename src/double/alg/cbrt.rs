@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the cube root of the number.
+    /// Calculates the cube root of the `Double`.
     ///
     /// # Examples
     /// ```

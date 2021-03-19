@@ -6,7 +6,9 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates the inverse hyperbolic sine of the number.
+    /// Calculates the inverse hyperbolic sine (sinh<sup>-1</sup>) of the `Quad`.
+    /// 
+    /// The domain and range of this function are both (-∞, ∞).
     ///
     /// # Examples
     /// ```
