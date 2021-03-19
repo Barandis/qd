@@ -35,7 +35,7 @@ mod macros {
     #[macro_export]
     macro_rules! qd {
         ($x:expr) => {
-            Quad::from($x)
+            $crate::Quad::from($x)
         };
     }
 }

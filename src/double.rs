@@ -37,7 +37,7 @@ mod macros {
     #[macro_export]
     macro_rules! dd {
         ($x:expr) => {
-            Double::from($x)
+            $crate::Double::from($x)
         };
     }
 }

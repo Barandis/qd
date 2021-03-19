@@ -376,7 +376,7 @@ impl From<Double> for Quad {
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
-    /// # use qd::{Double, Quad};
+    /// # use qd::Quad;
     /// # fn main() {
     /// let expected = Quad::from("0.9999999303082806237436760862691");
     /// let a = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
