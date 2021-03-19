@@ -45,6 +45,8 @@ mod macros {
 #[cfg(test)]
 #[macro_use]
 mod tests {
+    use super::Double;
+
     macro_rules! assert_precision {
         ($expected:expr, $actual:expr, $digits:expr) => {
             let expected = Double::from($expected);
@@ -94,6 +96,26 @@ mod tests {
             }
         };
     }
+
+    #[test]
+    fn raw() {
+        let a = Double::raw(0.0, 10.0);
+        assert_exact!(a.0, 0.0);
+        assert_exact!(a.1, 10.0);
+    }
+
+    #[test]
+    fn new() {
+        let a = Double::new(0.0, 10.1);
+        assert_exact!(a.0, 10.1);
+        assert_exact!(a.1, 0.0);
+    }
+
+    #[test]
+    fn index() {
+        assert_exact!(Double::PI[0], Double::PI.0);
+        assert_exact!(Double::PI[1], Double::PI.1);
+    }
 }
 
 mod alg;
@@ -118,7 +140,7 @@ mod trig;
 ///
 /// * calling the [`new`] or [`raw`] functions
 /// * calling [`from`] and passing a type that has a `From` implementation
-/// * calling [`parse`] on a string
+/// * calling [`parse`] on a string (or equivalently using [`from_str`])
 /// * calling [`from_add`], [`from_sub`], [`from_mul`], or [`from_div`]
 /// * using the [`dd!`] macro
 ///
@@ -126,13 +148,13 @@ mod trig;
 /// 
 /// * [`raw`] will *not* normalize its result. This is for speed, but it means that the
 ///   arguments must be pre-normalized.
-/// * [`new`], [`from_add`], [`from_sub`], [`from_mul`], and [`from_div`] will normalize
-///   their results but will *not* account for floating-point rounding error. `f64`s passed
-///   to these functions are assumed to be exactly what's desired, including the rounding
-///   error.
-/// * [`from`], [`parse`], and [`dd!`] will both account for floating-point rounding error
-///   *and* produce normalized results. This is the slowest of the three choices but also
-///   the most accurate.
+/// * [`new`], [`from_add`], [`from_sub`], [`from_mul`], [`from_div`], and [`from`] (when
+///   used with tuples) will normalize their results but will *not* account for
+///   floating-point rounding error. `f64`s passed to these functions are assumed to be
+///   exactly what's desired, including the rounding error.
+/// * [`from`] (when used with non-tuples), [`parse`], and [`dd!`] will both account for
+///   floating-point rounding error *and* produce normalized results. This is the slowest of
+///   the three choices but also the most accurate.
 ///
 /// See the [module-level documentation](index.html) for more information.
 ///
@@ -140,6 +162,7 @@ mod trig;
 /// [`raw`]: #method.raw
 /// [`from`]: #impl-From<f64>
 /// [`parse`]: #impl-FromStr
+/// [`from_str`]: #method.from_str
 /// [`from_add`]: #method.from_add
 /// [`from_sub`]: #method.from_sub
 /// [`from_mul`]: #method.from_mul
@@ -180,7 +203,7 @@ impl Double {
     /// from normalization, they will not be manipulated further. That means that any
     /// floating-point rounding error will be retained. For instance, `Double::new(1.1,
     /// 0.0)` actually produces the number `1.10000000000000008881784197001253`. To account
-    /// for that rounding error, use [`Double::from`] or the [`dd!`] macro; `dd!(1.1)` is
+    /// for that rounding error, use [`from`] or the [`dd!`] macro; `dd!(1.1)` is
     /// effectively the same as `Double::new(1.1, -8.881784197001253e-17)`.
     ///
     /// # Examples
@@ -194,13 +217,13 @@ impl Double {
     /// ```
     ///
     /// [`raw`]: #method.raw
-    /// [`Double::from`]: #impl-From<f64>
+    /// [`from`]: #impl-From<f64>
     /// [`dd!`]: macro.dd.html
     pub fn new(a: f64, b: f64) -> Double {
         let (s, e) = if a.abs() > b.abs() {
-            core::quick_two_sum(a, b)
+            core::renorm2(a, b)
         } else {
-            core::quick_two_sum(b, a)
+            core::renorm2(b, a)
         };
         Double(s, e)
     }
@@ -213,8 +236,8 @@ impl Index<usize> for Double {
     ///
     /// Using index `0` will return the first component; using index `1` will return the
     /// second. This capability is provided mostly to make some algorithms easier to
-    /// implement. If the components of the `Double` are needed, pattern matching with
-    /// [`as_tuple`] is likely to be the better way to go.
+    /// implement. If the components of the `Double` are needed, pattern matching with the
+    /// 2-tuple's [`from`] is likely to be the better way to go.
     ///
     /// One capability that is *not* provided is mutable indexing; ensuring that a `Double`
     /// is normalized would be impossible if they could be individually changed at will. If
@@ -231,7 +254,7 @@ impl Index<usize> for Double {
     /// # }
     /// ```
     ///
-    /// [`as_tuple`]: #method.as_tuple
+    /// [`from`]: #method.from-22
     /// [`assign`]: #method.assign
     fn index(&self, idx: usize) -> &f64 {
         match idx {
