@@ -9,6 +9,8 @@ use crate::double::Double;
 
 impl Double {
     /// Computes the sine of the number.
+    /// 
+    /// The domain of this function is (-∞, ∞), and the range is [-1, 1].
     ///
     /// # Examples
     /// ```

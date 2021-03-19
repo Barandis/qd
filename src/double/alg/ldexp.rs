@@ -11,8 +11,7 @@ impl Double {
     /// Though this is not an everyday operation, it is often used in more advanced
     /// mathematical calculations (including several within this library). Therefore an
     /// implementation that is much more efficient than calculating it through
-    /// multiplication and [`powi`](#method.powi) is offered despite it not being part of
-    /// the `f64` API.
+    /// multiplication and [`powi`] is offered despite it not being part of the `f64` API.
     ///
     /// # Examples
     /// ```
@@ -23,6 +22,8 @@ impl Double {
     /// assert!(x.ldexp(3) == dd!(40)); // 5 * 2^3
     /// # }
     /// ```
+    /// 
+    /// [`powi`]: #method.powi
     #[inline]
     pub fn ldexp(self, n: i32) -> Double {
         let factor = 2f64.powi(n);

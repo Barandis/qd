@@ -13,8 +13,6 @@ impl Quad {
     /// implementation that is much more efficient than calculating it through
     /// multiplication and [`powi`] is offered despite it not being part of the `f64` API.
     ///
-    /// [`powi`]: #method.powi
-    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -24,6 +22,8 @@ impl Quad {
     /// assert!(x.ldexp(3) == qd!(24)); // 3 * 2^3
     /// # }
     /// ```
+    ///
+    /// [`powi`]: #method.powi
     #[inline]
     pub fn ldexp(self, n: i32) -> Quad {
         let factor = 2f64.powi(n);

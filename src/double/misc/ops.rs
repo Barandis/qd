@@ -8,7 +8,7 @@ use crate::double::Double;
 use std::f64;
 
 impl Double {
-    /// Calculates the absolute value of the double-double.
+    /// Calculates the absolute value of the number.
     ///
     /// # Examples
     /// ```
@@ -28,7 +28,7 @@ impl Double {
         }
     }
 
-    /// Returns the largest integer less than or equal to the double-double.
+    /// Returns the largest integer value less than or equal to the number.
     ///
     /// # Examples
     /// ```
@@ -55,7 +55,7 @@ impl Double {
         }
     }
 
-    /// Returns the smallest integer greater than or equal to the double-double.
+    /// Returns the smallest integer value greater than or equal to the number.
     ///
     /// # Examples
     /// ```
@@ -82,7 +82,7 @@ impl Double {
         }
     }
 
-    /// Returns the nearest integer to the double-double. Half-way cases are rounded away
+    /// Returns the nearest integer value to the number. Half-way cases are rounded away
     /// from `0.0`, per the behavior of `f64`'s `round` method.
     ///
     /// # Examples
@@ -113,7 +113,7 @@ impl Double {
         }
     }
 
-    /// Returns the integer part of the double-double.
+    /// Returns the integer part of the number.
     ///
     /// # Examples
     /// ```
@@ -136,7 +136,7 @@ impl Double {
         }
     }
 
-    /// Returns the fractional part of the double-double.
+    /// Returns the fractional part of the number.
     ///
     /// # Examples
     /// ```
@@ -158,11 +158,11 @@ impl Double {
         self - self.trunc()
     }
 
-    /// Returns a number that represents the sign of the double-double.
+    /// Returns a number that represents the sign of the number.
     ///
-    /// * `1.0` if the double-double is positive, `+0.0`, or [`INFINITY`]
-    /// * `-1.0` if the double-double is negative, `-0.0`, or [`NEG_INFINITY`]
-    /// *  [`NAN`] if the double-double is [`NAN`]
+    /// * `1.0` if the number is positive, including `+0.0` and [`INFINITY`]
+    /// * `-1.0` if the number is negative, including `-0.0` and [`NEG_INFINITY`]
+    /// *  [`NAN`] if the number is [`NAN`]
     ///
     /// # Examples
     /// ```
@@ -189,10 +189,9 @@ impl Double {
         }
     }
 
-    /// Assigns the components of a tuple to the components of the double-double.
+    /// Assigns the components of a tuple to the components of the number.
     ///
-    /// The parameters will be normalized before being assigned to the double-double's
-    /// components.
+    /// The parameters will be normalized before being assigned to the number's components.
     ///
     /// # Examples
     /// ```

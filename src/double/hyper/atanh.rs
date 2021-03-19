@@ -10,7 +10,7 @@ impl Double {
     /// Calculates the inverse hyperbolic tangent (tanh<sup>-1</sup>) of the number.
     /// 
     /// The domain of the function is (-1, 1) and the range is (-∞, ∞). Any argument whose
-    /// absolute value is greater than or equal to 1 will result in `Double::NAN`.
+    /// absolute value is greater than or equal to 1 will result in [`Double::NAN`].
     ///
     /// # Examples
     /// ```
@@ -24,6 +24,8 @@ impl Double {
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
+    /// 
+    /// [`Double::NAN`]: #associatedconstant.NAN
     pub fn atanh(self) -> Double {
         if self.abs() >= Double::ONE {
             Double::NAN

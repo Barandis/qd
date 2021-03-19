@@ -11,11 +11,11 @@ impl Quad {
     /// This function correctly handles the special inputs defined in IEEE 754. In
     /// particular:
     ///
-    /// * `x.powi(0)` is `1` for any `x` (including `0`, `NaN`, or infinity)
-    /// * `x.powi(n)` is ±∞ for `x == ±0` and any odd negative `n`
-    /// * `x.powi(n)` is +∞ for `x == ±0` and any even negative `n`
-    /// * `x.powi(n)` is ±0 for `x == ±0` and any odd positive `n`
-    /// * `x.powi(n)` is +0 for `x == ±0` and any even positive `n`
+    /// * `x.powi(0)` is 1 for any `x` (including 0, `NaN`, or infinity)
+    /// * `x.powi(n)` is ±∞ for `x` = ±0 and any odd negative `n`
+    /// * `x.powi(n)` is +∞ for `x` = ±0 and any even negative `n`
+    /// * `x.powi(n)` is ±0 for `x` = ±0 and any odd positive `n`
+    /// * `x.powi(n)` is +0 for `x` = ±0 and any even positive `n`
     ///
     /// # Examples
     /// ```

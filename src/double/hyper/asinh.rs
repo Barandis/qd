@@ -8,7 +8,7 @@ use crate::double::Double;
 impl Double {
     /// Calculates the inverse hyperbolic sine (sinh<sup>-1</sup>) of the number.
     /// 
-    /// The domain of the function is (-∞, ∞) and the range is (-∞, ∞).
+    /// The domain and range of this function are both (-∞, ∞).
     ///
     /// # Examples
     /// ```

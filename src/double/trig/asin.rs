@@ -6,8 +6,9 @@
 use crate::double::Double;
 
 impl Double {
-    /// Computes the arcsine of the number. The return value is in the range [-π/2, π/2] for
-    /// any number in the range [-1, 1]. Otherwise the return value is `NaN`.
+    /// Computes the inverse sine (sin<sup>-1</sup>) of the number. The domain of this
+    /// function is [-1, 1] while the range is [-π/2, π/2]. Arguments outside of this domain
+    /// will result in [`Double::NAN`].
     ///
     /// # Examples
     /// ```
@@ -21,6 +22,8 @@ impl Double {
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
+    /// 
+    /// [`Double::NAN`]: #associatedconstant.NAN
     pub fn asin(self) -> Double {
         if self.abs() > Double::ONE {
             Double::NAN

@@ -17,8 +17,6 @@ impl Double {
     /// this is a surprisingly hard problem (see [this libm implementation][1], for
     /// example).
     ///
-    /// [1]: http://www.netlib.org/fdlibm/e_pow.c
-    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -31,6 +29,8 @@ impl Double {
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
+    ///
+    /// [1]: http://www.netlib.org/fdlibm/e_pow.c
     #[inline]
     pub fn powf(self, n: Double) -> Double {
         if self.is_zero() {

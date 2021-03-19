@@ -7,6 +7,8 @@ use crate::double::Double;
 
 impl Double {
     /// Computes the tangent of the number.
+    /// 
+    /// The domain and range of this function are both (-∞, ∞).
     ///
     /// # Examples
     /// ```

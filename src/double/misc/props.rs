@@ -7,9 +7,9 @@ use crate::double::Double;
 use std::num::FpCategory;
 
 impl Double {
-    /// Returns the floating point category of the double-double.
+    /// Returns the floating point category of the number.
     ///
-    /// The possible return values are the members of `FpCategory`, as follows:
+    /// The possible return values are the members of [`FpCategory`], as follows:
     ///
     /// * `FpCategory::Zero` if the number is ±0;
     /// * `FpCategory::Infinite` if the number is ±∞;
@@ -33,12 +33,13 @@ impl Double {
     /// # }
     /// ```
     ///
+    /// [`FpCategory`]: https://doc.rust-lang.org/std/num/enum.FpCategory.html
     /// [`Double::MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE
     pub fn classify(self) -> FpCategory {
         self.0.classify()
     }
 
-    /// Returns `true` if the double-double is neither zero, infinite, subnormal, or `NaN`.
+    /// Returns `true` if the number is neither zero, infinite, subnormal, or `NaN`.
     ///
     /// # Examples
     /// ```
@@ -65,7 +66,7 @@ impl Double {
         self.classify() == FpCategory::Normal
     }
 
-    /// Returns `true` if the double-double is either positive or negative zero.
+    /// Returns `true` if the number is either positive or negative zero.
     ///
     /// # Examples
     /// ```
@@ -79,8 +80,8 @@ impl Double {
         self.0 == 0.0
     }
 
-    /// Returns `true` if the double-double is negative, including negative zero and
-    /// infinity and `NaN` with a negative sign bit.
+    /// Returns `true` if the number is negative, including negative zero, negative
+    /// infinity, and `NaN` with a negative sign bit.
     ///
     /// # Examples
     /// ```
@@ -99,8 +100,8 @@ impl Double {
         self.0.is_sign_negative()
     }
 
-    /// Returns `true` if the double-double is positive, including positive zero and
-    /// infinity and `NaN` with a positive sign bit.
+    /// Returns `true` if the number is positive, including positive zero, positive infinity
+    /// and `NaN` with a positive sign bit.
     ///
     /// # Examples
     /// ```
@@ -119,7 +120,7 @@ impl Double {
         self.0.is_sign_positive()
     }
 
-    /// Returns `true` if the double-double is `NaN`.
+    /// Returns `true` if the number is `NaN`.
     ///
     /// # Examples
     /// ```
@@ -135,7 +136,7 @@ impl Double {
         self.0.is_nan()
     }
 
-    /// Returns `true` if the double-double is positive or negative infinity.
+    /// Returns `true` if the number is positive or negative infinity.
     ///
     /// # Examples
     /// ```
@@ -153,7 +154,7 @@ impl Double {
         self.0.is_infinite()
     }
 
-    /// Returns `true` if the double-double is neither infinite nor `NaN`.
+    /// Returns `true` if the number is neither infinite nor `NaN`.
     ///
     /// # Examples
     /// ```

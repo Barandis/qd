@@ -6,7 +6,8 @@
 use crate::double::Double;
 
 impl Double {
-    /// Computes the arctangent of the number. The return value is in the range [-π/2, π/2].
+    /// Computes the inverse tangent (tan<sup>-1</sup>) of the number. The domain of this
+    /// function is [-∞, ∞] and the range is [-π/2, π/2].
     ///
     /// # Examples
     /// ```

@@ -6,8 +6,9 @@
 use crate::double::Double;
 
 impl Double {
-    /// Computes the arccosine of the number. The return value is in the range [0, π] for
-    /// any number in the range [-1, 1]. Otherwise the return value is `NaN`.
+    /// Computes the inverse cosine (cos<sup>-1</sup>) of the number. The domain of this
+    /// function is [-1, 1] and the range is [0, π]. Arguments outside of the domain will
+    /// result in [`Double::NAN`].
     ///
     /// # Examples
     /// ```
@@ -21,6 +22,8 @@ impl Double {
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
+    /// 
+    /// [`Double::NAN`]: #associatedconstant.NAN
     pub fn acos(self) -> Double {
         if self.abs() > Double::ONE {
             Double::NAN

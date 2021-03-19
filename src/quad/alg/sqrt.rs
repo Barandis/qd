@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::quad::common::mul_pwr2;
+use crate::quad::common;
 use crate::quad::Quad;
 
 impl Quad {
@@ -40,7 +40,7 @@ impl Quad {
             // pass, so performing it three times should be enough.
 
             let mut r = Quad::ONE / Quad::from(self.0.sqrt());
-            let h = mul_pwr2(self, 0.5);
+            let h = common::mul_pwr2(self, 0.5);
             let k = Quad(0.5, 0.0, 0.0, 0.0);
 
             r += (k - h * r.sqr()) * r;
