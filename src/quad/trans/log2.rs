@@ -6,7 +6,7 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates log<sub>2</sub> of the number.
+    /// Calculates log<sub>2</sub> of the `Quad`.
     ///
     /// # Examples
     /// ```

@@ -6,15 +6,11 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the base `b` logarithm (log<sub>`b`</sub>) of the number.
+    /// Calculates the base `b` logarithm (log<sub>`b`</sub>) of the `Double`.
     ///
     /// If the goal is to calculate the base *e*, base 2, or base 10 logarithms of `self`,
     /// the specialized functions for those purposes([`ln`], [`log2`], and [`log10`]
     /// respectively) will be more efficient.
-    ///
-    /// [`ln`]: #method.ln 
-    /// [`log2`]: #method.log2 
-    /// [`log10`]: #method.log10
     ///
     /// # Examples
     /// ```
@@ -28,6 +24,10 @@ impl Double {
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
+    ///
+    /// [`ln`]: #method.ln 
+    /// [`log2`]: #method.log2 
+    /// [`log10`]: #method.log10
     #[inline]
     pub fn log(self, b: f64) -> Double {
         self.ln() / Double::from(b).ln()

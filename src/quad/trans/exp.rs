@@ -7,7 +7,7 @@ use crate::quad::common::{mul_pwr2, INV_FACTS};
 use crate::quad::Quad;
 
 impl Quad {
-    /// Computes the exponential function, *e*<sup>x</sup>, for the number.
+    /// Computes the exponential function, *e*<sup>x</sup>, for the `Quad`.
     ///
     /// # Examples
     /// ```

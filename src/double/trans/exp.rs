@@ -7,7 +7,7 @@ use crate::double::common;
 use crate::double::Double;
 
 impl Double {
-    /// Computes the exponential function, *e*<sup>x</sup>, for the number.
+    /// Computes the exponential function, *e*<sup>x</sup>, for the `Double`.
     ///
     /// # Examples
     /// ```

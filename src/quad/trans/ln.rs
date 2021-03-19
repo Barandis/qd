@@ -6,7 +6,7 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates the natural logarithm, log<sub>*e*</sub>, of the number.
+    /// Calculates the natural logarithm, log<sub>*e*</sub>, of the `Quad`.
     ///
     /// # Examples
     /// ```

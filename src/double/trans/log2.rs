@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates log<sub>2</sub> of the number.
+    /// Calculates log<sub>2</sub> of the `Double`.
     ///
     /// # Examples
     /// ```

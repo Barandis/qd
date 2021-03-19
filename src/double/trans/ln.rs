@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the natural logarithm, log<sub>*e*</sub>, of the number.
+    /// Calculates the natural logarithm, log<sub>*e*</sub>, of the `Double`.
     ///
     /// # Examples
     /// ```
