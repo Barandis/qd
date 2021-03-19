@@ -192,41 +192,41 @@ fn format_exp(value: &Double, f: &mut Formatter, upper: bool) -> Result {
 }
 
 impl Display for Double {
-    /// Formats a double-double number for display.
-    /// 
+    /// Formats a `Double` for display.
+    ///
     /// All formatting options that are shown in [`std::fmt`] are supported *except* for
     /// ones that are typically meant only for integers (hexadecimal, binary, octal, and
     /// pointer formats). Because of this, the "alternate" (`#`) flag is only recognized
     /// along with `?`, pretty-printing the `Debug` output.
-    /// 
-    /// By default, numbers are printed with 31 digits but drop trailing zeros.
-    /// 
+    ///
+    /// By default, `Double`s are printed with 31 digits but drop trailing zeros.
+    ///
     /// This function also provides the formatting for [`to_string`], which renders the
-    /// number as if formatted with an empty format specifier (`"{}"`).
-    /// 
+    /// `Double` as if formatted with an empty format specifier (`"{}"`).
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
     /// assert!(format!("{}", dd!(1.5)) == "1.5");
-    /// 
+    ///
     /// // The next digit in π is 0, which is why it's one digit shorter than e
     /// assert!(format!("{}", Double::PI) == "3.14159265358979323846264338328");
     /// assert!(format!("{}", Double::E) == "2.718281828459045235360287471353");
-    /// 
+    ///
     /// // to_string renders as if formatted with "{}"
     /// assert!(Double::PI.to_string() == "3.14159265358979323846264338328");
-    /// 
+    ///
     /// // debug
     /// assert!(format!("{:?}", Double::PI) ==
     ///     "Double(3.141592653589793e0, 1.2246467991473532e-16)");
     /// assert!(format!("{:#?}", Double::PI) ==
     /// "Double(
-    ///     3.141592653589793e0, 
+    ///     3.141592653589793e0,
     ///     1.2246467991473532e-16
     /// )");
-    /// 
+    ///
     /// // precision and exponents
     /// let value = dd!(0.016_777_216);
     /// assert!(format!("{:.0}", value) == "0");
@@ -236,7 +236,7 @@ impl Display for Double {
     /// assert!(format!("{:.*e}", 3, value) == "1.678e-2");
     /// assert!(format!("{0:.1$E}", value, 4) == "1.6777E-2");
     /// assert!(format!("{:.prec$E}", value, prec = 10) == "1.6777216000E-2");
-    /// 
+    ///
     /// // width, alignment, and fill
     /// let value = dd!(123_456);
     /// assert!(format!("{:10}", value) == "    123456"); // right-align is the default
@@ -246,7 +246,7 @@ impl Display for Double {
     /// assert!(format!("{:0>10}", value) == "0000123456");
     /// assert!(format!("{:*<10}", value) == "123456****");
     /// assert!(format!("{:'^10}", value) == "''123456''");
-    /// 
+    ///
     /// // plus sign and sign-aware zero fill
     /// let value = dd!(123_456);
     /// assert!(format!("{:+}", value) == "+123456");
@@ -255,7 +255,7 @@ impl Display for Double {
     /// assert!(format!("{:+012e}", value) == "+001.23456e5");
     /// # }
     /// ```
-    /// 
+    ///
     /// [`std::fmt`]: https://doc.rust-lang.org/std/fmt/index.html
     /// [`to_string`]: #tymethod.to_string
     fn fmt(&self, f: &mut Formatter) -> Result {
@@ -264,8 +264,8 @@ impl Display for Double {
 }
 
 impl LowerExp for Double {
-    /// Formats a double-double for display when the "`e`" formatting option is specified.
-    /// 
+    /// Formats a `Double` for display when the "`e`" formatting option is specified.
+    ///
     /// See [`Display::fmt`](#method.fmt-1) for more information.
     fn fmt(&self, f: &mut Formatter) -> Result {
         format_exp(self, f, false)
@@ -273,8 +273,8 @@ impl LowerExp for Double {
 }
 
 impl UpperExp for Double {
-    /// Formats a double-double for display when the "`E`" formatting option is specified.
-    /// 
+    /// Formats a `Double` for display when the "`E`" formatting option is specified.
+    ///
     /// See [`Display::fmt`](#method.fmt-1) for more information.
     fn fmt(&self, f: &mut Formatter) -> Result {
         format_exp(self, f, true)
@@ -282,8 +282,8 @@ impl UpperExp for Double {
 }
 
 impl Debug for Double {
-    /// Formats a double-double for display when the "`?`" formatting option is specified.
-    /// 
+    /// Formats a `Double` for display when the "`?`" formatting option is specified.
+    ///
     /// See [`Display::fmt`](#method.fmt-1) for more information.
     fn fmt(&self, f: &mut Formatter) -> Result {
         let alt = f.alternate();
@@ -291,9 +291,11 @@ impl Debug for Double {
         if alt {
             r.push_str("\n    ");
         }
-        r.push_str(format!("{:e}, ", self.0).as_str());
+        r.push_str(format!("{:e},", self.0).as_str());
         if alt {
             r.push_str("\n    ");
+        } else {
+            r.push(' ');
         }
         r.push_str(format!("{:e}", self.1).as_str());
         if alt {
@@ -311,8 +313,6 @@ mod tests {
 
     const PI_TIMES_10_20: &str = "314159265358979323846";
     const PI_TIMES_10_20_EXP: &str = "3.14159265358979323846e20";
-
-    // #region Plain formatting
 
     fn plain(value: Double) -> String {
         format!("{}", value)
@@ -394,10 +394,6 @@ mod tests {
         );
     }
 
-    // #endregion
-
-    // #region Exponential formatting
-
     fn exp(value: Double) -> String {
         format!("{:e}", value)
     }
@@ -461,10 +457,6 @@ mod tests {
         assert!(close_exp(exp(Double::from(-4.2e-4)).as_str(), "-4.2e-4"));
     }
 
-    // #endregion
-
-    // #region Precision formatting
-
     #[test]
     fn format_precision_integer() {
         assert_eq!(format!("{:.3}", Double::from(23)), "23.000");
@@ -507,10 +499,6 @@ mod tests {
         assert_eq!(format!("{0:.1$e}", value, 4), "1.6777e-2");
         assert_eq!(format!("{:.prec$e}", value, prec = 10), "1.6777216000e-2");
     }
-
-    // #endregion
-
-    // #region Width, fill, and alignment formatting
 
     #[test]
     fn format_width_default_align() {
@@ -574,10 +562,6 @@ mod tests {
         assert_eq!(format!("{:012e}", -value), "-001.23456e5");
     }
 
-    // #endregion
-
-    // #region Miscellaneous formatting
-
     #[test]
     fn format_misc_plus_sign() {
         let value = Double::from(123_456);
@@ -597,6 +581,4 @@ mod tests {
         // point)
         assert_eq!(format!("{:.30}", value).len(), 61);
     }
-
-    // #endregion
 }
