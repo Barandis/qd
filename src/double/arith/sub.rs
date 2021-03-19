@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic;
+use crate::common::core;
 use crate::double::Double;
 use std::ops::{Sub, SubAssign};
 
@@ -20,7 +20,7 @@ impl Double {
     /// # }
     /// ```
     pub fn from_sub(a: f64, b: f64) -> Double {
-        Double::from(basic::two_diff(a, b))
+        Double::from(core::two_diff(a, b))
     }
 }
 
@@ -72,10 +72,10 @@ impl Sub for Double {
                 Double::INFINITY
             }
         } else {
-            let (s0, e0) = basic::two_diff(self.0, other.0);
-            let (s1, e1) = basic::two_diff(self.1, other.1);
-            let (s2, e2) = basic::quick_two_sum(s0, s1 + e0);
-            Double::from(basic::quick_two_sum(s2, e1 + e2))
+            let (s0, e0) = core::two_diff(self.0, other.0);
+            let (s1, e1) = core::two_diff(self.1, other.1);
+            let (s2, e2) = core::quick_two_sum(s0, s1 + e0);
+            Double::from(core::quick_two_sum(s2, e1 + e2))
         }
     }
 }

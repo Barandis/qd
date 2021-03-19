@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic::renorm4;
+use crate::common::core;
 use crate::double::Double;
 use crate::quad::Quad;
 use std::f64;
@@ -79,12 +79,12 @@ fn from_components(a: f64, b: f64, c: f64, d: f64) -> Quad {
 }
 
 fn from_2_tuple(a: f64, b: f64) -> Quad {
-    let (a, b, c, d) = renorm4(a, b, 0.0, 0.0);
+    let (a, b, c, d) = core::renorm4(a, b, 0.0, 0.0);
     from_components(a, b, c, d)
 }
 
 fn from_3_tuple(a: f64, b: f64, c: f64) -> Quad {
-    let (a, b, c, d) = renorm4(a, b, c, 0.0);
+    let (a, b, c, d) = core::renorm4(a, b, c, 0.0);
     from_components(a, b, c, d)
 }
 
@@ -107,14 +107,14 @@ fn split_u128(a: u128) -> (u32, u32, u32, u32) {
 
 fn from_u64(a: u64) -> Quad {
     let (x, y) = split_u64(a);
-    Quad::from(renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0))
+    Quad::from(core::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0))
 }
 
 fn from_i64(a: i64) -> Quad {
     let sign = a.signum();
     let a = a.abs() as u64;
     let (x, y) = split_u64(a);
-    let d = Quad::from(renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0));
+    let d = Quad::from(core::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0));
     if sign == -1 {
         -d
     } else {
@@ -125,7 +125,7 @@ fn from_i64(a: i64) -> Quad {
 #[allow(clippy::many_single_char_names)]
 fn from_u128(a: u128) -> Quad {
     let (w, x, y, z) = split_u128(a);
-    Quad::from(renorm4(
+    Quad::from(core::renorm4(
         w as f64 * 2f64.powi(96),
         x as f64 * 2f64.powi(64),
         y as f64 * 2f64.powi(32),
@@ -138,7 +138,7 @@ fn from_i128(a: i128) -> Quad {
     let sign = a.signum();
     let a = a.abs() as u128;
     let (w, x, y, z) = split_u128(a);
-    let d = Quad::from(renorm4(
+    let d = Quad::from(core::renorm4(
         w as f64 * 2f64.powi(96),
         x as f64 * 2f64.powi(64),
         y as f64 * 2f64.powi(32),

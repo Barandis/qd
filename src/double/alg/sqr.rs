@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic;
+use crate::common::core;
 use crate::double::Double;
 
 impl Double {
@@ -27,8 +27,8 @@ impl Double {
         if self.is_infinite() {
             Double::INFINITY
         } else {
-            let (p, e) = basic::two_sqr(self.0);
-            Double::from(basic::quick_two_sum(
+            let (p, e) = core::two_sqr(self.0);
+            Double::from(core::quick_two_sum(
                 p,
                 e + 2.0 * self.0 * self.1 + self.1 * self.1,
             ))

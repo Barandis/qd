@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic;
+use crate::common::core;
 use std::f64;
 use std::ops::Index;
 
@@ -198,9 +198,9 @@ impl Double {
     /// [`dd!`]: macro.dd.html
     pub fn new(a: f64, b: f64) -> Double {
         let (s, e) = if a.abs() > b.abs() {
-            basic::quick_two_sum(a, b)
+            core::quick_two_sum(a, b)
         } else {
-            basic::quick_two_sum(b, a)
+            core::quick_two_sum(b, a)
         };
         Double(s, e)
     }

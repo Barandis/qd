@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic;
+use crate::common::core;
 use crate::double::Double;
 use std::f64;
 
@@ -28,7 +28,7 @@ fn split_u64(a: u64) -> (u32, u32) {
 
 fn from_u64(a: u64) -> Double {
     let (x, y) = split_u64(a);
-    Double::from(basic::renorm2(x as f64 * 2f64.powi(32), y as f64))
+    Double::from(core::renorm2(x as f64 * 2f64.powi(32), y as f64))
 }
 
 fn from_i64(a: i64) -> Double {
@@ -41,7 +41,7 @@ fn from_i64(a: i64) -> Double {
         a.abs() as u64
     };
     let (x, y) = split_u64(a);
-    let d = Double::from(basic::renorm2(x as f64 * 2f64.powi(32), y as f64));
+    let d = Double::from(core::renorm2(x as f64 * 2f64.powi(32), y as f64));
     if sign == -1 {
         -d
     } else {
@@ -126,7 +126,7 @@ macro_rules! from_tuple_impl {
         impl From<($t, $t)> for Double {
             #[inline]
             fn from((a, b): ($t, $t)) -> Double {
-                let (a, b) = basic::two_sum(a.into(), b.into());
+                let (a, b) = core::two_sum(a.into(), b.into());
                 Double(a, b)
             }
         }

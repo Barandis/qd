@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic;
+use crate::common::core;
 use crate::double::Double;
 use std::f64;
 
@@ -105,7 +105,7 @@ impl Double {
 
         if (hi - self.0).abs() < f64::EPSILON {
             let lo = self.1.round();
-            Double::from(basic::renorm2(hi, lo))
+            Double::from(core::renorm2(hi, lo))
         } else if ((hi - self.0).abs() - 0.5).abs() < f64::EPSILON && self.1 < 0.0 {
             Double(hi - 1.0, 0.0)
         } else {
@@ -205,9 +205,9 @@ impl Double {
     #[inline]
     pub fn assign(&mut self, (a, b): (f64, f64)) {
         let (s, e) = if a.abs() > b.abs() {
-            basic::quick_two_sum(a, b)
+            core::quick_two_sum(a, b)
         } else {
-            basic::quick_two_sum(b, a)
+            core::quick_two_sum(b, a)
         };
         self.0 = s;
         self.1 = e;

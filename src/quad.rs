@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic::renorm4;
+use crate::common::core;
 use std::ops::{Index, IndexMut};
 
 #[macro_use]
@@ -108,7 +108,7 @@ impl Quad {
     }
 
     pub fn new(a: f64, b: f64, c: f64, d: f64) -> Quad {
-        Quad::from(renorm4(a, b, c, d))
+        Quad::from(core::renorm4(a, b, c, d))
     }
 }
 

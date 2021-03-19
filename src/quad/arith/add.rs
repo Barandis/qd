@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::basic::*;
+use crate::common::core;
 use crate::quad::Quad;
 use std::ops::{Add, AddAssign};
 
@@ -72,7 +72,7 @@ impl Add for Quad {
             } else {
                 index_and_inc(other, &mut j)
             };
-            let (mut u, mut v) = renorm2(u, v);
+            let (mut u, mut v) = core::renorm2(u, v);
 
             while k < 4 {
                 if i >= 4 && j >= 4 {
@@ -92,7 +92,7 @@ impl Add for Quad {
                     index_and_inc(other, &mut j)
                 };
 
-                let (s, y, z) = accumulate(u, v, t);
+                let (s, y, z) = core::accumulate(u, v, t);
                 u = y;
                 v = z;
 
@@ -109,7 +109,7 @@ impl Add for Quad {
                 x[3] += other[k];
             }
 
-            Quad::from(renorm4(x[0], x[1], x[2], x[3]))
+            Quad::from(core::renorm4(x[0], x[1], x[2], x[3]))
         }
     }
 }
