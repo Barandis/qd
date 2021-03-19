@@ -7,7 +7,9 @@ use crate::quad::common::mul_pwr2;
 use crate::quad::Quad;
 
 impl Quad {
-    /// Computes the hyperbolic sine of the number.
+    /// Computes the hyperbolic sine (sinh) of the `Quad`.
+    /// 
+    /// The domain and range of this function are both (-∞, ∞).
     ///
     /// # Examples
     /// ```

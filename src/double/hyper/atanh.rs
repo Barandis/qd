@@ -7,10 +7,10 @@ use crate::double::common;
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the inverse hyperbolic tangent (tanh<sup>-1</sup>) of the number.
+    /// Calculates the inverse hyperbolic tangent (tanh<sup>-1</sup>) of the `Double`.
     /// 
     /// The domain of the function is (-1, 1) and the range is (-∞, ∞). Any argument whose
-    /// absolute value is greater than or equal to 1 will result in [`Double::NAN`].
+    /// absolute value is greater than or equal to 1 will result in [`NAN`].
     ///
     /// # Examples
     /// ```
@@ -25,7 +25,7 @@ impl Double {
     /// # }
     /// ```
     /// 
-    /// [`Double::NAN`]: #associatedconstant.NAN
+    /// [`NAN`]: #associatedconstant.NAN
     pub fn atanh(self) -> Double {
         if self.abs() >= Double::ONE {
             Double::NAN

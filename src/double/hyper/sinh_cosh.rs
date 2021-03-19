@@ -8,7 +8,7 @@ use crate::double::Double;
 
 impl Double {
     /// Simultaneously computes the hyperbolic sine and cosine (sinh and cosh) of the
-    /// number.
+    /// `Double`.
     /// 
     /// The domain of this function is (-∞, ∞), and the range is (-∞, ∞) for the first
     /// component of the answer (the hyperbolic sine) and [1, ∞) for the second (the

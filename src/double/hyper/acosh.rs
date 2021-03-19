@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Calculates the inverse hyperbolic cosine (cosh<sup>-1</sup>) of the number.
+    /// Calculates the inverse hyperbolic cosine (cosh<sup>-1</sup>) of the `Double`.
     /// 
     /// The domain of the function is [1, ∞) and the range is [0, ∞). Any argument outside
     /// the range will result in [`NAN`].

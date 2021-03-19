@@ -7,7 +7,9 @@ use crate::quad::common::mul_pwr2;
 use crate::quad::Quad;
 
 impl Quad {
-    /// Computes the hyperbolic cosine of the number.
+    /// Computes the hyperbolic cosine (cosh) of the `Quad`.
+    /// 
+    /// The domain of this function is (-∞, ∞), and the range is [1, ∞).
     ///
     /// # Examples
     /// ```

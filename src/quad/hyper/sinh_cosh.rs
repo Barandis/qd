@@ -7,10 +7,15 @@ use crate::quad::common::mul_pwr2;
 use crate::quad::Quad;
 
 impl Quad {
-    /// Simultaneously computes the hyperbolic sine and cosine of the number.
+    /// Simultaneously computes the hyperbolic sine and cosine (sinh and cosh) of the
+    /// `Quad`.
     ///
-    /// This method is more efficient to run than [`sinh`] and [`cosh`]
-    /// individually and is useful when both numbers are needed.
+    /// The domain of this function is (-∞, ∞), and the range is (-∞, ∞) for the first
+    /// component of the answer (the hyperbolic sine) and [1, ∞) for the second (the
+    /// hyperbolic cosine).
+    ///
+    /// This method is more efficient to run than [`sinh`] and [`cosh`] individually and is
+    /// useful when both numbers are needed.
     ///
     /// # Examples
     /// ```

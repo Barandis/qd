@@ -7,7 +7,10 @@ use crate::quad::common::mul_pwr2;
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates the inverse hyperbolic tangent of the number.
+    /// Calculates the inverse hyperbolic tangent (tanh<sup>-1</sup>) of the `Quad`.
+    /// 
+    /// The domain of the function is (-1, 1) and the range is (-∞, ∞). Any argument whose
+    /// absolute value is greater than or equal to 1 will result in [`NAN`].
     ///
     /// # Examples
     /// ```
@@ -21,6 +24,8 @@ impl Quad {
     /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
+    /// 
+    /// [`NAN`]: #associatedconstant.NAN
     pub fn atanh(self) -> Quad {
         if self.abs() >= Quad::ONE {
             Quad::NAN

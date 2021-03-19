@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Computes the hyperbolic tangent (tanh) of the number.
+    /// Computes the hyperbolic tangent (tanh) of the `Double`.
     /// 
     /// The domain of this function is (-∞, ∞), and the range is (-1, 1).
     ///
