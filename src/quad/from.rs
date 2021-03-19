@@ -20,39 +20,6 @@ fn is_dyadic(n: f64) -> bool {
     }
 }
 
-fn from_float(n: f64) -> Quad {
-    if n == 0.0 {
-        if n.is_sign_negative() {
-            Quad::NEG_ZERO
-        } else {
-            Quad::ZERO
-        }
-    } else if n.is_nan() {
-        Quad::NAN
-    } else if n.is_infinite() {
-        if n.is_sign_negative() {
-            Quad::NEG_INFINITY
-        } else {
-            Quad::INFINITY
-        }
-    } else if is_dyadic(n) {
-        Quad(n, 0.0, 0.0, 0.0)
-    } else {
-        // Yes, this converts an f64 to a string and then parses it. After a lot of study,
-        // doing it decimal-digit-by-decimal-digit seems to be the only way to do this
-        // accurately, because doing it as a whole f64 causes floating-point error to cancel
-        // itself out. And parsing from a string is the most reasonable way to do it
-        // digit-by-digit.
-        //
-        // I'm concerned about the effect on the speed of math functions that use it, like
-        // `log` and `exp` and `powf`, but the answer seems to be to optimize the parsing.
-        //
-        // `unwrap` is safe because `n.to_string` will never return a string that can't be
-        // parsed into a Quad.
-        n.to_string().parse().unwrap()
-    }
-}
-
 #[inline]
 fn split_u64(a: u64) -> (u32, u32) {
     let x = (a >> 32) as u32;
@@ -78,7 +45,13 @@ fn from_u64(a: u64) -> Quad {
 
 fn from_i64(a: i64) -> Quad {
     let sign = a.signum();
-    let a = a.abs() as u64;
+    // The first part prevents a.abs() from failing with overflow because the absolute
+    // value of i64::MIN is i64::MAX + 1
+    let a = if a == i64::MIN {
+        i64::MAX as u64 + 1
+    } else {
+        a.abs() as u64
+    };
     let (x, y) = split_u64(a);
     let (a, b, c, d) = core::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0);
     if sign == -1 {
@@ -103,7 +76,13 @@ fn from_u128(a: u128) -> Quad {
 #[allow(clippy::many_single_char_names)]
 fn from_i128(a: i128) -> Quad {
     let sign = a.signum();
-    let a = a.abs() as u128;
+    // The first part prevents a.abs() from failing with overflow because the absolute
+    // value of i128::MIN is i128::MAX + 1
+    let a = if a == i128::MIN {
+        i128::MAX as u128 + 1
+    } else {
+        a.abs() as u128
+    };
     let (w, x, y, z) = split_u128(a);
     let (a, b, c, d) = core::renorm4(
         w as f64 * 2f64.powi(96),
@@ -119,7 +98,11 @@ fn from_i128(a: i128) -> Quad {
 }
 
 macro_rules! from_int_impl {
-    ($($t:ident)*) => ($(
+    ($(
+        $(#[$m:meta])*
+        $t:ident
+    )*) => ($(
+        $(#[$m])*
         impl From<$t> for Quad {
             fn from(a: $t) -> Quad {
                 Quad(a.into(), 0.0, 0.0, 0.0)
@@ -128,18 +111,13 @@ macro_rules! from_int_impl {
     )*);
 }
 
-macro_rules! from_float_impl {
-    ($($t:ident)*) => ($(
-        impl From<$t> for Quad {
-            fn from(a: $t) -> Quad {
-                from_float(a.into())
-            }
-        }
-    )*);
-}
-
 macro_rules! from_long_int_impl {
-    ($($t:ident $f:ident)*) => ($(
+    ($(
+        $(#[$m:meta])*
+        $t:ident
+        $f:ident
+    )*) => ($(
+        $(#[$m])*
         impl From<$t> for Quad {
             fn from(a: $t) -> Quad {
                 $f(a)
@@ -148,25 +126,300 @@ macro_rules! from_long_int_impl {
     )*);
 }
 
-from_int_impl! { i8 u8 i16 u16 i32 u32 }
-from_long_int_impl! { i64 from_i64 u64 from_u64 i128 from_i128 u128 from_u128 }
-from_float_impl! { f32 f64 }
+// The Rust conversion from f32 to f64 is a bit-for-bit translation. It does not attempt to
+// account for floating point rounding error, so the parsed f64 is different from the
+// "equivalent" parsed f32. So rather than having a helper function that takes an f64, we
+// put the entire function into this macro so that `a.to_string().parse().unwrap()` calls
+// the f32 parser if an f32 is being converted.
+//
+// is_dyadic is still fine to convert for, because a dyadic f32 will convert accurately
+// into an f64 (and still return true) while a non-dyadic f32 may not convert accurately,
+// but it'll still be non-dyadic after the conversion.
+macro_rules! from_float_impl {
+    ($(
+        $(#[$m:meta])*
+        $t:ident
+    )*) => ($(
+        $(#[$m])*
+        impl From<$t> for Quad {
+            fn from(a: $t) -> Quad {
+                if a == 0.0 {
+                    if a.is_sign_negative() {
+                        Quad::NEG_ZERO
+                    } else {
+                        Quad::ZERO
+                    }
+                } else if a.is_nan() {
+                    Quad::NAN
+                } else if a.is_infinite() {
+                    if a.is_sign_negative() {
+                        Quad::NEG_INFINITY
+                    } else {
+                        Quad::INFINITY
+                    }
+                } else if is_dyadic(a as f64) {
+                    Quad(a.into(), 0.0, 0.0, 0.0)
+                } else {
+                    // Yes, this converts an f32/f64 to a string and then parses it. After a
+                    // lot of study, doing it decimal-digit-by-decimal-digit seems to be the
+                    // only way to do this accurately, because doing it as a whole f64
+                    // causes floating-point error to cancel itself out. And parsing from a
+                    // string is the most reasonable way to do it digit-by-digit.
+                    //
+                    // I'm concerned about the effect on the speed of math functions that
+                    // use it, like `log` and `exp` and `powf`, but the answer seems to be
+                    // to optimize the parsing.
+                    //
+                    // `unwrap` is safe because `n.to_string` will never return a string
+                    // that can't be parsed into a Quad.
+                    a.to_string().parse().unwrap()
+                }
+            }
+        }
+    )*);
+}
+
+from_int_impl! {
+    /// Generates a `Quad` from an `i8`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = i8::MIN;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "-128");
+    /// # }
+    /// ```
+    i8
+    /// Generates a `Quad` from a `u8`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = u8::MAX;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "255");
+    /// # }
+    /// ```
+    u8
+    /// Generates a `Quad` from an `i16`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = i16::MIN;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "-32768");
+    /// # }
+    /// ```
+    i16
+    /// Generates a `Quad` from a `u8`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = u16::MAX;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "65535");
+    /// # }
+    /// ```
+    u16
+    /// Generates a `Quad` from an `i32`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = i32::MIN;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "-2147483648");
+    /// # }
+    /// ```
+    i32
+    /// Generates a `Quad` from a `u32`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = u32::MAX;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "4294967295");
+    /// # }
+    /// ```
+    u32
+}
+
+from_long_int_impl! {
+    /// Generates a `Quad` from an `i64`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = i64::MIN;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "-9223372036854775808");
+    /// # }
+    /// ```
+    i64 from_i64
+    /// Generates a `Quad` from a `u64`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = u64::MAX;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "18446744073709551615");
+    /// # }
+    /// ```
+    u64 from_u64
+    /// Generates a `Quad` from an `i128`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = i128::MIN;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "-170141183460469231731687303715884105728");
+    /// # }
+    /// ```
+    i128 from_i128
+    /// Generates a `Quad` from a `u128`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = u128::MAX;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "340282366920938463463374607431768211455");
+    /// # }
+    /// ```
+    u128 from_u128
+}
+
+from_float_impl! {
+    /// Generates a `Quad` from an `f32`.
+    ///
+    /// This function *does* account for floating point rounding error. Even though the
+    /// first component of a `Quad` is enough to fit an `f32`, if that `f32` is not
+    /// exactly representable in binary, then the second component of the `Quad` will
+    /// account for the rounding error.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// // Exactly representable in binary
+    /// let x = 0.9921875f32;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "0.9921875");
+    ///
+    /// // Xot exactly representable in binary
+    /// let x = 0.9921876f32;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "0.9921876");
+    /// # }
+    /// ```
+    f32
+    /// Generates a `Quad` from an `f64`.
+    ///
+    /// This function *does* account for floating point rounding error. Even though the
+    /// first component of a `Quad` is enough to fit an `f64`, if that `f64` is not
+    /// exactly representable in binary, then the second component of the `Quad` will
+    /// account for the rounding error.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// // Exactly representable in binary
+    /// let x = 0.999969482421875f64;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "0.999969482421875");
+    ///
+    /// // Not exactly representable in binary
+    /// let x = 0.999969482421876f64;
+    /// let a = Quad::from(x);
+    /// assert!(a.to_string() == "0.999969482421876");
+    /// # }
+    /// ```
+    f64
+}
 
 impl From<Double> for Quad {
+    /// Generates a `Quad` from a `Double`.
+    /// 
+    /// The new `Quad`'s third and fourth components will be used to account for
+    /// floating-point rounding error at the end of the `Double`, but it will of course
+    /// otherwise only have the precision of the `Double` used to make it.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::{Double, Quad};
+    /// # fn main() {
+    /// let expected = Quad::from("0.9999999303082806237436760862691");
+    /// let a = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
+    /// let x = Quad::from(a);
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     fn from(a: Double) -> Quad {
         a.to_string().parse().unwrap()
     }
 }
 
 impl From<&str> for Quad {
-    /// Converts a string representation of a number into a `Quad`.
+    /// Parses a string to create a `Quad`.
     ///
-    /// `parse` from [`FromStr`] is a safer way to make this conversion, as it returns a
-    /// type (`Result`) that allows for error checking. This function returns `NaN` in the
-    /// case of a parse error, which is indistinguishable from a legitimately-returned
-    /// `NaN`. Take care when using this function.
+    /// The parser works pretty similarly to parsers for `f32` and `f64`. It will fail if
+    /// characters are present that are not digits, decimal points, signs, or exponent
+    /// markers. It will also fail if there are multiples of these or if they're in the
+    /// wrong places; two decimal points or a negative sign after the number will both be
+    /// rejected, for instance.
     ///
-    /// [`FromStr`]: #impl-FromStr
+    /// Failure will return [`NAN`]. This can be an issue because parsing the string `"nan"`
+    /// *also* produces [`NAN`]. For this reason it's suggested to use [`from_str`] (or its
+    /// associated `parse` function) instead of this function if there is any chance that
+    /// the parsed string will be legitimately [`NAN`].
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let expected = (qd!(3).powi(15) - qd!(1)) / qd!(3).powi(15);
+    /// let x = Quad::from("0.9999999303082806237436760862691492808476631704421807180156648865");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
+    ///
+    /// [`NAN`]: #associatedconstant.NAN
+    /// [`from_str`]: #method.from_str
     fn from(s: &str) -> Quad {
         s.parse().unwrap_or(Quad::NAN)
     }
@@ -175,28 +428,6 @@ impl From<&str> for Quad {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn conv_from_u64() {
-        let a = 0x0_123_456_789_abc_defu64;
-        let q = qd!(a);
-        assert_eq!(format!("{}", a), format!("{}", q));
-    }
-
-    #[test]
-    fn conv_from_i64() {
-        let a = -0x0_123_456_789_abc_defi64;
-        let q = qd!(a);
-        assert_eq!(format!("{}", a), format!("{}", q));
-    }
-
-    #[test]
-    fn conv_from_and_to_i128() {
-        let a = -0x0_123_456_789_abc_defi128;
-        let q = qd!(a);
-        let x = q.as_int();
-        assert_eq!(a, x);
-    }
 
     #[test]
     fn dyadic() {
@@ -214,7 +445,19 @@ mod tests {
     }
 
     #[test]
-    fn conv_from_f64() {
+    fn from_f32() {
+        assert_exact!(qd!(1.0f32), Quad(1.0, 0.0, 0.0, 0.0));
+        assert_exact!(qd!(1.203125f32), Quad(1.203125, 0.0, 0.0, 0.0));
+        assert_ne!(qd!(1.1f32).1, 0.0);
+        assert_exact!(qd!(0f32), Quad::ZERO);
+        assert_exact!(qd!(-0.0f32), Quad::NEG_ZERO);
+        assert_exact!(qd!(std::f32::INFINITY), Quad::INFINITY);
+        assert_exact!(qd!(std::f32::NEG_INFINITY), Quad::NEG_INFINITY);
+        assert_exact!(qd!(std::f32::NAN), Quad::NAN);
+    }
+
+    #[test]
+    fn from_f64() {
         assert_exact!(qd!(1.0), Quad(1.0, 0.0, 0.0, 0.0));
         assert_exact!(qd!(1.203125), Quad(1.203125, 0.0, 0.0, 0.0));
         assert_exact!(
@@ -227,5 +470,19 @@ mod tests {
         assert_exact!(qd!(std::f64::INFINITY), Quad::INFINITY);
         assert_exact!(qd!(std::f64::NEG_INFINITY), Quad::NEG_INFINITY);
         assert_exact!(qd!(std::f64::NAN), Quad::NAN);
+    }
+
+    #[test]
+    fn from_int() {
+        assert_eq!(i8::MIN.to_string(), qd!(i8::MIN).to_string());
+        assert_eq!(u8::MAX.to_string(), qd!(u8::MAX).to_string());
+        assert_eq!(i16::MIN.to_string(), qd!(i16::MIN).to_string());
+        assert_eq!(u16::MAX.to_string(), qd!(u16::MAX).to_string());
+        assert_eq!(i32::MIN.to_string(), qd!(i32::MIN).to_string());
+        assert_eq!(u32::MAX.to_string(), qd!(u32::MAX).to_string());
+        assert_eq!(i64::MIN.to_string(), qd!(i64::MIN).to_string());
+        assert_eq!(u64::MAX.to_string(), qd!(u64::MAX).to_string());
+        assert_eq!(i128::MIN.to_string(), qd!(i128::MIN).to_string());
+        assert_eq!(u128::MAX.to_string(), qd!(u128::MAX).to_string());
     }
 }

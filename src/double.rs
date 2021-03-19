@@ -234,14 +234,17 @@ impl Index<usize> for Double {
 
     /// Returns one of the components of the `Double`.
     ///
-    /// Using index `0` will return the first component; using index `1` will return the
-    /// second. This capability is provided mostly to make some algorithms easier to
-    /// implement. If the components of the `Double` are needed, pattern matching with the
-    /// 2-tuple's [`from`] is likely to be the better way to go.
+    /// Using index `0` will return the first component and using index `1` will return the
+    /// second.
     ///
     /// One capability that is *not* provided is mutable indexing; ensuring that a `Double`
-    /// is normalized would be impossible if they could be individually changed at will. If
-    /// you need to modify the components of an existing mutable `Double`, use [`assign`].
+    /// is normalized would be impossible if they could be individually changed at will.
+    /// `Double`s are immutable like any other number; if you need a new value for a
+    /// `Double`, you should simply create a new `Double`.
+    ///
+    /// This is primarily provided for making certain mathematical algorithms easier to
+    /// implement. There isn't a lot meaning to an individual component of a `Double` other
+    /// than the first.
     ///
     /// # Examples
     /// ```
@@ -253,9 +256,6 @@ impl Index<usize> for Double {
     /// assert!(d[1] == 0.0);
     /// # }
     /// ```
-    ///
-    /// [`from`]: #method.from-22
-    /// [`assign`]: #method.assign
     fn index(&self, idx: usize) -> &f64 {
         match idx {
             0 => &self.0,

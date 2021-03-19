@@ -241,13 +241,16 @@ impl Index<usize> for Quad {
     /// Returns one of the components of the `Quad`.
     ///
     /// Using index `0` will return the first component, using index `1` will return the
-    /// second, and so on. This capability is provided mostly to make some algorithms easier
-    /// to implement. If the components of the `Double` are needed, pattern matching with
-    /// the 4-tuple's [`from`] is likely to be the better way to go.
+    /// second, and so on.
     ///
-    /// One capability that is *not* provided is mutable indexing; ensuring that a `Quad`
-    /// is normalized would be impossible if they could be individually changed at will. If
-    /// you need to modify the components of an existing mutable `Quad`, use [`assign`].
+    /// One capability that is *not* provided is mutable indexing; ensuring that a `Quad` is
+    /// normalized would be impossible if they could be individually changed at will.
+    /// `Quad`s are immutable like any other number; if you need a new value for a `Quad`,
+    /// you should simply create a new `Quad`.
+    ///
+    /// This is primarily provided for making certain mathematical algorithms easier to
+    /// implement. There isn't a lot meaning to an individual component of a `Quad` other
+    /// than the first.Quad
     ///
     /// # Examples
     /// ```
@@ -261,8 +264,6 @@ impl Index<usize> for Quad {
     /// assert!(q[3] == 0.0);
     /// # }
     /// ```
-    ///
-    /// [`assign`]: #method.assign
     fn index(&self, idx: usize) -> &f64 {
         match idx {
             0 => &self.0,

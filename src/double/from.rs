@@ -295,10 +295,10 @@ impl From<&str> for Double {
     /// wrong places; two decimal points or a negative sign after the number will both be
     /// rejected, for instance.
     ///
-    /// Failure will return [`Double::NAN`]. This can be an issue because parsing the string
-    /// `"nan"` *also* produces [`Double::NAN`]. For this reason it's suggested to use
-    /// [`from_str`] (or its associated `parse` function) instead of this function if there
-    /// is any chance that the parsed string will be legitimately [`Double::NAN`].
+    /// Failure will return [`NAN`]. This can be an issue because parsing the string `"nan"`
+    /// *also* produces [`NAN`]. For this reason it's suggested to use [`from_str`] (or its
+    /// associated `parse` function) instead of this function if there is any chance that
+    /// the parsed string will be legitimately [`NAN`].
     /// 
     /// # Examples
     /// ```
@@ -313,7 +313,7 @@ impl From<&str> for Double {
     /// # }
     /// ```
     /// 
-    /// [`Double::NAN`]: #associatedconstant.NAN
+    /// [`NAN`]: #associatedconstant.NAN
     /// [`from_str`]: #method.from_str
     fn from(s: &str) -> Double {
         s.parse().unwrap_or(Double::NAN)
