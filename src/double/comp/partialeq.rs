@@ -6,13 +6,13 @@
 use crate::double::Double;
 
 impl PartialEq for Double {
-    /// Implements the `==` and `!= operators, testing two double-doubles for equality and
+    /// Implements the `==` and `!= operators, testing two `Double`s for equality and
     /// inequality.
     ///
     /// Equality works exactly the same as it does for system floating-point numbers (`f64`,
     /// etc.), including zero equalling negative zero, `NaN` equalling nothing (including
     /// itself), etc. Notably, equality should be used with care since floating-point
-    /// rounding, even with the increased precision of double-doubles, will still cause some
+    /// rounding, even with the increased precision of `Double`s, will still cause some
     /// numbers that should be equal to not be equal.
     ///
     /// # Examples

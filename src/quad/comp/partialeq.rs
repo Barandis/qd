@@ -6,13 +6,13 @@
 use crate::quad::Quad;
 
 impl PartialEq for Quad {
-    /// Implements the `==` and `!= operators, testing two quad-Quads for equality and
+    /// Implements the `==` and `!= operators, testing two `Quad`s for equality and
     /// inequality.
     ///
     /// Equality works exactly the same as it does for system floating-point numbers (`f64`,
     /// etc.), including zero equalling negative zero, `NaN` equalling nothing (including
     /// itself), etc. Notably, equality should be used with care since floating-point
-    /// rounding, even with the increased precision of quad-Quads, will still cause some
+    /// rounding, even with the increased precision of `Quad`s, will still cause some
     /// numbers that should be equal to not be equal.
     ///
     /// # Examples
