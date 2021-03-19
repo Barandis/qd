@@ -6,9 +6,9 @@
 use crate::double::Double;
 
 impl Double {
-    /// Computes the inverse sine (sin<sup>-1</sup>) of the number. The domain of this
+    /// Computes the inverse sine (sin<sup>-1</sup>) of the `Double`. The domain of this
     /// function is [-1, 1] while the range is [-π/2, π/2]. Arguments outside of this domain
-    /// will result in [`Double::NAN`].
+    /// will result in [`NAN`].
     ///
     /// # Examples
     /// ```
@@ -23,7 +23,7 @@ impl Double {
     /// # }
     /// ```
     /// 
-    /// [`Double::NAN`]: #associatedconstant.NAN
+    /// [`NAN`]: #associatedconstant.NAN
     pub fn asin(self) -> Double {
         if self.abs() > Double::ONE {
             Double::NAN

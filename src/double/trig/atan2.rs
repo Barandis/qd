@@ -6,8 +6,8 @@
 use crate::double::Double;
 
 impl Double {
-    /// Computes the 2-argument inverse tangent (tan<sup>-1</sup>) of the number and `other`
-    /// in radians.
+    /// Computes the 2-argument inverse tangent (tan<sup>-1</sup>) of this `Double` and
+    /// another `Double`.
     ///
     /// The single-argument [`atan`] function always returns values in either the first (0
     /// to π/2) or fourth (0 to -π/2) quadrants. However, first-quadrant results repeat
@@ -18,12 +18,13 @@ impl Double {
     ///
     /// The double-argument `atan2` can return either, depending on the arguments. It
     /// essentially returns the angle between the positive x-axis and the point (x, y),
-    /// where *y* is the number that `atan2` is called on and *x* is the argument. Therefore
-    /// `Double::ONE.atan2(Double::ONE)` is π/4 (first quadrant), but flipping both signs to
-    /// `(-Double::ONE).atan2(-Double::ONE)` gives the -3π/4 result (third quadrant).
+    /// where *y* is the `Double` that `atan2` is called on and *x* is the argument.
+    /// Therefore `Double::ONE.atan2(Double::ONE)` is π/4 (first quadrant), but flipping
+    /// both signs to `(-Double::ONE).atan2(-Double::ONE)` gives the -3π/4 result (third
+    /// quadrant).
     ///
     /// This function extends the range of the result to [-π, π].
-    /// 
+    ///
     /// Because this function deals with angles around the origin and Cartesian coordinates,
     /// it's very useful for converting between Cartesian and polar coordinates.
     ///

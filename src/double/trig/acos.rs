@@ -6,9 +6,9 @@
 use crate::double::Double;
 
 impl Double {
-    /// Computes the inverse cosine (cos<sup>-1</sup>) of the number. The domain of this
+    /// Computes the inverse cosine (cos<sup>-1</sup>) of the `Double`. The domain of this
     /// function is [-1, 1] and the range is [0, π]. Arguments outside of the domain will
-    /// result in [`Double::NAN`].
+    /// result in [`NAN`].
     ///
     /// # Examples
     /// ```
@@ -23,7 +23,7 @@ impl Double {
     /// # }
     /// ```
     /// 
-    /// [`Double::NAN`]: #associatedconstant.NAN
+    /// [`NAN`]: #associatedconstant.NAN
     pub fn acos(self) -> Double {
         if self.abs() > Double::ONE {
             Double::NAN

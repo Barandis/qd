@@ -6,7 +6,9 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Computes the tangent of the number.
+    /// Computes the tangent (tan) of the `Quad`.
+    /// 
+    /// The domain and range of this function are both (-∞, ∞).
     ///
     /// # Examples
     /// ```

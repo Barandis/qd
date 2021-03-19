@@ -6,9 +6,9 @@
 use crate::quad::Quad;
 
 impl Quad {
-    /// Computes the arccosine of the number. The return value is in the range
-    /// [0, π] for any number in the range [-1, 1]. Otherwise the return value
-    /// is `NaN`.
+    /// Computes the inverse cosine (cos<sup>-1</sup>) of the `Quad`. The domain of this
+    /// function is [-1, 1] and the range is [0, π]. Arguments outside of the domain will
+    /// result in [`NAN`].
     ///
     /// # Examples
     /// ```
@@ -22,6 +22,8 @@ impl Quad {
     /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
+    /// 
+    /// [`NAN`]: #associatedconstant.NAN
     pub fn acos(self) -> Quad {
         if self.abs() > Quad::ONE {
             Quad::NAN

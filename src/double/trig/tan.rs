@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Computes the tangent of the number.
+    /// Computes the tangent (tan) of the `Double`.
     /// 
     /// The domain and range of this function are both (-∞, ∞).
     ///

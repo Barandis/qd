@@ -8,7 +8,7 @@ use super::tables;
 use crate::double::Double;
 
 impl Double {
-    /// Computes the sine of the number.
+    /// Computes the sine (sin) of the `Double`.
     /// 
     /// The domain of this function is (-∞, ∞), and the range is [-1, 1].
     ///

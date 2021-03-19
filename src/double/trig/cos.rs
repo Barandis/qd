@@ -8,7 +8,7 @@ use super::tables;
 use crate::double::Double;
 
 impl Double {
-    /// Computes the cosine of the number.
+    /// Computes the cosine (cos) of the `Double`.
     /// 
     /// The domain of this function is (-∞, ∞), and the range is [-1, 1].
     ///

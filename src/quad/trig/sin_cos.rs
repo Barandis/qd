@@ -8,8 +8,9 @@ use super::tables::{COSINES, SINES};
 use crate::quad::Quad;
 
 impl Quad {
-    /// Simultaneously computes the sine and the cosine of the number. This is more
-    /// efficient if you need both numbers. Returns `(sin(x), cos(x))`.
+    /// Simultaneously computes the sine (sin) and the cosine (cos) of the `Quad`. This is
+    /// more efficient than calling the separate [`sin`] and [`cos`] functions if you need
+    /// both numbers.
     ///
     /// # Examples
     /// ```
@@ -26,6 +27,9 @@ impl Quad {
     /// assert!(diff_cos < qd!(1e-60));
     /// # }
     /// ```
+    ///
+    /// [`sin`]: #method.sin
+    /// [`cos`]: #method.cos
     #[allow(clippy::many_single_char_names)]
     pub fn sin_cos(self) -> (Quad, Quad) {
         if self.is_zero() {

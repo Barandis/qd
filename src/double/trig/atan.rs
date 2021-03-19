@@ -6,7 +6,7 @@
 use crate::double::Double;
 
 impl Double {
-    /// Computes the inverse tangent (tan<sup>-1</sup>) of the number. The domain of this
+    /// Computes the inverse tangent (tan<sup>-1</sup>) of the `Double`. The domain of this
     /// function is [-∞, ∞] and the range is [-π/2, π/2].
     ///
     /// # Examples

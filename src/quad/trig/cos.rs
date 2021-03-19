@@ -8,7 +8,9 @@ use super::tables::{COSINES, SINES};
 use crate::quad::Quad;
 
 impl Quad {
-    /// Computes the cosine of the number.
+    /// Computes the cosine (cos) of the `Quad`.
+    /// 
+    /// The domain of this function is (-∞, ∞), and the range is [-1, 1].
     ///
     /// # Examples
     /// ```

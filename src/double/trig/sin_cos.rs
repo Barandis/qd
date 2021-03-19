@@ -8,9 +8,9 @@ use super::tables;
 use crate::double::Double;
 
 impl Double {
-    /// Simultaneously computes the sine and the cosine of the number. This is more
-    /// efficient than calling the separate [`sin`] and [`cos`] functions if you need both
-    /// numbers. Returns `(sin x, cos x)`.
+    /// Simultaneously computes the sine (sin) and the cosine (cos) of the `Double`. This is
+    /// more efficient than calling the separate [`sin`] and [`cos`] functions if you need
+    /// both numbers.
     ///
     /// # Examples
     /// ```
@@ -27,7 +27,7 @@ impl Double {
     /// assert!(diff_cos < dd!(1e-30));
     /// # }
     /// ```
-    /// 
+    ///
     /// [`sin`]: #method.sin
     /// [`cos`]: #method.cos
     #[allow(clippy::many_single_char_names)]
