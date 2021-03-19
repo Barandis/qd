@@ -118,22 +118,6 @@ macro_rules! from_float_impl {
     )*);
 }
 
-macro_rules! from_tuple_impl {
-    ($(
-        $(#[$m:meta])*
-        $t:ty
-    )*) => ($(
-        $(#[$m])*
-        impl From<($t, $t)> for Double {
-            #[inline]
-            fn from((a, b): ($t, $t)) -> Double {
-                let (a, b) = core::two_sum(a.into(), b.into());
-                Double(a, b)
-            }
-        }
-    )*);
-}
-
 from_int_impl! {
     /// Generates a `Double` from an `i8`.
     ///
@@ -214,6 +198,7 @@ from_int_impl! {
     /// ```
     u32
 }
+
 from_float_impl! {
     /// Generates a `Double` from an `f32`.
     ///
@@ -264,195 +249,6 @@ from_float_impl! {
     /// ```
     f64
 }
-from_tuple_impl! {
-    /// Generates a `Double` from a 2-tuple of `i8`s. The two components of the tuple are
-    /// added together and the result is normalized. Note that the resulting sum does *not*
-    /// have to be small enough to be an `i8` itself.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// let x = -128i8;
-    /// let a = Double::from((x, x));
-    /// assert!(a.to_string() == "-256");
-    /// # }
-    /// ```
-    i8
-    /// Generates a `Double` from a 2-tuple of `u8`s. The two components of the tuple are
-    /// added together and the result is normalized. Note that the resulting sum does *not*
-    /// have to be small enough to be a `u8` itself.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// let x = 255u8;
-    /// let a = Double::from((x, x));
-    /// assert!(a.to_string() == "510");
-    /// # }
-    /// ```
-    u8
-    /// Generates a `Double` from a 2-tuple of `i16`s. The two components of the tuple are
-    /// added together and the result is normalized. Note that the resulting sum does *not*
-    /// have to be small enough to be an `i16` itself.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// let x = -32768i16;
-    /// let a = Double::from((x, x));
-    /// assert!(a.to_string() == "-65536");
-    /// # }
-    /// ```
-    i16
-    /// Generates a `Double` from a 2-tuple of `u16`s. The two components of the tuple are
-    /// added together and the result is normalized. Note that the resulting sum does *not*
-    /// have to be small enough to be a `u16` itself.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// let x = 32767u16;
-    /// let a = Double::from((x, x));
-    /// assert!(a.to_string() == "65534");
-    /// # }
-    /// ```
-    u16
-    /// Generates a `Double` from a 2-tuple of `i32`s. The two components of the tuple are
-    /// added together and the result is normalized. Note that the resulting sum does *not*
-    /// have to be small enough to be an `i32` itself.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// let x = -2_147_483_648i32;
-    /// let a = Double::from((x, x));
-    /// assert!(a.to_string() == "-4294967296");
-    /// # }
-    /// ```
-    i32
-    /// Generates a `Double` from a 2-tuple of `u32`s. The two components of the tuple are
-    /// added together and the result is normalized. Note that the resulting sum does *not*
-    /// have to be small enough to be a `u32` itself.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// let x = 4_294_967_295u32;
-    /// let a = Double::from((x, x));
-    /// assert!(a.to_string() == "8589934590");
-    /// # }
-    /// ```
-    u32
-    /// Generates a `Double` from a 2-tuple of `f32`s. The two components of the tuple are
-    /// added together and the result is normalized. Note that the resulting sum does *not*
-    /// have to be small enough to be an `f32` itself.
-    /// 
-    /// Generating a `Double` from a tuple is *not* intended to be accurate as a sum of the
-    /// tuple components. While normalization happens, floating-point rounding error is
-    /// *not* accounted for, so as a sum, the resulting `Double` will only be as accurate
-    /// as a plain `f32`. Using a tuple to create a `Double` is intended for use when the
-    /// tuple components are known to be exactly what should be used for the components
-    /// internal to the `Double`.
-    /// 
-    /// To create a `Double` that *does* account for floating-point error, create `Double`s
-    /// separately from each tuple component and then add them.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// // Exactly representable in binary
-    /// let x = 0.9921875f32;
-    /// let d = Double::from((x, x));
-    /// // Accurate
-    /// assert!(d.to_string() == "1.984375");
-    ///
-    /// // Not exactly representable in binary
-    /// let x = 0.9921876f32;
-    /// let a = Double::from((x, x));
-    /// // Only accurate as a sum to f32 precision
-    /// assert!(a.to_string() == "1.9843752384185791015625");
-    /// 
-    /// // Created as a sum of the tuple components
-    /// let a = Double::from(x) + Double::from(x);
-    /// // Accurate
-    /// assert!(a.to_string() == "1.9843752");
-    /// # }
-    /// ```
-    f32
-
-    /// Generates a `Double` from a 2-tuple of `f32`s. The two components of the tuple are
-    /// added together and the result is normalized. Note that the resulting sum does *not*
-    /// have to be small enough to be an `f32` itself.
-    /// 
-    /// Generating a `Double` from a tuple is *not* intended to be accurate as a sum of the
-    /// tuple components. While normalization happens, floating-point rounding error is
-    /// *not* accounted for, so as a sum, the resulting `Double` will only be as accurate
-    /// as a plain `f64`. Using a tuple to create a `Double` is intended for use when the
-    /// tuple components are known to be exactly what should be used for the components
-    /// internal to the `Double`.
-    /// 
-    /// To create a `Double` that *does* account for floating-point error, create `Double`s
-    /// separately from each tuple component and then add them.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// // Exactly representable in binary
-    /// let x = 0.999969482421875f64;
-    /// let a = Double::from((x, x));
-    /// // Accurate
-    /// assert!(a.to_string() == "1.99993896484375");
-    ///
-    /// // Not exactly representable in binary
-    /// let x = 0.999969482421876f64;
-    /// let a = Double::from((x, x));
-    /// // Only accurate as a sum to f64 precision
-    /// assert!(a.to_string() == "1.999938964843751998401444325282");
-    /// 
-    /// // Created as a sum of the tuple components
-    /// let a = Double::from(x) + Double::from(x);
-    /// // Accurate
-    /// assert!(a.to_string() == "1.999938964843752");
-    /// # }
-    /// ```
-    f64
-}
-
-/// Generates a `Double` from a 2-tuple of `u64`s. The two components of the tuple are added
-/// together and the result is normalized. Note that the resulting sum does *not* have to be
-/// small enough to be a `u64` itself.
-///
-/// # Examples
-/// ```
-/// # #[macro_use] extern crate qd;
-/// # use qd::Double;
-/// # fn main() {
-/// let x = 18_446_744_073_709_551_615u64;
-/// let a = Double::from((x, x));
-/// assert!(a.to_string() == "36893488147419103230");
-/// # }
-/// ```
-impl From<(u64, u64)> for Double {
-    fn from((a, b): (u64, u64)) -> Double {
-        from_u64(a) + from_u64(b)
-    }
-}
 
 /// Generates a `Double` from a `u64`.
 ///
@@ -469,25 +265,6 @@ impl From<(u64, u64)> for Double {
 impl From<u64> for Double {
     fn from(a: u64) -> Double {
         from_u64(a)
-    }
-}
-
-/// Generates a `Double` from a 2-tuple of `i64`s. The two components of the tuple are
-/// added together and the result is normalized.
-///
-/// # Examples
-/// ```
-/// # #[macro_use] extern crate qd;
-/// # use qd::Double;
-/// # fn main() {
-/// let x = -9_223_372_036_854_775_808i64;
-/// let a = Double::from((x, x));
-/// assert!(a.to_string() == "-18446744073709551616");
-/// # }
-/// ```
-impl From<(i64, i64)> for Double {
-    fn from((a, b): (i64, i64)) -> Double {
-        from_i64(a) + from_i64(b)
     }
 }
 
@@ -571,45 +348,9 @@ impl From<Double> for f64 {
     }
 }
 
-impl From<Double> for (f64, f64) {
-    /// Converts a `Double` into a 2-tuple of `f64`s.
-    ///
-    /// The components of the resulting tuple are simply the components of the `Double`.
-    /// 
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// let a = Double::PI;
-    /// let x = <(f64, f64)>::from(a);
-    /// 
-    /// assert!(x.0 == 3.141592653589793);
-    /// assert!(x.1 == 1.2246467991473532e-16);
-    /// # }
-    #[inline]
-    fn from(a: Double) -> (f64, f64) {
-        (a.0, a.1)
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn conv_from_u64() {
-        let a = 0x0_123_456_789_abc_defu64;
-        let d = dd!(a);
-        assert_eq!(format!("{}", a), format!("{}", d));
-    }
-
-    #[test]
-    fn conv_from_i64() {
-        let a = -0x0_123_456_789_abc_defi64;
-        let d = dd!(a);
-        assert_eq!(format!("{}", a), format!("{}", d));
-    }
 
     #[test]
     fn dyadic() {
@@ -627,7 +368,19 @@ mod tests {
     }
 
     #[test]
-    fn conv_from_f64() {
+    fn from_f32() {
+        assert_exact!(dd!(1.0f32), Double(1.0, 0.0));
+        assert_exact!(dd!(1.203125f32), Double(1.203125, 0.0));
+        assert_ne!(dd!(1.1f32).1, 0.0);
+        assert_exact!(dd!(0f32), Double::ZERO);
+        assert_exact!(dd!(-0.0f32), Double::NEG_ZERO);
+        assert_exact!(dd!(std::f32::INFINITY), Double::INFINITY);
+        assert_exact!(dd!(std::f32::NEG_INFINITY), Double::NEG_INFINITY);
+        assert_exact!(dd!(std::f32::NAN), Double::NAN);
+    }
+
+    #[test]
+    fn from_f64() {
         assert_exact!(dd!(1.0), Double(1.0, 0.0));
         assert_exact!(dd!(1.203125), Double(1.203125, 0.0));
         assert_exact!(dd!(1.0005645751953125), Double(1.0005645751953125, 0.0));
@@ -637,7 +390,17 @@ mod tests {
         assert_exact!(dd!(std::f64::INFINITY), Double::INFINITY);
         assert_exact!(dd!(std::f64::NEG_INFINITY), Double::NEG_INFINITY);
         assert_exact!(dd!(std::f64::NAN), Double::NAN);
-        println!("{:.32}", Double(1.1, 0.0));
-        println!("{:?}", Double::from(1.1));
+    }
+
+    #[test]
+    fn from_int() {
+        assert_eq!(i8::MIN.to_string(), dd!(i8::MIN).to_string());
+        assert_eq!(u8::MAX.to_string(), dd!(u8::MAX).to_string());
+        assert_eq!(i16::MIN.to_string(), dd!(i16::MIN).to_string());
+        assert_eq!(u16::MAX.to_string(), dd!(u16::MAX).to_string());
+        assert_eq!(i32::MIN.to_string(), dd!(i32::MIN).to_string());
+        assert_eq!(u32::MAX.to_string(), dd!(u32::MAX).to_string());
+        assert_eq!(i64::MIN.to_string(), dd!(i64::MIN).to_string());
+        assert_eq!(u64::MAX.to_string(), dd!(u64::MAX).to_string());
     }
 }

@@ -176,9 +176,9 @@ impl MulAssign for Double {
     /// ```
     #[inline]
     fn mul_assign(&mut self, other: Double) {
-        let (a, b) = self.mul(other).into();
-        self.0 = a;
-        self.1 = b;
+        let r = self.mul(other);
+        self.0 = r.0;
+        self.1 = r.1;
     }
 }
 
@@ -203,9 +203,9 @@ impl MulAssign<&Double> for Double {
     /// ```
     #[inline]
     fn mul_assign(&mut self, other: &Double) {
-        let (a, b) = self.mul(*other).into();
-        self.0 = a;
-        self.1 = b;
+        let r = self.mul(*other);
+        self.0 = r.0;
+        self.1 = r.1;
     }
 }
 

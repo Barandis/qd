@@ -179,9 +179,9 @@ impl AddAssign for Double {
     /// ```
     #[inline]
     fn add_assign(&mut self, other: Double) {
-        let (a, b) = self.add(other).into();
-        self.0 = a;
-        self.1 = b;
+        let r = self.add(other);
+        self.0 = r.0;
+        self.1 = r.1;
     }
 }
 
@@ -206,9 +206,9 @@ impl AddAssign<&Double> for Double {
     /// ```
     #[inline]
     fn add_assign(&mut self, other: &Double) {
-        let (a, b) = self.add(*other).into();
-        self.0 = a;
-        self.1 = b;
+        let r = self.add(*other);
+        self.0 = r.0;
+        self.1 = r.1;
     }
 }
 

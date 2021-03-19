@@ -134,9 +134,9 @@ impl RemAssign for Double {
     /// ```
     #[inline]
     fn rem_assign(&mut self, other: Double) {
-        let (a, b) = self.rem(other).into();
-        self.0 = a;
-        self.1 = b;
+        let r = self.rem(other);
+        self.0 = r.0;
+        self.1 = r.1;
     }
 }
 
@@ -161,9 +161,9 @@ impl RemAssign<&Double> for Double {
     /// ```
     #[inline]
     fn rem_assign(&mut self, other: &Double) {
-        let (a, b) = self.rem(*other).into();
-        self.0 = a;
-        self.1 = b;
+        let r = self.rem(*other);
+        self.0 = r.0;
+        self.1 = r.1;
     }
 }
 

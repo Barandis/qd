@@ -181,7 +181,9 @@ impl SubAssign for Double {
     /// ```
     #[inline]
     fn sub_assign(&mut self, other: Double) {
-        self.assign(self.sub(other).into());
+        let r = self.sub(other);
+        self.0 = r.0;
+        self.1 = r.1;
     }
 }
 
@@ -206,7 +208,9 @@ impl SubAssign<&Double> for Double {
     /// ```
     #[inline]
     fn sub_assign(&mut self, other: &Double) {
-        self.assign(self.sub(*other).into());
+        let r = self.sub(*other);
+        self.0 = r.0;
+        self.1 = r.1;
     }
 }
 

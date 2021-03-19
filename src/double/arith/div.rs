@@ -208,9 +208,9 @@ impl DivAssign for Double {
     /// ```
     #[inline]
     fn div_assign(&mut self, other: Double) {
-        let (a, b) = self.div(other).into();
-        self.0 = a;
-        self.1 = b;
+        let r = self.div(other);
+        self.0 = r.0;
+        self.1 = r.1;
     }
 }
 
@@ -235,9 +235,9 @@ impl DivAssign<&Double> for Double {
     /// ```
     #[inline]
     fn div_assign(&mut self, other: &Double) {
-        let (a, b) = self.div(*other).into();
-        self.0 = a;
-        self.1 = b;
+        let r = self.div(*other);
+        self.0 = r.0;
+        self.1 = r.1;
     }
 }
 

@@ -189,30 +189,6 @@ impl Double {
             Double::ONE
         }
     }
-
-    /// Assigns the components of a tuple to the components of the number.
-    ///
-    /// The parameters will be normalized before being assigned to the number's components.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// let mut x = dd!(10);
-    /// x.assign((Double::PI[1], Double::PI[0])); // reversed to show normalization
-    /// assert!(x == Double::PI);
-    /// # }
-    #[inline]
-    pub fn assign(&mut self, (a, b): (f64, f64)) {
-        let (s, e) = if a.abs() > b.abs() {
-            core::quick_two_sum(a, b)
-        } else {
-            core::quick_two_sum(b, a)
-        };
-        self.0 = s;
-        self.1 = e;
-    }
 }
 
 #[cfg(test)]
@@ -404,15 +380,5 @@ mod tests {
     #[test]
     fn signum_nan() {
         assert!(Double::NAN.signum().is_nan());
-    }
-
-    #[test]
-    fn assign() {
-        let mut a = Double::ZERO;
-        a.assign(Double::PI.into());
-        assert_close!(a, Double::PI);
-
-        a.assign((Double::PI[1], Double::PI[0]));
-        assert_close!(a, Double::PI);
     }
 }
