@@ -22,8 +22,24 @@ impl Add for Quad {
     // This function is the real reason indexing was added to quads. Unlike multiplication,
     // where every component has a specific function and appears in a specific place in the
     // algorithm, addition is just a repeated iteration over each successive component.
+
+    /// Adds this `Quad` to another, producing a new `Quad` as a result.
+    /// 
+    /// This implements the `+` operator between two `Quad`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = Quad::E + Quad::PI;
+    /// let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[allow(clippy::suspicious_arithmetic_impl, clippy::many_single_char_names)]
-    #[inline]
     fn add(self, other: Quad) -> Quad {
         if self.is_nan() || other.is_nan() {
             Quad::NAN
@@ -56,7 +72,7 @@ impl Add for Quad {
             let mut j = 0;
             let mut k = 0;
 
-            let mut x = [0.0, 0.0, 0.0, 0.0];
+            let mut x = [0.0; 4];
 
             // These two assignments, along with the reassignments of the same variables in
             // the `accumulate` call below, act as a merge sort. The largest component
@@ -114,9 +130,50 @@ impl Add for Quad {
     }
 }
 
+impl Add for &Quad {
+    type Output = Quad;
+
+    /// Adds a reference to this `Quad` to another, producing a new `Quad` as a result.
+    /// 
+    /// This implements the `+` operator between two references to `Quad`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = &Quad::E + &Quad::PI;
+    /// let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
+    #[inline]
+    fn add(self, other: &Quad) -> Quad {
+        (*self).add(*other)
+    }
+}
+
 impl Add<&Quad> for Quad {
     type Output = Quad;
 
+    /// Adds this `Quad` to a reference to another, producing a new `Quad` as a result.
+    /// 
+    /// This implements the `+` operator between a `Quad` and a reference to a `Quad`.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = Quad::E + &Quad::PI;
+    /// let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn add(self, other: &Quad) -> Quad {
         self.add(*other)
@@ -126,6 +183,23 @@ impl Add<&Quad> for Quad {
 impl Add<Quad> for &Quad {
     type Output = Quad;
 
+    /// Adds a reference to this `Quad` to another `Quad`, producing a new `Quad` as a
+    /// result.
+    ///
+    /// This implements the `+` operator between a reference to a `Quad` and a `Quad`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = &Quad::E + Quad::PI;
+    /// let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn add(self, other: Quad) -> Quad {
         (*self).add(other)
@@ -133,6 +207,23 @@ impl Add<Quad> for &Quad {
 }
 
 impl AddAssign for Quad {
+    /// Adds another `Quad` to this one, modifying this one to equal the result.
+    /// 
+    /// This implements the `+=` operator between two `Quad`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let mut x = Quad::E;
+    /// x += Quad::PI;
+    /// let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn add_assign(&mut self, other: Quad) {
         self.assign(self.add(other).into());
@@ -140,6 +231,24 @@ impl AddAssign for Quad {
 }
 
 impl AddAssign<&Quad> for Quad {
+    /// Adds a reference to another `Quad` to this one, modifying this one to equal the
+    /// result.
+    ///
+    /// This implements the `+=` operator between a `Quad` and a reference to a `Quad`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let mut x = Quad::E;
+    /// x += &Quad::PI;
+    /// let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn add_assign(&mut self, other: &Quad) {
         self.assign(self.add(*other).into());
@@ -154,6 +263,12 @@ mod tests {
     fn num_num() {
         let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
         assert_close!(expected, Quad::PI + Quad::E);
+    }
+
+    #[test]
+    fn ref_ref() {
+        let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
+        assert_close!(expected, &Quad::PI + &Quad::E);
     }
 
     #[test]
