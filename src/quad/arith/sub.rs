@@ -9,15 +9,75 @@ use std::ops::{Add, Sub, SubAssign};
 impl Sub for Quad {
     type Output = Quad;
 
+    /// Subtracts another `Quad` from this one, producing a new `Quad` as a result.
+    /// 
+    /// This implements the binary `-` operator between two `Quad`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = Quad::E - Quad::PI;
+    /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn sub(self, other: Quad) -> Quad {
         self.add(-other)
     }
 }
 
+impl Sub for &Quad {
+    type Output = Quad;
+
+    /// Subtracts a reference to another `Quad` from this one, producing a new `Quad` as a
+    /// result.
+    ///
+    /// This implements the binary `-` operator between two references to `Quad`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = &Quad::E - &Quad::PI;
+    /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
+    #[inline]
+    fn sub(self, other: &Quad) -> Quad {
+        (*self).add(-*other)
+    }
+}
+
 impl Sub<&Quad> for Quad {
     type Output = Quad;
 
+    /// Subtracts a reference to another `Quad` from this `Quad`, producing a new `Quad` as
+    /// a result.
+    ///
+    /// This implements the binary `-` operator between a `Quad` and a reference to a
+    /// `Quad`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = Quad::E - &Quad::PI;
+    /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn sub(self, other: &Quad) -> Quad {
         self.add(-*other)
@@ -27,6 +87,24 @@ impl Sub<&Quad> for Quad {
 impl Sub<Quad> for &Quad {
     type Output = Quad;
 
+    /// Subtracts another `Quad` from a reference to this one, producing a new `Quad` as a
+    /// result.
+    ///
+    /// This implements the binary `-` operator between a reference to a `Quad` and a
+    /// `Quad`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = &Quad::E - Quad::PI;
+    /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn sub(self, other: Quad) -> Quad {
         (*self).add(-other)
@@ -34,6 +112,23 @@ impl Sub<Quad> for &Quad {
 }
 
 impl SubAssign for Quad {
+    /// Subtracts another `Quad` from this one, modifying this one to equal the result.
+    /// 
+    /// This implements the `-=` operator between two `Quad`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let mut x = Quad::E;
+    /// x -= Quad::PI;
+    /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn sub_assign(&mut self, other: Quad) {
         self.assign(self.add(-other).into());
@@ -41,6 +136,24 @@ impl SubAssign for Quad {
 }
 
 impl SubAssign<&Quad> for Quad {
+    /// Subtracts a reference to another `Quad` from this `Quad`, modifying this one to
+    /// equal the result.
+    ///
+    /// This implements the `-=` operator between a `Quad` and a reference to a `Quad`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let mut x = Quad::E;
+    /// x -= &Quad::PI;
+    /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn sub_assign(&mut self, other: &Quad) {
         self.assign(self.add(-*other).into());
@@ -55,6 +168,12 @@ mod tests {
     fn num_num() {
         let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
         assert_close!(expected, Quad::PI - Quad::E);
+    }
+
+    #[test]
+    fn ref_ref() {
+        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+        assert_close!(expected, &Quad::PI - &Quad::E);
     }
 
     #[test]
