@@ -9,6 +9,23 @@ use std::ops::{Div, Rem, RemAssign};
 impl Rem for Quad {
     type Output = Quad;
 
+    /// Divides this `Quad` by another, producing a new `Quad` of the remainder as a
+    /// result.
+    ///
+    /// This implements the `%` operator between two `Quad`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = Quad::PI % Quad::E;
+    /// let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn rem(self, other: Quad) -> Quad {
         let n = self.div(other).trunc();
@@ -16,9 +33,52 @@ impl Rem for Quad {
     }
 }
 
+impl Rem for &Quad {
+    type Output = Quad;
+
+    /// Divides a reference to this `Quad` by another, producing a new `Quad` of the
+    /// remainder as a result.
+    ///
+    /// This implements the `%` operator between two references to `Quad`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = &Quad::PI % &Quad::E;
+    /// let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
+    #[inline]
+    fn rem(self, other: &Quad) -> Quad {
+        (*self).rem(*other)
+    }
+}
+
 impl Rem<&Quad> for Quad {
     type Output = Quad;
 
+    /// Divides this `Quad` by a reference to another, producing a new `Quad` of the
+    /// remainder as a result.
+    ///
+    /// This implements the `%` operator between a `Quad` and a reference to a `Quad`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = Quad::PI % &Quad::E;
+    /// let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn rem(self, other: &Quad) -> Quad {
         self.rem(*other)
@@ -28,6 +88,23 @@ impl Rem<&Quad> for Quad {
 impl Rem<Quad> for &Quad {
     type Output = Quad;
 
+    /// Divides a reference to this `Quad` by another `Quad`, producing a new `Quad` of the
+    /// remainder as a result.
+    ///
+    /// This implements the `%` operator between a reference to a `Quad` and a `Quad`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = &Quad::PI % Quad::E;
+    /// let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn rem(self, other: Quad) -> Quad {
         (*self).rem(other)
@@ -35,6 +112,23 @@ impl Rem<Quad> for &Quad {
 }
 
 impl RemAssign for Quad {
+    /// Divides this `Quad` by another, modifying this one to equal the remainder.
+    /// 
+    /// This implements the `%=` operator between two `Quad`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let mut x = Quad::PI;
+    /// x %= Quad::E;
+    /// let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn rem_assign(&mut self, other: Quad) {
         self.assign(self.rem(other).into());
@@ -42,6 +136,24 @@ impl RemAssign for Quad {
 }
 
 impl RemAssign<&Quad> for Quad {
+    /// Divides this `Quad` by a reference to another, modifying this one to equal the
+    /// remainder.
+    ///
+    /// This implements the `%=` operator between a `Quad` and a reference to a `Quad`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let mut x = Quad::PI;
+    /// x %= &Quad::E;
+    /// let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn rem_assign(&mut self, other: &Quad) {
         self.assign(self.rem(*other).into());
@@ -56,6 +168,12 @@ mod tests {
     fn num_num() {
         let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
         assert_close!(expected, Quad::PI % Quad::E);
+    }
+
+    #[test]
+    fn ref_ref() {
+        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+        assert_close!(expected, &Quad::PI % &Quad::E);
     }
 
     #[test]
