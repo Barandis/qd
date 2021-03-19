@@ -101,6 +101,11 @@
 <span id="98"> 98</span>
 <span id="99"> 99</span>
 <span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -111,10 +116,15 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Simultaneously computes the hyperbolic sine and cosine of the number.</span>
+    <span class="doccomment">/// Simultaneously computes the hyperbolic sine and cosine (sinh and cosh) of the</span>
+    <span class="doccomment">/// `Quad`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// This method is more efficient to run than [`sinh`] and [`cosh`]</span>
-    <span class="doccomment">/// individually and is useful when both numbers are needed.</span>
+    <span class="doccomment">/// The domain of this function is (-∞, ∞), and the range is (-∞, ∞) for the first</span>
+    <span class="doccomment">/// component of the answer (the hyperbolic sine) and [1, ∞) for the second (the</span>
+    <span class="doccomment">/// hyperbolic cosine).</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This method is more efficient to run than [`sinh`] and [`cosh`] individually and is</span>
+    <span class="doccomment">/// useful when both numbers are needed.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>

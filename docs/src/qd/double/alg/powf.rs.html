@@ -143,7 +143,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
 <span class="kw">impl</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Calculates the number raised to a double-double power.</span>
+    <span class="doccomment">/// Calculates the `Double` raised to a `Double` power.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This function is implemented using the logarithm of the number being raised, which</span>
     <span class="doccomment">/// means it will not work for negatives even though raising a negative number to a</span>
@@ -153,8 +153,6 @@
     <span class="doccomment">/// It is possible that a new algorithm will eventually remove this restriction, though</span>
     <span class="doccomment">/// this is a surprisingly hard problem (see [this libm implementation][1], for</span>
     <span class="doccomment">/// example).</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// [1]: http://www.netlib.org/fdlibm/e_pow.c</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -168,6 +166,8 @@
     <span class="doccomment">/// assert!(diff &lt; dd!(1e-30));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [1]: http://www.netlib.org/fdlibm/e_pow.c</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">powf</span>(<span class="self">self</span>, <span class="ident">n</span>: <span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {

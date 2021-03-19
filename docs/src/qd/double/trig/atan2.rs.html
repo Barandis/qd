@@ -172,6 +172,23 @@
 <span id="169">169</span>
 <span id="170">170</span>
 <span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -181,10 +198,27 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
 <span class="kw">impl</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Computes the 2-argument arctangent of the number (`y`) and `other` (`x`) in radians.</span>
+    <span class="doccomment">/// Computes the 2-argument inverse tangent (tan&lt;sup&gt;-1&lt;/sup&gt;) of this `Double` and</span>
+    <span class="doccomment">/// another `Double`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// The second argument allows the avoidance of ambiguities in the single-argument</span>
-    <span class="doccomment">/// [`atan`] function, notably allowing the determination of quadrant.</span>
+    <span class="doccomment">/// The single-argument [`atan`] function always returns values in either the first (0</span>
+    <span class="doccomment">/// to π/2) or fourth (0 to -π/2) quadrants. However, first-quadrant results repeat</span>
+    <span class="doccomment">/// themselves in the third quadrant, and fourth-quadrant results repeat themselves in</span>
+    <span class="doccomment">/// the second. For example, the tangent of π/4 is 1, but so is the tangent of -3π/4.</span>
+    <span class="doccomment">/// Single-argument [`atan`] cannot distinguish between these two possibilities, so it</span>
+    <span class="doccomment">/// always returns the one in the range [-π/2, π/2].</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The double-argument `atan2` can return either, depending on the arguments. It</span>
+    <span class="doccomment">/// essentially returns the angle between the positive x-axis and the point (x, y),</span>
+    <span class="doccomment">/// where *y* is the `Double` that `atan2` is called on and *x* is the argument.</span>
+    <span class="doccomment">/// Therefore `Double::ONE.atan2(Double::ONE)` is π/4 (first quadrant), but flipping</span>
+    <span class="doccomment">/// both signs to `(-Double::ONE).atan2(-Double::ONE)` gives the -3π/4 result (third</span>
+    <span class="doccomment">/// quadrant).</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This function extends the range of the result to [-π, π].</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Because this function deals with angles around the origin and Cartesian coordinates,</span>
+    <span class="doccomment">/// it&#39;s very useful for converting between Cartesian and polar coordinates.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>

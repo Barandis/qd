@@ -528,15 +528,72 @@
 <span id="525">525</span>
 <span id="526">526</span>
 <span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">display</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">display</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Display</span>, <span class="ident">Formatter</span>, <span class="ident">LowerExp</span>, <span class="prelude-ty">Result</span>, <span class="ident">UpperExp</span>};
 
 <span class="kw">const</span> <span class="ident">DEFAULT_PRECISION</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">31</span>;
 <span class="kw">const</span> <span class="ident">TEN</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="ident">Double</span>(<span class="number">10.0</span>, <span class="number">0.0</span>);
@@ -586,7 +643,7 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">digits</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">precision</span>);
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">precision</span> {
         <span class="kw">let</span> <span class="ident">digit</span> <span class="op">=</span> <span class="ident">r</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span>;
-        <span class="kw-2">*</span><span class="ident">r</span> <span class="op">-</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="ident">digit</span>);
+        <span class="kw-2">*</span><span class="ident">r</span> <span class="op">-</span><span class="op">=</span> <span class="ident">Double</span>(<span class="ident">digit</span>.<span class="ident">into</span>(), <span class="number">0.0</span>);
         <span class="kw-2">*</span><span class="ident">r</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">TEN</span>;
         <span class="ident">digits</span>.<span class="ident">push</span>(<span class="ident">digit</span>);
     }
@@ -613,8 +670,8 @@
     <span class="comment">// We pass one more than the actual precision to leave an extra digit at the end to do</span>
     <span class="comment">// rounding</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">digits</span> <span class="op">=</span> <span class="ident">extract_digits</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>, <span class="ident">precision</span> <span class="op">+</span> <span class="number">1</span>);
-    <span class="ident">correct_range</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">digits</span>);
-    <span class="ident">round_vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">digits</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">exp</span>);
+    <span class="ident">display</span>::<span class="ident">correct_range</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">digits</span>);
+    <span class="ident">display</span>::<span class="ident">round_vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">digits</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">exp</span>);
 
     (<span class="ident">digits</span>, <span class="ident">exp</span>)
 }
@@ -622,7 +679,7 @@
 <span class="comment">// Potentially pushes a sign character to the supplied vector. Returns whether or not a</span>
 <span class="comment">// character was actually added, information that is used later in formatting.</span>
 <span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">fn</span> <span class="ident">push_sign</span>(<span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">Double</span>, <span class="ident">formatter</span>: <span class="kw-2">&amp;</span><span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+<span class="kw">fn</span> <span class="ident">push_sign</span>(<span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">Double</span>, <span class="ident">formatter</span>: <span class="kw-2">&amp;</span><span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sign</span> <span class="op">=</span> <span class="bool-val">true</span>;
     <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_sign_negative</span>() {
         <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;-&#39;</span>);
@@ -636,22 +693,22 @@
 
 <span class="comment">// Formats `value` as a fixed-point number, with the format defined by `f`.</span>
 <span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">fn</span> <span class="ident">format_fixed</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">Double</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">fn</span> <span class="ident">format_fixed</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">Double</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sign</span> <span class="op">=</span> <span class="bool-val">true</span>;
     <span class="kw">let</span> <span class="ident">precision</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">precision</span>().<span class="ident">unwrap_or</span>(<span class="ident">DEFAULT_PRECISION</span>);
 
     <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_nan</span>() {
-        <span class="ident">push_nan</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
+        <span class="ident">display</span>::<span class="ident">push_nan</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
     } <span class="kw">else</span> {
         <span class="ident">sign</span> <span class="op">=</span> <span class="ident">push_sign</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">value</span>, <span class="ident">f</span>);
 
         <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_infinite</span>() {
-            <span class="ident">push_inf</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
+            <span class="ident">display</span>::<span class="ident">push_inf</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_zero</span>() {
-            <span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
+            <span class="ident">display</span>::<span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
         } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">width</span> <span class="op">=</span> <span class="ident">precision</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="ident">value</span>.<span class="ident">abs</span>().<span class="ident">log10</span>().<span class="ident">floor</span>().<span class="ident">as_int</span>() <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="number">1</span>;
+            <span class="kw">let</span> <span class="ident">width</span> <span class="op">=</span> <span class="ident">precision</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">value</span>.<span class="ident">abs</span>().<span class="ident">log10</span>().<span class="ident">floor</span>()) <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="number">1</span>;
             <span class="comment">// Higher than the max-length number + max precision so that users can do their</span>
             <span class="comment">// format!(&quot;{:.30}&quot;, Double::from_str(&quot;999999999999999999999999999999&quot;)) in</span>
             <span class="comment">// peace</span>
@@ -659,17 +716,17 @@
 
             <span class="comment">// Special case: zero precision, |value| &lt; 1.0</span>
             <span class="comment">// In this case a number greater than 0.5 prints 0 and should print 1</span>
-            <span class="kw">if</span> <span class="ident">precision</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">value</span>.<span class="ident">abs</span>().<span class="ident">as_float</span>() <span class="op">&lt;</span> <span class="number">1.0</span> {
-                <span class="ident">result</span>.<span class="ident">push</span>(<span class="kw">if</span> <span class="ident">value</span>.<span class="ident">abs</span>().<span class="ident">as_float</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="number">0.5</span> {
+            <span class="kw">if</span> <span class="ident">precision</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">value</span>.<span class="ident">abs</span>()) <span class="op">&lt;</span> <span class="number">1.0</span> {
+                <span class="ident">result</span>.<span class="ident">push</span>(<span class="kw">if</span> <span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">value</span>.<span class="ident">abs</span>()) <span class="op">&gt;</span><span class="op">=</span> <span class="number">0.5</span> {
                     <span class="string">&#39;1&#39;</span>
                 } <span class="kw">else</span> {
                     <span class="string">&#39;0&#39;</span>
                 });
             } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">width</span> <span class="op">&lt;</span> <span class="number">0</span> {
-                <span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
+                <span class="ident">display</span>::<span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
             } <span class="kw">else</span> {
                 <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">digits</span>, <span class="ident">exp</span>) <span class="op">=</span> <span class="ident">to_digits</span>(<span class="ident">value</span>, <span class="ident">extra</span> <span class="kw">as</span> <span class="ident">usize</span>);
-                <span class="ident">push_fixed_digits</span>(
+                <span class="ident">display</span>::<span class="ident">push_fixed_digits</span>(
                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>,
                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">digits</span>,
                     <span class="ident">exp</span>,
@@ -680,82 +737,159 @@
         }
 
         <span class="kw">if</span> <span class="op">!</span><span class="ident">value</span>.<span class="ident">is_infinite</span>() {
-            <span class="ident">drop_trailing_zeros</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
+            <span class="ident">display</span>::<span class="ident">drop_trailing_zeros</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
         }
     }
-    <span class="ident">align_and_fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>, <span class="ident">sign</span>);
+    <span class="ident">display</span>::<span class="ident">align_and_fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>, <span class="ident">sign</span>);
 
     <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>.<span class="ident">into_iter</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>())
 }
 
 <span class="comment">// Formats `value` as a exponential number, with the format defined by `f`.</span>
 <span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">fn</span> <span class="ident">format_exp</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">Double</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>, <span class="ident">upper</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">fn</span> <span class="ident">format_exp</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">Double</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>, <span class="ident">upper</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sign</span> <span class="op">=</span> <span class="bool-val">true</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">exp</span> <span class="op">=</span> <span class="number">0</span>;
 
     <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_nan</span>() {
-        <span class="ident">push_nan</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
+        <span class="ident">display</span>::<span class="ident">push_nan</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
     } <span class="kw">else</span> {
         <span class="ident">sign</span> <span class="op">=</span> <span class="ident">push_sign</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">value</span>, <span class="ident">f</span>);
 
         <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_infinite</span>() {
-            <span class="ident">push_inf</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
+            <span class="ident">display</span>::<span class="ident">push_inf</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_zero</span>() {
-            <span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
+            <span class="ident">display</span>::<span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">width</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">precision</span>().<span class="ident">unwrap_or</span>(<span class="ident">DEFAULT_PRECISION</span>) <span class="op">+</span> <span class="number">1</span>;
             <span class="kw">let</span> (<span class="ident">digits</span>, <span class="ident">e</span>) <span class="op">=</span> <span class="ident">to_digits</span>(<span class="ident">value</span>, <span class="ident">width</span>);
             <span class="ident">exp</span> <span class="op">=</span> <span class="ident">e</span>;
-            <span class="ident">push_exp_digits</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="kw-2">&amp;</span><span class="ident">digits</span>, <span class="ident">f</span>.<span class="ident">precision</span>(), <span class="ident">DEFAULT_PRECISION</span>);
+            <span class="ident">display</span>::<span class="ident">push_exp_digits</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="kw-2">&amp;</span><span class="ident">digits</span>, <span class="ident">f</span>.<span class="ident">precision</span>(), <span class="ident">DEFAULT_PRECISION</span>);
         }
 
         <span class="kw">if</span> <span class="op">!</span><span class="ident">value</span>.<span class="ident">is_infinite</span>() {
-            <span class="ident">drop_trailing_zeros</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
+            <span class="ident">display</span>::<span class="ident">drop_trailing_zeros</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
             <span class="kw">let</span> <span class="ident">marker</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">upper</span> { <span class="string">&#39;E&#39;</span> } <span class="kw">else</span> { <span class="string">&#39;e&#39;</span> };
-            <span class="ident">push_exponent</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">marker</span>, <span class="ident">exp</span>);
+            <span class="ident">display</span>::<span class="ident">push_exponent</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">marker</span>, <span class="ident">exp</span>);
         }
     }
-    <span class="ident">align_and_fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>, <span class="ident">sign</span>);
+    <span class="ident">display</span>::<span class="ident">align_and_fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>, <span class="ident">sign</span>);
 
     <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>.<span class="ident">into_iter</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>())
 }
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Double</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Double</span> {
+    <span class="doccomment">/// Formats a `Double` for display.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// All formatting options that are shown in [`std::fmt`] are supported *except* for</span>
+    <span class="doccomment">/// ones that are typically meant only for integers (hexadecimal, binary, octal, and</span>
+    <span class="doccomment">/// pointer formats). Because of this, the &quot;alternate&quot; (`#`) flag is only recognized</span>
+    <span class="doccomment">/// along with `?`, pretty-printing the `Debug` output.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// By default, `Double`s are printed with 31 digits but drop trailing zeros.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This function also provides the formatting for [`to_string`], which renders the</span>
+    <span class="doccomment">/// `Double` as if formatted with an empty format specifier (`&quot;{}&quot;`).</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
+    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// assert!(format!(&quot;{}&quot;, dd!(1.5)) == &quot;1.5&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// // The next digit in π is 0, which is why it&#39;s one digit shorter than e</span>
+    <span class="doccomment">/// assert!(format!(&quot;{}&quot;, Double::PI) == &quot;3.14159265358979323846264338328&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{}&quot;, Double::E) == &quot;2.718281828459045235360287471353&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// // to_string renders as if formatted with &quot;{}&quot;</span>
+    <span class="doccomment">/// assert!(Double::PI.to_string() == &quot;3.14159265358979323846264338328&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// // debug</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:?}&quot;, Double::PI) ==</span>
+    <span class="doccomment">///     &quot;Double(3.141592653589793e0, 1.2246467991473532e-16)&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:#?}&quot;, Double::PI) ==</span>
+    <span class="doccomment">/// &quot;Double(</span>
+    <span class="doccomment">///     3.141592653589793e0,</span>
+    <span class="doccomment">///     1.2246467991473532e-16</span>
+    <span class="doccomment">/// )&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// // precision and exponents</span>
+    <span class="doccomment">/// let value = dd!(0.016_777_216);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:.0}&quot;, value) == &quot;0&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:.5}&quot;, value) == &quot;0.01678&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:.12}&quot;, value) == &quot;0.016777216000&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:.3e}&quot;, value) == &quot;1.678e-2&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:.*e}&quot;, 3, value) == &quot;1.678e-2&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{0:.1$E}&quot;, value, 4) == &quot;1.6777E-2&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:.prec$E}&quot;, value, prec = 10) == &quot;1.6777216000E-2&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// // width, alignment, and fill</span>
+    <span class="doccomment">/// let value = dd!(123_456);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:10}&quot;, value) == &quot;    123456&quot;); // right-align is the default</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:&gt;10}&quot;, value) == &quot;    123456&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:&lt;10}&quot;, value) == &quot;123456    &quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:^10}&quot;, value) == &quot;  123456  &quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:0&gt;10}&quot;, value) == &quot;0000123456&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:*&lt;10}&quot;, value) == &quot;123456****&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:&#39;^10}&quot;, value) == &quot;&#39;&#39;123456&#39;&#39;&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// // plus sign and sign-aware zero fill</span>
+    <span class="doccomment">/// let value = dd!(123_456);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:+}&quot;, value) == &quot;+123456&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:0&gt;10}&quot;, -value) == &quot;000-123456&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:010}&quot;, -value) == &quot;-000123456&quot;);</span>
+    <span class="doccomment">/// assert!(format!(&quot;{:+012e}&quot;, value) == &quot;+001.23456e5&quot;);</span>
+    <span class="doccomment">/// # }</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`std::fmt`]: https://doc.rust-lang.org/std/fmt/index.html</span>
+    <span class="doccomment">/// [`to_string`]: #tymethod.to_string</span>
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span> {
         <span class="ident">format_fixed</span>(<span class="self">self</span>, <span class="ident">f</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">LowerExp</span> <span class="kw">for</span> <span class="ident">Double</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">impl</span> <span class="ident">LowerExp</span> <span class="kw">for</span> <span class="ident">Double</span> {
+    <span class="doccomment">/// Formats a `Double` for display when the &quot;`e`&quot; formatting option is specified.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// See [`Display::fmt`](#method.fmt-1) for more information.</span>
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span> {
         <span class="ident">format_exp</span>(<span class="self">self</span>, <span class="ident">f</span>, <span class="bool-val">false</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">UpperExp</span> <span class="kw">for</span> <span class="ident">Double</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">impl</span> <span class="ident">UpperExp</span> <span class="kw">for</span> <span class="ident">Double</span> {
+    <span class="doccomment">/// Formats a `Double` for display when the &quot;`E`&quot; formatting option is specified.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// See [`Display::fmt`](#method.fmt-1) for more information.</span>
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span> {
         <span class="ident">format_exp</span>(<span class="self">self</span>, <span class="ident">f</span>, <span class="bool-val">true</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Double</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">impl</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Double</span> {
+    <span class="doccomment">/// Formats a `Double` for display when the &quot;`?`&quot; formatting option is specified.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// See [`Display::fmt`](#method.fmt-1) for more information.</span>
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span> {
         <span class="kw">let</span> <span class="ident">alt</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">alternate</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;Double(&quot;</span>);
         <span class="kw">if</span> <span class="ident">alt</span> {
             <span class="ident">r</span>.<span class="ident">push_str</span>(<span class="string">&quot;\n    &quot;</span>);
         }
-        <span class="ident">r</span>.<span class="ident">push_str</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:e}, &quot;</span>, <span class="self">self</span>.<span class="number">0</span>).<span class="ident">as_str</span>());
+        <span class="ident">r</span>.<span class="ident">push_str</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:e},&quot;</span>, <span class="self">self</span>.<span class="number">0</span>).<span class="ident">as_str</span>());
         <span class="kw">if</span> <span class="ident">alt</span> {
             <span class="ident">r</span>.<span class="ident">push_str</span>(<span class="string">&quot;\n    &quot;</span>);
+        } <span class="kw">else</span> {
+            <span class="ident">r</span>.<span class="ident">push</span>(<span class="string">&#39; &#39;</span>);
         }
         <span class="ident">r</span>.<span class="ident">push_str</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:e}&quot;</span>, <span class="self">self</span>.<span class="number">1</span>).<span class="ident">as_str</span>());
         <span class="kw">if</span> <span class="ident">alt</span> {
-            <span class="ident">r</span>.<span class="ident">push_str</span>(<span class="string">&quot;\n&quot;</span>);
+            <span class="ident">r</span>.<span class="ident">push</span>(<span class="string">&#39;\n&#39;</span>);
         }
-        <span class="ident">r</span>.<span class="ident">push_str</span>(<span class="string">&quot;)&quot;</span>);
+        <span class="ident">r</span>.<span class="ident">push</span>(<span class="string">&#39;)&#39;</span>);
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">r</span>)
     }
 }
@@ -767,8 +901,6 @@
 
     <span class="kw">const</span> <span class="ident">PI_TIMES_10_20</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;314159265358979323846&quot;</span>;
     <span class="kw">const</span> <span class="ident">PI_TIMES_10_20_EXP</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;3.14159265358979323846e20&quot;</span>;
-
-    <span class="comment">// #region Plain formatting</span>
 
     <span class="kw">fn</span> <span class="ident">plain</span>(<span class="ident">value</span>: <span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">value</span>)
@@ -850,10 +982,6 @@
         );
     }
 
-    <span class="comment">// #endregion</span>
-
-    <span class="comment">// #region Exponential formatting</span>
-
     <span class="kw">fn</span> <span class="ident">exp</span>(<span class="ident">value</span>: <span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:e}&quot;</span>, <span class="ident">value</span>)
     }
@@ -917,10 +1045,6 @@
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_exp</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">4.2e-4</span>)).<span class="ident">as_str</span>(), <span class="string">&quot;-4.2e-4&quot;</span>));
     }
 
-    <span class="comment">// #endregion</span>
-
-    <span class="comment">// #region Precision formatting</span>
-
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">format_precision_integer</span>() {
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.3}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">23</span>)), <span class="string">&quot;23.000&quot;</span>);
@@ -963,10 +1087,6 @@
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{0:.1$e}&quot;</span>, <span class="ident">value</span>, <span class="number">4</span>), <span class="string">&quot;1.6777e-2&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.prec$e}&quot;</span>, <span class="ident">value</span>, <span class="ident">prec</span> <span class="op">=</span> <span class="number">10</span>), <span class="string">&quot;1.6777216000e-2&quot;</span>);
     }
-
-    <span class="comment">// #endregion</span>
-
-    <span class="comment">// #region Width, fill, and alignment formatting</span>
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">format_width_default_align</span>() {
@@ -1030,10 +1150,6 @@
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:012e}&quot;</span>, <span class="op">-</span><span class="ident">value</span>), <span class="string">&quot;-001.23456e5&quot;</span>);
     }
 
-    <span class="comment">// #endregion</span>
-
-    <span class="comment">// #region Miscellaneous formatting</span>
-
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">format_misc_plus_sign</span>() {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">123_456</span>);
@@ -1053,8 +1169,6 @@
         <span class="comment">// point)</span>
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.30}&quot;</span>, <span class="ident">value</span>).<span class="ident">len</span>(), <span class="number">61</span>);
     }
-
-    <span class="comment">// #endregion</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "qd";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

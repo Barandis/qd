@@ -84,11 +84,11 @@
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">common</span>::<span class="ident">mul_pwr2</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">common</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
 <span class="kw">impl</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Calculates the square root of the number.</span>
+    <span class="doccomment">/// Calculates the square root of the `Double`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -120,7 +120,7 @@
             <span class="comment">// double-doubles only requires one iteration.</span>
             <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from_div</span>(<span class="number">1.0</span>, <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sqrt</span>());
             <span class="kw">let</span> <span class="ident">ax</span> <span class="op">=</span> <span class="self">self</span> <span class="op">*</span> <span class="ident">x</span>;
-            <span class="ident">ax</span> <span class="op">+</span> (<span class="self">self</span> <span class="op">-</span> <span class="ident">ax</span>.<span class="ident">sqr</span>()) <span class="op">*</span> <span class="ident">mul_pwr2</span>(<span class="ident">x</span>, <span class="number">0.5</span>)
+            <span class="ident">ax</span> <span class="op">+</span> (<span class="self">self</span> <span class="op">-</span> <span class="ident">ax</span>.<span class="ident">sqr</span>()) <span class="op">*</span> <span class="ident">common</span>::<span class="ident">mul_pwr2</span>(<span class="ident">x</span>, <span class="number">0.5</span>)
         }
     }
 }

@@ -145,12 +145,12 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
 <span class="kw">impl</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Calculates the number raised to an integral power.</span>
+    <span class="doccomment">/// Calculates the `Double` raised to an integer power.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This function correctly handles the special inputs defined in IEEE 754. In</span>
     <span class="doccomment">/// particular:</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// * `x.powi(0)` is `1` for any `x` (including 0, `NaN`, or infinity)</span>
+    <span class="doccomment">/// * `x.powi(0)` is 1 for any `x` (including 0, `NaN`, or infinity)</span>
     <span class="doccomment">/// * `x.powi(n)` is ±∞ for `x` = ±0 and any odd negative `n`</span>
     <span class="doccomment">/// * `x.powi(n)` is +∞ for `x` = ±0 and any even negative `n`</span>
     <span class="doccomment">/// * `x.powi(n)` is ±0 for `x` = ±0 and any odd positive `n`</span>

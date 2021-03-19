@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["qd"] = [{"text":"impl Debug for Double","synthetic":false,"types":[]},{"text":"impl Debug for Quad","synthetic":false,"types":[]},{"text":"impl Debug for ParseError","synthetic":false,"types":[]},{"text":"impl Debug for ErrorKind","synthetic":false,"types":[]}];
+implementors["qd"] = [{"text":"impl Debug for Double","synthetic":false,"types":[]},{"text":"impl Debug for Quad","synthetic":false,"types":[]},{"text":"impl Debug for ParseDoubleError","synthetic":false,"types":[]},{"text":"impl Debug for ParseQuadError","synthetic":false,"types":[]},{"text":"impl Debug for ErrorKind","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

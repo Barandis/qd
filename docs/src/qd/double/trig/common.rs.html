@@ -100,7 +100,7 @@
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">common</span>::{<span class="ident">mul_pwr2</span>, <span class="ident">INV_FACTS</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">common</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
 <span class="comment">// Compute sin a using the Taylor series. This assumes that |a| &lt;= π/32.</span>
@@ -109,7 +109,7 @@
     <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">is_zero</span>() {
         <span class="ident">Double</span>::<span class="ident">ZERO</span>
     } <span class="kw">else</span> {
-        <span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">mul_pwr2</span>(<span class="ident">a</span>.<span class="ident">abs</span>() <span class="op">*</span> <span class="ident">Double</span>::<span class="ident">EPSILON</span>, <span class="number">0.5</span>);
+        <span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">common</span>::<span class="ident">mul_pwr2</span>(<span class="ident">a</span>.<span class="ident">abs</span>() <span class="op">*</span> <span class="ident">Double</span>::<span class="ident">EPSILON</span>, <span class="number">0.5</span>);
         <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="op">-</span><span class="ident">a</span>.<span class="ident">sqr</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">a</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">a</span>;
@@ -117,10 +117,10 @@
 
         <span class="kw">loop</span> {
             <span class="ident">r</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">x</span>;
-            <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">INV_FACTS</span>[<span class="ident">i</span>];
+            <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">common</span>::<span class="ident">INV_FACTS</span>[<span class="ident">i</span>];
             <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
             <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">2</span>;
-            <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">INV_FACTS</span>.<span class="ident">len</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">t</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">threshold</span> {
+            <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">common</span>::<span class="ident">INV_FACTS</span>.<span class="ident">len</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">t</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">threshold</span> {
                 <span class="kw">break</span>;
             }
         }
@@ -134,18 +134,18 @@
     <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">is_zero</span>() {
         <span class="ident">Double</span>::<span class="ident">ONE</span>
     } <span class="kw">else</span> {
-        <span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">mul_pwr2</span>(<span class="ident">Double</span>::<span class="ident">EPSILON</span>, <span class="number">0.5</span>);
+        <span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">common</span>::<span class="ident">mul_pwr2</span>(<span class="ident">Double</span>::<span class="ident">EPSILON</span>, <span class="number">0.5</span>);
         <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="op">-</span><span class="ident">a</span>.<span class="ident">sqr</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">x</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">+</span> <span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">0.5</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">+</span> <span class="ident">common</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">0.5</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">1</span>;
 
         <span class="kw">loop</span> {
             <span class="ident">r</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">x</span>;
-            <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">INV_FACTS</span>[<span class="ident">i</span>];
+            <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">common</span>::<span class="ident">INV_FACTS</span>[<span class="ident">i</span>];
             <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
             <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">2</span>;
-            <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">INV_FACTS</span>.<span class="ident">len</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">t</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">threshold</span> {
+            <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">common</span>::<span class="ident">INV_FACTS</span>.<span class="ident">len</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">t</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">threshold</span> {
                 <span class="kw">break</span>;
             }
         }
@@ -178,12 +178,12 @@
 
     <span class="comment">// reduce modulo π/2</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">q</span> <span class="op">=</span> (<span class="ident">r</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">-</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="ident">q</span>) <span class="op">*</span> <span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">-</span> <span class="ident">Double</span>(<span class="ident">q</span>, <span class="number">0.0</span>) <span class="op">*</span> <span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>;
     <span class="kw">let</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">q</span> <span class="kw">as</span> <span class="ident">i32</span>;
 
     <span class="comment">// reduce modulo π/16</span>
     <span class="ident">q</span> <span class="op">=</span> (<span class="ident">t</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">Double</span>::<span class="ident">FRAC_PI_16</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
-    <span class="ident">t</span> <span class="op">-</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="ident">q</span>) <span class="op">*</span> <span class="ident">Double</span>::<span class="ident">FRAC_PI_16</span>;
+    <span class="ident">t</span> <span class="op">-</span><span class="op">=</span> <span class="ident">Double</span>(<span class="ident">q</span>, <span class="number">0.0</span>) <span class="op">*</span> <span class="ident">Double</span>::<span class="ident">FRAC_PI_16</span>;
     <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">q</span> <span class="kw">as</span> <span class="ident">i32</span>;
 
     (<span class="ident">j</span>, <span class="ident">k</span>, <span class="ident">t</span>)

@@ -86,15 +86,11 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Calculates the base `b` logarithm (log&lt;sub&gt;`b`&lt;/sub&gt;) of the number.</span>
+    <span class="doccomment">/// Calculates the base `b` logarithm (log&lt;sub&gt;`b`&lt;/sub&gt;) of the `Quad`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// If the goal is to calculate the base *e*, base 2, or base 10 logarithms</span>
-    <span class="doccomment">/// of `self`, the specialized functions for those purposes([`ln`],</span>
-    <span class="doccomment">/// [`log2`], and [`log10`] respectively) will be more efficient.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// [`ln`]: #method.ln</span>
-    <span class="doccomment">/// [`log2`]: #method.log2</span>
-    <span class="doccomment">/// [`log10`]: #method.log10</span>
+    <span class="doccomment">/// If the goal is to calculate the base *e*, base 2, or base 10 logarithms of `self`,</span>
+    <span class="doccomment">/// the specialized functions for those purposes([`ln`], [`log2`], and [`log10`]</span>
+    <span class="doccomment">/// respectively) will be more efficient.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -108,6 +104,10 @@
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`ln`]: #method.ln</span>
+    <span class="doccomment">/// [`log2`]: #method.log2</span>
+    <span class="doccomment">/// [`log10`]: #method.log10</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">log</span>(<span class="self">self</span>, <span class="ident">b</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
         <span class="self">self</span>.<span class="ident">ln</span>() <span class="op">/</span> <span class="ident">Quad</span>::<span class="ident">from</span>(<span class="ident">b</span>).<span class="ident">ln</span>()

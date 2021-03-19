@@ -38,15 +38,6 @@
 <span id="35">35</span>
 <span id="36">36</span>
 <span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
-<span id="40">40</span>
-<span id="41">41</span>
-<span id="42">42</span>
-<span id="43">43</span>
-<span id="44">44</span>
-<span id="45">45</span>
-<span id="46">46</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -83,15 +74,6 @@
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_tuple</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>) {
         (<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">1</span>, <span class="self">self</span>.<span class="number">2</span>, <span class="self">self</span>.<span class="number">3</span>)
-    }
-
-    <span class="doccomment">/// Assigns the components of a tuple to the components of the quad-double.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">assign</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>): (<span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>)) {
-        <span class="self">self</span>.<span class="number">0</span> <span class="op">=</span> <span class="ident">a</span>;
-        <span class="self">self</span>.<span class="number">1</span> <span class="op">=</span> <span class="ident">b</span>;
-        <span class="self">self</span>.<span class="number">2</span> <span class="op">=</span> <span class="ident">c</span>;
-        <span class="self">self</span>.<span class="number">3</span> <span class="op">=</span> <span class="ident">d</span>;
     }
 }
 </pre></div>

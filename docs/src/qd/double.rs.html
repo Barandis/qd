@@ -186,13 +186,97 @@
 <span id="183">183</span>
 <span id="184">184</span>
 <span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">basic</span>::<span class="ident">two_sum</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">core</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">f64</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Index</span>;
 
@@ -226,7 +310,7 @@
     <span class="attribute">#[<span class="ident">macro_export</span>]</span>
     <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">dd</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="ident">Double</span>::<span class="ident">from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>)
+            <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">Double</span>::<span class="ident">from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>)
         };
     }
 }
@@ -234,19 +318,24 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Double</span>;
+
     <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">assert_precision</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">digits</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>);
             <span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>);
-            <span class="kw">let</span> <span class="ident">mag</span> <span class="op">=</span> <span class="ident">expected</span>.<span class="ident">abs</span>().<span class="ident">log10</span>().<span class="ident">floor</span>().<span class="ident">as_int</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+            <span class="kw">let</span> <span class="ident">mag</span> <span class="op">=</span> <span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">expected</span>.<span class="ident">abs</span>().<span class="ident">log10</span>().<span class="ident">floor</span>()) <span class="kw">as</span> <span class="ident">i32</span>;
             <span class="kw">let</span> <span class="ident">epsilon</span> <span class="op">=</span> <span class="ident">Double</span>(<span class="number">10.0</span>, <span class="number">0.0</span>).<span class="ident">powi</span>(<span class="ident">mag</span> <span class="op">-</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">digits</span>);
             <span class="kw">let</span> <span class="ident">diff</span> <span class="op">=</span> (<span class="ident">expected</span> <span class="op">-</span> <span class="ident">actual</span>).<span class="ident">abs</span>();
             <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(
-                <span class="string">&quot;\nExpected: {0}\n\
-                          ({0:?})\n\
-                Actual:   {1}\n\
-                          ({1:?})\n\
-                Delta:    {2:e}&quot;</span>,
+                <span class="macro">concat</span><span class="macro">!</span>(
+                    <span class="string">&quot;\n&quot;</span>,
+                    <span class="string">&quot;Expected: {0}\n&quot;</span>,
+                    <span class="string">&quot;          ({0:?})\n&quot;</span>,
+                    <span class="string">&quot;Actual:   {1}\n&quot;</span>,
+                    <span class="string">&quot;          ({1:?})\n&quot;</span>,
+                    <span class="string">&quot;Delta:    {2:e}&quot;</span>
+                ),
                 <span class="ident">expected</span>, <span class="ident">actual</span>, <span class="ident">diff</span>
             );
             <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">diff</span> <span class="op">&lt;</span> <span class="ident">epsilon</span>, <span class="ident">message</span>);
@@ -264,7 +353,13 @@
             <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>);
             <span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>);
             <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(
-                <span class="string">&quot;\nExpected: {0}\n          ({0:?})\nActual:   {1}\n          ({1:?})&quot;</span>,
+                <span class="macro">concat</span><span class="macro">!</span>(
+                    <span class="string">&quot;\n&quot;</span>,
+                    <span class="string">&quot;Expected: {0}\n&quot;</span>,
+                    <span class="string">&quot;          ({0:?})\n&quot;</span>,
+                    <span class="string">&quot;Actual:   {1}\n&quot;</span>,
+                    <span class="string">&quot;          ({1:?})&quot;</span>
+                ),
                 <span class="ident">expected</span>, <span class="ident">actual</span>
             );
             <span class="kw">if</span> <span class="ident">expected</span>.<span class="ident">is_nan</span>() {
@@ -273,6 +368,26 @@
                 <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">expected</span> <span class="op">=</span><span class="op">=</span> <span class="ident">actual</span>, <span class="ident">message</span>);
             }
         };
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">raw</span>() {
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">raw</span>(<span class="number">0.0</span>, <span class="number">10.0</span>);
+        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">a</span>.<span class="number">0</span>, <span class="number">0.0</span>);
+        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">a</span>.<span class="number">1</span>, <span class="number">10.0</span>);
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">new</span>() {
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">new</span>(<span class="number">0.0</span>, <span class="number">10.1</span>);
+        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">a</span>.<span class="number">0</span>, <span class="number">10.1</span>);
+        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">a</span>.<span class="number">1</span>, <span class="number">0.0</span>);
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">index</span>() {
+        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">PI</span>[<span class="number">0</span>], <span class="ident">Double</span>::<span class="ident">PI</span>.<span class="number">0</span>);
+        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">PI</span>[<span class="number">1</span>], <span class="ident">Double</span>::<span class="ident">PI</span>.<span class="number">1</span>);
     }
 }
 
@@ -291,26 +406,42 @@
 <span class="kw">mod</span> <span class="ident">trig</span>;
 
 <span class="doccomment">/// A 128-bit floating-point number implemented as the unevaluated sum of two 64-bit</span>
-<span class="doccomment">/// floating-point numbers.</span>
+<span class="doccomment">/// floating-point numbers. Discarding the bits used for exponents, this makes for about</span>
+<span class="doccomment">/// 106 bits of mantissa accuracy, or around 31 decimal digits.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// There are several ways to create a new `Double`:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * calling the [`new`] or [`raw`] functions</span>
-<span class="doccomment">/// * calling `Double::from` and passing a type that has a `From` implementation</span>
-<span class="doccomment">/// * calling `parse` on a string</span>
+<span class="doccomment">/// * calling [`from`] with a primitive number (except for `u128` and `i128`) or a string</span>
+<span class="doccomment">/// * calling [`parse`] on a string (or equivalently using [`from_str`])</span>
 <span class="doccomment">/// * calling [`from_add`], [`from_sub`], [`from_mul`], or [`from_div`]</span>
 <span class="doccomment">/// * using the [`dd!`] macro</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// What kind of number you actually end up getting depends on the method called to get it.</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// * [`raw`] will *not* normalize its result. This is for speed, but it means that the</span>
+<span class="doccomment">///   arguments must be pre-normalized.</span>
+<span class="doccomment">/// * [`new`], [`from_add`], [`from_sub`], [`from_mul`], and [`from_div`] will normalize</span>
+<span class="doccomment">///   their results but will *not* account for floating-point rounding error. `f64`s passed</span>
+<span class="doccomment">///   to these functions are assumed to be exactly what&#39;s desired, including the rounding</span>
+<span class="doccomment">///   error.</span>
+<span class="doccomment">/// * [`from`], [`parse`], and [`dd!`] will both account for floating-point rounding error</span>
+<span class="doccomment">///   *and* produce normalized results. This is the slowest of the three choices but also</span>
+<span class="doccomment">///   the most accurate.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// See the [module-level documentation](index.html) for more information.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// [`new`]: #method.new</span>
 <span class="doccomment">/// [`raw`]: #method.raw</span>
+<span class="doccomment">/// [`from`]: #impl-From&lt;f64&gt;</span>
+<span class="doccomment">/// [`parse`]: #impl-FromStr</span>
+<span class="doccomment">/// [`from_str`]: #method.from_str</span>
 <span class="doccomment">/// [`from_add`]: #method.from_add</span>
 <span class="doccomment">/// [`from_sub`]: #method.from_sub</span>
 <span class="doccomment">/// [`from_mul`]: #method.from_mul</span>
 <span class="doccomment">/// [`from_div`]: #method.from_div</span>
 <span class="doccomment">/// [`dd!`]: macro.dd.html</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Double</span>(<span class="ident">f64</span>, <span class="ident">f64</span>);
 
 <span class="kw">impl</span> <span class="ident">Double</span> {
@@ -329,38 +460,75 @@
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// let dd = Double::raw(0.0, 0.0);</span>
-    <span class="doccomment">/// assert!(dd.is_zero());</span>
+    <span class="doccomment">/// let d = Double::raw(0.0, 0.0);</span>
+    <span class="doccomment">/// assert!(d.is_zero());</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">raw</span>(<span class="ident">a</span>: <span class="ident">f64</span>, <span class="ident">b</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
         <span class="ident">Double</span>(<span class="ident">a</span>, <span class="ident">b</span>)
     }
 
-    <span class="doccomment">/// Creates a `Double` by normalizing the sum of two arguments.</span>
+    <span class="doccomment">/// Creates a `Double` by normalizing its two arguments.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// This function normalizes its components (if this is obviously unnecessary, use</span>
-    <span class="doccomment">/// [`raw`](#fn.raw) instead). The normalization is effective no matter the values of</span>
-    <span class="doccomment">/// the components; while it&#39;s possible to have more efficient normalization if we know</span>
-    <span class="doccomment">/// that |`a`| &gt;= |`b`|, the &quot;safe&quot; normalization is still less expensive than the</span>
-    <span class="doccomment">/// conditional required to know whether the quick one can be used.</span>
+    <span class="doccomment">/// This function normalizes the input arguments (if this is obviously unnecessary, use</span>
+    <span class="doccomment">/// [`raw`] instead) and assigns the normalized values to the new `Double`&#39;s components.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// It&#39;s assumed that the two numbers passed in are exactly what&#39;s desired, and aside</span>
+    <span class="doccomment">/// from normalization, they will not be manipulated further. That means that any</span>
+    <span class="doccomment">/// floating-point rounding error will be retained. For instance, `Double::new(1.1,</span>
+    <span class="doccomment">/// 0.0)` actually produces the number `1.10000000000000008881784197001253`. To account</span>
+    <span class="doccomment">/// for that rounding error, use [`from`] or the [`dd!`] macro; `dd!(1.1)` is</span>
+    <span class="doccomment">/// effectively the same as `Double::new(1.1, -8.881784197001253e-17)`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
     <span class="doccomment">/// # use qd::Double;</span>
     <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let dd = Double::new(2.0, 1.0);</span>
-    <span class="doccomment">/// assert!(dd == dd!(3.0));</span>
+    <span class="doccomment">/// let d = Double::new(2.0, 1.0);</span>
+    <span class="doccomment">/// assert!(d == dd!(3.0));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`raw`]: #method.raw</span>
+    <span class="doccomment">/// [`from`]: #impl-From&lt;f64&gt;</span>
+    <span class="doccomment">/// [`dd!`]: macro.dd.html</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">a</span>: <span class="ident">f64</span>, <span class="ident">b</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="ident">Double</span>::<span class="ident">from</span>(<span class="ident">two_sum</span>(<span class="ident">a</span>, <span class="ident">b</span>))
+        <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">b</span>.<span class="ident">abs</span>() {
+            <span class="ident">core</span>::<span class="ident">renorm2</span>(<span class="ident">a</span>, <span class="ident">b</span>)
+        } <span class="kw">else</span> {
+            <span class="ident">core</span>::<span class="ident">renorm2</span>(<span class="ident">b</span>, <span class="ident">a</span>)
+        };
+        <span class="ident">Double</span>(<span class="ident">a</span>, <span class="ident">b</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Double</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">f64</span>;
 
+    <span class="doccomment">/// Returns one of the components of the `Double`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Using index `0` will return the first component and using index `1` will return the</span>
+    <span class="doccomment">/// second.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// One capability that is *not* provided is mutable indexing; ensuring that a `Double`</span>
+    <span class="doccomment">/// is normalized would be impossible if they could be individually changed at will.</span>
+    <span class="doccomment">/// `Double`s are immutable like any other number; if you need a new value for a</span>
+    <span class="doccomment">/// `Double`, you should simply create a new `Double`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This is primarily provided for making certain mathematical algorithms easier to</span>
+    <span class="doccomment">/// implement. There isn&#39;t a lot meaning to an individual component of a `Double` other</span>
+    <span class="doccomment">/// than the first.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
+    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// let d = Double::ONE;</span>
+    <span class="doccomment">/// assert!(d[0] == 1.0);</span>
+    <span class="doccomment">/// assert!(d[1] == 0.0);</span>
+    <span class="doccomment">/// # }</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">f64</span> {
         <span class="kw">match</span> <span class="ident">idx</span> {
             <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>,

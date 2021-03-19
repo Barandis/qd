@@ -81,17 +81,21 @@
 <span id="78">78</span>
 <span id="79">79</span>
 <span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">common</span>::<span class="ident">mul_pwr2</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">common</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
 <span class="kw">impl</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Computes the hyperbolic sine of the number.</span>
+    <span class="doccomment">/// Computes the hyperbolic sine (sinh) of the `Double`.</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// The domain and range of this function are both (-∞, ∞).</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -110,9 +114,9 @@
             <span class="ident">Double</span>::<span class="ident">NAN</span>
         } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
             <span class="ident">Double</span>::<span class="ident">ZERO</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">abs</span>().<span class="ident">as_float</span>() <span class="op">&gt;</span> <span class="number">0.05</span> {
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">abs</span>().<span class="number">0</span> <span class="op">&gt;</span> <span class="number">0.05</span> {
             <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">exp</span>();
-            <span class="ident">mul_pwr2</span>(<span class="ident">a</span> <span class="op">-</span> <span class="ident">a</span>.<span class="ident">recip</span>(), <span class="number">0.5</span>)
+            <span class="ident">common</span>::<span class="ident">mul_pwr2</span>(<span class="ident">a</span> <span class="op">-</span> <span class="ident">a</span>.<span class="ident">recip</span>(), <span class="number">0.5</span>)
         } <span class="kw">else</span> {
             <span class="comment">// The above formula is not accurate enough with very small numbers. Use a</span>
             <span class="comment">// Taylor series instead.</span>

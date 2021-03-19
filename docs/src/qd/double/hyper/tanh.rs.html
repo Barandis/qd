@@ -67,6 +67,8 @@
 <span id="64">64</span>
 <span id="65">65</span>
 <span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -76,7 +78,9 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
 <span class="kw">impl</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Computes the hyperbolic tangent of the number.</span>
+    <span class="doccomment">/// Computes the hyperbolic tangent (tanh) of the `Double`.</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// The domain of this function is (-∞, ∞), and the range is (-1, 1).</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -97,7 +101,7 @@
             <span class="ident">Double</span>::<span class="ident">ZERO</span>
         } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_infinite</span>() {
             <span class="self">self</span>.<span class="ident">signum</span>() <span class="op">*</span> <span class="ident">Double</span>::<span class="ident">ONE</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">abs</span>().<span class="ident">as_float</span>() <span class="op">&gt;</span> <span class="number">0.05</span> {
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">abs</span>().<span class="number">0</span> <span class="op">&gt;</span> <span class="number">0.05</span> {
             <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">exp</span>();
             <span class="kw">let</span> <span class="ident">inv_a</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">recip</span>();
             (<span class="ident">a</span> <span class="op">-</span> <span class="ident">inv_a</span>) <span class="op">/</span> (<span class="ident">a</span> <span class="op">+</span> <span class="ident">inv_a</span>)

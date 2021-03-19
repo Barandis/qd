@@ -152,7 +152,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Computes the exponential function, *e*&lt;sup&gt;x&lt;/sup&gt;, for the number.</span>
+    <span class="doccomment">/// Computes the exponential function, *e*&lt;sup&gt;x&lt;/sup&gt;, for the `Quad`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -201,7 +201,7 @@
             <span class="ident">Quad</span>::<span class="ident">E</span>
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> (<span class="self">self</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
-            <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">mul_pwr2</span>(<span class="self">self</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span> <span class="op">*</span> <span class="ident">Quad</span>::<span class="ident">from</span>(<span class="ident">m</span>), <span class="ident">inv_k</span>);
+            <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">mul_pwr2</span>(<span class="self">self</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span> <span class="op">*</span> <span class="ident">Quad</span>(<span class="ident">m</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>), <span class="ident">inv_k</span>);
             <span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">from</span>(<span class="ident">inv_k</span>) <span class="op">*</span> <span class="ident">Quad</span>::<span class="ident">EPSILON</span>;
 
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">sqr</span>();

@@ -112,7 +112,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">Sum</span>;
 
 <span class="kw">impl</span> <span class="ident">Sum</span> <span class="kw">for</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Sums all of the values in an iterator.</span>
+    <span class="doccomment">/// Sums all of the values in an iterator of `Double`s.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -135,7 +135,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Sum</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Double</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Sums all of the referenced values in an iterator.</span>
+    <span class="doccomment">/// Sums all of the referenced values in an iterator of `Double`s.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>

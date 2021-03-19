@@ -78,13 +78,13 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
 <span class="kw">impl</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Implements the `==` and `!= operators, testing two double-doubles for equality and</span>
+    <span class="doccomment">/// Implements the `==` and `!= operators, testing two `Double`s for equality and</span>
     <span class="doccomment">/// inequality.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Equality works exactly the same as it does for system floating-point numbers (`f64`,</span>
     <span class="doccomment">/// etc.), including zero equalling negative zero, `NaN` equalling nothing (including</span>
     <span class="doccomment">/// itself), etc. Notably, equality should be used with care since floating-point</span>
-    <span class="doccomment">/// rounding, even with the increased precision of double-doubles, will still cause some</span>
+    <span class="doccomment">/// rounding, even with the increased precision of `Double`s, will still cause some</span>
     <span class="doccomment">/// numbers that should be equal to not be equal.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>

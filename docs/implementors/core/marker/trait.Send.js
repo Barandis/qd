@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["qd"] = [{"text":"impl Send for Double","synthetic":true,"types":[]},{"text":"impl Send for Quad","synthetic":true,"types":[]},{"text":"impl Send for ParseError","synthetic":true,"types":[]},{"text":"impl Send for ErrorKind","synthetic":true,"types":[]}];
+implementors["qd"] = [{"text":"impl Send for Double","synthetic":true,"types":[]},{"text":"impl Send for Quad","synthetic":true,"types":[]},{"text":"impl Send for ParseDoubleError","synthetic":true,"types":[]},{"text":"impl Send for ParseQuadError","synthetic":true,"types":[]},{"text":"impl Send for ErrorKind","synthetic":true,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

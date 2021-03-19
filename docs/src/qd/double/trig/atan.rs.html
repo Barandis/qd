@@ -54,6 +54,7 @@
 <span id="51">51</span>
 <span id="52">52</span>
 <span id="53">53</span>
+<span id="54">54</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -63,7 +64,8 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
 <span class="kw">impl</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Computes the arctangent of the number. The return value is in the range [-π/2, π/2].</span>
+    <span class="doccomment">/// Computes the inverse tangent (tan&lt;sup&gt;-1&lt;/sup&gt;) of the `Double`. The domain of this</span>
+    <span class="doccomment">/// function is [-∞, ∞] and the range is [-π/2, π/2].</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>

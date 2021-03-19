@@ -68,6 +68,8 @@
 <span id="65">65</span>
 <span id="66">66</span>
 <span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -78,7 +80,9 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Computes the hyperbolic cosine of the number.</span>
+    <span class="doccomment">/// Computes the hyperbolic cosine (cosh) of the `Quad`.</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// The domain of this function is (-∞, ∞), and the range is [1, ∞).</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>

@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["qd"] = [{"text":"impl Sync for Double","synthetic":true,"types":[]},{"text":"impl Sync for Quad","synthetic":true,"types":[]},{"text":"impl Sync for ParseError","synthetic":true,"types":[]},{"text":"impl Sync for ErrorKind","synthetic":true,"types":[]}];
+implementors["qd"] = [{"text":"impl Sync for Double","synthetic":true,"types":[]},{"text":"impl Sync for Quad","synthetic":true,"types":[]},{"text":"impl Sync for ParseDoubleError","synthetic":true,"types":[]},{"text":"impl Sync for ParseQuadError","synthetic":true,"types":[]},{"text":"impl Sync for ErrorKind","synthetic":true,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

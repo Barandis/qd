@@ -66,6 +66,11 @@
 <span id="63">63</span>
 <span id="64">64</span>
 <span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -75,7 +80,10 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Calculates the inverse hyperbolic cosine of the number.</span>
+    <span class="doccomment">/// Calculates the inverse hyperbolic cosine (cosh&lt;sup&gt;-1&lt;/sup&gt;) of the `Quad`.</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// The domain of the function is [1, ∞) and the range is [0, ∞). Any argument outside</span>
+    <span class="doccomment">/// the range will result in [`NAN`].</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -89,6 +97,8 @@
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-30));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// [`NAN`]: #associatedconstant.NAN</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">acosh</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
         <span class="kw">if</span> <span class="self">self</span> <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">ONE</span> {
             <span class="ident">Quad</span>::<span class="ident">NAN</span>

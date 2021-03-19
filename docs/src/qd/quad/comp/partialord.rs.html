@@ -102,7 +102,6 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
-<span id="102">102</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -113,8 +112,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span>;
 
 <span class="kw">impl</span> <span class="ident">PartialOrd</span> <span class="kw">for</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Implements the `&lt;`, `&gt;`, `&lt;=`, and `&gt;=` operators, testing two quad-doubles for</span>
-    <span class="doccomment">/// ordering.</span>
+    <span class="doccomment">/// Implements the `&lt;`, `&gt;`, `&lt;=`, and `&gt;=` operators, testing two `Quad`s for ordering.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Ordering works the same as it does for system floating-point numbers, including</span>
     <span class="doccomment">/// `NaN` returning false for any of these operators (including when comparing it to</span>

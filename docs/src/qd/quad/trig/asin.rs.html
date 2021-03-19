@@ -69,6 +69,8 @@
 <span id="66">66</span>
 <span id="67">67</span>
 <span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -78,9 +80,9 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Computes the arcsine of the number. The return value is in the range</span>
-    <span class="doccomment">/// [-π/2, π/2] for any number in the range [-1, 1]. Otherwise the return</span>
-    <span class="doccomment">/// value is `NaN`.</span>
+    <span class="doccomment">/// Computes the inverse sine (sin&lt;sup&gt;-1&lt;/sup&gt;) of the `Quad`. The domain of this</span>
+    <span class="doccomment">/// function is [-1, 1] while the range is [-π/2, π/2]. Arguments outside of this domain</span>
+    <span class="doccomment">/// will result in [`NAN`].</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -94,6 +96,8 @@
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// [`NAN`]: #associatedconstant.NAN</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">asin</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">Quad</span>::<span class="ident">ONE</span> {
             <span class="ident">Quad</span>::<span class="ident">NAN</span>

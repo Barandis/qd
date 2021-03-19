@@ -140,18 +140,16 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Calculates the number raised to a quad-Quad power.</span>
+    <span class="doccomment">/// Calculates the `Quad` raised to a `Quad` power.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// This function is implemented using the logarithm of the number being</span>
-    <span class="doccomment">/// raised, which means it will not work for negatives even though raising a</span>
-    <span class="doccomment">/// negative number to a non-integer power is defined. It has been extended</span>
-    <span class="doccomment">/// to handle zero in accordance with the IEEE 754 specification.</span>
+    <span class="doccomment">/// This function is implemented using the logarithm of the number being raised, which</span>
+    <span class="doccomment">/// means it will not work for negatives even though raising a negative number to a</span>
+    <span class="doccomment">/// non-integer power is defined. It has been extended to handle zero in accordance with</span>
+    <span class="doccomment">/// the IEEE 754 specification.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// It is possible that a new algorithm will eventually remove this</span>
-    <span class="doccomment">/// restriction, though this is a surprisingly hard problem (see [this libm</span>
-    <span class="doccomment">/// implementation][1], for example).</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// [1]: http://www.netlib.org/fdlibm/e_pow.c</span>
+    <span class="doccomment">/// It is possible that a new algorithm will eventually remove this restriction, though</span>
+    <span class="doccomment">/// this is a surprisingly hard problem (see [this libm implementation][1], for</span>
+    <span class="doccomment">/// example).</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -165,6 +163,8 @@
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [1]: http://www.netlib.org/fdlibm/e_pow.c</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">powf</span>(<span class="self">self</span>, <span class="ident">n</span>: <span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {

@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["ErrorKind",""]],"struct":[["ParseError",""]]});
+initSidebarItems({"enum":[["ErrorKind","The different kinds of errors that might be generated during parsing."]],"struct":[["ParseDoubleError","An error generated when a problem is encountered parsing a string into a `Double`."],["ParseQuadError","An error generated when a problem is encountered parsing a string into a `Quad`."]]});

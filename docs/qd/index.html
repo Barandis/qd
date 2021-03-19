@@ -80,10 +80,15 @@ efficiently, and generally everything works better.</p>
 <a href="struct.Double.html#methods.raw"><code>Double::raw</code></a> and <a href="struct.Quad.html:methods.raw"><code>Quad::raw</code></a>, which specifically skip normalization and
 should only be used on numbers that are already known to be normalized.</p>
 </div><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
-<table><tr class="module-item"><td><a class="mod" href="error/index.html" title="qd::error mod">error</a></td><td class="docblock-short"></td></tr></table><h2 id="macros" class="section-header"><a href="#macros">Macros</a></h2>
+<table><tr class="module-item"><td><a class="mod" href="error/index.html" title="qd::error mod">error</a></td><td class="docblock-short"><p>Errors that may occur while parsing a string into a <a href="struct.Double.html"><code>Double</code></a> or a <a href="struct.Quad.html"><code>Quad</code></a>.</p>
+</td></tr></table><h2 id="macros" class="section-header"><a href="#macros">Macros</a></h2>
 <table><tr class="module-item"><td><a class="macro" href="macro.dd.html" title="qd::dd macro">dd</a></td><td class="docblock-short"><p>Creates a new double-double from another number or from a string.</p>
 </td></tr><tr class="module-item"><td><a class="macro" href="macro.qd.html" title="qd::qd macro">qd</a></td><td class="docblock-short"><p>Creates a new quad-double from another number or from a string.</p>
 </td></tr></table><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2>
 <table><tr class="module-item"><td><a class="struct" href="struct.Double.html" title="qd::Double struct">Double</a></td><td class="docblock-short"><p>A 128-bit floating-point number implemented as the unevaluated sum of two 64-bit
-floating-point numbers.</p>
-</td></tr><tr class="module-item"><td><a class="struct" href="struct.Quad.html" title="qd::Quad struct">Quad</a></td><td class="docblock-short"></td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "qd";</script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>
+floating-point numbers. Discarding the bits used for exponents, this makes for about
+106 bits of mantissa accuracy, or around 31 decimal digits.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.Quad.html" title="qd::Quad struct">Quad</a></td><td class="docblock-short"><p>A 256-bit floating-point number implemented as the unevaluated sum of four 64-bit
+floating-point numbers. Discarding the bits used for exponents, this makes for about
+212 bits of mantissa accuracy, or around 63 decimal digits.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "qd";</script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

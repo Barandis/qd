@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["qd"] = [{"text":"impl Unpin for Double","synthetic":true,"types":[]},{"text":"impl Unpin for Quad","synthetic":true,"types":[]},{"text":"impl Unpin for ParseError","synthetic":true,"types":[]},{"text":"impl Unpin for ErrorKind","synthetic":true,"types":[]}];
+implementors["qd"] = [{"text":"impl Unpin for Double","synthetic":true,"types":[]},{"text":"impl Unpin for Quad","synthetic":true,"types":[]},{"text":"impl Unpin for ParseDoubleError","synthetic":true,"types":[]},{"text":"impl Unpin for ParseQuadError","synthetic":true,"types":[]},{"text":"impl Unpin for ErrorKind","synthetic":true,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

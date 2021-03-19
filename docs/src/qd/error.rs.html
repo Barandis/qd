@@ -32,37 +32,91 @@
 <span id="29">29</span>
 <span id="30">30</span>
 <span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
+<span class="doccomment">//! Errors that may occur while parsing a string into a [`Double`] or a [`Quad`].</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! [`Double`]: struct.Double.html</span>
+<span class="doccomment">//! [`Quad`]: struct.Quad.html</span>
 
-<span class="comment">// #region Parsing error</span>
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::{<span class="ident">Display</span>, <span class="ident">Formatter</span>, <span class="prelude-ty">Result</span>};
 
+<span class="doccomment">/// An error generated when a problem is encountered parsing a string into a [`Double`].</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// [`Double`]: struct.Double.html</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ParseError</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ParseDoubleError</span> {
     <span class="kw">pub</span> <span class="ident">kind</span>: <span class="ident">ErrorKind</span>,
 }
 
+<span class="doccomment">/// An error generated when a problem is encountered parsing a string into a [`Quad`].</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// [`Quad`]: struct.Quad.html</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ParseQuadError</span> {
+    <span class="kw">pub</span> <span class="ident">kind</span>: <span class="ident">ErrorKind</span>,
+}
+
+<span class="doccomment">/// The different kinds of errors that might be generated during parsing.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ErrorKind</span> {
+    <span class="doccomment">/// An error indicating that an attempt was made to parse an empty string.</span>
     <span class="ident">Empty</span>,
+    <span class="doccomment">/// An error indicating that the format of a parsed string is not a legal number.</span>
     <span class="ident">Invalid</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">ParseError</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">ParseDoubleError</span> {
+    <span class="doccomment">/// Displays an English-language message describing the kind of the error.</span>
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span> {
         <span class="kw">let</span> <span class="ident">description</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">kind</span> {
-            <span class="ident">ErrorKind</span>::<span class="ident">Empty</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;cannot parse composite double from empty string&quot;</span>,
-            <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;invalid composite double literal&quot;</span>,
+            <span class="ident">ErrorKind</span>::<span class="ident">Empty</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;cannot parse double-double from empty string&quot;</span>,
+            <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;invalid double-double literal&quot;</span>,
         };
         <span class="ident">description</span>.<span class="ident">fmt</span>(<span class="ident">f</span>)
     }
 }
 
-<span class="comment">// #endregion</span>
+<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">ParseQuadError</span> {
+    <span class="doccomment">/// Displays an English-language message describing the kind of the error.</span>
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span> {
+        <span class="kw">let</span> <span class="ident">description</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">kind</span> {
+            <span class="ident">ErrorKind</span>::<span class="ident">Empty</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;cannot parse quad-double from empty string&quot;</span>,
+            <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;invalid quad-double literal&quot;</span>,
+        };
+        <span class="ident">description</span>.<span class="ident">fmt</span>(<span class="ident">f</span>)
+    }
+}
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "qd";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

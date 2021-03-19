@@ -194,12 +194,12 @@
 
     <span class="comment">// reduce modulo π/2</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">q</span> <span class="op">=</span> (<span class="ident">r</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">Quad</span>::<span class="ident">FRAC_PI_2</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">from</span>(<span class="ident">q</span>) <span class="op">*</span> <span class="ident">Quad</span>::<span class="ident">FRAC_PI_2</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">-</span> <span class="ident">Quad</span>(<span class="ident">q</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>) <span class="op">*</span> <span class="ident">Quad</span>::<span class="ident">FRAC_PI_2</span>;
     <span class="kw">let</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">q</span> <span class="kw">as</span> <span class="ident">i32</span>;
 
     <span class="comment">// reduce modulo π/1024</span>
     <span class="ident">q</span> <span class="op">=</span> (<span class="ident">t</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">FRAC_PI_1024</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
-    <span class="ident">t</span> <span class="op">-</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">from</span>(<span class="ident">q</span>) <span class="op">*</span> <span class="ident">FRAC_PI_1024</span>;
+    <span class="ident">t</span> <span class="op">-</span><span class="op">=</span> <span class="ident">Quad</span>(<span class="ident">q</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>) <span class="op">*</span> <span class="ident">FRAC_PI_1024</span>;
     <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">q</span> <span class="kw">as</span> <span class="ident">i32</span>;
 
     (<span class="ident">j</span>, <span class="ident">k</span>, <span class="ident">t</span>)

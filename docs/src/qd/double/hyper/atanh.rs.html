@@ -65,17 +65,25 @@
 <span id="62">62</span>
 <span id="63">63</span>
 <span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">common</span>::<span class="ident">mul_pwr2</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">common</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
 <span class="kw">impl</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Calculates the inverse hyperbolic tangent of the number.</span>
+    <span class="doccomment">/// Calculates the inverse hyperbolic tangent (tanh&lt;sup&gt;-1&lt;/sup&gt;) of the `Double`.</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// The domain of the function is (-1, 1) and the range is (-∞, ∞). Any argument whose</span>
+    <span class="doccomment">/// absolute value is greater than or equal to 1 will result in [`NAN`].</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -89,11 +97,13 @@
     <span class="doccomment">/// assert!(diff &lt; dd!(1e-30));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// [`NAN`]: #associatedconstant.NAN</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">atanh</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">abs</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
             <span class="ident">Double</span>::<span class="ident">NAN</span>
         } <span class="kw">else</span> {
-            <span class="ident">mul_pwr2</span>(((<span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">+</span> <span class="self">self</span>) <span class="op">/</span> (<span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">-</span> <span class="self">self</span>)).<span class="ident">ln</span>(), <span class="number">0.5</span>)
+            <span class="ident">common</span>::<span class="ident">mul_pwr2</span>(((<span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">+</span> <span class="self">self</span>) <span class="op">/</span> (<span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">-</span> <span class="self">self</span>)).<span class="ident">ln</span>(), <span class="number">0.5</span>)
         }
     }
 }

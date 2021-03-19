@@ -73,6 +73,8 @@
 <span id="70">70</span>
 <span id="71">71</span>
 <span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -82,7 +84,9 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Computes the hyperbolic tangent of the number.</span>
+    <span class="doccomment">/// Computes the hyperbolic tangent (tanh) of the `Quad`.</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// The domain of this function is (-∞, ∞), and the range is (-1, 1).</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
