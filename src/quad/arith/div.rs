@@ -34,7 +34,22 @@ fn mul_f64(a: Quad, b: f64) -> Quad {
 impl Div for Quad {
     type Output = Quad;
 
-    #[inline]
+    /// Divides this `Quad` by another, producing a new `Quad` as a result.
+    /// 
+    /// This implements the `/` operator between two `Quad`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = Quad::E / Quad::PI;
+    /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[allow(clippy::suspicious_arithmetic_impl)]
     fn div(self, other: Quad) -> Quad {
         if self.is_nan() || other.is_nan() {
@@ -87,9 +102,50 @@ impl Div for Quad {
     }
 }
 
+    /// Divides a reference to this `Quad` by another, producing a new `Quad` as a result.
+    /// 
+    /// This implements the `/` operator between two references to `Quad`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = &Quad::E / &Quad::PI;
+    /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
+impl Div for &Quad {
+    type Output = Quad;
+
+    #[inline]
+    fn div(self, other: &Quad) -> Quad {
+        (*self).div(*other)
+    }
+}
+
 impl Div<&Quad> for Quad {
     type Output = Quad;
 
+    /// Divides this `Quad` by a reference to another, producing a new `Quad` as a result.
+    /// 
+    /// This implements the `/` operator between a `Quad` and a reference to a `Quad`.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = Quad::E / &Quad::PI;
+    /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
+    /// 
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn div(self, other: &Quad) -> Quad {
         self.div(*other)
@@ -99,6 +155,23 @@ impl Div<&Quad> for Quad {
 impl Div<Quad> for &Quad {
     type Output = Quad;
 
+    /// Divides a reference to this `Quad` by another `Quad`, producing a new `Quad` as a
+    /// result.
+    ///
+    /// This implements the `/` operator between a reference to a `Quad` and a `Quad`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let x = &Quad::E / Quad::PI;
+    /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn div(self, other: Quad) -> Quad {
         (*self).div(other)
@@ -106,6 +179,23 @@ impl Div<Quad> for &Quad {
 }
 
 impl DivAssign for Quad {
+    /// Divides this `Quad` by another, modifying this one to equal the result.
+    /// 
+    /// This implements the `/=` operator between two `Quad`s.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let mut x = Quad::E;
+    /// x /= Quad::PI;
+    /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn div_assign(&mut self, other: Quad) {
         self.assign(self.div(other).into());
@@ -113,6 +203,24 @@ impl DivAssign for Quad {
 }
 
 impl DivAssign<&Quad> for Quad {
+    /// Divides this `Quad` by a reference to another, modifying this one to equal the
+    /// result.
+    ///
+    /// This implements the `/=` operator between two `Quad`s.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let mut x = Quad::E;
+    /// x /= &Quad::PI;
+    /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
+    ///
+    /// let diff = (x - expected).abs();
+    /// assert!(diff < qd!(1e-60));
+    /// # }
+    /// ```
     #[inline]
     fn div_assign(&mut self, other: &Quad) {
         self.assign(self.div(*other).into());
@@ -127,6 +235,12 @@ mod tests {
     fn num_num() {
         let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
         assert_close!(expected, Quad::PI / Quad::E);
+    }
+
+    #[test]
+    fn ref_ref() {
+        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
+        assert_close!(expected, &Quad::PI / &Quad::E);
     }
 
     #[test]
