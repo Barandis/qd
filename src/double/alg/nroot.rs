@@ -64,7 +64,7 @@ impl Double {
             // a^(-1/n) = exp(-ln(a) / n)
             let mut x: Double = (-(r.0.ln()) / n as f64).exp().into();
 
-            x += x * (Double::ONE - r * x.powi(n)) / Double::from(n);
+            x += x * (Double::ONE - r * x.powi(n)) / Double(n.into(), 0.0);
             if self.is_sign_negative() {
                 x = -x;
             }

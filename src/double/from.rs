@@ -28,7 +28,8 @@ fn split_u64(a: u64) -> (u32, u32) {
 
 fn from_u64(a: u64) -> Double {
     let (x, y) = split_u64(a);
-    Double::from(core::renorm2(x as f64 * 2f64.powi(32), y as f64))
+    let (a, b) = core::renorm2(x as f64 * 2f64.powi(32), y as f64);
+    Double(a, b)
 }
 
 fn from_i64(a: i64) -> Double {
@@ -41,11 +42,11 @@ fn from_i64(a: i64) -> Double {
         a.abs() as u64
     };
     let (x, y) = split_u64(a);
-    let d = Double::from(core::renorm2(x as f64 * 2f64.powi(32), y as f64));
+    let (a, b) = core::renorm2(x as f64 * 2f64.powi(32), y as f64);
     if sign == -1 {
-        -d
+        Double(-a, -b)
     } else {
-        d
+        Double(a, b)
     }
 }
 
@@ -141,9 +142,9 @@ from_int_impl! {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x: i8 = -128;
-    /// let d = Double::from(x);
-    /// assert!(d.to_string() == "-128");
+    /// let x = -128i8;
+    /// let a = Double::from(x);
+    /// assert!(a.to_string() == "-128");
     /// # }
     /// ```
     i8
@@ -154,9 +155,9 @@ from_int_impl! {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x: u8 = 255;
-    /// let d = Double::from(x);
-    /// assert!(d.to_string() == "255");
+    /// let x = 255u8;
+    /// let a = Double::from(x);
+    /// assert!(a.to_string() == "255");
     /// # }
     /// ```
     u8
@@ -167,9 +168,9 @@ from_int_impl! {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x: i16 = -32768;
-    /// let d = Double::from(x);
-    /// assert!(d.to_string() == "-32768");
+    /// let x = -32768i16;
+    /// let a = Double::from(x);
+    /// assert!(a.to_string() == "-32768");
     /// # }
     /// ```
     i16
@@ -180,9 +181,9 @@ from_int_impl! {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x: u16 = 65535;
-    /// let d = Double::from(x);
-    /// assert!(d.to_string() == "65535");
+    /// let x = 65535u16;
+    /// let a = Double::from(x);
+    /// assert!(a.to_string() == "65535");
     /// # }
     /// ```
     u16
@@ -193,9 +194,9 @@ from_int_impl! {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x: i32 = -2_147_483_648;
-    /// let d = Double::from(x);
-    /// assert!(d.to_string() == "-2147483648");
+    /// let x = -2_147_483_648i32;
+    /// let a = Double::from(x);
+    /// assert!(a.to_string() == "-2147483648");
     /// # }
     /// ```
     i32
@@ -206,9 +207,9 @@ from_int_impl! {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x: u32 = 4_294_967_295;
-    /// let d = Double::from(x);
-    /// assert!(d.to_string() == "4294967295");
+    /// let x = 4_294_967_295u32;
+    /// let a = Double::from(x);
+    /// assert!(a.to_string() == "4294967295");
     /// # }
     /// ```
     u32
@@ -227,14 +228,14 @@ from_float_impl! {
     /// # use qd::Double;
     /// # fn main() {
     /// // Exactly representable in binary
-    /// let x: f32 = 0.9921875;
-    /// let d = Double::from(x);
-    /// assert!(d.to_string() == "0.9921875");
+    /// let x = 0.9921875f32;
+    /// let a = Double::from(x);
+    /// assert!(a.to_string() == "0.9921875");
     ///
     /// // Xot exactly representable in binary
-    /// let x: f32 = 0.9921876;
-    /// let d = Double::from(x);
-    /// assert!(d.to_string() == "0.9921876");
+    /// let x = 0.9921876f32;
+    /// let a = Double::from(x);
+    /// assert!(a.to_string() == "0.9921876");
     /// # }
     /// ```
     f32
@@ -251,14 +252,14 @@ from_float_impl! {
     /// # use qd::Double;
     /// # fn main() {
     /// // Exactly representable in binary
-    /// let x = 0.999969482421875;
-    /// let d = Double::from(x);
-    /// assert!(d.to_string() == "0.999969482421875");
+    /// let x = 0.999969482421875f64;
+    /// let a = Double::from(x);
+    /// assert!(a.to_string() == "0.999969482421875");
     ///
     /// // Not exactly representable in binary
-    /// let x = 0.999969482421876;
-    /// let d = Double::from(x);
-    /// assert!(d.to_string() == "0.999969482421876");
+    /// let x = 0.999969482421876f64;
+    /// let a = Double::from(x);
+    /// assert!(a.to_string() == "0.999969482421876");
     /// # }
     /// ```
     f64
@@ -273,9 +274,9 @@ from_tuple_impl! {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x: i8 = -128;
-    /// let d = Double::from((x, x));
-    /// assert!(d.to_string() == "-256");
+    /// let x = -128i8;
+    /// let a = Double::from((x, x));
+    /// assert!(a.to_string() == "-256");
     /// # }
     /// ```
     i8
@@ -288,9 +289,9 @@ from_tuple_impl! {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x: u8 = 255;
-    /// let d = Double::from((x, x));
-    /// assert!(d.to_string() == "510");
+    /// let x = 255u8;
+    /// let a = Double::from((x, x));
+    /// assert!(a.to_string() == "510");
     /// # }
     /// ```
     u8
@@ -303,9 +304,9 @@ from_tuple_impl! {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x: i16 = -32768;
-    /// let d = Double::from((x, x));
-    /// assert!(d.to_string() == "-65536");
+    /// let x = -32768i16;
+    /// let a = Double::from((x, x));
+    /// assert!(a.to_string() == "-65536");
     /// # }
     /// ```
     i16
@@ -318,9 +319,9 @@ from_tuple_impl! {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x: u16 = 32767;
-    /// let d = Double::from((x, x));
-    /// assert!(d.to_string() == "65534");
+    /// let x = 32767u16;
+    /// let a = Double::from((x, x));
+    /// assert!(a.to_string() == "65534");
     /// # }
     /// ```
     u16
@@ -333,9 +334,9 @@ from_tuple_impl! {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x: i32 = -2_147_483_648;
-    /// let d = Double::from((x, x));
-    /// assert!(d.to_string() == "-4294967296");
+    /// let x = -2_147_483_648i32;
+    /// let a = Double::from((x, x));
+    /// assert!(a.to_string() == "-4294967296");
     /// # }
     /// ```
     i32
@@ -348,9 +349,9 @@ from_tuple_impl! {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x: u32 = 4_294_967_295;
-    /// let d = Double::from((x, x));
-    /// assert!(d.to_string() == "8589934590");
+    /// let x = 4_294_967_295u32;
+    /// let a = Double::from((x, x));
+    /// assert!(a.to_string() == "8589934590");
     /// # }
     /// ```
     u32
@@ -374,21 +375,21 @@ from_tuple_impl! {
     /// # use qd::Double;
     /// # fn main() {
     /// // Exactly representable in binary
-    /// let x: f32 = 0.9921875;
+    /// let x = 0.9921875f32;
     /// let d = Double::from((x, x));
     /// // Accurate
     /// assert!(d.to_string() == "1.984375");
     ///
     /// // Not exactly representable in binary
-    /// let x: f32 = 0.9921876;
-    /// let d = Double::from((x, x));
+    /// let x = 0.9921876f32;
+    /// let a = Double::from((x, x));
     /// // Only accurate as a sum to f32 precision
-    /// assert!(d.to_string() == "1.9843752384185791015625");
+    /// assert!(a.to_string() == "1.9843752384185791015625");
     /// 
     /// // Created as a sum of the tuple components
-    /// let d = Double::from(x) + Double::from(x);
+    /// let a = Double::from(x) + Double::from(x);
     /// // Accurate
-    /// assert!(d.to_string() == "1.9843752");
+    /// assert!(a.to_string() == "1.9843752");
     /// # }
     /// ```
     f32
@@ -413,21 +414,21 @@ from_tuple_impl! {
     /// # use qd::Double;
     /// # fn main() {
     /// // Exactly representable in binary
-    /// let x = 0.999969482421875;
-    /// let d = Double::from((x, x));
+    /// let x = 0.999969482421875f64;
+    /// let a = Double::from((x, x));
     /// // Accurate
-    /// assert!(d.to_string() == "1.99993896484375");
+    /// assert!(a.to_string() == "1.99993896484375");
     ///
     /// // Not exactly representable in binary
-    /// let x = 0.999969482421876;
-    /// let d = Double::from((x, x));
+    /// let x = 0.999969482421876f64;
+    /// let a = Double::from((x, x));
     /// // Only accurate as a sum to f64 precision
-    /// assert!(d.to_string() == "1.999938964843751998401444325282");
+    /// assert!(a.to_string() == "1.999938964843751998401444325282");
     /// 
     /// // Created as a sum of the tuple components
-    /// let d = Double::from(x) + Double::from(x);
+    /// let a = Double::from(x) + Double::from(x);
     /// // Accurate
-    /// assert!(d.to_string() == "1.999938964843752");
+    /// assert!(a.to_string() == "1.999938964843752");
     /// # }
     /// ```
     f64
@@ -442,9 +443,9 @@ from_tuple_impl! {
 /// # #[macro_use] extern crate qd;
 /// # use qd::Double;
 /// # fn main() {
-/// let x: u64 = 18_446_744_073_709_551_615;
-/// let d = Double::from((x, x));
-/// assert!(d.to_string() == "36893488147419103230");
+/// let x = 18_446_744_073_709_551_615u64;
+/// let a = Double::from((x, x));
+/// assert!(a.to_string() == "36893488147419103230");
 /// # }
 /// ```
 impl From<(u64, u64)> for Double {
@@ -460,9 +461,9 @@ impl From<(u64, u64)> for Double {
 /// # #[macro_use] extern crate qd;
 /// # use qd::Double;
 /// # fn main() {
-/// let x: u64 = 18_446_744_073_709_551_615;
-/// let d = Double::from(x);
-/// assert!(d.to_string() == "18446744073709551615");
+/// let x = 18_446_744_073_709_551_615u64;
+/// let a = Double::from(x);
+/// assert!(a.to_string() == "18446744073709551615");
 /// # }
 /// ```
 impl From<u64> for Double {
@@ -479,9 +480,9 @@ impl From<u64> for Double {
 /// # #[macro_use] extern crate qd;
 /// # use qd::Double;
 /// # fn main() {
-/// let x: i64 = -9_223_372_036_854_775_808;
-/// let d = Double::from((x, x));
-/// assert!(d.to_string() == "-18446744073709551616");
+/// let x = -9_223_372_036_854_775_808i64;
+/// let a = Double::from((x, x));
+/// assert!(a.to_string() == "-18446744073709551616");
 /// # }
 /// ```
 impl From<(i64, i64)> for Double {
@@ -490,16 +491,16 @@ impl From<(i64, i64)> for Double {
     }
 }
 
-/// Generates a `Double` from a `u64`.
+/// Generates a `Double` from an `i64`.
 ///
 /// # Examples
 /// ```
 /// # #[macro_use] extern crate qd;
 /// # use qd::Double;
 /// # fn main() {
-/// let x: i64 = -9_223_372_036_854_775_808;
-/// let d = Double::from(x);
-/// assert!(d.to_string() == "-9223372036854775808");
+/// let x = -9_223_372_036_854_775_808i64;
+/// let a = Double::from(x);
+/// assert!(a.to_string() == "-9223372036854775808");
 /// # }
 /// ```
 impl From<i64> for Double {
@@ -558,8 +559,8 @@ impl From<Double> for f64 {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let d = Double::PI;
-    /// let x = f64::from(d);
+    /// let a = Double::PI;
+    /// let x = f64::from(a);
     /// 
     /// let diff = (x - std::f64::consts::PI).abs();
     /// assert!(diff < 1e-15);
@@ -580,8 +581,8 @@ impl From<Double> for (f64, f64) {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let d = Double::PI;
-    /// let x = <(f64, f64)>::from(d);
+    /// let a = Double::PI;
+    /// let x = <(f64, f64)>::from(a);
     /// 
     /// assert!(x.0 == 3.141592653589793);
     /// assert!(x.1 == 1.2246467991473532e-16);

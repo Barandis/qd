@@ -64,7 +64,7 @@ impl Quad {
             // a^(-1/n) = exp(-ln(a) / n)
             let mut x: Quad = (-(r.0.ln()) / n as f64).exp().into();
 
-            let qd_n = Quad::from(n);
+            let qd_n = Quad(n.into(), 0.0, 0.0, 0.0);
             x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
             x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
             x += x * (Quad::ONE - r * x.powi(n)) / qd_n;

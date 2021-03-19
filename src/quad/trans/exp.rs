@@ -56,7 +56,7 @@ impl Quad {
             Quad::E
         } else {
             let m = (self.0 / Quad::LN_2.0 + 0.5).floor();
-            let r = mul_pwr2(self - Quad::LN_2 * Quad::from(m), inv_k);
+            let r = mul_pwr2(self - Quad::LN_2 * Quad(m, 0.0, 0.0, 0.0), inv_k);
             let threshold = Quad::from(inv_k) * Quad::EPSILON;
 
             let mut p = r.sqr();

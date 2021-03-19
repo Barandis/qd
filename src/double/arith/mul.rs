@@ -20,7 +20,8 @@ impl Double {
     /// # }
     /// ```
     pub fn from_mul(a: f64, b: f64) -> Double {
-        Double::from(core::two_prod(a, b))
+        let (a, b) = core::two_prod(a, b);
+        Double(a, b)
     }
 }
 
@@ -71,7 +72,8 @@ impl Mul for Double {
             }
         } else {
             let (p, e) = core::two_prod(self.0, other.0);
-            Double::from(core::quick_two_sum(p, e + self.0 * other.1 + self.1 * other.0))
+            let (a, b) = core::renorm2(p, e + self.0 * other.1 + self.1 * other.0);
+            Double(a, b)
         }
     }
 }

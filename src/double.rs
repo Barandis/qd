@@ -220,12 +220,12 @@ impl Double {
     /// [`from`]: #impl-From<f64>
     /// [`dd!`]: macro.dd.html
     pub fn new(a: f64, b: f64) -> Double {
-        let (s, e) = if a.abs() > b.abs() {
+        let (a, b) = if a.abs() > b.abs() {
             core::renorm2(a, b)
         } else {
             core::renorm2(b, a)
         };
-        Double(s, e)
+        Double(a, b)
     }
 }
 

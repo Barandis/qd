@@ -57,7 +57,8 @@ impl Quad {
                     d = self.3.floor();
                 }
             }
-            Quad::from(core::renorm4(a, b, c, d))
+            let (a, b, c, d) = core::renorm4(a, b, c, d);
+            Quad(a, b, c, d)
         } else {
             Quad(a, b, c, d)
         }
@@ -92,7 +93,8 @@ impl Quad {
                     d = self.3.ceil();
                 }
             }
-            Quad::from(core::renorm4(a, b, c, d))
+            let (a, b, c, d) = core::renorm4(a, b, c, d);
+            Quad(a, b, c, d)
         } else {
             Quad(a, b, c, d)
         }
@@ -122,7 +124,8 @@ impl Quad {
                 let c = self.2.round();
                 if (c - self.2).abs() < f64::EPSILON {
                     let d = self.3.round();
-                    Quad::from(core::renorm4(a, b, c, d))
+                    let (a, b, c, d) = core::renorm4(a, b, c, d);
+                    Quad(a, b, c, d)
                 } else if ((c - self.2).abs() - 0.5).abs() < f64::EPSILON && self.3 < 0.0 {
                     Quad(a, b, c - 1.0, 0.0)
                 } else {

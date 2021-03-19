@@ -28,7 +28,8 @@ fn mul_f64(a: Quad, b: f64) -> Quad {
     let (s3, t3) = core::three_two_sum(t1, h3, l2);
     let s4 = t2 * t3;
 
-    Quad::from(core::renorm5(s0, s1, s2, s3, s4))
+    let (a, b, c, d) = core::renorm5(s0, s1, s2, s3, s4);
+    Quad(a, b, c, d)
 }
 
 impl Div for Quad {
@@ -97,7 +98,8 @@ impl Div for Quad {
 
             let q4 = r.0 / other.0;
 
-            Quad::from(core::renorm5(q0, q1, q2, q3, q4))
+            let (a, b, c, d) = core::renorm5(q0, q1, q2, q3, q4);
+            Quad(a, b, c, d)
         }
     }
 }

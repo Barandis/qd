@@ -220,16 +220,17 @@ impl Quad {
     /// [`from`]: #impl-From<f64>
     /// [`qd!`]: macro.qd.html
     pub fn new(a: f64, b: f64, c: f64, d: f64) -> Quad {
-        let mut comps = [a, b, c, d];
-        if comps.iter().any(|&x| x.is_nan()) {
+        let mut xs = [a, b, c, d];
+        if xs.iter().any(|&x| x.is_nan()) {
             // Returns NaN if any component is NaN
             Quad::NAN
         } else {
             // Reverse sort, largest absolute value to smallest. Normalization depends on
             // the components being in this order. The `unwrap` is safe because we've
             // already dealt with the one case where ordering can fail (NaN).
-            comps.sort_by(|a, b| b.abs().partial_cmp(&a.abs()).unwrap());
-            Quad::from(core::renorm4(comps[0], comps[1], comps[2], comps[3]))
+            xs.sort_by(|a, b| b.abs().partial_cmp(&a.abs()).unwrap());
+            let (a, b, c, d) = core::renorm4(xs[0], xs[1], xs[2], xs[3]);
+            Quad(a, b, c, d)
         }
     }
 }

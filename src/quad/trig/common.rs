@@ -89,12 +89,12 @@ pub(super) fn reduce(a: Quad) -> (i32, i32, Quad) {
 
     // reduce modulo π/2
     let mut q = (r.0 / Quad::FRAC_PI_2.0 + 0.5).floor();
-    let mut t = r - Quad::from(q) * Quad::FRAC_PI_2;
+    let mut t = r - Quad(q, 0.0, 0.0, 0.0) * Quad::FRAC_PI_2;
     let j = q as i32;
 
     // reduce modulo π/1024
     q = (t.0 / FRAC_PI_1024.0 + 0.5).floor();
-    t -= Quad::from(q) * FRAC_PI_1024;
+    t -= Quad(q, 0.0, 0.0, 0.0) * FRAC_PI_1024;
     let k = q as i32;
 
     (j, k, t)

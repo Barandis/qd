@@ -28,10 +28,8 @@ impl Double {
             Double::INFINITY
         } else {
             let (p, e) = core::two_sqr(self.0);
-            Double::from(core::quick_two_sum(
-                p,
-                e + 2.0 * self.0 * self.1 + self.1 * self.1,
-            ))
+            let (a, b) = core::renorm2(p, e + 2.0 * self.0 * self.1 + self.1 * self.1);
+            Double(a, b)
         }
     }
 }

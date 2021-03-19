@@ -105,7 +105,8 @@ impl Double {
 
         if (hi - self.0).abs() < f64::EPSILON {
             let lo = self.1.round();
-            Double::from(core::renorm2(hi, lo))
+            let (a, b) = core::renorm2(hi, lo);
+            Double(a, b)
         } else if ((hi - self.0).abs() - 0.5).abs() < f64::EPSILON && self.1 < 0.0 {
             Double(hi - 1.0, 0.0)
         } else {

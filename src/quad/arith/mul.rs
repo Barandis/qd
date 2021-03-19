@@ -118,7 +118,8 @@ impl Mul for Quad {
             let r4 = t3 + t4 + ha + hb + hc + l6 + l7 + l8 + l9;
 
             // Results of the prior calculations are renormalized into four f64s.
-            Quad::from(core::renorm5(r0, r1, r2, r3, r4))
+            let (a, b, c, d) = core::renorm5(r0, r1, r2, r3, r4);
+            Quad(a, b, c, d)
         }
     }
 }

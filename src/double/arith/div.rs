@@ -13,7 +13,8 @@ use std::ops::{Div, DivAssign};
 #[inline]
 fn mul_f64(a: Double, b: f64) -> Double {
     let (p, e) = core::two_prod(a.0, b);
-    Double::from(core::quick_two_sum(p, e + a.1 * b))
+    let (a, b) = core::renorm2(p, e + a.1 * b);
+    Double(a, b)
 }
 
 impl Double {
@@ -44,7 +45,9 @@ impl Double {
             let (s, e) = core::two_diff(a, p1);
 
             let q2 = (s + e - p2) / b;
-            Double::from(core::quick_two_sum(q1, q2))
+
+            let (a, b) = core::renorm2(q1, q2);
+            Double(a, b)
         }
     }
 }
@@ -54,9 +57,9 @@ impl Div for Double {
     type Output = Double;
 
     /// Divides this `Double` by another, producing a new `Double` as a result.
-    /// 
+    ///
     /// This implements the `/` operator between two `Double`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -64,7 +67,7 @@ impl Div for Double {
     /// # fn main() {
     /// let x = Double::E / Double::PI;
     /// let expected = dd!("0.8652559794322650872177747896461");
-    /// 
+    ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
     /// # }
@@ -102,7 +105,9 @@ impl Div for Double {
             r -= mul_f64(other, q2);
 
             let q3 = r.0 / other.0;
-            Double::from(core::renorm3(q1, q2, q3))
+
+            let (a, b) = core::renorm3(q1, q2, q3);
+            Double(a, b)
         }
     }
 }
@@ -111,9 +116,9 @@ impl Div for &Double {
     type Output = Double;
 
     /// Divides a reference to this `Double` by another, producing a new `Double` as a result.
-    /// 
+    ///
     /// This implements the `/` operator between two references to `Double`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -121,7 +126,7 @@ impl Div for &Double {
     /// # fn main() {
     /// let x = &Double::E / &Double::PI;
     /// let expected = dd!("0.8652559794322650872177747896461");
-    /// 
+    ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
     /// # }
@@ -185,9 +190,9 @@ impl Div<Double> for &Double {
 
 impl DivAssign for Double {
     /// Divides this `Double` by another, modifying this one to equal the result.
-    /// 
+    ///
     /// This implements the `/=` operator between two `Double`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;

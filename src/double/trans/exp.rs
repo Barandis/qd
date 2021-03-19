@@ -54,7 +54,7 @@ impl Double {
             Double::E
         } else {
             let m = (self.0 / Double::LN_2.0 + 0.5).floor();
-            let r = common::mul_pwr2(self - Double::LN_2 * Double::from(m), inv_k);
+            let r = common::mul_pwr2(self - Double::LN_2 * Double(m, 0.0), inv_k);
 
             let mut p = r.sqr();
             let mut s = r + common::mul_pwr2(p, 0.5);

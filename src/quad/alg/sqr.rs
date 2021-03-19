@@ -68,7 +68,8 @@ impl Quad {
 
             let r4 = m1 + n1 + o1 + k1 + q1;
 
-            Quad::from(core::renorm5(r0, r1, r2, r3, r4))
+            let (a, b, c, d) = core::renorm5(r0, r1, r2, r3, r4);
+            Quad(a, b, c, d)
         }
     }
 }

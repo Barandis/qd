@@ -20,7 +20,8 @@ impl Double {
     /// # }
     /// ```
     pub fn from_sub(a: f64, b: f64) -> Double {
-        Double::from(core::two_diff(a, b))
+        let (a, b) = core::two_diff(a, b);
+        Double(a, b)
     }
 }
 
@@ -75,7 +76,8 @@ impl Sub for Double {
             let (s0, e0) = core::two_diff(self.0, other.0);
             let (s1, e1) = core::two_diff(self.1, other.1);
             let (s2, e2) = core::quick_two_sum(s0, s1 + e0);
-            Double::from(core::quick_two_sum(s2, e1 + e2))
+            let (a, b) = core::renorm2(s2, e1 + e2);
+            Double(a, b)
         }
     }
 }

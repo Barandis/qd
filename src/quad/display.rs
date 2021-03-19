@@ -55,7 +55,7 @@ fn extract_digits(r: &mut Quad, precision: usize) -> Vec<i32> {
     let mut digits = Vec::with_capacity(precision);
     for _ in 0..precision {
         let digit = r.0 as i32;
-        *r -= Quad::from(digit);
+        *r -= Quad(digit.into(), 0.0, 0.0, 0.0);
         *r *= TEN;
         digits.push(digit);
     }

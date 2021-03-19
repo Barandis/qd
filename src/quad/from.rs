@@ -35,7 +35,7 @@ fn from_float(n: f64) -> Quad {
         } else {
             Quad::INFINITY
         }
-    } else if is_dyadic(n){
+    } else if is_dyadic(n) {
         Quad(n, 0.0, 0.0, 0.0)
     } else {
         // Yes, this converts an f64 to a string and then parses it. After a lot of study,
@@ -107,30 +107,32 @@ fn split_u128(a: u128) -> (u32, u32, u32, u32) {
 
 fn from_u64(a: u64) -> Quad {
     let (x, y) = split_u64(a);
-    Quad::from(core::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0))
+    let (a, b, c, d) = core::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0);
+    Quad(a, b, c, d)
 }
 
 fn from_i64(a: i64) -> Quad {
     let sign = a.signum();
     let a = a.abs() as u64;
     let (x, y) = split_u64(a);
-    let d = Quad::from(core::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0));
+    let (a, b, c, d) = core::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0);
     if sign == -1 {
-        -d
+        Quad(-a, -b, -c, -d)
     } else {
-        d
+        Quad(a, b, c, d)
     }
 }
 
 #[allow(clippy::many_single_char_names)]
 fn from_u128(a: u128) -> Quad {
     let (w, x, y, z) = split_u128(a);
-    Quad::from(core::renorm4(
+    let (a, b, c, d) = core::renorm4(
         w as f64 * 2f64.powi(96),
         x as f64 * 2f64.powi(64),
         y as f64 * 2f64.powi(32),
         z as f64,
-    ))
+    );
+    Quad(a, b, c, d)
 }
 
 #[allow(clippy::many_single_char_names)]
@@ -138,16 +140,16 @@ fn from_i128(a: i128) -> Quad {
     let sign = a.signum();
     let a = a.abs() as u128;
     let (w, x, y, z) = split_u128(a);
-    let d = Quad::from(core::renorm4(
+    let (a, b, c, d) = core::renorm4(
         w as f64 * 2f64.powi(96),
         x as f64 * 2f64.powi(64),
         y as f64 * 2f64.powi(32),
         z as f64,
-    ));
+    );
     if sign == -1 {
-        -d
+        Quad(-a, -b, -c, -d)
     } else {
-        d
+        Quad(a, b, c, d)
     }
 }
 
@@ -317,7 +319,10 @@ mod tests {
     fn conv_from_f64() {
         assert_exact!(qd!(1.0), Quad(1.0, 0.0, 0.0, 0.0));
         assert_exact!(qd!(1.203125), Quad(1.203125, 0.0, 0.0, 0.0));
-        assert_exact!(qd!(1.0005645751953125), Quad(1.0005645751953125, 0.0, 0.0, 0.0));
+        assert_exact!(
+            qd!(1.0005645751953125),
+            Quad(1.0005645751953125, 0.0, 0.0, 0.0)
+        );
         assert_ne!(qd!(1.1).1, 0.0);
         assert_exact!(qd!(0), Quad::ZERO);
         assert_exact!(qd!(-0.0), Quad::NEG_ZERO);

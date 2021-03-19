@@ -124,8 +124,8 @@ impl Add for Quad {
             for k in j..4 {
                 x[3] += other[k];
             }
-
-            Quad::from(core::renorm4(x[0], x[1], x[2], x[3]))
+            let (a, b, c, d) = core::renorm4(x[0], x[1], x[2], x[3]);
+            Quad(a, b, c, d)
         }
     }
 }

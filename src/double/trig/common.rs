@@ -81,12 +81,12 @@ pub(super) fn reduce(a: Double) -> (i32, i32, Double) {
 
     // reduce modulo π/2
     let mut q = (r.0 / Double::FRAC_PI_2.0 + 0.5).floor();
-    let mut t = r - Double::from(q) * Double::FRAC_PI_2;
+    let mut t = r - Double(q, 0.0) * Double::FRAC_PI_2;
     let j = q as i32;
 
     // reduce modulo π/16
     q = (t.0 / Double::FRAC_PI_16.0 + 0.5).floor();
-    t -= Double::from(q) * Double::FRAC_PI_16;
+    t -= Double(q, 0.0) * Double::FRAC_PI_16;
     let k = q as i32;
 
     (j, k, t)
