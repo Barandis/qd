@@ -139,7 +139,7 @@ mod trig;
 /// There are several ways to create a new `Double`:
 ///
 /// * calling the [`new`] or [`raw`] functions
-/// * calling [`from`] and passing a type that has a `From` implementation
+/// * calling [`from`] with a primitive number (except for `u128` and `i128`) or a string
 /// * calling [`parse`] on a string (or equivalently using [`from_str`])
 /// * calling [`from_add`], [`from_sub`], [`from_mul`], or [`from_div`]
 /// * using the [`dd!`] macro
@@ -148,13 +148,13 @@ mod trig;
 /// 
 /// * [`raw`] will *not* normalize its result. This is for speed, but it means that the
 ///   arguments must be pre-normalized.
-/// * [`new`], [`from_add`], [`from_sub`], [`from_mul`], [`from_div`], and [`from`] (when
-///   used with tuples) will normalize their results but will *not* account for
-///   floating-point rounding error. `f64`s passed to these functions are assumed to be
-///   exactly what's desired, including the rounding error.
-/// * [`from`] (when used with non-tuples), [`parse`], and [`dd!`] will both account for
-///   floating-point rounding error *and* produce normalized results. This is the slowest of
-///   the three choices but also the most accurate.
+/// * [`new`], [`from_add`], [`from_sub`], [`from_mul`], and [`from_div`] will normalize
+///   their results but will *not* account for floating-point rounding error. `f64`s passed
+///   to these functions are assumed to be exactly what's desired, including the rounding
+///   error.
+/// * [`from`], [`parse`], and [`dd!`] will both account for floating-point rounding error
+///   *and* produce normalized results. This is the slowest of the three choices but also
+///   the most accurate.
 ///
 /// See the [module-level documentation](index.html) for more information.
 ///

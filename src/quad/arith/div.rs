@@ -200,7 +200,11 @@ impl DivAssign for Quad {
     /// ```
     #[inline]
     fn div_assign(&mut self, other: Quad) {
-        self.assign(self.div(other).into());
+        let r = self.div(other);
+        self.0 = r.0;
+        self.1 = r.1;
+        self.2 = r.2;
+        self.3 = r.3;
     }
 }
 
@@ -225,7 +229,11 @@ impl DivAssign<&Quad> for Quad {
     /// ```
     #[inline]
     fn div_assign(&mut self, other: &Quad) {
-        self.assign(self.div(*other).into());
+        let r = self.div(*other);
+        self.0 = r.0;
+        self.1 = r.1;
+        self.2 = r.2;
+        self.3 = r.3;
     }
 }
 

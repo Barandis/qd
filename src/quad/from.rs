@@ -54,41 +54,6 @@ fn from_float(n: f64) -> Quad {
 }
 
 #[inline]
-fn from_components(a: f64, b: f64, c: f64, d: f64) -> Quad {
-    if d != 0.0 {
-        Quad(a, b, c, d)
-    } else if a == 0.0 {
-        if a.is_sign_negative() {
-            Quad::NEG_ZERO
-        } else {
-            Quad::ZERO
-        }
-    } else if a.is_nan() {
-        Quad::NAN
-    } else if a.is_infinite() {
-        if a.is_sign_negative() {
-            Quad::NEG_INFINITY
-        } else {
-            Quad::INFINITY
-        }
-    } else if (a.floor() - a).abs() < f64::EPSILON {
-        Quad(a, b, c, d)
-    } else {
-        Quad(a, b, c, d).to_string().parse().unwrap()
-    }
-}
-
-fn from_2_tuple(a: f64, b: f64) -> Quad {
-    let (a, b, c, d) = core::renorm4(a, b, 0.0, 0.0);
-    from_components(a, b, c, d)
-}
-
-fn from_3_tuple(a: f64, b: f64, c: f64) -> Quad {
-    let (a, b, c, d) = core::renorm4(a, b, c, 0.0);
-    from_components(a, b, c, d)
-}
-
-#[inline]
 fn split_u64(a: u64) -> (u32, u32) {
     let x = (a >> 32) as u32;
     let y = a as u32;
@@ -160,27 +125,6 @@ macro_rules! from_int_impl {
                 Quad(a.into(), 0.0, 0.0, 0.0)
             }
         }
-
-        impl From<($t, $t)> for Quad {
-            #[inline]
-            fn from((a, b): ($t, $t)) -> Quad {
-                Quad(a.into(), b.into(), 0.0, 0.0)
-            }
-        }
-
-        impl From<($t, $t, $t)> for Quad {
-            #[inline]
-            fn from((a, b, c): ($t, $t, $t)) -> Quad {
-                Quad(a.into(), b.into(), c.into(), 0.0)
-            }
-        }
-
-        impl From<($t, $t, $t, $t)> for Quad {
-            #[inline]
-            fn from((a, b, c, d): ($t, $t, $t, $t)) -> Quad {
-                Quad(a.into(), b.into(), c.into(), d.into())
-            }
-        }
     )*);
 }
 
@@ -189,27 +133,6 @@ macro_rules! from_float_impl {
         impl From<$t> for Quad {
             fn from(a: $t) -> Quad {
                 from_float(a.into())
-            }
-        }
-
-        impl From<($t, $t)> for Quad {
-            #[inline]
-            fn from((a, b): ($t, $t)) -> Quad {
-                from_2_tuple(a.into(), b.into())
-            }
-        }
-
-        impl From<($t, $t, $t)> for Quad {
-            #[inline]
-            fn from((a, b, c): ($t, $t, $t)) -> Quad {
-                from_3_tuple(a.into(), b.into(), c.into())
-            }
-        }
-
-        impl From<($t, $t, $t, $t)> for Quad {
-            #[inline]
-            fn from((a, b, c, d): ($t, $t, $t, $t)) -> Quad {
-                Quad(a.into(), b.into(), c.into(), d.into())
             }
         }
     )*);
@@ -222,24 +145,6 @@ macro_rules! from_long_int_impl {
                 $f(a)
             }
         }
-
-        impl From<($t, $t)> for Quad {
-            fn from((a, b): ($t, $t)) -> Quad {
-                $f(a) + $f(b)
-            }
-        }
-
-        impl From<($t, $t, $t)> for Quad {
-            fn from((a, b, c): ($t, $t, $t)) -> Quad {
-                $f(a) + $f(b) + $f(c)
-            }
-        }
-
-        impl From<($t, $t, $t, $t)> for Quad {
-            fn from((a, b, c, d): ($t, $t, $t, $t)) -> Quad {
-                $f(a) + $f(b) + $f(c) + $f(d)
-            }
-        }
     )*);
 }
 
@@ -249,7 +154,7 @@ from_float_impl! { f32 f64 }
 
 impl From<Double> for Quad {
     fn from(a: Double) -> Quad {
-        from_2_tuple(a[0], a[1])
+        a.to_string().parse().unwrap()
     }
 }
 
@@ -264,13 +169,6 @@ impl From<&str> for Quad {
     /// [`FromStr`]: #impl-FromStr
     fn from(s: &str) -> Quad {
         s.parse().unwrap_or(Quad::NAN)
-    }
-}
-
-impl From<Quad> for (f64, f64, f64, f64) {
-    #[inline]
-    fn from(a: Quad) -> (f64, f64, f64, f64) {
-        (a.0, a.1, a.2, a.3)
     }
 }
 

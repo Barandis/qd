@@ -131,7 +131,11 @@ impl SubAssign for Quad {
     /// ```
     #[inline]
     fn sub_assign(&mut self, other: Quad) {
-        self.assign(self.add(-other).into());
+        let r = self.add(-other);
+        self.0 = r.0;
+        self.1 = r.1;
+        self.2 = r.2;
+        self.3 = r.3;
     }
 }
 
@@ -156,7 +160,11 @@ impl SubAssign<&Quad> for Quad {
     /// ```
     #[inline]
     fn sub_assign(&mut self, other: &Quad) {
-        self.assign(self.add(-*other).into());
+        let r = self.add(-*other);
+        self.0 = r.0;
+        self.1 = r.1;
+        self.2 = r.2;
+        self.3 = r.3;
     }
 }
 

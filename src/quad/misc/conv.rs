@@ -34,13 +34,4 @@ impl Quad {
     pub fn as_tuple(self) -> (f64, f64, f64, f64) {
         (self.0, self.1, self.2, self.3)
     }
-
-    /// Assigns the components of a tuple to the components of the quad-double.
-    #[inline]
-    pub fn assign(&mut self, (a, b, c, d): (f64, f64, f64, f64)) {
-        self.0 = a;
-        self.1 = b;
-        self.2 = c;
-        self.3 = d;
-    }
 }

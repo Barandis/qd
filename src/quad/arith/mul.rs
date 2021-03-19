@@ -222,7 +222,11 @@ impl MulAssign for Quad {
     /// ```
     #[inline]
     fn mul_assign(&mut self, other: Quad) {
-        self.assign(self.mul(other).into());
+        let r = self.mul(other);
+        self.0 = r.0;
+        self.1 = r.1;
+        self.2 = r.2;
+        self.3 = r.3;
     }
 }
 
@@ -247,7 +251,11 @@ impl MulAssign<&Quad> for Quad {
     /// ```
     #[inline]
     fn mul_assign(&mut self, other: &Quad) {
-        self.assign(self.mul(*other).into());
+        let r = self.mul(*other);
+        self.0 = r.0;
+        self.1 = r.1;
+        self.2 = r.2;
+        self.3 = r.3;
     }
 }
 

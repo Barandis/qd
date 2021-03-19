@@ -143,7 +143,7 @@ mod trig;
 /// There are several ways to create a new `Quad`:
 ///
 /// * calling the [`new`] or [`raw`] functions
-/// * calling [`from`] and passing a type that has a `From` implementation
+/// * calling [`from`] with a primitive number or a string
 /// * calling [`parse`] on a string (or equivalently using [`from_str`])
 /// * using the [`qd!`] macro
 ///
@@ -151,12 +151,12 @@ mod trig;
 ///
 /// * [`raw`] will *not* normalize its result. This is for speed, but it means that the
 ///   arguments must be pre-normalized.
-/// * [`new`] and [`from`] (when used with tuples) will normalize their results but will
-///   *not* account for floating-point rounding error. `f64`s passed to these functions are
-///   assumed to be exactly what's desired, including the rounding error.
-/// * [`from`] (when used with non-tuples), [`parse`], and [`qd!`] will both account for
-///   floating-point rounding error *and* produce normalized results. This is the slowest of
-///   the three choices but also the most accurate.
+/// * [`new`] will normalize its result but will *not* account for floating-point rounding
+///   error. `f64`s passed to this functions are assumed to be exactly what's desired,
+///   including the rounding error.
+/// * [`from`], [`parse`], and [`qd!`] will both account for floating-point rounding error
+///   *and* produce normalized results. This is the slowest of the three choices but also
+///   the most accurate.
 ///
 /// See the [module-level documentation](index.html) for more information.
 ///
