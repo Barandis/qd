@@ -14,11 +14,6 @@ mod macros {
     /// defines a `From` implementation for. This includes `&str`, `Double`, `Quad`, any
     /// primitive number, and 2-, 3-, and 4-tuples of any of those primitive number types.
     ///
-    /// # Panics
-    ///
-    /// Passing an expression that evaluates to a type that does not have a `From`
-    /// implementation will cause a panic.
-    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;

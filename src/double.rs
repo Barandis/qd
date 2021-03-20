@@ -16,11 +16,6 @@ mod macros {
     /// number that is not a `u128` or `i128`, and 2-tuples of any of those primitive number
     /// types.
     ///
-    /// # Panics
-    ///
-    /// Passing an expression that evaluates to a type that does not have a `From`
-    /// implementation will cause a panic.
-    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
