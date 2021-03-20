@@ -310,7 +310,7 @@ mod tests {
         assert_exact!(Double::NAN, Double::NEG_INFINITY / Double::INFINITY);
         assert_exact!(Double::NAN, Double::NEG_INFINITY / Double::NEG_INFINITY);
         assert_exact!(Double::INFINITY, Double::ONE / Double::ZERO);
-        assert_exact!(Double::NEG_INFINITY, -Double::ONE / Double::ZERO);
+        assert_exact!(Double::NEG_INFINITY, Double::NEG_ONE / Double::ZERO);
     }
 
     #[test]

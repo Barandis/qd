@@ -58,7 +58,7 @@ mod tests {
     #[test]
     fn infinity() {
         assert_exact!(Double::ONE, Double::INFINITY.tanh());
-        assert_exact!(-Double::ONE, Double::NEG_INFINITY.tanh());
+        assert_exact!(Double::NEG_ONE, Double::NEG_INFINITY.tanh());
     }
 
     #[test]

@@ -171,7 +171,7 @@ impl Double {
     /// # use qd::Double;
     /// # fn main() {
     /// assert!(dd!(3.5).signum() == Double::ONE);
-    /// assert!(Double::NEG_INFINITY.signum() == -Double::ONE);
+    /// assert!(Double::NEG_INFINITY.signum() == Double::NEG_ONE);
     /// assert!(Double::NAN.signum().is_nan());
     /// # }
     /// ```
@@ -184,7 +184,7 @@ impl Double {
         if self.is_nan() {
             Double::NAN
         } else if self.is_sign_negative() {
-            -Double::ONE
+            Double::NEG_ONE
         } else {
             Double::ONE
         }
@@ -358,23 +358,23 @@ mod tests {
     fn signum() {
         assert_exact!(Double::PI.signum(), Double::ONE);
         assert_exact!(Double::E.signum(), Double::ONE);
-        assert_exact!((-Double::PI).signum(), -Double::ONE);
-        assert_exact!((-Double::E).signum(), -Double::ONE);
+        assert_exact!((-Double::PI).signum(), Double::NEG_ONE);
+        assert_exact!((-Double::E).signum(), Double::NEG_ONE);
         assert_exact!(dd!(2).signum(), Double::ONE);
         assert_exact!(dd!(2.5).signum(), Double::ONE);
-        assert_exact!(dd!(-3.5).signum(), -Double::ONE);
+        assert_exact!(dd!(-3.5).signum(), Double::NEG_ONE);
     }
 
     #[test]
     fn signum_zero() {
         assert_exact!(Double::ZERO.signum(), Double::ONE);
-        assert_exact!(Double::NEG_ZERO.signum(), -Double::ONE);
+        assert_exact!(Double::NEG_ZERO.signum(), Double::NEG_ONE);
     }
 
     #[test]
     fn signum_infinity() {
         assert_exact!(Double::INFINITY.signum(), Double::ONE);
-        assert_exact!(Double::NEG_INFINITY.signum(), -Double::ONE);
+        assert_exact!(Double::NEG_INFINITY.signum(), Double::NEG_ONE);
     }
 
     #[test]

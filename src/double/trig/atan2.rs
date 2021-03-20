@@ -20,8 +20,8 @@ impl Double {
     /// essentially returns the angle between the positive x-axis and the point (x, y),
     /// where *y* is the `Double` that `atan2` is called on and *x* is the argument.
     /// Therefore `Double::ONE.atan2(Double::ONE)` is π/4 (first quadrant), but flipping
-    /// both signs to `(-Double::ONE).atan2(-Double::ONE)` gives the -3π/4 result (third
-    /// quadrant).
+    /// both signs to `(Double::NEG_ONE).atan2(Double::NEG_ONE)` gives the -3π/4 result
+    /// (third quadrant).
     ///
     /// This function extends the range of the result to [-π, π].
     ///
@@ -146,11 +146,11 @@ mod tests {
         );
         assert_close!(
             dd!("-0.46364760900080611621425623146121"),
-            -Double::ONE.atan2(dd!(2))
+            Double::NEG_ONE.atan2(dd!(2))
         );
         assert_close!(
             dd!("-2.6779450445889871222483871518183"),
-            -Double::ONE.atan2(dd!(-2))
+            Double::NEG_ONE.atan2(dd!(-2))
         );
     }
 
@@ -158,17 +158,17 @@ mod tests {
     fn zero() {
         assert_exact!(Double::NAN, Double::ZERO.atan2(Double::ZERO));
         assert_exact!(Double::ZERO, Double::ZERO.atan2(Double::ONE));
-        assert_close!(Double::PI, Double::ZERO.atan2(-Double::ONE));
+        assert_close!(Double::PI, Double::ZERO.atan2(Double::NEG_ONE));
         assert_close!(Double::FRAC_PI_2, Double::ONE.atan2(Double::ZERO));
-        assert_close!(-Double::FRAC_PI_2, -Double::ONE.atan2(Double::ZERO));
+        assert_close!(-Double::FRAC_PI_2, Double::NEG_ONE.atan2(Double::ZERO));
     }
 
     #[test]
     fn one() {
         assert_close!(Double::FRAC_PI_4, Double::ONE.atan2(Double::ONE));
-        assert_close!(-Double::FRAC_3_PI_4, -Double::ONE.atan2(-Double::ONE));
-        assert_close!(Double::FRAC_3_PI_4, Double::ONE.atan2(-Double::ONE));
-        assert_close!(-Double::FRAC_PI_4, -Double::ONE.atan2(Double::ONE));
+        assert_close!(-Double::FRAC_3_PI_4, Double::NEG_ONE.atan2(Double::NEG_ONE));
+        assert_close!(Double::FRAC_3_PI_4, Double::ONE.atan2(Double::NEG_ONE));
+        assert_close!(-Double::FRAC_PI_4, Double::NEG_ONE.atan2(Double::ONE));
     }
 
     #[test]

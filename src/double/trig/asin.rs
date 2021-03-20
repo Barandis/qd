@@ -29,7 +29,7 @@ impl Double {
             Double::NAN
         } else if self == Double::ONE {
             Double::FRAC_PI_2
-        } else if self == -Double::ONE {
+        } else if self == Double::NEG_ONE {
             -Double::FRAC_PI_2
         } else {
             self.atan2((Double::ONE - self.sqr()).sqrt())

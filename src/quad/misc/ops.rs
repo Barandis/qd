@@ -200,7 +200,7 @@ impl Quad {
     /// # use qd::Quad;
     /// # fn main() {
     /// assert!(qd!(3.5).signum() == Quad::ONE);
-    /// assert!(Quad::NEG_INFINITY.signum() == -Quad::ONE);
+    /// assert!(Quad::NEG_INFINITY.signum() == Quad::NEG_ONE);
     /// assert!(Quad::NAN.signum().is_nan());
     /// # }
     /// ```
@@ -213,7 +213,7 @@ impl Quad {
         if self.is_nan() {
             Quad::NAN
         } else if self.is_sign_negative() {
-            -Quad::ONE
+            Quad::NEG_ONE
         } else {
             Quad::ONE
         }
@@ -387,23 +387,23 @@ mod tests {
     fn signum() {
         assert_exact!(Quad::PI.signum(), Quad::ONE);
         assert_exact!(Quad::E.signum(), Quad::ONE);
-        assert_exact!((-Quad::PI).signum(), -Quad::ONE);
-        assert_exact!((-Quad::E).signum(), -Quad::ONE);
+        assert_exact!((-Quad::PI).signum(), Quad::NEG_ONE);
+        assert_exact!((-Quad::E).signum(), Quad::NEG_ONE);
         assert_exact!(qd!(2).signum(), Quad::ONE);
         assert_exact!(qd!(2.5).signum(), Quad::ONE);
-        assert_exact!(qd!(-3.5).signum(), -Quad::ONE);
+        assert_exact!(qd!(-3.5).signum(), Quad::NEG_ONE);
     }
 
     #[test]
     fn signum_zero() {
         assert_exact!(Quad::ZERO.signum(), Quad::ONE);
-        assert_exact!(Quad::NEG_ZERO.signum(), -Quad::ONE);
+        assert_exact!(Quad::NEG_ZERO.signum(), Quad::NEG_ONE);
     }
 
     #[test]
     fn signum_infinity() {
         assert_exact!(Quad::INFINITY.signum(), Quad::ONE);
-        assert_exact!(Quad::NEG_INFINITY.signum(), -Quad::ONE);
+        assert_exact!(Quad::NEG_INFINITY.signum(), Quad::NEG_ONE);
     }
 
     #[test]

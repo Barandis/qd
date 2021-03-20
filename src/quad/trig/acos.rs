@@ -29,7 +29,7 @@ impl Quad {
             Quad::NAN
         } else if self == Quad::ONE {
             Quad::ZERO
-        } else if self == -Quad::ONE {
+        } else if self == Quad::NEG_ONE {
             Quad::PI
         } else {
             (Quad::ONE - self.sqr()).sqrt().atan2(self)

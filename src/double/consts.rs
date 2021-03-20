@@ -63,6 +63,9 @@ impl Double {
     /// One (1)
     pub const ONE: Double = Double(1.0, 0.0);
 
+    /// Negative one (-1)
+    pub const NEG_ONE: Double = Double(-1.0, 0.0);
+
     /// Archimedes' constant (π)
     pub const PI: Double = Double(3.141_592_653_589_793e0, 1.224_646_799_147_353_2e-16);
 

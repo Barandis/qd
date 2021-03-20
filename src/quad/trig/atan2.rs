@@ -20,7 +20,7 @@ impl Quad {
     /// essentially returns the angle between the positive x-axis and the point (x, y),
     /// where *y* is the `Quad` that `atan2` is called on and *x* is the argument. Therefore
     /// `Quad::ONE.atan2(Quad::ONE)` is π/4 (first quadrant), but flipping both signs to
-    /// `(-Quad::ONE).atan2(-Quad::ONE)` gives the -3π/4 result (third quadrant).
+    /// `(Quad::NEG_ONE).atan2(Quad::NEG_ONE)` gives the -3π/4 result (third quadrant).
     ///
     /// This function extends the range of the result to [-π, π].
     ///
@@ -167,17 +167,17 @@ mod tests {
     fn zero() {
         assert_exact!(Quad::NAN, Quad::ZERO.atan2(Quad::ZERO));
         assert_exact!(Quad::ZERO, Quad::ZERO.atan2(Quad::ONE));
-        assert_close!(Quad::PI, Quad::ZERO.atan2(-Quad::ONE));
+        assert_close!(Quad::PI, Quad::ZERO.atan2(Quad::NEG_ONE));
         assert_close!(Quad::FRAC_PI_2, Quad::ONE.atan2(Quad::ZERO));
-        assert_close!(-Quad::FRAC_PI_2, -Quad::ONE.atan2(Quad::ZERO));
+        assert_close!(-Quad::FRAC_PI_2, Quad::NEG_ONE.atan2(Quad::ZERO));
     }
 
     #[test]
     fn one() {
         assert_close!(Quad::FRAC_PI_4, Quad::ONE.atan2(Quad::ONE));
-        assert_close!(-Quad::FRAC_3_PI_4, -Quad::ONE.atan2(-Quad::ONE));
-        assert_close!(Quad::FRAC_3_PI_4, Quad::ONE.atan2(-Quad::ONE));
-        assert_close!(-Quad::FRAC_PI_4, -Quad::ONE.atan2(Quad::ONE));
+        assert_close!(-Quad::FRAC_3_PI_4, Quad::NEG_ONE.atan2(Quad::NEG_ONE));
+        assert_close!(Quad::FRAC_3_PI_4, Quad::ONE.atan2(Quad::NEG_ONE));
+        assert_close!(-Quad::FRAC_PI_4, Quad::NEG_ONE.atan2(Quad::ONE));
     }
 
     #[test]

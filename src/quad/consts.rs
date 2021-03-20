@@ -21,13 +21,13 @@ impl Quad {
     ///
     /// This is the difference between `1.0` and the next largest representable number.
     ///
-    /// [Machine epsilon]: https://en.wikipedia.org/wiki/Machine_epsilon 2^-209
+    /// [Machine epsilon]: https://en.wikipedia.org/wiki/Machine_epsilon
     pub const EPSILON: Quad = Quad(
         1.215_432_671_457_254_2e-63,
         4.226_184_419_490_203_5e-129,
         0e0,
         0e0,
-    );
+    ); // 2^-209
 
     /// Smallest finite `Quad` value.
     pub const MIN: Quad = Quad(
@@ -77,6 +77,9 @@ impl Quad {
 
     /// One (1)
     pub const ONE: Quad = Quad(1.0, 0.0, 0.0, 0.0);
+
+    /// Negative one (-1)
+    pub const NEG_ONE: Quad = Quad(-1.0, 0.0, 0.0, 0.0);
 
     /// Archimedes' constant (π)
     pub const PI: Quad = Quad(

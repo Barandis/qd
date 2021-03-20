@@ -64,7 +64,7 @@ mod tests {
     #[test]
     fn infinity() {
         assert_exact!(Quad::ONE, Quad::INFINITY.tanh());
-        assert_exact!(-Quad::ONE, Quad::NEG_INFINITY.tanh());
+        assert_exact!(Quad::NEG_ONE, Quad::NEG_INFINITY.tanh());
     }
 
     #[test]
