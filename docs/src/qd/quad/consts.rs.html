@@ -252,10 +252,8 @@
 <span id="249">249</span>
 <span id="250">250</span>
 <span id="251">251</span>
-<span id="252">252</span>
-<span id="253">253</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="comment">// Copyright (c) 2019 Thomas Otterson</span>
+<span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
@@ -278,13 +276,13 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This is the difference between `1.0` and the next largest representable number.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// [Machine epsilon]: https://en.wikipedia.org/wiki/Machine_epsilon 2^-209</span>
+    <span class="doccomment">/// [Machine epsilon]: https://en.wikipedia.org/wiki/Machine_epsilon</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EPSILON</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">1.215_432_671_457_254_2e-63</span>,
         <span class="number">4.226_184_419_490_203_5e-129</span>,
         <span class="number">0e0</span>,
         <span class="number">0e0</span>,
-    );
+    ); <span class="comment">// 2^-209</span>
 
     <span class="doccomment">/// Smallest finite `Quad` value.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MIN</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
@@ -318,18 +316,13 @@
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_10_EXP</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">308</span>;
 
     <span class="doccomment">/// Not a Number (NaN).</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NAN</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="ident">f64</span>::<span class="ident">NAN</span>, <span class="ident">f64</span>::<span class="ident">NAN</span>, <span class="ident">f64</span>::<span class="ident">NAN</span>, <span class="ident">f64</span>::<span class="ident">NAN</span>);
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NAN</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="ident">f64</span>::<span class="ident">NAN</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 
     <span class="doccomment">/// Infinity (∞).</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INFINITY</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="ident">f64</span>::<span class="ident">INFINITY</span>, <span class="ident">f64</span>::<span class="ident">INFINITY</span>, <span class="ident">f64</span>::<span class="ident">INFINITY</span>, <span class="ident">f64</span>::<span class="ident">INFINITY</span>);
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INFINITY</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="ident">f64</span>::<span class="ident">INFINITY</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 
     <span class="doccomment">/// Negative infinity (-∞).</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NEG_INFINITY</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
-        <span class="ident">f64</span>::<span class="ident">NEG_INFINITY</span>,
-        <span class="ident">f64</span>::<span class="ident">NEG_INFINITY</span>,
-        <span class="ident">f64</span>::<span class="ident">NEG_INFINITY</span>,
-        <span class="ident">f64</span>::<span class="ident">NEG_INFINITY</span>,
-    );
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NEG_INFINITY</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="ident">f64</span>::<span class="ident">NEG_INFINITY</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 
     <span class="doccomment">/// Zero (0)</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ZERO</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
@@ -339,6 +332,9 @@
 
     <span class="doccomment">/// One (1)</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ONE</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
+
+    <span class="doccomment">/// Negative one (-1)</span>
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NEG_ONE</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="op">-</span><span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 
     <span class="doccomment">/// Archimedes&#39; constant (π)</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PI</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(

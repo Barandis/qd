@@ -122,17 +122,22 @@ mod tests {
     }
 }
 
+mod add;
 mod alg;
-mod arith;
-mod common;
 mod comp;
 mod consts;
 mod display;
+mod div;
 mod from;
 mod from_str;
 mod hyper;
 mod iter;
 mod misc;
+mod mul;
+mod neg;
+mod rem;
+mod sub;
+mod tables;
 mod trans;
 mod trig;
 
