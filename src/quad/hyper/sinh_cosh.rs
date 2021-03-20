@@ -41,7 +41,7 @@ impl Quad {
             (Quad::NAN, Quad::NAN)
         } else if self.is_zero() {
             (Quad::ZERO, Quad::ONE)
-        } else if self.abs().as_float() <= 0.05 {
+        } else if self.abs().0 <= 0.05 {
             let s = self.sinh();
             let c = (Quad::ONE + s.sqr()).sqrt();
             (s, c)

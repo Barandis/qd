@@ -28,7 +28,7 @@ impl Quad {
             Quad::NAN
         } else if self.is_zero() {
             Quad::ZERO
-        } else if self.abs().as_float() > 0.05 {
+        } else if self.abs().0 > 0.05 {
             let a = self.exp();
             mul_pwr2(a - a.recip(), 0.5)
         } else {

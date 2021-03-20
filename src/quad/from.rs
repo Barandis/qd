@@ -425,6 +425,34 @@ impl From<&str> for Quad {
     }
 }
 
+impl From<Quad> for f64 {
+    /// Converts a `Quad` into an `f64`.
+    ///
+    /// This will lose precision if the second component of the `Quad` is not 0, but it
+    /// will not lose range.
+    ///
+    /// No other conversions from `Quad` to numeric types are provided, as every other one
+    /// has the capability of losing range (for example, no other type could be used to
+    /// represent `dd!(1e308)`). Casts can be made from the `f64` provided by this function
+    /// to other numeric types as needed.
+    /// 
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// let a = Quad::PI;
+    /// let x = f64::from(a);
+    /// 
+    /// let diff = (x - std::f64::consts::PI).abs();
+    /// assert!(diff < 1e-15);
+    /// # }
+    #[inline]
+    fn from(a: Quad) -> f64 {
+        a.0
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -49,7 +49,7 @@ mod tests {
         ($expected:expr, $actual:expr, $digits:expr) => {
             let expected = Quad::from($expected);
             let actual = Quad::from($actual);
-            let mag = expected.abs().log10().floor().as_int() as i32;
+            let mag = f64::from(expected.abs().log10().floor()) as i32;
             let epsilon = Quad(10.0, 0.0, 0.0, 0.0).powi(mag - $digits);
             let diff = (expected - actual).abs();
             let message = format!(
