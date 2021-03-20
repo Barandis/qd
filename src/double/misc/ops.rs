@@ -8,7 +8,7 @@ use crate::double::Double;
 use std::f64;
 
 impl Double {
-    /// Calculates the absolute value of the number.
+    /// Calculates the absolute value of the `Double`.
     ///
     /// # Examples
     /// ```
@@ -28,7 +28,7 @@ impl Double {
         }
     }
 
-    /// Returns the largest integer value less than or equal to the number.
+    /// Returns the largest integer value less than or equal to the `Double`.
     ///
     /// # Examples
     /// ```
@@ -55,7 +55,7 @@ impl Double {
         }
     }
 
-    /// Returns the smallest integer value greater than or equal to the number.
+    /// Returns the smallest integer value greater than or equal to the `Double`.
     ///
     /// # Examples
     /// ```
@@ -82,7 +82,7 @@ impl Double {
         }
     }
 
-    /// Returns the nearest integer value to the number. Half-way cases are rounded away
+    /// Returns the nearest integer value to the `Double`. Half-way cases are rounded away
     /// from `0.0`, per the behavior of `f64`'s `round` method.
     ///
     /// # Examples
@@ -114,7 +114,7 @@ impl Double {
         }
     }
 
-    /// Returns the integer part of the number.
+    /// Returns the integer part of the `Double`.
     ///
     /// # Examples
     /// ```
@@ -137,7 +137,7 @@ impl Double {
         }
     }
 
-    /// Returns the fractional part of the number.
+    /// Returns the fractional part of the `Double`.
     ///
     /// # Examples
     /// ```
@@ -159,7 +159,7 @@ impl Double {
         self - self.trunc()
     }
 
-    /// Returns a number that represents the sign of the number.
+    /// Returns a number that represents the sign of the `Double`.
     ///
     /// * `1.0` if the number is positive, including `+0.0` and [`INFINITY`]
     /// * `-1.0` if the number is negative, including `-0.0` and [`NEG_INFINITY`]

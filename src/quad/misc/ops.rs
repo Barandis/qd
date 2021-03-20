@@ -8,7 +8,7 @@ use crate::quad::Quad;
 use std::f64;
 
 impl Quad {
-    /// Calculates the absolute value of the quad-double.
+    /// Calculates the absolute value of the `Quad`.
     ///
     /// # Examples
     /// ```
@@ -28,7 +28,7 @@ impl Quad {
         }
     }
 
-    /// Returns the largest integer less than or equal to the quad-double.
+    /// Returns the largest integer value less than or equal to the `Quad`.
     ///
     /// # Examples
     /// ```
@@ -64,7 +64,7 @@ impl Quad {
         }
     }
 
-    /// Returns the smallest integer greater than or equal to the quad-double.
+    /// Returns the smallest integer value greater than or equal to the `Quad`.
     ///
     /// # Examples
     /// ```
@@ -100,8 +100,8 @@ impl Quad {
         }
     }
 
-    /// Returns the nearest integer to the quad-double. Half-way cases are
-    /// rounded away from `0.0`.
+    /// Returns the nearest integer value to the `Double`. Half-way cases are rounded away
+    /// from `0.0`, per the behavior of `f64`'s `round` method.
     ///
     /// # Examples
     /// ```
@@ -143,7 +143,7 @@ impl Quad {
         }
     }
 
-    /// Returns the integer part of the quad-double.
+    /// Returns the integer part of the `Quad`.
     ///
     /// # Examples
     /// ```
@@ -166,7 +166,7 @@ impl Quad {
         }
     }
 
-    /// Returns the fractional part of the quad-double.
+    /// Returns the fractional part of the `Quad`.
     ///
     /// # Examples
     /// ```
@@ -188,11 +188,11 @@ impl Quad {
         self - self.trunc()
     }
 
-    /// Returns a number that represents the sign of the quad-double.
+    /// Returns a number that represents the sign of the `Quad`.
     ///
-    /// * `1.0` if the quad-double is positive, `+0.0`, or [`INFINITY`]
-    /// * `-1.0` if the quad-double is negative, `-0.0`, or [`NEG_INFINITY`]
-    /// *  [`NAN`] if the quad-double is [`NAN`]
+    /// * `1.0` if the number is positive, including `+0.0` and [`INFINITY`]
+    /// * `-1.0` if the number is negative, including `-0.0` and [`NEG_INFINITY`]
+    /// *  [`NAN`] if the number is [`NAN`]
     ///
     /// # Examples
     /// ```
@@ -219,3 +219,196 @@ impl Quad {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn abs() {
+        assert_exact!((-Quad::PI).abs(), Quad::PI);
+        assert_exact!(Quad::PI.abs(), Quad::PI);
+    }
+
+    #[test]
+    fn abs_zero() {
+        assert_exact!(Quad::ZERO.abs(), Quad::ZERO);
+        assert_exact!(Quad::NEG_ZERO.abs(), Quad::ZERO);
+    }
+
+    #[test]
+    fn abs_infinity() {
+        assert_exact!(Quad::INFINITY.abs(), Quad::INFINITY);
+        assert_exact!(Quad::NEG_INFINITY.abs(), Quad::INFINITY);
+    }
+
+    #[test]
+    fn abs_nan() {
+        assert!(Quad::NAN.abs().is_nan());
+    }
+
+    #[test]
+    fn floor() {
+        assert_exact!(Quad::PI.floor(), qd!(3));
+        assert_exact!(Quad::E.floor(), qd!(2));
+        assert_exact!((-Quad::PI).floor(), qd!(-4));
+        assert_exact!((-Quad::E).floor(), qd!(-3));
+        assert_exact!(qd!(2).floor(), qd!(2));
+    }
+
+    #[test]
+    fn floor_zero() {
+        assert_exact!(Quad::ZERO.floor(), Quad::ZERO);
+        assert_exact!(Quad::NEG_ZERO.floor(), Quad::NEG_ZERO);
+    }
+
+    #[test]
+    fn floor_infinity() {
+        assert_exact!(Quad::INFINITY.floor(), Quad::INFINITY);
+        assert_exact!(Quad::NEG_INFINITY.floor(), Quad::NEG_INFINITY);
+    }
+
+    #[test]
+    fn floor_nan() {
+        assert!(Quad::NAN.floor().is_nan());
+    }
+
+    #[test]
+    fn ceil() {
+        assert_exact!(Quad::PI.ceil(), qd!(4));
+        assert_exact!(Quad::E.ceil(), qd!(3));
+        assert_exact!((-Quad::PI).ceil(), qd!(-3));
+        assert_exact!((-Quad::E).ceil(), qd!(-2));
+        assert_exact!(qd!(2).ceil(), qd!(2));
+    }
+
+    #[test]
+    fn ceil_zero() {
+        assert_exact!(Quad::ZERO.ceil(), Quad::ZERO);
+        assert_exact!(Quad::NEG_ZERO.ceil(), Quad::NEG_ZERO);
+    }
+
+    #[test]
+    fn ceil_infinity() {
+        assert_exact!(Quad::INFINITY.ceil(), Quad::INFINITY);
+        assert_exact!(Quad::NEG_INFINITY.ceil(), Quad::NEG_INFINITY);
+    }
+
+    #[test]
+    fn ceil_nan() {
+        assert!(Quad::NAN.ceil().is_nan());
+    }
+
+    #[test]
+    fn round() {
+        assert_exact!(Quad::PI.round(), qd!(3));
+        assert_exact!(Quad::E.round(), qd!(3));
+        assert_exact!((-Quad::PI).round(), qd!(-3));
+        assert_exact!((-Quad::E).round(), qd!(-3));
+        assert_exact!(qd!(2).round(), qd!(2));
+        assert_exact!(qd!(2.5).round(), qd!(3));
+        assert_exact!(qd!(-3.5).round(), qd!(-4));
+    }
+
+    #[test]
+    fn round_zero() {
+        assert_exact!(Quad::ZERO.round(), Quad::ZERO);
+        assert_exact!(Quad::NEG_ZERO.round(), Quad::NEG_ZERO);
+    }
+
+    #[test]
+    fn round_infinity() {
+        assert_exact!(Quad::INFINITY.round(), Quad::INFINITY);
+        assert_exact!(Quad::NEG_INFINITY.round(), Quad::NEG_INFINITY);
+    }
+
+    #[test]
+    fn round_nan() {
+        assert!(Quad::NAN.round().is_nan());
+    }
+
+    #[test]
+    fn trunc() {
+        assert_exact!(Quad::PI.trunc(), qd!(3));
+        assert_exact!(Quad::E.trunc(), qd!(2));
+        assert_exact!((-Quad::PI).trunc(), qd!(-3));
+        assert_exact!((-Quad::E).trunc(), qd!(-2));
+        assert_exact!(qd!(2).trunc(), qd!(2));
+        assert_exact!(qd!(2.5).trunc(), qd!(2));
+        assert_exact!(qd!(-3.5).trunc(), qd!(-3));
+    }
+
+    #[test]
+    fn trunc_zero() {
+        assert_exact!(Quad::ZERO.trunc(), Quad::ZERO);
+        assert_exact!(Quad::NEG_ZERO.trunc(), Quad::NEG_ZERO);
+    }
+
+    #[test]
+    fn trunc_infinity() {
+        assert_exact!(Quad::INFINITY.trunc(), Quad::INFINITY);
+        assert_exact!(Quad::NEG_INFINITY.trunc(), Quad::NEG_INFINITY);
+    }
+
+    #[test]
+    fn trunc_nan() {
+        assert!(Quad::NAN.trunc().is_nan());
+    }
+
+    #[test]
+    fn fract() {
+        assert_close!(Quad::PI.fract(), Quad::PI - qd!(3));
+        assert_close!(Quad::E.fract(), Quad::E - qd!(2));
+        assert_close!((-Quad::PI).fract(), -Quad::PI + qd!(3));
+        assert_close!((-Quad::E).fract(), -Quad::E + qd!(2));
+        assert_exact!(qd!(2).fract(), Quad::ZERO);
+        assert_exact!(qd!(2.5).fract(), qd!(0.5));
+        assert_exact!(qd!(-3.5).fract(), qd!(-0.5));
+    }
+
+    #[test]
+    fn fract_zero() {
+        assert_exact!(Quad::ZERO.fract(), Quad::ZERO);
+        assert_exact!(Quad::NEG_ZERO.fract(), Quad::NEG_ZERO);
+    }
+
+    #[test]
+    fn fract_infinity() {
+        assert_exact!(Quad::INFINITY.fract(), Quad::NAN);
+        assert_exact!(Quad::NEG_INFINITY.fract(), Quad::NAN);
+    }
+
+    #[test]
+    fn fract_nan() {
+        assert!(Quad::NAN.fract().is_nan());
+    }
+
+    #[test]
+    fn signum() {
+        assert_exact!(Quad::PI.signum(), Quad::ONE);
+        assert_exact!(Quad::E.signum(), Quad::ONE);
+        assert_exact!((-Quad::PI).signum(), -Quad::ONE);
+        assert_exact!((-Quad::E).signum(), -Quad::ONE);
+        assert_exact!(qd!(2).signum(), Quad::ONE);
+        assert_exact!(qd!(2.5).signum(), Quad::ONE);
+        assert_exact!(qd!(-3.5).signum(), -Quad::ONE);
+    }
+
+    #[test]
+    fn signum_zero() {
+        assert_exact!(Quad::ZERO.signum(), Quad::ONE);
+        assert_exact!(Quad::NEG_ZERO.signum(), -Quad::ONE);
+    }
+
+    #[test]
+    fn signum_infinity() {
+        assert_exact!(Quad::INFINITY.signum(), Quad::ONE);
+        assert_exact!(Quad::NEG_INFINITY.signum(), -Quad::ONE);
+    }
+
+    #[test]
+    fn signum_nan() {
+        assert!(Quad::NAN.signum().is_nan());
+    }
+}
+

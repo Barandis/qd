@@ -61,18 +61,13 @@ impl Quad {
     pub const MAX_10_EXP: i32 = 308;
 
     /// Not a Number (NaN).
-    pub const NAN: Quad = Quad(f64::NAN, f64::NAN, f64::NAN, f64::NAN);
+    pub const NAN: Quad = Quad(f64::NAN, 0.0, 0.0, 0.0);
 
     /// Infinity (∞).
-    pub const INFINITY: Quad = Quad(f64::INFINITY, f64::INFINITY, f64::INFINITY, f64::INFINITY);
+    pub const INFINITY: Quad = Quad(f64::INFINITY, 0.0, 0.0, 0.0);
 
     /// Negative infinity (-∞).
-    pub const NEG_INFINITY: Quad = Quad(
-        f64::NEG_INFINITY,
-        f64::NEG_INFINITY,
-        f64::NEG_INFINITY,
-        f64::NEG_INFINITY,
-    );
+    pub const NEG_INFINITY: Quad = Quad(f64::NEG_INFINITY, 0.0, 0.0, 0.0);
 
     /// Zero (0)
     pub const ZERO: Quad = Quad(0.0, 0.0, 0.0, 0.0);
