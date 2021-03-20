@@ -7,9 +7,16 @@ use crate::quad::Quad;
 use std::num::FpCategory;
 
 impl Quad {
-    /// Returns the floating point category of the quad-double. If only one
-    /// property is being tested, it's generally faster to use the specific
-    /// predicate rather than this function.
+    /// Returns the floating point category of the `Quad`.
+    ///
+    /// The possible return values are the members of [`FpCategory`], as follows:
+    ///
+    /// * `FpCategory::Zero` if the number is ±0;
+    /// * `FpCategory::Infinite` if the number is ±∞;
+    /// * `FpCategory::Nan` if the number is not a number;
+    /// * `FpCategory::Subnormal` if the number is ±[`MIN_POSITIVE`] (numbers this small can
+    ///     be represented, but they lose some accuracy);
+    /// * `FpCategory::Normal` if the number is anything else.
     ///
     /// # Examples
     /// ```
@@ -25,29 +32,14 @@ impl Quad {
     /// assert!(inf.classify() == FpCategory::Infinite);
     /// # }
     /// ```
+    ///
+    /// [`FpCategory`]: https://doc.rust-lang.org/std/num/enum.FpCategory.html
+    /// [`MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE
     pub fn classify(self) -> FpCategory {
-        use std::num::FpCategory::*;
-
-        let c0 = self.0.classify();
-        let c1 = self.1.classify();
-        let c2 = self.2.classify();
-        let c3 = self.3.classify();
-
-        if c0 == Zero && c1 == Zero && c2 == Zero && c3 == Zero {
-            Zero
-        } else if c0 == Subnormal || c1 == Subnormal || c2 == Subnormal || c3 == Subnormal {
-            Subnormal
-        } else if c0 == Infinite || c1 == Infinite || c2 == Infinite || c3 == Infinite {
-            Infinite
-        } else if c0 == Nan || c1 == Nan || c2 == Nan || c3 == Nan {
-            Nan
-        } else {
-            Normal
-        }
+        self.0.classify()
     }
 
-    /// Returns `true` if the quad-double is neither zero, infinite, subnormal,
-    /// or `NaN`.
+    /// Returns `true` if the `Quad` is neither zero, infinite, subnormal, or `NaN`.
     ///
     /// # Examples
     /// ```
@@ -74,7 +66,7 @@ impl Quad {
         self.classify() == FpCategory::Normal
     }
 
-    /// Returns `true` if the quad-double is either positive or negative zero.
+    /// Returns `true` if the `Quad` is either positive or negative zero.
     ///
     /// # Examples
     /// ```
@@ -88,8 +80,8 @@ impl Quad {
         self.0 == 0.0
     }
 
-    /// Returns `true` if the quad-double is negative, including negative zero
-    /// and infinity and `NaN` with a negative sign bit.
+    /// Returns `true` if the `Quad` is negative, including negative zero, negative
+    /// infinity, and `NaN` with a negative sign bit.
     ///
     /// # Examples
     /// ```
@@ -108,8 +100,8 @@ impl Quad {
         self.0.is_sign_negative()
     }
 
-    /// Returns `true` if the quad-double is positive, including positive zero
-    /// and infinity and `NaN` with a positive sign bit.
+    /// Returns `true` if the `Quad` is positive, including positive zero, positive infinity
+    /// and `NaN` with a positive sign bit.
     ///
     /// # Examples
     /// ```
@@ -128,7 +120,7 @@ impl Quad {
         self.0.is_sign_positive()
     }
 
-    /// Returns `true` if the quad-double is `NaN`.
+    /// Returns `true` if the `Quad` is `NaN`.
     ///
     /// # Examples
     /// ```
@@ -141,10 +133,10 @@ impl Quad {
     /// ```
     #[inline]
     pub fn is_nan(self) -> bool {
-        self.0.is_nan() || self.1.is_nan()
+        self.0.is_nan()
     }
 
-    /// Returns `true` if the quad-double is positive or negative infinity.
+    /// Returns `true` if the `Quad` is positive or negative infinity.
     ///
     /// # Examples
     /// ```
@@ -159,10 +151,10 @@ impl Quad {
     /// ```
     #[inline]
     pub fn is_infinite(self) -> bool {
-        self.0.is_infinite() || self.1.is_infinite() || self.2.is_infinite() || self.3.is_infinite()
+        self.0.is_infinite()
     }
 
-    /// Returns `true` if the quad-double is neither infinite nor `NaN`.
+    /// Returns `true` if the `Quad` is neither infinite nor `NaN`..
     ///
     /// # Examples
     /// ```
@@ -177,6 +169,143 @@ impl Quad {
     /// ```
     #[inline]
     pub fn is_finite(self) -> bool {
-        self.0.is_finite() && self.1.is_finite() && self.2.is_finite() && self.3.is_finite()
+        self.0.is_finite()
+    }
+
+    /// Returns `true` if the `Quad` has an absolute value of less than [`MIN_POSITIVE`]. 
+    ///
+    /// Numbers this small can be represented by floating point numbers, but they are not as
+    /// accurate. This inaccuracy is inherent in the IEEE-754 format for 64-bit numbers;
+    /// making a double-double out of an inaccurate number means the double-double is also
+    /// going to be inaccurate.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Quad;
+    /// # fn main() {
+    /// assert!(!Quad::PI.is_subnormal());
+    /// assert!(qd!(1e-308).is_subnormal());
+    /// # }
+    /// ```
+    ///
+    /// [`MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE
+    #[inline]
+    pub fn is_subnormal(self) -> bool {
+        self.classify() == FpCategory::Subnormal
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::num::FpCategory::*;
+
+    #[test]
+    fn classify() {
+        assert_eq!(Quad::PI.classify(), Normal);
+        assert_eq!(Quad::ZERO.classify(), Zero);
+        assert_eq!(Quad::NEG_ZERO.classify(), Zero);
+        assert_eq!(Quad::INFINITY.classify(), Infinite);
+        assert_eq!(Quad::NEG_INFINITY.classify(), Infinite);
+        assert_eq!(Quad::NAN.classify(), Nan);
+        assert_eq!(qd!(1e-308).classify(), Subnormal);
+    }
+
+    #[test]
+    fn is_normal() {
+        assert!(Quad::PI.is_normal());
+        assert!((-Quad::PI).is_normal());
+        assert!(!Quad::ZERO.is_normal());
+        assert!(!Quad::NEG_ZERO.is_normal());
+        assert!(!Quad::INFINITY.is_normal());
+        assert!(!Quad::NEG_INFINITY.is_normal());
+        assert!(!Quad::NAN.is_normal());
+        assert!(!qd!(1e-308).is_normal());
+    }
+
+    #[test]
+    fn is_zero() {
+        assert!(!Quad::PI.is_zero());
+        assert!(!(-Quad::PI).is_zero());
+        assert!(Quad::ZERO.is_zero());
+        assert!(Quad::NEG_ZERO.is_zero());
+        assert!(!Quad::INFINITY.is_zero());
+        assert!(!Quad::NEG_INFINITY.is_zero());
+        assert!(!Quad::NAN.is_zero());
+        assert!(!qd!(1e-308).is_zero());
+    }
+
+    #[test]
+    fn is_sign_negative() {
+        assert!(!Quad::PI.is_sign_negative());
+        assert!((-Quad::PI).is_sign_negative());
+        assert!(!Quad::ZERO.is_sign_negative());
+        assert!(Quad::NEG_ZERO.is_sign_negative());
+        assert!(!Quad::INFINITY.is_sign_negative());
+        assert!(Quad::NEG_INFINITY.is_sign_negative());
+        assert!(!Quad::NAN.is_sign_negative());
+        assert!(!qd!(1e-308).is_sign_negative());
+    }
+
+    #[test]
+    fn is_sign_positive() {
+        assert!(Quad::PI.is_sign_positive());
+        assert!(!(-Quad::PI).is_sign_positive());
+        assert!(Quad::ZERO.is_sign_positive());
+        assert!(!Quad::NEG_ZERO.is_sign_positive());
+        assert!(Quad::INFINITY.is_sign_positive());
+        assert!(!Quad::NEG_INFINITY.is_sign_positive());
+        assert!(Quad::NAN.is_sign_positive());
+        assert!(qd!(1e-308).is_sign_positive());
+    }
+
+    #[test]
+    fn is_nan() {
+        assert!(!Quad::PI.is_nan());
+        assert!(!(-Quad::PI).is_nan());
+        assert!(!Quad::ZERO.is_nan());
+        assert!(!Quad::NEG_ZERO.is_nan());
+        assert!(!Quad::INFINITY.is_nan());
+        assert!(!Quad::NEG_INFINITY.is_nan());
+        assert!(Quad::NAN.is_nan());
+        assert!(!qd!(1e-308).is_nan());
+    }
+
+    #[test]
+    fn is_infinite() {
+        assert!(!Quad::PI.is_infinite());
+        assert!(!(-Quad::PI).is_infinite());
+        assert!(!Quad::ZERO.is_infinite());
+        assert!(!Quad::NEG_ZERO.is_infinite());
+        assert!(Quad::INFINITY.is_infinite());
+        assert!(Quad::NEG_INFINITY.is_infinite());
+        assert!(!Quad::NAN.is_infinite());
+        assert!(!qd!(1e-308).is_infinite());
+    }
+
+    #[test]
+    fn is_finite() {
+        assert!(Quad::PI.is_finite());
+        assert!((-Quad::PI).is_finite());
+        assert!(Quad::ZERO.is_finite());
+        assert!(Quad::NEG_ZERO.is_finite());
+        assert!(!Quad::INFINITY.is_finite());
+        assert!(!Quad::NEG_INFINITY.is_finite());
+        assert!(!Quad::NAN.is_finite());
+        assert!(qd!(1e-308).is_finite());
+    }
+
+    #[test]
+    fn is_subnormal() {
+        assert!(!Quad::PI.is_subnormal());
+        assert!(!(-Quad::PI).is_subnormal());
+        assert!(!Quad::ZERO.is_subnormal());
+        assert!(!Quad::NEG_ZERO.is_subnormal());
+        assert!(!Quad::INFINITY.is_subnormal());
+        assert!(!Quad::NEG_INFINITY.is_subnormal());
+        assert!(!Quad::NAN.is_subnormal());
+        assert!(qd!(1e-308).is_subnormal());
+    }
+}
+

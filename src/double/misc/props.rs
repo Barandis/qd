@@ -7,15 +7,15 @@ use crate::double::Double;
 use std::num::FpCategory;
 
 impl Double {
-    /// Returns the floating point category of the number.
+    /// Returns the floating point category of the `Double`.
     ///
     /// The possible return values are the members of [`FpCategory`], as follows:
     ///
     /// * `FpCategory::Zero` if the number is ±0;
     /// * `FpCategory::Infinite` if the number is ±∞;
     /// * `FpCategory::Nan` if the number is not a number;
-    /// * `FpCategory::Subnormal` if the number is ±[`Double::MIN_POSITIVE`] (numbers this
-    ///     small can be represented, but they lose some accuracy);
+    /// * `FpCategory::Subnormal` if the number is ±[`MIN_POSITIVE`] (numbers this small can
+    ///     be represented, but they lose some accuracy);
     /// * `FpCategory::Normal` if the number is anything else.
     ///
     /// # Examples
@@ -34,12 +34,12 @@ impl Double {
     /// ```
     ///
     /// [`FpCategory`]: https://doc.rust-lang.org/std/num/enum.FpCategory.html
-    /// [`Double::MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE
+    /// [`MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE
     pub fn classify(self) -> FpCategory {
         self.0.classify()
     }
 
-    /// Returns `true` if the number is neither zero, infinite, subnormal, or `NaN`.
+    /// Returns `true` if the `Double` is neither zero, infinite, subnormal, or `NaN`.
     ///
     /// # Examples
     /// ```
@@ -66,7 +66,7 @@ impl Double {
         self.classify() == FpCategory::Normal
     }
 
-    /// Returns `true` if the number is either positive or negative zero.
+    /// Returns `true` if the `Double` is either positive or negative zero.
     ///
     /// # Examples
     /// ```
@@ -80,7 +80,7 @@ impl Double {
         self.0 == 0.0
     }
 
-    /// Returns `true` if the number is negative, including negative zero, negative
+    /// Returns `true` if the `Double` is negative, including negative zero, negative
     /// infinity, and `NaN` with a negative sign bit.
     ///
     /// # Examples
@@ -100,8 +100,8 @@ impl Double {
         self.0.is_sign_negative()
     }
 
-    /// Returns `true` if the number is positive, including positive zero, positive infinity
-    /// and `NaN` with a positive sign bit.
+    /// Returns `true` if the `Double` is positive, including positive zero, positive
+    /// infinity and `NaN` with a positive sign bit.
     ///
     /// # Examples
     /// ```
@@ -120,7 +120,7 @@ impl Double {
         self.0.is_sign_positive()
     }
 
-    /// Returns `true` if the number is `NaN`.
+    /// Returns `true` if the `Double` is `NaN`.
     ///
     /// # Examples
     /// ```
@@ -136,7 +136,7 @@ impl Double {
         self.0.is_nan()
     }
 
-    /// Returns `true` if the number is positive or negative infinity.
+    /// Returns `true` if the `Double` is positive or negative infinity.
     ///
     /// # Examples
     /// ```
@@ -154,7 +154,7 @@ impl Double {
         self.0.is_infinite()
     }
 
-    /// Returns `true` if the number is neither infinite nor `NaN`.
+    /// Returns `true` if the `Double` is neither infinite nor `NaN`.
     ///
     /// # Examples
     /// ```
@@ -172,14 +172,13 @@ impl Double {
         self.0.is_finite()
     }
 
-    /// Returns `true` if the double-double has an absolute value of less than
-    /// [`Double::MIN_POSITIVE`]. 
-    /// 
+    /// Returns `true` if the `Double` has an absolute value of less than [`MIN_POSITIVE`]. 
+    ///
     /// Numbers this small can be represented by floating point numbers, but they are not as
     /// accurate. This inaccuracy is inherent in the IEEE-754 format for 64-bit numbers;
     /// making a double-double out of an inaccurate number means the double-double is also
     /// going to be inaccurate.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -189,8 +188,8 @@ impl Double {
     /// assert!(dd!(1e-308).is_subnormal());
     /// # }
     /// ```
-    /// 
-    /// [`Double::MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE
+    ///
+    /// [`MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE
     #[inline]
     pub fn is_subnormal(self) -> bool {
         self.classify() == FpCategory::Subnormal
