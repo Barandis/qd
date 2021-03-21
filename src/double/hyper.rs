@@ -13,7 +13,7 @@ use crate::double::Double;
 impl Double {
     /// Simultaneously computes the hyperbolic sine and cosine (sinh and cosh) of the
     /// `Double`.
-    /// 
+    ///
     /// The domain of this function is (-∞, ∞), and the range is (-∞, ∞) for the first
     /// component of the answer (the hyperbolic sine) and [1, ∞) for the second (the
     /// hyperbolic cosine).
@@ -41,25 +41,26 @@ impl Double {
     /// [`sinh`]: #method.sinh
     /// [`cosh`]: #method.cosh
     pub fn sinh_cosh(self) -> (Double, Double) {
-        if self.is_nan() {
-            (Double::NAN, Double::NAN)
-        } else if self.is_zero() {
-            (Double::ZERO, Double::ONE)
-        } else if self.abs().0 <= 0.05 {
-            let s = self.sinh();
-            let c = (Double::ONE + s.sqr()).sqrt();
-            (s, c)
-        } else {
-            let a = self.exp();
-            let inv_a = a.recip();
-            let s = (a - inv_a).mul_pwr2(0.5);
-            let c = (a + inv_a).mul_pwr2(0.5);
-            (s, c)
+        match self.pre_sinh_cosh() {
+            Some(r) => r,
+            None => {
+                if self.abs().0 <= 0.05 {
+                    let s = self.sinh();
+                    let c = (Double::ONE + s.sqr()).sqrt();
+                    (s, c)
+                } else {
+                    let a = self.exp();
+                    let inv_a = a.recip();
+                    let s = (a - inv_a).mul_pwr2(0.5);
+                    let c = (a + inv_a).mul_pwr2(0.5);
+                    (s, c)
+                }
+            }
         }
     }
 
     /// Computes the hyperbolic sine (sinh) of the `Double`.
-    /// 
+    ///
     /// The domain and range of this function are both (-∞, ∞).
     ///
     /// # Examples
@@ -75,37 +76,38 @@ impl Double {
     /// # }
     /// ```
     pub fn sinh(self) -> Double {
-        if self.is_nan() {
-            Double::NAN
-        } else if self.is_zero() {
-            Double::ZERO
-        } else if self.abs().0 > 0.05 {
-            let a = self.exp();
-            (a - a.recip()).mul_pwr2(0.5)
-        } else {
-            // The above formula is not accurate enough with very small numbers. Use a
-            // Taylor series instead.
-            let mut s = self;
-            let mut t = self;
-            let r = t.sqr();
-            let mut m = 1.0;
-            let threshold = (self * Double::EPSILON).abs();
+        match self.pre_sinh() {
+            Some(r) => r,
+            None => {
+                if self.abs().0 > 0.05 {
+                    let a = self.exp();
+                    (a - a.recip()).mul_pwr2(0.5)
+                } else {
+                    // The above formula is not accurate enough with very small numbers. Use
+                    // a Taylor series instead.
+                    let mut s = self;
+                    let mut t = self;
+                    let r = t.sqr();
+                    let mut m = 1.0;
+                    let threshold = (self * Double::EPSILON).abs();
 
-            loop {
-                m += 2.0;
-                t *= r;
-                t /= Double::from_mul(m - 1.0, m);
-                s += t;
-                if t.abs() <= threshold {
-                    break;
+                    loop {
+                        m += 2.0;
+                        t *= r;
+                        t /= Double::from_mul(m - 1.0, m);
+                        s += t;
+                        if t.abs() <= threshold {
+                            break;
+                        }
+                    }
+                    s
                 }
             }
-            s
         }
     }
 
     /// Computes the hyperbolic cosine (cosh) of the `Double`.
-    /// 
+    ///
     /// The domain of this function is (-∞, ∞), and the range is [1, ∞).
     ///
     /// # Examples
@@ -121,18 +123,17 @@ impl Double {
     /// # }
     /// ```
     pub fn cosh(self) -> Double {
-        if self.is_nan() {
-            Double::NAN
-        } else if self.is_zero() {
-            Double::ONE
-        } else {
-            let a = self.exp();
-            (a + a.recip()).mul_pwr2(0.5)
+        match self.pre_cosh() {
+            Some(r) => r,
+            None => {
+                let a = self.exp();
+                (a + a.recip()).mul_pwr2(0.5)
+            }
         }
     }
 
     /// Computes the hyperbolic tangent (tanh) of the `Double`.
-    /// 
+    ///
     /// The domain of this function is (-∞, ∞), and the range is (-1, 1).
     ///
     /// # Examples
@@ -148,24 +149,23 @@ impl Double {
     /// # }
     /// ```
     pub fn tanh(self) -> Double {
-        if self.is_nan() {
-            Double::NAN
-        } else if self.is_zero() {
-            Double::ZERO
-        } else if self.is_infinite() {
-            self.signum() * Double::ONE
-        } else if self.abs().0 > 0.05 {
-            let a = self.exp();
-            let inv_a = a.recip();
-            (a - inv_a) / (a + inv_a)
-        } else {
-            let (s, c) = self.sinh_cosh();
-            s / c
+        match self.pre_tanh() {
+            Some(r) => r,
+            None => {
+                if self.abs().0 > 0.05 {
+                    let a = self.exp();
+                    let inv_a = a.recip();
+                    (a - inv_a) / (a + inv_a)
+                } else {
+                    let (s, c) = self.sinh_cosh();
+                    s / c
+                }
+            }
         }
     }
 
     /// Calculates the inverse hyperbolic sine (sinh<sup>-1</sup>) of the `Double`.
-    /// 
+    ///
     /// The domain and range of this function are both (-∞, ∞).
     ///
     /// # Examples
@@ -181,21 +181,14 @@ impl Double {
     /// # }
     /// ```
     pub fn asinh(self) -> Double {
-        if self.is_zero() {
-            self
-        } else if self.is_infinite() {
-            if self.is_sign_positive() {
-                Double::INFINITY
-            } else {
-                Double::NEG_INFINITY
-            }
-        } else {
-            (self + (self.sqr() + Double::ONE).sqrt()).ln()
+        match self.pre_asinh() {
+            Some(r) => r,
+            None => (self + (self.sqr() + Double::ONE).sqrt()).ln(),
         }
     }
 
     /// Calculates the inverse hyperbolic cosine (cosh<sup>-1</sup>) of the `Double`.
-    /// 
+    ///
     /// The domain of the function is [1, ∞) and the range is [0, ∞). Any argument outside
     /// the range will result in [`NAN`].
     ///
@@ -211,22 +204,17 @@ impl Double {
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
-    /// 
+    ///
     /// [`NAN`]: #associatedconstant.NAN
     pub fn acosh(self) -> Double {
-        if self < Double::ONE {
-            Double::NAN
-        } else if self == Double::ONE {
-            Double::ZERO
-        } else if self.is_infinite() {
-            Double::INFINITY
-        } else {
-            (self + (self.sqr() - Double::ONE).sqrt()).ln()
+        match self.pre_acosh() {
+            Some(r) => r,
+            None => (self + (self.sqr() - Double::ONE).sqrt()).ln(),
         }
     }
 
     /// Calculates the inverse hyperbolic tangent (tanh<sup>-1</sup>) of the `Double`.
-    /// 
+    ///
     /// The domain of the function is (-1, 1) and the range is (-∞, ∞). Any argument whose
     /// absolute value is greater than or equal to 1 will result in [`NAN`].
     ///
@@ -242,13 +230,106 @@ impl Double {
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
-    /// 
+    ///
     /// [`NAN`]: #associatedconstant.NAN
     pub fn atanh(self) -> Double {
-        if self.abs() >= Double::ONE {
-            Double::NAN
+        match self.pre_atanh() {
+            Some(r) => r,
+            None => ((Double::ONE + self) / (Double::ONE - self))
+                .ln()
+                .mul_pwr2(0.5),
+        }
+    }
+
+    // Precalc functions
+    //
+    // This series of functions returns `Some` with a value that is to be returned, if it
+    // turns out that the function doesn't have to be calculated because a shortcut result
+    // is known. They return `None` if the value has to be calculated normally.
+    //
+    // This keeps the public functions from being mucked up with code that does validation
+    // rather than calculation.
+
+    #[inline]
+    fn pre_sinh_cosh(&self) -> Option<(Double, Double)> {
+        if self.is_nan() {
+            Some((Double::NAN, Double::NAN))
+        } else if self.is_zero() {
+            Some((Double::ZERO, Double::ONE))
         } else {
-            ((Double::ONE + self) / (Double::ONE - self)).ln().mul_pwr2(0.5)
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_sinh(&self) -> Option<Double> {
+        if self.is_nan() {
+            Some(Double::NAN)
+        } else if self.is_zero() {
+            Some(Double::ZERO)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_cosh(&self) -> Option<Double> {
+        if self.is_nan() {
+            Some(Double::NAN)
+        } else if self.is_zero() {
+            Some(Double::ONE)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_tanh(&self) -> Option<Double> {
+        if self.is_nan() {
+            Some(Double::NAN)
+        } else if self.is_zero() {
+            Some(Double::ZERO)
+        } else if self.is_infinite() {
+            Some(self.signum())
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_asinh(&self) -> Option<Double> {
+        if self.is_zero() {
+            Some(*self)
+        } else if self.is_infinite() {
+            if self.is_sign_positive() {
+                Some(Double::INFINITY)
+            } else {
+                Some(Double::NEG_INFINITY)
+            }
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_acosh(&self) -> Option<Double> {
+        if *self < Double::ONE {
+            Some(Double::NAN)
+        } else if *self == Double::ONE {
+            Some(Double::ZERO)
+        } else if self.is_infinite() {
+            Some(Double::INFINITY)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_atanh(&self) -> Option<Double> {
+        if self.abs() >= Double::ONE {
+            Some(Double::NAN)
+        } else {
+            None
         }
     }
 }

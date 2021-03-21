@@ -30,9 +30,9 @@ impl Sub for Double {
     type Output = Double;
 
     /// Subtracts another `Double` from this one, producing a new `Double` as a result.
-    /// 
+    ///
     /// This implements the binary `-` operator between two `Double`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -40,44 +40,21 @@ impl Sub for Double {
     /// # fn main() {
     /// let x = Double::E - Double::PI;
     /// let expected = dd!("-0.4233108251307480031023559119268");
-    /// 
+    ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
     fn sub(self, other: Double) -> Double {
-        if self.is_nan() || other.is_nan() {
-            Double::NAN
-        } else if self.is_infinite() {
-            if other.is_infinite() {
-                if self.is_sign_positive() {
-                    if other.is_sign_positive() {
-                        Double::NAN
-                    } else {
-                        Double::INFINITY
-                    }
-                } else if other.is_sign_negative() {
-                    Double::NAN
-                } else {
-                    Double::NEG_INFINITY
-                }
-            } else if self.is_sign_positive() {
-                Double::INFINITY
-            } else {
-                Double::NEG_INFINITY
+        match self.pre_sub(&other) {
+            Some(r) => r,
+            None => {
+                let (s0, e0) = core::two_diff(self.0, other.0);
+                let (s1, e1) = core::two_diff(self.1, other.1);
+                let (s2, e2) = core::quick_two_sum(s0, s1 + e0);
+                let (a, b) = core::renorm2(s2, e1 + e2);
+                Double(a, b)
             }
-        } else if other.is_infinite() {
-            if other.is_sign_positive() {
-                Double::NEG_INFINITY
-            } else {
-                Double::INFINITY
-            }
-        } else {
-            let (s0, e0) = core::two_diff(self.0, other.0);
-            let (s1, e1) = core::two_diff(self.1, other.1);
-            let (s2, e2) = core::quick_two_sum(s0, s1 + e0);
-            let (a, b) = core::renorm2(s2, e1 + e2);
-            Double(a, b)
         }
     }
 }
@@ -163,9 +140,9 @@ impl Sub<Double> for &Double {
 
 impl SubAssign for Double {
     /// Subtracts another `Double` from this one, modifying this one to equal the result.
-    /// 
+    ///
     /// This implements the `-=` operator between two `Double`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -211,6 +188,50 @@ impl SubAssign<&Double> for Double {
         let r = self.sub(*other);
         self.0 = r.0;
         self.1 = r.1;
+    }
+}
+
+impl Double {
+    // Precalc functions
+    //
+    // This series of functions returns `Some` with a value that is to be returned, if it
+    // turns out that the function doesn't have to be calculated because a shortcut result
+    // is known. They return `None` if the value has to be calculated normally.
+    //
+    // This keeps the public functions from being mucked up with code that does validation
+    // rather than calculation.
+
+    #[inline]
+    fn pre_sub(&self, other: &Double) -> Option<Double> {
+        if self.is_nan() || other.is_nan() {
+            Some(Double::NAN)
+        } else if self.is_infinite() {
+            if other.is_infinite() {
+                if self.is_sign_positive() {
+                    if other.is_sign_positive() {
+                        Some(Double::NAN)
+                    } else {
+                        Some(Double::INFINITY)
+                    }
+                } else if other.is_sign_negative() {
+                    Some(Double::NAN)
+                } else {
+                    Some(Double::NEG_INFINITY)
+                }
+            } else if self.is_sign_positive() {
+                Some(Double::INFINITY)
+            } else {
+                Some(Double::NEG_INFINITY)
+            }
+        } else if other.is_infinite() {
+            if other.is_sign_positive() {
+                Some(Double::NEG_INFINITY)
+            } else {
+                Some(Double::INFINITY)
+            }
+        } else {
+            None
+        }
     }
 }
 

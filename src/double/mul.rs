@@ -46,34 +46,13 @@ impl Mul for Double {
     /// # }
     /// ```
     fn mul(self, other: Double) -> Double {
-        if self.is_nan() || other.is_nan() {
-            Double::NAN
-        } else if self.is_zero() {
-            if other.is_infinite() {
-                Double::NAN
-            } else if self.is_sign_positive() == other.is_sign_positive() {
-                Double::ZERO
-            } else {
-                Double::NEG_ZERO
+        match self.pre_mul(&other) {
+            Some(r) => r,
+            None => {
+                let (p, e) = core::two_prod(self.0, other.0);
+                let (a, b) = core::renorm2(p, e + self.0 * other.1 + self.1 * other.0);
+                Double(a, b)
             }
-        } else if self.is_infinite() {
-            if other.is_zero() {
-                Double::NAN
-            } else if self.is_sign_positive() == other.is_sign_positive() {
-                Double::INFINITY
-            } else {
-                Double::NEG_INFINITY
-            }
-        } else if other.is_infinite() {
-            if self.is_sign_positive() == other.is_sign_positive() {
-                Double::INFINITY
-            } else {
-                Double::NEG_INFINITY
-            }
-        } else {
-            let (p, e) = core::two_prod(self.0, other.0);
-            let (a, b) = core::renorm2(p, e + self.0 * other.1 + self.1 * other.0);
-            Double(a, b)
         }
     }
 }
@@ -206,6 +185,48 @@ impl MulAssign<&Double> for Double {
         let r = self.mul(*other);
         self.0 = r.0;
         self.1 = r.1;
+    }
+}
+
+impl Double {
+    // Precalc functions
+    //
+    // This series of functions returns `Some` with a value that is to be returned, if it
+    // turns out that the function doesn't have to be calculated because a shortcut result
+    // is known. They return `None` if the value has to be calculated normally.
+    //
+    // This keeps the public functions from being mucked up with code that does validation
+    // rather than calculation.
+
+    #[inline]
+    fn pre_mul(&self, other: &Double) -> Option<Double> {
+        if self.is_nan() || other.is_nan() {
+            Some(Double::NAN)
+        } else if self.is_zero() {
+            if other.is_infinite() {
+                Some(Double::NAN)
+            } else if self.is_sign_positive() == other.is_sign_positive() {
+                Some(Double::ZERO)
+            } else {
+                Some(Double::NEG_ZERO)
+            }
+        } else if self.is_infinite() {
+            if other.is_zero() {
+                Some(Double::NAN)
+            } else if self.is_sign_positive() == other.is_sign_positive() {
+                Some(Double::INFINITY)
+            } else {
+                Some(Double::NEG_INFINITY)
+            }
+        } else if other.is_infinite() {
+            if self.is_sign_positive() == other.is_sign_positive() {
+                Some(Double::INFINITY)
+            } else {
+                Some(Double::NEG_INFINITY)
+            }
+        } else {
+            None
+        }
     }
 }
 

@@ -36,9 +36,9 @@ impl Div for Quad {
     type Output = Quad;
 
     /// Divides this `Quad` by another, producing a new `Quad` as a result.
-    /// 
+    ///
     /// This implements the `/` operator between two `Quad`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -46,80 +46,60 @@ impl Div for Quad {
     /// # fn main() {
     /// let x = Quad::E / Quad::PI;
     /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
-    /// 
+    ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
     #[allow(clippy::suspicious_arithmetic_impl)]
     fn div(self, other: Quad) -> Quad {
-        if self.is_nan() || other.is_nan() {
-            Quad::NAN
-        } else if other.is_zero() {
-            if self.is_zero() {
-                Quad::NAN
-            } else if self.is_sign_negative() == other.is_sign_positive() {
-                Quad::NEG_INFINITY
-            } else {
-                Quad::INFINITY
+        match self.pre_div(&other) {
+            Some(r) => r,
+            None => {
+                // Strategy:
+                //
+                // Divide the first component of `self` by the first component of `other`.
+                // Then divide the first component of the remainder by the first component
+                // of `other`, then the first component of -that- remainder by the first
+                // component of `other`, and so on until we have five terms we can
+                // renormalize.
+                let q0 = self.0 / other.0;
+                let mut r = self - mul_f64(other, q0);
+
+                let q1 = r.0 / other.0;
+                r -= mul_f64(other, q1);
+
+                let q2 = r.0 / other.0;
+                r -= mul_f64(other, q2);
+
+                let q3 = r.0 / other.0;
+                r -= mul_f64(other, q3);
+
+                let q4 = r.0 / other.0;
+
+                let (a, b, c, d) = core::renorm5(q0, q1, q2, q3, q4);
+                Quad(a, b, c, d)
             }
-        } else if self.is_infinite() {
-            if other.is_infinite() {
-                Quad::NAN
-            } else if self.is_sign_positive() == other.is_sign_positive() {
-                Quad::INFINITY
-            } else {
-                Quad::NEG_INFINITY
-            }
-        } else if other.is_infinite() {
-            if self.is_sign_positive() == other.is_sign_positive() {
-                Quad::ZERO
-            } else {
-                Quad::NEG_ZERO
-            }
-        } else {
-            // Strategy:
-            //
-            // Divide the first component of `self` by the first component of `other`. Then
-            // divide the first component of the remainder by the first component of
-            // `other`, then the first component of -that- remainder by the first component
-            // of `other`, and so on until we have five terms we can renormalize.
-            let q0 = self.0 / other.0;
-            let mut r = self - mul_f64(other, q0);
-
-            let q1 = r.0 / other.0;
-            r -= mul_f64(other, q1);
-
-            let q2 = r.0 / other.0;
-            r -= mul_f64(other, q2);
-
-            let q3 = r.0 / other.0;
-            r -= mul_f64(other, q3);
-
-            let q4 = r.0 / other.0;
-
-            let (a, b, c, d) = core::renorm5(q0, q1, q2, q3, q4);
-            Quad(a, b, c, d)
         }
     }
 }
 
-    /// Divides a reference to this `Quad` by another, producing a new `Quad` as a result.
-    /// 
-    /// This implements the `/` operator between two references to `Quad`s.
-    /// 
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
-    /// let x = &Quad::E / &Quad::PI;
-    /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
-    /// 
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < qd!(1e-60));
-    /// # }
-    /// ```
+/// Divides a reference to this `Quad` by another, producing a new `Quad` as a result.
+///
+/// This implements the `/` operator between two references to `Quad`s.
+///
+/// # Examples
+/// ```
+/// # #[macro_use] extern crate qd;
+/// # use qd::Quad;
+/// # fn main() {
+/// let x = &Quad::E / &Quad::PI;
+/// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
+///
+/// let diff = (x - expected).abs();
+/// assert!(diff < qd!(1e-60));
+/// # }
+/// ```
 impl Div for &Quad {
     type Output = Quad;
 
@@ -133,9 +113,9 @@ impl Div<&Quad> for Quad {
     type Output = Quad;
 
     /// Divides this `Quad` by a reference to another, producing a new `Quad` as a result.
-    /// 
+    ///
     /// This implements the `/` operator between a `Quad` and a reference to a `Quad`.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -143,7 +123,7 @@ impl Div<&Quad> for Quad {
     /// # fn main() {
     /// let x = Quad::E / &Quad::PI;
     /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
-    /// 
+    ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
     /// # }
@@ -182,9 +162,9 @@ impl Div<Quad> for &Quad {
 
 impl DivAssign for Quad {
     /// Divides this `Quad` by another, modifying this one to equal the result.
-    /// 
+    ///
     /// This implements the `/=` operator between two `Quad`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -234,6 +214,48 @@ impl DivAssign<&Quad> for Quad {
         self.1 = r.1;
         self.2 = r.2;
         self.3 = r.3;
+    }
+}
+
+impl Quad {
+    // Precalc functions
+    //
+    // This series of functions returns `Some` with a value that is to be returned, if it
+    // turns out that the function doesn't have to be calculated because a shortcut result
+    // is known. They return `None` if the value has to be calculated normally.
+    //
+    // This keeps the public functions from being mucked up with code that does validation
+    // rather than calculation.
+
+    #[inline]
+    fn pre_div(&self, other: &Quad) -> Option<Quad> {
+        if self.is_nan() || other.is_nan() {
+            Some(Quad::NAN)
+        } else if other.is_zero() {
+            if self.is_zero() {
+                Some(Quad::NAN)
+            } else if self.is_sign_negative() == other.is_sign_positive() {
+                Some(Quad::NEG_INFINITY)
+            } else {
+                Some(Quad::INFINITY)
+            }
+        } else if self.is_infinite() {
+            if other.is_infinite() {
+                Some(Quad::NAN)
+            } else if self.is_sign_positive() == other.is_sign_positive() {
+                Some(Quad::INFINITY)
+            } else {
+                Some(Quad::NEG_INFINITY)
+            }
+        } else if other.is_infinite() {
+            if self.is_sign_positive() == other.is_sign_positive() {
+                Some(Quad::ZERO)
+            } else {
+                Some(Quad::NEG_ZERO)
+            }
+        } else {
+            None
+        }
     }
 }
 

@@ -51,7 +51,7 @@ impl Quad {
     ///
     /// `mul_pwr2` is primarily useful for implementing mathematical algorithms. It is used
     /// extensively in this library.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -59,12 +59,12 @@ impl Quad {
     /// # fn main() {
     /// let x = Quad::PI.mul_pwr2(0.5); // MUCH faster than Quad::PI / 2
     /// let expected = qd!("1.570796326794896619231321691639751442098584699687552910487472296");
-    /// 
+    ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
-    /// 
+    ///
     /// [`ldexp`]: #methods.ldexp
     #[inline]
     pub fn mul_pwr2(self, n: f64) -> Quad {
@@ -88,52 +88,53 @@ impl Quad {
     /// ```
     #[inline]
     pub fn sqr(self) -> Quad {
-        if self.is_infinite() {
-            Quad::INFINITY
-        } else {
-            // A considerable simplification over simply multiplying the number by itself,
-            // with the simplifications possible because the two numbers being multiplied
-            // are in fact equal.
-            //
-            // The result is a simpler calculation:
-            //
-            //      a0² + 2a0a1 + 2a0a2 + a1² + 2a0a3 + 2a1a2
-            //
-            // where any further terms, including the low words of the final two terms, are
-            // unnecessary to achieve the desired accuracy.
+        match self.pre_sqr() {
+            Some(r) => r,
+            None => {
+                // A considerable simplification over simply multiplying the number by
+                // itself, with the simplifications possible because the two numbers being
+                // multiplied are in fact equal.
+                //
+                // The result is a simpler calculation:
+                //
+                //      a0² + 2a0a1 + 2a0a2 + a1² + 2a0a3 + 2a1a2
+                //
+                // where any further terms, including the low words of the final two terms,
+                // are unnecessary to achieve the desired accuracy.
 
-            let (h0, l0) = core::two_sqr(self.0);
-            let (h1, l1) = core::two_prod(2.0 * self.0, self.1);
-            let (h2, l2) = core::two_prod(2.0 * self.0, self.2);
-            let (h3, l3) = core::two_sqr(self.1);
-            let h4 = 2.0 * self.0 * self.3;
-            let h5 = 2.0 * self.1 * self.2;
+                let (h0, l0) = core::two_sqr(self.0);
+                let (h1, l1) = core::two_prod(2.0 * self.0, self.1);
+                let (h2, l2) = core::two_prod(2.0 * self.0, self.2);
+                let (h3, l3) = core::two_sqr(self.1);
+                let h4 = 2.0 * self.0 * self.3;
+                let h5 = 2.0 * self.1 * self.2;
 
-            // Less primitive functions are not used here because there are steps in them
-            // that can be skipped.
+                // Less primitive functions are not used here because there are steps in
+                // them that can be skipped.
 
-            let r0 = h0;
+                let r0 = h0;
 
-            let (r1, a1) = core::two_sum(h1, l0);
+                let (r1, a1) = core::two_sum(h1, l0);
 
-            let (b0, b1) = core::two_sum(a1, l1);
-            let (c0, c1) = core::two_sum(h2, h3);
-            let (d0, d1) = core::two_sum(b0, c0);
-            let (e0, e1) = core::two_sum(b1, c1);
-            let (f0, f1) = core::two_sum(d1, e0);
-            let (i0, i1) = core::quick_two_sum(f0, e1 + f1);
-            let (r2, j1) = core::quick_two_sum(d0, i0);
+                let (b0, b1) = core::two_sum(a1, l1);
+                let (c0, c1) = core::two_sum(h2, h3);
+                let (d0, d1) = core::two_sum(b0, c0);
+                let (e0, e1) = core::two_sum(b1, c1);
+                let (f0, f1) = core::two_sum(d1, e0);
+                let (i0, i1) = core::quick_two_sum(f0, e1 + f1);
+                let (r2, j1) = core::quick_two_sum(d0, i0);
 
-            let (k0, k1) = core::quick_two_sum(i1, j1);
-            let (m0, m1) = core::two_sum(h4, h5);
-            let (n0, n1) = core::two_sum(l2, l3);
-            let (o0, o1) = core::two_sum(m0, n0);
-            let (r3, q1) = core::two_sum(k0, o0);
+                let (k0, k1) = core::quick_two_sum(i1, j1);
+                let (m0, m1) = core::two_sum(h4, h5);
+                let (n0, n1) = core::two_sum(l2, l3);
+                let (o0, o1) = core::two_sum(m0, n0);
+                let (r3, q1) = core::two_sum(k0, o0);
 
-            let r4 = m1 + n1 + o1 + k1 + q1;
+                let r4 = m1 + n1 + o1 + k1 + q1;
 
-            let (a, b, c, d) = core::renorm5(r0, r1, r2, r3, r4);
-            Quad(a, b, c, d)
+                let (a, b, c, d) = core::renorm5(r0, r1, r2, r3, r4);
+                Quad(a, b, c, d)
+            }
         }
     }
 
@@ -152,33 +153,30 @@ impl Quad {
     /// # }
     /// ```
     pub fn sqrt(self) -> Quad {
-        if self.is_zero() {
-            Quad::ZERO
-        } else if self.is_sign_negative() {
-            Quad::NAN
-        } else if self.is_infinite() {
-            Quad::INFINITY
-        } else {
-            // Strategy: use Newton's iteration.
-            //
-            // Perform the following Newton iteration
-            //
-            //      x' = x + (1 - ax²) * x / 2
-            //
-            // which converges to 1/√a, starting with a Quad-precision approximation of
-            // 1/√a. Newton's iteration more or less quadruples the precision with each
-            // pass, so performing it three times should be enough.
+        match self.pre_sqrt() {
+            Some(r) => r,
+            None => {
+                // Strategy: use Newton's iteration.
+                //
+                // Perform the following Newton iteration
+                //
+                //      x' = x + (1 - ax²) * x / 2
+                //
+                // which converges to 1/√a, starting with a Quad-precision approximation of
+                // 1/√a. Newton's iteration more or less quadruples the precision with each
+                // pass, so performing it three times should be enough.
 
-            let mut r = Quad::ONE / Quad::from(self.0.sqrt());
-            let h = self.mul_pwr2(0.5);
-            let k = Quad(0.5, 0.0, 0.0, 0.0);
+                let mut r = Quad::ONE / Quad::from(self.0.sqrt());
+                let h = self.mul_pwr2(0.5);
+                let k = Quad(0.5, 0.0, 0.0, 0.0);
 
-            r += (k - h * r.sqr()) * r;
-            r += (k - h * r.sqr()) * r;
-            r += (k - h * r.sqr()) * r;
+                r += (k - h * r.sqr()) * r;
+                r += (k - h * r.sqr()) * r;
+                r += (k - h * r.sqr()) * r;
 
-            r *= self;
-            r
+                r *= self;
+                r
+            }
         }
     }
 
@@ -197,57 +195,35 @@ impl Quad {
     /// # }
     /// ```
     pub fn nroot(self, n: i32) -> Quad {
-        if self.is_zero() {
-            if n % 2 == 0 || self.is_sign_positive() {
-                if n > 0 {
-                    Quad::ZERO
-                } else {
-                    Quad::INFINITY
+        match self.pre_nroot(n) {
+            Some(r) => r,
+            None => {
+                // Strategy: the traditional way of finding roots is using Newton's
+                // iteration for the function
+                //
+                //      f(x) = x^(-n) - a
+                //
+                // to find its root a^(-1/n). The iteration is therefore
+                //
+                //      x' = x + x * (1 - a * x^n) / n
+                //
+                // This converges quadratically, which is pretty fast. After performing a
+                // small number of iterations, we can then find a^(1/n) by taking the
+                // reciprocal.
+
+                let r = self.abs();
+                // a^(-1/n) = exp(-ln(a) / n)
+                let mut x = Quad::from((-(r.0.ln()) / n as f64).exp());
+
+                let qd_n = Quad(n.into(), 0.0, 0.0, 0.0);
+                x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
+                x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
+                x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
+                if self.0 < 0.0 {
+                    x = -x
                 }
-            } else if n > 0 {
-                Quad::NEG_ZERO
-            } else {
-                Quad::NEG_INFINITY
+                x.recip()
             }
-        } else if n <= 0 {
-            Quad::NAN
-        } else if self.is_infinite() {
-            if self.is_sign_positive() {
-                Quad::INFINITY
-            } else if n % 2 == 0 {
-                Quad::NAN
-            } else {
-                Quad::NEG_INFINITY
-            }
-        } else if n == 1 {
-            self
-        } else if n == 2 {
-            self.sqrt() // use the more specialized method in sqrt
-        } else {
-            // Strategy: the traditional way of finding roots is using Newton's iteration
-            // for the function
-            //
-            //      f(x) = x^(-n) - a
-            //
-            // to find its root a^(-1/n). The iteration is therefore
-            //
-            //      x' = x + x * (1 - a * x^n) / n
-            //
-            // This converges quadratically, which is pretty fast. After performing a small
-            // number of iterations, we can then find a^(1/n) by taking the reciprocal.
-
-            let r = self.abs();
-            // a^(-1/n) = exp(-ln(a) / n)
-            let mut x: Quad = (-(r.0.ln()) / n as f64).exp().into();
-
-            let qd_n = Quad(n.into(), 0.0, 0.0, 0.0);
-            x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
-            x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
-            x += x * (Quad::ONE - r * x.powi(n)) / qd_n;
-            if self.0 < 0.0 {
-                x = -x
-            }
-            x.recip()
         }
     }
 
@@ -290,57 +266,32 @@ impl Quad {
     /// # }
     /// ```
     pub fn powi(self, n: i32) -> Quad {
-        if n == 0 {
-            Quad::ONE
-        } else if self.is_nan() {
-            Quad::NAN
-        } else if self.is_zero() {
-            if n % 2 == 0 || self.is_sign_positive() {
-                if n > 0 {
-                    Quad::ZERO
-                } else {
-                    Quad::INFINITY
-                }
-            } else if n > 0 {
-                Quad::NEG_ZERO
-            } else {
-                Quad::NEG_INFINITY
-            }
-        } else if self.is_infinite() {
-            if n % 2 == 0 || self.is_sign_positive() {
-                if n > 0 {
-                    Quad::INFINITY
-                } else {
-                    Quad::ZERO
-                }
-            } else if n > 0 {
-                Quad::NEG_INFINITY
-            } else {
-                Quad::NEG_ZERO
-            }
-        } else {
-            let mut r = self;
-            let mut s = Quad::ONE;
-            let mut k = n.abs();
+        match self.pre_powi(n) {
+            Some(r) => r,
+            None => {
+                let mut r = self;
+                let mut s = Quad::ONE;
+                let mut k = n.abs();
 
-            if k > 1 {
-                while k > 0 {
-                    if k % 2 == 1 {
-                        s *= r;
+                if k > 1 {
+                    while k > 0 {
+                        if k % 2 == 1 {
+                            s *= r;
+                        }
+                        k /= 2;
+                        if k > 0 {
+                            r = r.sqr();
+                        }
                     }
-                    k /= 2;
-                    if k > 0 {
-                        r = r.sqr();
-                    }
+                } else {
+                    s = r;
                 }
-            } else {
-                s = r;
-            }
 
-            if n < 0 {
-                s.recip()
-            } else {
-                s
+                if n < 0 {
+                    s.recip()
+                } else {
+                    s
+                }
             }
         }
     }
@@ -372,24 +323,9 @@ impl Quad {
     /// [1]: http://www.netlib.org/fdlibm/e_pow.c
     #[inline]
     pub fn powf(self, n: Quad) -> Quad {
-        if self.is_zero() {
-            if n.is_zero() {
-                Quad::NAN
-            } else if n.is_sign_positive() {
-                Quad::ZERO
-            } else {
-                Quad::INFINITY
-            }
-        } else if n.is_infinite() {
-            if self == Quad::ONE {
-                Quad::NAN
-            } else if n.is_sign_positive() {
-                Quad::INFINITY
-            } else {
-                Quad::ZERO
-            }
-        } else {
-            (n * self.ln()).exp()
+        match self.pre_powf(&n) {
+            Some(r) => r,
+            None => (n * self.ln()).exp(),
         }
     }
 
@@ -410,6 +346,128 @@ impl Quad {
     #[inline]
     pub fn recip(self) -> Quad {
         Quad::ONE / self
+    }
+
+    // PRecalc functions
+    //
+    // This series of functions returns `Some` with a value that is to be returned, if it
+    // turns out that the function doesn't have to be calculated because a shortcut result
+    // is known. They return `None` if the value has to be calculated normally.
+    //
+    // This keeps the public functions from being mucked up with code that does validation
+    // rather than calculation.
+
+    #[inline]
+    fn pre_sqr(&self) -> Option<Quad> {
+        if self.is_infinite() {
+            Some(Quad::INFINITY)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_sqrt(&self) -> Option<Quad> {
+        if self.is_zero() {
+            Some(Quad::ZERO)
+        } else if self.is_sign_negative() {
+            Some(Quad::NAN)
+        } else if self.is_infinite() {
+            Some(Quad::INFINITY)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_nroot(&self, n: i32) -> Option<Quad> {
+        if self.is_zero() {
+            if n % 2 == 0 || self.is_sign_positive() {
+                if n > 0 {
+                    Some(Quad::ZERO)
+                } else {
+                    Some(Quad::INFINITY)
+                }
+            } else if n > 0 {
+                Some(Quad::NEG_ZERO)
+            } else {
+                Some(Quad::NEG_INFINITY)
+            }
+        } else if n <= 0 {
+            Some(Quad::NAN)
+        } else if self.is_infinite() {
+            if self.is_sign_positive() {
+                Some(Quad::INFINITY)
+            } else if n % 2 == 0 {
+                Some(Quad::NAN)
+            } else {
+                Some(Quad::NEG_INFINITY)
+            }
+        } else if n == 1 {
+            Some(*self)
+        } else if n == 2 {
+            Some(self.sqrt()) // use the more specialized method in sqrt
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_powi(&self, n: i32) -> Option<Quad> {
+        if n == 0 {
+            Some(Quad::ONE)
+        } else if self.is_nan() {
+            Some(Quad::NAN)
+        } else if self.is_zero() {
+            if n % 2 == 0 || self.is_sign_positive() {
+                if n > 0 {
+                    Some(Quad::ZERO)
+                } else {
+                    Some(Quad::INFINITY)
+                }
+            } else if n > 0 {
+                Some(Quad::NEG_ZERO)
+            } else {
+                Some(Quad::NEG_INFINITY)
+            }
+        } else if self.is_infinite() {
+            if n % 2 == 0 || self.is_sign_positive() {
+                if n > 0 {
+                    Some(Quad::INFINITY)
+                } else {
+                    Some(Quad::ZERO)
+                }
+            } else if n > 0 {
+                Some(Quad::NEG_INFINITY)
+            } else {
+                Some(Quad::NEG_ZERO)
+            }
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_powf(&self, n: &Quad) -> Option<Quad> {
+        if self.is_zero() {
+            if n.is_zero() {
+                Some(Quad::NAN)
+            } else if n.is_sign_positive() {
+                Some(Quad::ZERO)
+            } else {
+                Some(Quad::INFINITY)
+            }
+        } else if n.is_infinite() {
+            if *self == Quad::ONE {
+                Some(Quad::NAN)
+            } else if n.is_sign_positive() {
+                Some(Quad::INFINITY)
+            } else {
+                Some(Quad::ZERO)
+            }
+        } else {
+            None
+        }
     }
 }
 

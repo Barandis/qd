@@ -54,72 +54,51 @@ impl Mul for Quad {
     /// ```
     #[allow(clippy::suspicious_arithmetic_impl)]
     fn mul(self, other: Quad) -> Quad {
-        if self.is_nan() || other.is_nan() {
-            Quad::NAN
-        } else if self.is_zero() {
-            if other.is_infinite() {
-                Quad::NAN
-            } else if self.is_sign_positive() == other.is_sign_positive() {
-                Quad::ZERO
-            } else {
-                Quad::NEG_ZERO
+        match self.pre_mul(&other) {
+            Some(r) => r,
+            None => {
+                // O(1) term
+                let (h0, l0) = core::two_prod(self.0, other.0);
+
+                // O(ε) terms
+                let (h1, l1) = core::two_prod(self.0, other.1);
+                let (h2, l2) = core::two_prod(self.1, other.0);
+
+                // O(ε²) terms
+                let (h3, l3) = core::two_prod(self.0, other.2);
+                let (h4, l4) = core::two_prod(self.1, other.1);
+                let (h5, l5) = core::two_prod(self.2, other.0);
+
+                // O(ε³) terms
+                let (h6, l6) = core::two_prod(self.0, other.3);
+                let (h7, l7) = core::two_prod(self.1, other.2);
+                let (h8, l8) = core::two_prod(self.2, other.1);
+                let (h9, l9) = core::two_prod(self.3, other.0);
+
+                // O(ε⁴) terms - the low words aren't necessary for the accuracy we need
+                let ha = self.1 * other.3;
+                let hb = self.2 * other.2;
+                let hc = self.3 * other.1;
+
+                // Each calculation takes all of the high words for the terms of that level,
+                // whatever intermediate words are specified by the algorithm, and whatever
+                // low words fit in the remaining input space.
+
+                // O(1) calculation (pass-through)
+                let r0 = h0;
+                // O(ε) calculation
+                let (r1, t0, t1) = core::three_three_sum(h1, h2, l0);
+                // O(ε²) calculation
+                let (r2, t2, t3) = core::six_three_sum(t0, h3, h4, h5, l1, l2);
+                // O(ε³) calculation
+                let (r3, t4) = core::nine_two_sum(t1, t2, h6, h7, h8, h9, l3, l4, l5);
+                // O(ε⁴) calculation (nine_one_sum)
+                let r4 = t3 + t4 + ha + hb + hc + l6 + l7 + l8 + l9;
+
+                // Results of the prior calculations are renormalized into four f64s.
+                let (a, b, c, d) = core::renorm5(r0, r1, r2, r3, r4);
+                Quad(a, b, c, d)
             }
-        } else if self.is_infinite() {
-            if other.is_zero() {
-                Quad::NAN
-            } else if self.is_sign_positive() == other.is_sign_positive() {
-                Quad::INFINITY
-            } else {
-                Quad::NEG_INFINITY
-            }
-        } else if other.is_infinite() {
-            if self.is_sign_positive() == other.is_sign_positive() {
-                Quad::INFINITY
-            } else {
-                Quad::NEG_INFINITY
-            }
-        } else {
-            // O(1) term
-            let (h0, l0) = core::two_prod(self.0, other.0);
-
-            // O(ε) terms
-            let (h1, l1) = core::two_prod(self.0, other.1);
-            let (h2, l2) = core::two_prod(self.1, other.0);
-
-            // O(ε²) terms
-            let (h3, l3) = core::two_prod(self.0, other.2);
-            let (h4, l4) = core::two_prod(self.1, other.1);
-            let (h5, l5) = core::two_prod(self.2, other.0);
-
-            // O(ε³) terms
-            let (h6, l6) = core::two_prod(self.0, other.3);
-            let (h7, l7) = core::two_prod(self.1, other.2);
-            let (h8, l8) = core::two_prod(self.2, other.1);
-            let (h9, l9) = core::two_prod(self.3, other.0);
-
-            // O(ε⁴) terms - the low words aren't necessary for the accuracy we need
-            let ha = self.1 * other.3;
-            let hb = self.2 * other.2;
-            let hc = self.3 * other.1;
-
-            // Each calculation takes all of the high words for the terms of that level,
-            // whatever intermediate words are specified by the algorithm, and whatever low
-            // words fit in the remaining input space.
-
-            // O(1) calculation (pass-through)
-            let r0 = h0;
-            // O(ε) calculation
-            let (r1, t0, t1) = core::three_three_sum(h1, h2, l0);
-            // O(ε²) calculation
-            let (r2, t2, t3) = core::six_three_sum(t0, h3, h4, h5, l1, l2);
-            // O(ε³) calculation
-            let (r3, t4) = core::nine_two_sum(t1, t2, h6, h7, h8, h9, l3, l4, l5);
-            // O(ε⁴) calculation (nine_one_sum)
-            let r4 = t3 + t4 + ha + hb + hc + l6 + l7 + l8 + l9;
-
-            // Results of the prior calculations are renormalized into four f64s.
-            let (a, b, c, d) = core::renorm5(r0, r1, r2, r3, r4);
-            Quad(a, b, c, d)
         }
     }
 }
@@ -256,6 +235,48 @@ impl MulAssign<&Quad> for Quad {
         self.1 = r.1;
         self.2 = r.2;
         self.3 = r.3;
+    }
+}
+
+impl Quad {
+    // Precalc functions
+    //
+    // This series of functions returns `Some` with a value that is to be returned, if it
+    // turns out that the function doesn't have to be calculated because a shortcut result
+    // is known. They return `None` if the value has to be calculated normally.
+    //
+    // This keeps the public functions from being mucked up with code that does validation
+    // rather than calculation.
+
+    #[inline]
+    fn pre_mul(&self, other: &Quad) -> Option<Quad> {
+        if self.is_nan() || other.is_nan() {
+            Some(Quad::NAN)
+        } else if self.is_zero() {
+            if other.is_infinite() {
+                Some(Quad::NAN)
+            } else if self.is_sign_positive() == other.is_sign_positive() {
+                Some(Quad::ZERO)
+            } else {
+                Some(Quad::NEG_ZERO)
+            }
+        } else if self.is_infinite() {
+            if other.is_zero() {
+                Some(Quad::NAN)
+            } else if self.is_sign_positive() == other.is_sign_positive() {
+                Some(Quad::INFINITY)
+            } else {
+                Some(Quad::NEG_INFINITY)
+            }
+        } else if other.is_infinite() {
+            if self.is_sign_positive() == other.is_sign_positive() {
+                Some(Quad::INFINITY)
+            } else {
+                Some(Quad::NEG_INFINITY)
+            }
+        } else {
+            None
+        }
     }
 }
 

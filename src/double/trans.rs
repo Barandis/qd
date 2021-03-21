@@ -22,69 +22,61 @@ impl Double {
     /// ```
     #[allow(clippy::many_single_char_names)]
     pub fn exp(self) -> Double {
-        // Strategy, as gleaned from MIT papers and Wikipedia:
-        //
-        // The first step is to reduce the size of the exponent by noting that
-        //
-        //      exp(kr + m * ln(2)) = 2^m * exp(r)^k
-        //
-        // where m and k are arbitary integers. By choosing m appropriately we can make |kr|
-        // <= ln(2) / 2 = 0.347. Then exp(r) is evaluated using a Taylor series, which is
-        // actually reasonably easy to figure out for the exponential function:
-        //
-        //      exp(x) = 1 + x + x^2/2! + x^3/3! + x^4/4! ...
-        //
-        // Reducing x substantially speeds up the convergence, so we have to use fewer terms
-        // to reach the required precision.
+        match self.pre_exp() {
+            Some(r) => r,
+            None => {
+                // Strategy, as gleaned from MIT papers and Wikipedia:
+                //
+                // The first step is to reduce the size of the exponent by noting that
+                //
+                //      exp(kr + m * ln(2)) = 2^m * exp(r)^k
+                //
+                // where m and k are arbitary integers. By choosing m appropriately we can
+                // make |kr| <= ln(2) / 2 = 0.347. Then exp(r) is evaluated using a Taylor
+                // series, which is actually reasonably easy to figure out for the
+                // exponential function:
+                //
+                //      exp(x) = 1 + x + x^2/2! + x^3/3! + x^4/4! ...
+                //
+                // Reducing x substantially speeds up the convergence, so we have to use
+                // fewer terms to reach the required precision.
+                let k = 512.0;
+                let inv_k = 1.0 / k;
 
-        let k = 512.0;
-        let inv_k = 1.0 / k;
+                let m = (self.0 / Double::LN_2.0 + 0.5).floor();
+                let r = (self - Double::LN_2 * Double(m, 0.0)).mul_pwr2(inv_k);
 
-        // Common cases, including numbers too big or small to be represented with Doubles
-        if self.0 <= -709.0 {
-            Double::ZERO
-        } else if self.0 >= 709.0 {
-            Double::INFINITY
-        } else if self.is_nan() {
-            Double::NAN
-        } else if self.is_zero() {
-            Double::ONE
-        } else if self == Double::ONE {
-            Double::E
-        } else {
-            let m = (self.0 / Double::LN_2.0 + 0.5).floor();
-            let r = (self - Double::LN_2 * Double(m, 0.0)).mul_pwr2(inv_k);
-
-            let mut p = r.sqr();
-            let mut s = r + p.mul_pwr2(0.5);
-            p *= r;
-            let mut t = p * tables::INV_FACTS[0];
-            let mut i = 0;
-
-            loop {
-                s += t;
+                let mut p = r.sqr();
+                let mut s = r + p.mul_pwr2(0.5);
                 p *= r;
-                i += 1;
-                t = p * tables::INV_FACTS[i];
-                if i >= 5 || t.abs() <= Double::from(inv_k) * Double::EPSILON {
-                    break;
+                let mut t = p * tables::INV_FACTS[0];
+                let mut i = 0;
+
+                loop {
+                    s += t;
+                    p *= r;
+                    i += 1;
+                    t = p * tables::INV_FACTS[i];
+                    if i >= 5 || t.abs() <= Double::from(inv_k) * Double::EPSILON {
+                        break;
+                    }
                 }
+
+                s += t;
+
+                s = s.mul_pwr2(2.0) + s.sqr();
+                s = s.mul_pwr2(2.0) + s.sqr();
+                s = s.mul_pwr2(2.0) + s.sqr();
+                s = s.mul_pwr2(2.0) + s.sqr();
+                s = s.mul_pwr2(2.0) + s.sqr();
+                s = s.mul_pwr2(2.0) + s.sqr();
+                s = s.mul_pwr2(2.0) + s.sqr();
+                s = s.mul_pwr2(2.0) + s.sqr();
+                s = s.mul_pwr2(2.0) + s.sqr();
+                s += Double::ONE;
+
+                s.ldexp(m as i32)
             }
-
-            s += t;
-
-            s = s.mul_pwr2(2.0) + s.sqr();
-            s = s.mul_pwr2(2.0) + s.sqr();
-            s = s.mul_pwr2(2.0) + s.sqr();
-            s = s.mul_pwr2(2.0) + s.sqr();
-            s = s.mul_pwr2(2.0) + s.sqr();
-            s = s.mul_pwr2(2.0) + s.sqr();
-            s = s.mul_pwr2(2.0) + s.sqr();
-            s = s.mul_pwr2(2.0) + s.sqr();
-            s = s.mul_pwr2(2.0) + s.sqr();
-            s += Double::ONE;
-
-            s.ldexp(m as i32)
         }
     }
 
@@ -103,37 +95,35 @@ impl Double {
     /// # }
     /// ```
     pub fn ln(self) -> Double {
-        // Strategy:
-        //
-        // The Taylor series for logarithms converges much more slowly than that of exp
-        // because of the lack of a factorial term in the denominator. Hence this routine
-        // instead tries to determine the root of the function
-        //
-        //      f(x) = exp(x) - a
-        //
-        // using Newton's iteration. This iteration is given by
-        //
-        //      x' = x - f(x)/f'(x)
-        //         = x - (1 - a * exp(-x))
-        //         = x + a * exp(-x) - 1
-        //
-        // Testing has shown that it requires two iterations to get the required precision.
-        if self == Double::ONE {
-            Double::ZERO
-        } else if self.is_zero() || self.is_sign_negative() {
-            Double::NAN
-        } else if self.is_infinite() {
-            Double::INFINITY
-        } else {
-            let mut x = Double::from(self.0.ln()); // initial approximation
-            let mut i = 0;
-            loop {
-                let next = x + self * (-x).exp() - Double::ONE;
-                if (x - next).abs() < Double::EPSILON || i >= 5 {
-                    return next;
+        match self.pre_ln() {
+            Some(r) => r,
+            None => {
+                // Strategy:
+                //
+                // The Taylor series for logarithms converges much more slowly than that of
+                // exp because of the lack of a factorial term in the denominator. Hence
+                // this routine instead tries to determine the root of the function
+                //
+                //      f(x) = exp(x) - a
+                //
+                // using Newton's iteration. This iteration is given by
+                //
+                //      x' = x - f(x)/f'(x)
+                //         = x - (1 - a * exp(-x))
+                //         = x + a * exp(-x) - 1
+                //
+                // Testing has shown that it requires two iterations to get the required
+                // precision.
+                let mut x = Double::from(self.0.ln()); // initial approximation
+                let mut i = 0;
+                loop {
+                    let next = x + self * (-x).exp() - Double::ONE;
+                    if (x - next).abs() < Double::EPSILON || i >= 5 {
+                        return next;
+                    }
+                    x = next;
+                    i += 1;
                 }
-                x = next;
-                i += 1;
             }
         }
     }
@@ -195,12 +185,51 @@ impl Double {
     /// # }
     /// ```
     ///
-    /// [`ln`]: #method.ln 
-    /// [`log2`]: #method.log2 
+    /// [`ln`]: #method.ln
+    /// [`log2`]: #method.log2
     /// [`log10`]: #method.log10
     #[inline]
     pub fn log(self, b: f64) -> Double {
         self.ln() / Double::from(b).ln()
+    }
+
+    // Precalc functions
+    //
+    // This series of functions returns `Some` with a value that is to be returned, if it
+    // turns out that the function doesn't have to be calculated because a shortcut result
+    // is known. They return `None` if the value has to be calculated normally.
+    //
+    // This keeps the public functions from being mucked up with code that does validation
+    // rather than calculation.
+
+    #[inline]
+    fn pre_exp(&self) -> Option<Double> {
+        if self.0 <= -709.0 {
+            Some(Double::ZERO)
+        } else if self.0 >= 709.0 {
+            Some(Double::INFINITY)
+        } else if self.is_nan() {
+            Some(Double::NAN)
+        } else if self.is_zero() {
+            Some(Double::ONE)
+        } else if *self == Double::ONE {
+            Some(Double::E)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_ln(&self) -> Option<Double> {
+        if *self == Double::ONE {
+            Some(Double::ZERO)
+        } else if self.is_zero() || self.is_sign_negative() {
+            Some(Double::NAN)
+        } else if self.is_infinite() {
+            Some(Double::INFINITY)
+        } else {
+            None
+        }
     }
 }
 
@@ -360,4 +389,3 @@ mod tests {
         assert_exact!(Double::NAN, dd!(-1).log(1.8));
     }
 }
-

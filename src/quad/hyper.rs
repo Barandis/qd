@@ -36,25 +36,26 @@ impl Quad {
     /// [`sinh`]: #method.sinh
     /// [`cosh`]: #method.cosh
     pub fn sinh_cosh(self) -> (Quad, Quad) {
-        if self.is_nan() {
-            (Quad::NAN, Quad::NAN)
-        } else if self.is_zero() {
-            (Quad::ZERO, Quad::ONE)
-        } else if self.abs().0 <= 0.05 {
-            let s = self.sinh();
-            let c = (Quad::ONE + s.sqr()).sqrt();
-            (s, c)
-        } else {
-            let a = self.exp();
-            let inv_a = a.recip();
-            let s = (a - inv_a).mul_pwr2(0.5);
-            let c = (a + inv_a).mul_pwr2(0.5);
-            (s, c)
+        match self.pre_sinh_cosh() {
+            Some(r) => r,
+            None => {
+                if self.abs().0 <= 0.05 {
+                    let s = self.sinh();
+                    let c = (Quad::ONE + s.sqr()).sqrt();
+                    (s, c)
+                } else {
+                    let a = self.exp();
+                    let inv_a = a.recip();
+                    let s = (a - inv_a).mul_pwr2(0.5);
+                    let c = (a + inv_a).mul_pwr2(0.5);
+                    (s, c)
+                }
+            }
         }
     }
 
     /// Computes the hyperbolic sine (sinh) of the `Quad`.
-    /// 
+    ///
     /// The domain and range of this function are both (-∞, ∞).
     ///
     /// # Examples
@@ -70,37 +71,38 @@ impl Quad {
     /// # }
     /// ```
     pub fn sinh(self) -> Quad {
-        if self.is_nan() {
-            Quad::NAN
-        } else if self.is_zero() {
-            Quad::ZERO
-        } else if self.abs().0 > 0.05 {
-            let a = self.exp();
-            (a - a.recip()).mul_pwr2(0.5)
-        } else {
-            // The above formula is not accurate enough with very small numbers.
-            // Use a Taylor series instead.
-            let mut s = self;
-            let mut t = self;
-            let r = t.sqr();
-            let mut m = 1.0;
-            let threshold = (self * Quad::EPSILON).abs();
+        match self.pre_sinh() {
+            Some(r) => r,
+            None => {
+                if self.abs().0 > 0.05 {
+                    let a = self.exp();
+                    (a - a.recip()).mul_pwr2(0.5)
+                } else {
+                    // The above formula is not accurate enough with very small numbers.
+                    // Use a Taylor series instead.
+                    let mut s = self;
+                    let mut t = self;
+                    let r = t.sqr();
+                    let mut m = 1.0;
+                    let threshold = (self * Quad::EPSILON).abs();
 
-            loop {
-                m += 2.0;
-                t *= r;
-                t /= Quad::from((m - 1.0) * m);
-                s += t;
-                if t.abs() <= threshold {
-                    break;
+                    loop {
+                        m += 2.0;
+                        t *= r;
+                        t /= Quad::from((m - 1.0) * m);
+                        s += t;
+                        if t.abs() <= threshold {
+                            break;
+                        }
+                    }
+                    s
                 }
             }
-            s
         }
     }
 
     /// Computes the hyperbolic cosine (cosh) of the `Quad`.
-    /// 
+    ///
     /// The domain of this function is (-∞, ∞), and the range is [1, ∞).
     ///
     /// # Examples
@@ -116,18 +118,17 @@ impl Quad {
     /// # }
     /// ```
     pub fn cosh(self) -> Quad {
-        if self.is_nan() {
-            Quad::NAN
-        } else if self.is_zero() {
-            Quad::ONE
-        } else {
-            let a = self.exp();
-            (a + a.recip()).mul_pwr2(0.5)
+        match self.pre_cosh() {
+            Some(r) => r,
+            None => {
+                let a = self.exp();
+                (a + a.recip()).mul_pwr2(0.5)
+            }
         }
     }
 
     /// Computes the hyperbolic tangent (tanh) of the `Quad`.
-    /// 
+    ///
     /// The domain of this function is (-∞, ∞), and the range is (-1, 1).
     ///
     /// # Examples
@@ -143,24 +144,23 @@ impl Quad {
     /// # }
     /// ```
     pub fn tanh(self) -> Quad {
-        if self.is_nan() {
-            Quad::NAN
-        } else if self.is_zero() {
-            Quad::ZERO
-        } else if self.is_infinite() {
-            self.signum() * Quad::ONE
-        } else if self.abs().0 > 0.05 {
-            let a = self.exp();
-            let inv_a = a.recip();
-            (a - inv_a) / (a + inv_a)
-        } else {
-            let (s, c) = self.sinh_cosh();
-            s / c
+        match self.pre_tanh() {
+            Some(r) => r,
+            None => {
+                if self.abs().0 > 0.05 {
+                    let a = self.exp();
+                    let inv_a = a.recip();
+                    (a - inv_a) / (a + inv_a)
+                } else {
+                    let (s, c) = self.sinh_cosh();
+                    s / c
+                }
+            }
         }
     }
 
     /// Calculates the inverse hyperbolic sine (sinh<sup>-1</sup>) of the `Quad`.
-    /// 
+    ///
     /// The domain and range of this function are both (-∞, ∞).
     ///
     /// # Examples
@@ -176,19 +176,14 @@ impl Quad {
     /// # }
     /// ```
     pub fn asinh(self) -> Quad {
-        if self.is_infinite() {
-            if self.is_sign_positive() {
-                Quad::INFINITY
-            } else {
-                Quad::NEG_INFINITY
-            }
-        } else {
-            (self + (self.sqr() + Quad::ONE).sqrt()).ln()
+        match self.pre_asinh() {
+            Some(r) => r,
+            None => (self + (self.sqr() + Quad::ONE).sqrt()).ln(),
         }
     }
 
     /// Calculates the inverse hyperbolic cosine (cosh<sup>-1</sup>) of the `Quad`.
-    /// 
+    ///
     /// The domain of the function is [1, ∞) and the range is [0, ∞). Any argument outside
     /// the range will result in [`NAN`].
     ///
@@ -204,20 +199,17 @@ impl Quad {
     /// assert!(diff < qd!(1e-30));
     /// # }
     /// ```
-    /// 
+    ///
     /// [`NAN`]: #associatedconstant.NAN
     pub fn acosh(self) -> Quad {
-        if self < Quad::ONE {
-            Quad::NAN
-        } else if self.is_infinite() {
-            Quad::INFINITY
-        } else {
-            (self + (self.sqr() - Quad::ONE).sqrt()).ln()
+        match self.pre_acosh() {
+            Some(r) => r,
+            None => (self + (self.sqr() - Quad::ONE).sqrt()).ln(),
         }
     }
 
     /// Calculates the inverse hyperbolic tangent (tanh<sup>-1</sup>) of the `Quad`.
-    /// 
+    ///
     /// The domain of the function is (-1, 1) and the range is (-∞, ∞). Any argument whose
     /// absolute value is greater than or equal to 1 will result in [`NAN`].
     ///
@@ -233,13 +225,100 @@ impl Quad {
     /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
-    /// 
+    ///
     /// [`NAN`]: #associatedconstant.NAN
     pub fn atanh(self) -> Quad {
-        if self.abs() >= Quad::ONE {
-            Quad::NAN
+        match self.pre_atanh() {
+            Some(r) => r,
+            None => ((Quad::ONE + self) / (Quad::ONE - self)).ln().mul_pwr2(0.5),
+        }
+    }
+
+    // Precalc functions
+    //
+    // This series of functions returns `Some` with a value that is to be returned, if it
+    // turns out that the function doesn't have to be calculated because a shortcut result
+    // is known. They return `None` if the value has to be calculated normally.
+    //
+    // This keeps the public functions from being mucked up with code that does validation
+    // rather than calculation.
+
+    #[inline]
+    fn pre_sinh_cosh(&self) -> Option<(Quad, Quad)> {
+        if self.is_nan() {
+            Some((Quad::NAN, Quad::NAN))
+        } else if self.is_zero() {
+            Some((Quad::ZERO, Quad::ONE))
         } else {
-            ((Quad::ONE + self) / (Quad::ONE - self)).ln().mul_pwr2(0.5)
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_sinh(&self) -> Option<Quad> {
+        if self.is_nan() {
+            Some(Quad::NAN)
+        } else if self.is_zero() {
+            Some(Quad::ZERO)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_cosh(&self) -> Option<Quad> {
+        if self.is_nan() {
+            Some(Quad::NAN)
+        } else if self.is_zero() {
+            Some(Quad::ONE)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_tanh(&self) -> Option<Quad> {
+        if self.is_nan() {
+            Some(Quad::NAN)
+        } else if self.is_zero() {
+            Some(Quad::ZERO)
+        } else if self.is_infinite() {
+            Some(self.signum())
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_asinh(&self) -> Option<Quad> {
+        if self.is_infinite() {
+            if self.is_sign_positive() {
+                Some(Quad::INFINITY)
+            } else {
+                Some(Quad::NEG_INFINITY)
+            }
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_acosh(&self) -> Option<Quad> {
+        if *self < Quad::ONE {
+            Some(Quad::NAN)
+        } else if self.is_infinite() {
+            Some(Quad::INFINITY)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_atanh(&self) -> Option<Quad> {
+        if self.abs() >= Quad::ONE {
+            Some(Quad::NAN)
+        } else {
+            None
         }
     }
 }

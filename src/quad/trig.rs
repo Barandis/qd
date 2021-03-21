@@ -30,39 +30,38 @@ impl Quad {
     /// [`cos`]: #method.cos
     #[allow(clippy::many_single_char_names)]
     pub fn sin_cos(self) -> (Quad, Quad) {
-        if self.is_zero() {
-            (Quad::ZERO, Quad::ONE)
-        } else if !self.is_finite() {
-            (Quad::NAN, Quad::NAN)
-        } else {
-            let (j, k, t) = reduce(self);
-            let abs_k = k.abs() as usize;
+        match self.pre_sin_cos() {
+            Some(r) => r,
+            None => {
+                let (j, k, t) = reduce(self);
+                let abs_k = k.abs() as usize;
 
-            let (sin_t, cos_t) = sincos_taylor(t);
+                let (sin_t, cos_t) = sincos_taylor(t);
 
-            let (s, c) = if k == 0 {
-                (sin_t, cos_t)
-            } else {
-                let u = tables::COSINES[abs_k - 1];
-                let v = tables::SINES[abs_k - 1];
-                if k > 0 {
-                    (u * sin_t + v * cos_t, u * cos_t - v * sin_t)
+                let (s, c) = if k == 0 {
+                    (sin_t, cos_t)
                 } else {
-                    (u * sin_t - v * cos_t, u * cos_t + v * sin_t)
-                }
-            };
+                    let u = tables::COSINES[abs_k - 1];
+                    let v = tables::SINES[abs_k - 1];
+                    if k > 0 {
+                        (u * sin_t + v * cos_t, u * cos_t - v * sin_t)
+                    } else {
+                        (u * sin_t - v * cos_t, u * cos_t + v * sin_t)
+                    }
+                };
 
-            match j {
-                0 => (s, c),
-                1 => (c, -s),
-                -1 => (-c, s),
-                _ => (-s, -c),
+                match j {
+                    0 => (s, c),
+                    1 => (c, -s),
+                    -1 => (-c, s),
+                    _ => (-s, -c),
+                }
             }
         }
     }
 
     /// Computes the sine (sin) of the `Quad`.
-    /// 
+    ///
     /// The domain of this function is (-∞, ∞), and the range is [-1, 1].
     ///
     /// # Examples
@@ -79,48 +78,47 @@ impl Quad {
     /// ```
     #[allow(clippy::many_single_char_names)]
     pub fn sin(self) -> Quad {
-        // Strategy:
-        //
-        // We choose integers a and b so that
-        //
-        //      x = s + aπ/2 + bπ/1024
-        //
-        // where |s| <= π/2048. Using a precomputed table of sin (kπ/1024) and cos
-        // (kπ/1024), we can compute sin x from sin s and cos s. This greatly increases the
-        // convergence of the Taylor series for sine and cosine.
-        if self.is_zero() {
-            Quad::ZERO
-        } else if !self.is_finite() {
-            Quad::NAN
-        } else {
-            let (j, k, t) = reduce(self);
-            let abs_k = k.abs() as usize;
+        match self.pre_sin() {
+            Some(r) => r,
+            None => {
+                // Strategy:
+                //
+                // We choose integers a and b so that
+                //
+                //      x = s + aπ/2 + bπ/1024
+                //
+                // where |s| <= π/2048. Using a precomputed table of sin (kπ/1024) and cos
+                // (kπ/1024), we can compute sin x from sin s and cos s. This greatly
+                // increases the convergence of the Taylor series for sine and cosine.
+                let (j, k, t) = reduce(self);
+                let abs_k = k.abs() as usize;
 
-            if k == 0 {
-                match j {
-                    0 => sin_taylor(t),
-                    1 => cos_taylor(t),
-                    -1 => -cos_taylor(t),
-                    _ => -sin_taylor(t),
-                }
-            } else {
-                let u = tables::COSINES[abs_k - 1];
-                let v = tables::SINES[abs_k - 1];
-                let (sin_t, cos_t) = sincos_taylor(t);
-
-                if k > 0 {
+                if k == 0 {
                     match j {
-                        0 => u * sin_t + v * cos_t,
-                        1 => u * cos_t - v * sin_t,
-                        -1 => -u * cos_t + v * sin_t,
-                        _ => -u * sin_t - v * cos_t,
+                        0 => sin_taylor(t),
+                        1 => cos_taylor(t),
+                        -1 => -cos_taylor(t),
+                        _ => -sin_taylor(t),
                     }
                 } else {
-                    match j {
-                        0 => u * sin_t - v * cos_t,
-                        1 => u * cos_t + v * sin_t,
-                        -1 => -u * cos_t - v * sin_t,
-                        _ => -u * sin_t + v * cos_t,
+                    let u = tables::COSINES[abs_k - 1];
+                    let v = tables::SINES[abs_k - 1];
+                    let (sin_t, cos_t) = sincos_taylor(t);
+
+                    if k > 0 {
+                        match j {
+                            0 => u * sin_t + v * cos_t,
+                            1 => u * cos_t - v * sin_t,
+                            -1 => -u * cos_t + v * sin_t,
+                            _ => -u * sin_t - v * cos_t,
+                        }
+                    } else {
+                        match j {
+                            0 => u * sin_t - v * cos_t,
+                            1 => u * cos_t + v * sin_t,
+                            -1 => -u * cos_t - v * sin_t,
+                            _ => -u * sin_t + v * cos_t,
+                        }
                     }
                 }
             }
@@ -128,7 +126,7 @@ impl Quad {
     }
 
     /// Computes the cosine (cos) of the `Quad`.
-    /// 
+    ///
     /// The domain of this function is (-∞, ∞), and the range is [-1, 1].
     ///
     /// # Examples
@@ -145,39 +143,38 @@ impl Quad {
     /// ```
     #[allow(clippy::many_single_char_names)]
     pub fn cos(self) -> Quad {
-        if self.is_zero() {
-            Quad::ONE
-        } else if !self.is_finite() {
-            Quad::NAN
-        } else {
-            let (j, k, t) = reduce(self);
-            let abs_k = k.abs() as usize;
+        match self.pre_cos() {
+            Some(r) => r,
+            None => {
+                let (j, k, t) = reduce(self);
+                let abs_k = k.abs() as usize;
 
-            if k == 0 {
-                match j {
-                    0 => cos_taylor(t),
-                    1 => -sin_taylor(t),
-                    -1 => sin_taylor(t),
-                    _ => -cos_taylor(t),
-                }
-            } else {
-                let u = tables::COSINES[abs_k - 1];
-                let v = tables::SINES[abs_k - 1];
-                let (sin_t, cos_t) = sincos_taylor(t);
-
-                if k > 0 {
+                if k == 0 {
                     match j {
-                        0 => u * cos_t - v * sin_t,
-                        1 => -u * sin_t - v * cos_t,
-                        -1 => u * sin_t + v * cos_t,
-                        _ => -u * cos_t + v * sin_t,
+                        0 => cos_taylor(t),
+                        1 => -sin_taylor(t),
+                        -1 => sin_taylor(t),
+                        _ => -cos_taylor(t),
                     }
                 } else {
-                    match j {
-                        0 => u * cos_t + v * sin_t,
-                        1 => v * cos_t - u * sin_t,
-                        -1 => u * sin_t - v * cos_t,
-                        _ => -u * cos_t - v * sin_t,
+                    let u = tables::COSINES[abs_k - 1];
+                    let v = tables::SINES[abs_k - 1];
+                    let (sin_t, cos_t) = sincos_taylor(t);
+
+                    if k > 0 {
+                        match j {
+                            0 => u * cos_t - v * sin_t,
+                            1 => -u * sin_t - v * cos_t,
+                            -1 => u * sin_t + v * cos_t,
+                            _ => -u * cos_t + v * sin_t,
+                        }
+                    } else {
+                        match j {
+                            0 => u * cos_t + v * sin_t,
+                            1 => v * cos_t - u * sin_t,
+                            -1 => u * sin_t - v * cos_t,
+                            _ => -u * cos_t - v * sin_t,
+                        }
                     }
                 }
             }
@@ -185,7 +182,7 @@ impl Quad {
     }
 
     /// Computes the tangent (tan) of the `Quad`.
-    /// 
+    ///
     /// The domain and range of this function are both (-∞, ∞).
     ///
     /// # Examples
@@ -253,87 +250,51 @@ impl Quad {
     ///
     /// [`atan`]: #method.atan
     pub fn atan2(self, other: Quad) -> Quad {
-        // Strategy:
-        //
-        // Use Newton's iteration to solve one of the following equations
-        //
-        //      sin z = y / r
-        //      cos z = x / r
-        //
-        // where r = √(x² + y²).
-        //
-        // The iteration is given by z' = z + (y - sin z) / cos z
-        //      (for the first equation) z' = z - (x - cos z) / sin z
-        //      (for the second equation)
-        //
-        // Here, x and y are normalized so that x² + y² = 1. If |x| > |y|, the
-        // first iteration is used since the denominator is larger. Otherwise
-        // the second is used.
+        match self.pre_atan2(&other) {
+            Some(r) => r,
+            None => {
+                // Strategy:
+                //
+                // Use Newton's iteration to solve one of the following equations
+                //
+                //      sin z = y / r
+                //      cos z = x / r
+                //
+                // where r = √(x² + y²).
+                //
+                // The iteration is given by z' = z + (y - sin z) / cos z
+                //      (for the first equation) z' = z - (x - cos z) / sin z
+                //      (for the second equation)
+                //
+                // Here, x and y are normalized so that x² + y² = 1. If |x| > |y|, the first
+                // iteration is used since the denominator is larger. Otherwise the second
+                // is used.
+                let r = (self.sqr() + other.sqr()).sqrt();
+                let x = other / r;
+                let y = self / r;
 
-        if other.is_zero() {
-            if self.is_zero() {
-                Quad::NAN
-            } else if self.is_sign_positive() {
-                Quad::FRAC_PI_2
-            } else {
-                -Quad::FRAC_PI_2
-            }
-        } else if self.is_zero() {
-            if other.is_sign_positive() {
-                Quad::ZERO
-            } else {
-                Quad::PI
-            }
-        } else if self.is_infinite() {
-            if other.is_infinite() {
-                Quad::NAN
-            } else if self.is_sign_positive() {
-                Quad::FRAC_PI_2
-            } else {
-                -Quad::FRAC_PI_2
-            }
-        } else if other.is_infinite() {
-            Quad::ZERO
-        } else if self.is_nan() || other.is_nan() {
-            Quad::NAN
-        } else if self == other {
-            if self.is_sign_positive() {
-                Quad::FRAC_PI_4
-            } else {
-                -Quad::FRAC_3_PI_4
-            }
-        } else if self == -other {
-            if self.is_sign_positive() {
-                Quad::FRAC_3_PI_4
-            } else {
-                -Quad::FRAC_PI_4
-            }
-        } else {
-            let r = (self.sqr() + other.sqr()).sqrt();
-            let x = other / r;
-            let y = self / r;
+                // Compute f64 approximation to atan
+                let mut z = Quad::from(self.0.atan2(other.0));
 
-            // Compute f64 approximation to atan
-            let mut z = Quad::from(self.0.atan2(other.0));
-
-            if x.0.abs() > y.0.abs() {
-                // Use the first iteration above
-                let (sin_z, cos_z) = z.sin_cos();
-                z += (y - sin_z) / cos_z;
-                let (sin_z, cos_z) = z.sin_cos();
-                z += (y - sin_z) / cos_z;
-                let (sin_z, cos_z) = z.sin_cos();
-                z += (y - sin_z) / cos_z;
-            } else {
-                // Use the second iteration above
-                let (sin_z, cos_z) = z.sin_cos();
-                z -= (x - cos_z) / sin_z;
-                let (sin_z, cos_z) = z.sin_cos();
-                z -= (x - cos_z) / sin_z;
-                let (sin_z, cos_z) = z.sin_cos();
-                z -= (x - cos_z) / sin_z;
+                if x.0.abs() > y.0.abs() {
+                    // Use the first iteration above
+                    let (sin_z, cos_z) = z.sin_cos();
+                    z += (y - sin_z) / cos_z;
+                    let (sin_z, cos_z) = z.sin_cos();
+                    z += (y - sin_z) / cos_z;
+                    let (sin_z, cos_z) = z.sin_cos();
+                    z += (y - sin_z) / cos_z;
+                } else {
+                    // Use the second iteration above
+                    let (sin_z, cos_z) = z.sin_cos();
+                    z -= (x - cos_z) / sin_z;
+                    let (sin_z, cos_z) = z.sin_cos();
+                    z -= (x - cos_z) / sin_z;
+                    let (sin_z, cos_z) = z.sin_cos();
+                    z -= (x - cos_z) / sin_z;
+                }
+                z
             }
-            z
         }
     }
 
@@ -353,17 +314,12 @@ impl Quad {
     /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
-    /// 
+    ///
     /// [`NAN`]: #associatedconstant.NAN
     pub fn asin(self) -> Quad {
-        if self.abs() > Quad::ONE {
-            Quad::NAN
-        } else if self == Quad::ONE {
-            Quad::FRAC_PI_2
-        } else if self == Quad::NEG_ONE {
-            -Quad::FRAC_PI_2
-        } else {
-            self.atan2((Quad::ONE - self.sqr()).sqrt())
+        match self.pre_asin() {
+            Some(r) => r,
+            None => self.atan2((Quad::ONE - self.sqr()).sqrt()),
         }
     }
 
@@ -383,17 +339,12 @@ impl Quad {
     /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
-    /// 
+    ///
     /// [`NAN`]: #associatedconstant.NAN
     pub fn acos(self) -> Quad {
-        if self.abs() > Quad::ONE {
-            Quad::NAN
-        } else if self == Quad::ONE {
-            Quad::ZERO
-        } else if self == Quad::NEG_ONE {
-            Quad::PI
-        } else {
-            (Quad::ONE - self.sqr()).sqrt().atan2(self)
+        match self.pre_acos() {
+            Some(r) => r,
+            None => (Quad::ONE - self.sqr()).sqrt().atan2(self),
         }
     }
 
@@ -414,6 +365,119 @@ impl Quad {
     /// ```
     pub fn atan(self) -> Quad {
         self.atan2(Quad::ONE)
+    }
+
+    // Precalc functions
+    //
+    // This series of functions returns `Some` with a value that is to be returned, if it
+    // turns out that the function doesn't have to be calculated because a shortcut result
+    // is known. They return `None` if the value has to be calculated normally.
+    //
+    // This keeps the public functions from being mucked up with code that does validation
+    // rather than calculation.
+
+    #[inline]
+    fn pre_sin_cos(&self) -> Option<(Quad, Quad)> {
+        if self.is_zero() {
+            Some((Quad::ZERO, Quad::ONE))
+        } else if !self.is_finite() {
+            Some((Quad::NAN, Quad::NAN))
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_sin(&self) -> Option<Quad> {
+        if self.is_zero() {
+            Some(Quad::ZERO)
+        } else if !self.is_finite() {
+            Some(Quad::NAN)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_cos(&self) -> Option<Quad> {
+        if self.is_zero() {
+            Some(Quad::ONE)
+        } else if !self.is_finite() {
+            Some(Quad::NAN)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_atan2(&self, other: &Quad) -> Option<Quad> {
+        if other.is_zero() {
+            if self.is_zero() {
+                Some(Quad::NAN)
+            } else if self.is_sign_positive() {
+                Some(Quad::FRAC_PI_2)
+            } else {
+                Some(-Quad::FRAC_PI_2)
+            }
+        } else if self.is_zero() {
+            if other.is_sign_positive() {
+                Some(Quad::ZERO)
+            } else {
+                Some(Quad::PI)
+            }
+        } else if self.is_infinite() {
+            if other.is_infinite() {
+                Some(Quad::NAN)
+            } else if self.is_sign_positive() {
+                Some(Quad::FRAC_PI_2)
+            } else {
+                Some(-Quad::FRAC_PI_2)
+            }
+        } else if other.is_infinite() {
+            Some(Quad::ZERO)
+        } else if self.is_nan() || other.is_nan() {
+            Some(Quad::NAN)
+        } else if *self == *other {
+            if self.is_sign_positive() {
+                Some(Quad::FRAC_PI_4)
+            } else {
+                Some(-Quad::FRAC_3_PI_4)
+            }
+        } else if *self == -*other {
+            if self.is_sign_positive() {
+                Some(Quad::FRAC_3_PI_4)
+            } else {
+                Some(-Quad::FRAC_PI_4)
+            }
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_asin(&self) -> Option<Quad> {
+        if self.abs() > Quad::ONE {
+            Some(Quad::NAN)
+        } else if *self == Quad::ONE {
+            Some(Quad::FRAC_PI_2)
+        } else if *self == Quad::NEG_ONE {
+            Some(-Quad::FRAC_PI_2)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_acos(&self) -> Option<Quad> {
+        if self.abs() > Quad::ONE {
+            Some(Quad::NAN)
+        } else if *self == Quad::ONE {
+            Some(Quad::ZERO)
+        } else if *self == Quad::NEG_ONE {
+            Some(Quad::PI)
+        } else {
+            None
+        }
     }
 }
 

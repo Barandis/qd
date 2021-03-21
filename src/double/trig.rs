@@ -30,33 +30,32 @@ impl Double {
     /// [`cos`]: #method.cos
     #[allow(clippy::many_single_char_names)]
     pub fn sin_cos(self) -> (Double, Double) {
-        if self.is_zero() {
-            (Double::ZERO, Double::ONE)
-        } else if !self.is_finite() {
-            (Double::NAN, Double::NAN)
-        } else {
-            let (j, k, t) = reduce(self);
-            let abs_k = k.abs() as usize;
+        match self.pre_sin_cos() {
+            Some(r) => r,
+            None => {
+                let (j, k, t) = reduce(self);
+                let abs_k = k.abs() as usize;
 
-            let (sin_t, cos_t) = sincos_taylor(t);
+                let (sin_t, cos_t) = sincos_taylor(t);
 
-            let (s, c) = if k == 0 {
-                (sin_t, cos_t)
-            } else {
-                let u = tables::COSINES[abs_k - 1];
-                let v = tables::SINES[abs_k - 1];
-                if k > 0 {
-                    (u * sin_t + v * cos_t, u * cos_t - v * sin_t)
+                let (s, c) = if k == 0 {
+                    (sin_t, cos_t)
                 } else {
-                    (u * sin_t - v * cos_t, u * cos_t + v * sin_t)
-                }
-            };
+                    let u = tables::COSINES[abs_k - 1];
+                    let v = tables::SINES[abs_k - 1];
+                    if k > 0 {
+                        (u * sin_t + v * cos_t, u * cos_t - v * sin_t)
+                    } else {
+                        (u * sin_t - v * cos_t, u * cos_t + v * sin_t)
+                    }
+                };
 
-            match j {
-                0 => (s, c),
-                1 => (c, -s),
-                -1 => (-c, s),
-                _ => (-s, -c),
+                match j {
+                    0 => (s, c),
+                    1 => (c, -s),
+                    -1 => (-c, s),
+                    _ => (-s, -c),
+                }
             }
         }
     }
@@ -79,48 +78,47 @@ impl Double {
     /// ```
     #[allow(clippy::many_single_char_names)]
     pub fn sin(self) -> Double {
-        // Strategy:
-        //
-        // We choose integers a and b so that
-        //
-        //      x = s + aπ/2 + bπ/16
-        //
-        // where |s| <= π/32. Using a precomputed table of sin (kπ/16) and cos (kπ/16), we
-        // can compute sin x from sin s and cos s. This greatly increases the convergence of
-        // the Taylor series for sine and cosine.
-        if self.is_zero() {
-            Double::ZERO
-        } else if !self.is_finite() {
-            Double::NAN
-        } else {
-            let (j, k, t) = reduce(self);
-            let abs_k = k.abs() as usize;
+        match self.pre_sin() {
+            Some(r) => r,
+            None => {
+                // Strategy:
+                //
+                // We choose integers a and b so that
+                //
+                //      x = s + aπ/2 + bπ/16
+                //
+                // where |s| <= π/32. Using a precomputed table of sin (kπ/16) and cos
+                // (kπ/16), we can compute sin x from sin s and cos s. This greatly
+                // increases the convergence of the Taylor series for sine and cosine.
+                let (j, k, t) = reduce(self);
+                let abs_k = k.abs() as usize;
 
-            if k == 0 {
-                match j {
-                    0 => sin_taylor(t),
-                    1 => cos_taylor(t),
-                    -1 => -cos_taylor(t),
-                    _ => -sin_taylor(t),
-                }
-            } else {
-                let u = tables::COSINES[abs_k - 1];
-                let v = tables::SINES[abs_k - 1];
-                let (sin_t, cos_t) = sincos_taylor(t);
-
-                if k > 0 {
+                if k == 0 {
                     match j {
-                        0 => u * sin_t + v * cos_t,
-                        1 => u * cos_t - v * sin_t,
-                        -1 => -u * cos_t + v * sin_t,
-                        _ => -u * sin_t - v * cos_t,
+                        0 => sin_taylor(t),
+                        1 => cos_taylor(t),
+                        -1 => -cos_taylor(t),
+                        _ => -sin_taylor(t),
                     }
                 } else {
-                    match j {
-                        0 => u * sin_t - v * cos_t,
-                        1 => u * cos_t + v * sin_t,
-                        -1 => -u * cos_t - v * sin_t,
-                        _ => -u * sin_t + v * cos_t,
+                    let u = tables::COSINES[abs_k - 1];
+                    let v = tables::SINES[abs_k - 1];
+                    let (sin_t, cos_t) = sincos_taylor(t);
+
+                    if k > 0 {
+                        match j {
+                            0 => u * sin_t + v * cos_t,
+                            1 => u * cos_t - v * sin_t,
+                            -1 => -u * cos_t + v * sin_t,
+                            _ => -u * sin_t - v * cos_t,
+                        }
+                    } else {
+                        match j {
+                            0 => u * sin_t - v * cos_t,
+                            1 => u * cos_t + v * sin_t,
+                            -1 => -u * cos_t - v * sin_t,
+                            _ => -u * sin_t + v * cos_t,
+                        }
                     }
                 }
             }
@@ -145,39 +143,38 @@ impl Double {
     /// ```
     #[allow(clippy::many_single_char_names)]
     pub fn cos(self) -> Double {
-        if self.is_zero() {
-            Double::ONE
-        } else if !self.is_finite() {
-            Double::NAN
-        } else {
-            let (j, k, t) = reduce(self);
-            let abs_k = k.abs() as usize;
+        match self.pre_cos() {
+            Some(r) => r,
+            None => {
+                let (j, k, t) = reduce(self);
+                let abs_k = k.abs() as usize;
 
-            if k == 0 {
-                match j {
-                    0 => cos_taylor(t),
-                    1 => -sin_taylor(t),
-                    -1 => sin_taylor(t),
-                    _ => -cos_taylor(t),
-                }
-            } else {
-                let u = tables::COSINES[abs_k - 1];
-                let v = tables::SINES[abs_k - 1];
-                let (sin_t, cos_t) = sincos_taylor(t);
-
-                if k > 0 {
+                if k == 0 {
                     match j {
-                        0 => u * cos_t - v * sin_t,
-                        1 => -u * sin_t - v * cos_t,
-                        -1 => u * sin_t + v * cos_t,
-                        _ => -u * cos_t + v * sin_t,
+                        0 => cos_taylor(t),
+                        1 => -sin_taylor(t),
+                        -1 => sin_taylor(t),
+                        _ => -cos_taylor(t),
                     }
                 } else {
-                    match j {
-                        0 => u * cos_t + v * sin_t,
-                        1 => v * cos_t - u * sin_t,
-                        -1 => u * sin_t - v * cos_t,
-                        _ => -u * cos_t - v * sin_t,
+                    let u = tables::COSINES[abs_k - 1];
+                    let v = tables::SINES[abs_k - 1];
+                    let (sin_t, cos_t) = sincos_taylor(t);
+
+                    if k > 0 {
+                        match j {
+                            0 => u * cos_t - v * sin_t,
+                            1 => -u * sin_t - v * cos_t,
+                            -1 => u * sin_t + v * cos_t,
+                            _ => -u * cos_t + v * sin_t,
+                        }
+                    } else {
+                        match j {
+                            0 => u * cos_t + v * sin_t,
+                            1 => v * cos_t - u * sin_t,
+                            -1 => u * sin_t - v * cos_t,
+                            _ => -u * cos_t - v * sin_t,
+                        }
                     }
                 }
             }
@@ -254,77 +251,42 @@ impl Double {
     ///
     /// [`atan`]: #method.atan
     pub fn atan2(self, other: Double) -> Double {
-        // Strategy:
-        //
-        // Use Newton's iteration to solve one of the following equations
-        //
-        //      sin z = y / r
-        //      cos z = x / r
-        //
-        // where r = √(x² + y²).
-        //
-        // The iteration is given by
-        //      z' = z + (y - sin z) / cos z   (for the first equation)
-        //      z' = z - (x - cos z) / sin z   (for the second equation)
-        //
-        // Here, x and y are normalized so that x² + y² = 1. If |x| > |y|, the first
-        // iteration is used since the denominator is larger. Otherwise the second is used.
+        match self.pre_atan2(&other) {
+            Some(r) => r,
+            None => {
+                // Strategy:
+                //
+                // Use Newton's iteration to solve one of the following equations
+                //
+                //      sin z = y / r
+                //      cos z = x / r
+                //
+                // where r = √(x² + y²).
+                //
+                // The iteration is given by
+                //      z' = z + (y - sin z) / cos z   (for the first equation)
+                //      z' = z - (x - cos z) / sin z   (for the second equation)
+                //
+                // Here, x and y are normalized so that x² + y² = 1. If |x| > |y|, the first
+                // iteration is used since the denominator is larger. Otherwise the second
+                // is used.
+                let r = (self.sqr() + other.sqr()).sqrt();
+                let x = other / r;
+                let y = self / r;
 
-        if other.is_zero() {
-            if self.is_zero() {
-                Double::NAN
-            } else if self.is_sign_positive() {
-                Double::FRAC_PI_2
-            } else {
-                -Double::FRAC_PI_2
-            }
-        } else if self.is_zero() {
-            if other.is_sign_positive() {
-                Double::ZERO
-            } else {
-                Double::PI
-            }
-        } else if self.is_infinite() {
-            if other.is_infinite() {
-                Double::NAN
-            } else if self.is_sign_positive() {
-                Double::FRAC_PI_2
-            } else {
-                -Double::FRAC_PI_2
-            }
-        } else if other.is_infinite() {
-            Double::ZERO
-        } else if self.is_nan() || other.is_nan() {
-            Double::NAN
-        } else if self == other {
-            if self.is_sign_positive() {
-                Double::FRAC_PI_4
-            } else {
-                -Double::FRAC_3_PI_4
-            }
-        } else if self == -other {
-            if self.is_sign_positive() {
-                Double::FRAC_3_PI_4
-            } else {
-                -Double::FRAC_PI_4
-            }
-        } else {
-            let r = (self.sqr() + other.sqr()).sqrt();
-            let x = other / r;
-            let y = self / r;
+                // Compute f64 approximation to atan
+                let mut z = Double::from(self.0.atan2(other.0));
+                let (sin_z, cos_z) = z.sin_cos();
 
-            // Compute f64 approximation to atan
-            let mut z = Double::from(self.0.atan2(other.0));
-            let (sin_z, cos_z) = z.sin_cos();
-
-            if x.0.abs() > y.0.abs() {
-                // Use first iteration above
-                z += (y - sin_z) / cos_z;
-            } else {
-                // Use second iteration above
-                z -= (x - cos_z) / sin_z;
+                if x.0.abs() > y.0.abs() {
+                    // Use first iteration above
+                    z += (y - sin_z) / cos_z;
+                } else {
+                    // Use second iteration above
+                    z -= (x - cos_z) / sin_z;
+                }
+                z
             }
-            z
         }
     }
 
@@ -347,14 +309,9 @@ impl Double {
     ///
     /// [`NAN`]: #associatedconstant.NAN
     pub fn asin(self) -> Double {
-        if self.abs() > Double::ONE {
-            Double::NAN
-        } else if self == Double::ONE {
-            Double::FRAC_PI_2
-        } else if self == Double::NEG_ONE {
-            -Double::FRAC_PI_2
-        } else {
-            self.atan2((Double::ONE - self.sqr()).sqrt())
+        match self.pre_asin() {
+            Some(r) => r,
+            None => self.atan2((Double::ONE - self.sqr()).sqrt()),
         }
     }
 
@@ -377,14 +334,9 @@ impl Double {
     ///
     /// [`NAN`]: #associatedconstant.NAN
     pub fn acos(self) -> Double {
-        if self.abs() > Double::ONE {
-            Double::NAN
-        } else if self == Double::ONE {
-            Double::ZERO
-        } else if self == Double::NEG_ONE {
-            Double::PI
-        } else {
-            (Double::ONE - self.sqr()).sqrt().atan2(self)
+        match self.pre_acos() {
+            Some(r) => r,
+            None => (Double::ONE - self.sqr()).sqrt().atan2(self),
         }
     }
 
@@ -405,6 +357,119 @@ impl Double {
     /// ```
     pub fn atan(self) -> Double {
         self.atan2(Double::ONE)
+    }
+
+    // Precalc functions
+    //
+    // This series of functions returns `Some` with a value that is to be returned, if it
+    // turns out that the function doesn't have to be calculated because a shortcut result
+    // is known. They return `None` if the value has to be calculated normally.
+    //
+    // This keeps the public functions from being mucked up with code that does validation
+    // rather than calculation.
+
+    #[inline]
+    fn pre_sin_cos(&self) -> Option<(Double, Double)> {
+        if self.is_zero() {
+            Some((Double::ZERO, Double::ONE))
+        } else if !self.is_finite() {
+            Some((Double::NAN, Double::NAN))
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_sin(&self) -> Option<Double> {
+        if self.is_zero() {
+            Some(Double::ZERO)
+        } else if !self.is_finite() {
+            Some(Double::NAN)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_cos(&self) -> Option<Double> {
+        if self.is_zero() {
+            Some(Double::ONE)
+        } else if !self.is_finite() {
+            Some(Double::NAN)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_atan2(&self, other: &Double) -> Option<Double> {
+        if other.is_zero() {
+            if self.is_zero() {
+                Some(Double::NAN)
+            } else if self.is_sign_positive() {
+                Some(Double::FRAC_PI_2)
+            } else {
+                Some(-Double::FRAC_PI_2)
+            }
+        } else if self.is_zero() {
+            if other.is_sign_positive() {
+                Some(Double::ZERO)
+            } else {
+                Some(Double::PI)
+            }
+        } else if self.is_infinite() {
+            if other.is_infinite() {
+                Some(Double::NAN)
+            } else if self.is_sign_positive() {
+                Some(Double::FRAC_PI_2)
+            } else {
+                Some(-Double::FRAC_PI_2)
+            }
+        } else if other.is_infinite() {
+            Some(Double::ZERO)
+        } else if self.is_nan() || other.is_nan() {
+            Some(Double::NAN)
+        } else if *self == *other {
+            if self.is_sign_positive() {
+                Some(Double::FRAC_PI_4)
+            } else {
+                Some(-Double::FRAC_3_PI_4)
+            }
+        } else if *self == -*other {
+            if self.is_sign_positive() {
+                Some(Double::FRAC_3_PI_4)
+            } else {
+                Some(-Double::FRAC_PI_4)
+            }
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_asin(&self) -> Option<Double> {
+        if self.abs() > Double::ONE {
+            Some(Double::NAN)
+        } else if *self == Double::ONE {
+            Some(Double::FRAC_PI_2)
+        } else if *self == Double::NEG_ONE {
+            Some(-Double::FRAC_PI_2)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_acos(&self) -> Option<Double> {
+        if self.abs() > Double::ONE {
+            Some(Double::NAN)
+        } else if *self == Double::ONE {
+            Some(Double::ZERO)
+        } else if *self == Double::NEG_ONE {
+            Some(Double::PI)
+        } else {
+            None
+        }
     }
 }
 

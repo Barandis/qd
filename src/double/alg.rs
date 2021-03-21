@@ -23,7 +23,7 @@ impl Double {
     /// assert!(x.ldexp(3) == dd!(40)); // 5 * 2^3
     /// # }
     /// ```
-    /// 
+    ///
     /// [`powi`]: #method.powi
     #[inline]
     pub fn ldexp(self, n: i32) -> Double {
@@ -52,7 +52,7 @@ impl Double {
     /// # use qd::Double;
     /// # fn main() {
     /// let x = Double::PI.mul_pwr2(0.5); // faster than Double::PI / 2
-    /// let expected = dd!("1.570796326794896619231321691639751442098584699687552910487472296");
+    /// let expected = dd!("1.5707963267948966192313216916398");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
@@ -82,12 +82,13 @@ impl Double {
     /// ```
     #[inline]
     pub fn sqr(self) -> Double {
-        if self.is_infinite() {
-            Double::INFINITY
-        } else {
-            let (p, e) = core::two_sqr(self.0);
-            let (a, b) = core::renorm2(p, e + 2.0 * self.0 * self.1 + self.1 * self.1);
-            Double(a, b)
+        match self.pre_sqr() {
+            Some(r) => r,
+            None => {
+                let (p, e) = core::two_sqr(self.0);
+                let (a, b) = core::renorm2(p, e + 2.0 * self.0 * self.1 + self.1 * self.1);
+                Double(a, b)
+            }
         }
     }
 
@@ -104,26 +105,23 @@ impl Double {
     /// # }
     /// ```
     pub fn sqrt(self) -> Double {
-        if self.is_zero() {
-            Double::ZERO
-        } else if self.is_sign_negative() {
-            Double::NAN
-        } else if self.is_infinite() {
-            Double::INFINITY
-        } else {
-            // Strategy: use a method developed by Alan Karp and Peter Markstein at HP
-            // https://cr.yp.to/bib/1997/karp.pdf
-            //
-            // If x is an approximation of sqrt(a), then
-            //
-            //      sqrt(a) ≈ ax + (a - (ax)^2)x / 2
-            //
-            // The approximation is accurate to twice the accuracy of x. This can be
-            // repeated an arbitrary number of times, but this method when used on
-            // double-doubles only requires one iteration.
-            let x = Double::from_div(1.0, self.0.sqrt());
-            let ax = self * x;
-            ax + (self - ax.sqr()) * x.mul_pwr2(0.5)
+        match self.pre_sqrt() {
+            Some(r) => r,
+            None => {
+                // Strategy: use a method developed by Alan Karp and Peter Markstein at HP
+                // https://cr.yp.to/bib/1997/karp.pdf
+                //
+                // If x is an approximation of sqrt(a), then
+                //
+                //      sqrt(a) ≈ ax + (a - (ax)^2)x / 2
+                //
+                // The approximation is accurate to twice the accuracy of x. This can be
+                // repeated an arbitrary number of times, but this method when used on
+                // double-doubles only requires one iteration.
+                let x = Double::from_div(1.0, self.0.sqrt());
+                let ax = self * x;
+                ax + (self - ax.sqr()) * x.mul_pwr2(0.5)
+            }
         }
     }
 
@@ -142,57 +140,35 @@ impl Double {
     /// # }
     /// ```
     pub fn nroot(self, n: i32) -> Double {
-        if self.is_zero() {
-            if n % 2 == 0 || self.is_sign_positive() {
-                if n > 0 {
-                    Double::ZERO
-                } else {
-                    Double::INFINITY
+        match self.pre_nroot(n) {
+            Some(r) => r,
+            None => {
+                // Strategy: the square root method is specialized for square roots, but the
+                // traditional way of finding roots is using Newton's iteration for the
+                // function
+                //
+                //      f(x) = x^(-n) - a
+                //
+                // to find its root a^(-1/n). The iteration is therefore
+                //
+                //      x' = x + x * (1 - a * x^n) / n
+                //
+                // This converges quadratically, which is pretty fast. We can then find
+                // a^(1/n) by taking the reciprocal.
+
+                let r = self.abs();
+                // a^(-1/n) = exp(-ln(a) / n)
+                let mut x = Double::from((-(r.0.ln()) / n as f64).exp());
+
+                x += x * (Double::ONE - r * x.powi(n)) / Double(n.into(), 0.0);
+                if self.is_sign_negative() {
+                    x = -x;
                 }
-            } else if n > 0 {
-                Double::NEG_ZERO
-            } else {
-                Double::NEG_INFINITY
+                x.recip()
             }
-        } else if n <= 0 {
-            Double::NAN
-        } else if self.is_infinite() {
-            if self.is_sign_positive() {
-                Double::INFINITY
-            } else if n % 2 == 0 {
-                Double::NAN
-            } else {
-                Double::NEG_INFINITY
-            }
-        } else if n == 1 {
-            self
-        } else if n == 2 {
-            self.sqrt() // use the more specialized method in sqrt
-        } else {
-            // Strategy: the square root method is specialized for square roots, but the
-            // traditional way of finding roots is using Newton's iteration for the function
-            //
-            //      f(x) = x^(-n) - a
-            //
-            // to find its root a^(-1/n). The iteration is therefore
-            //
-            //      x' = x + x * (1 - a * x^n) / n
-            //
-            // This converges quadratically, which is pretty fast. We can then find a^(1/n)
-            // by taking the reciprocal.
-
-            let r = self.abs();
-            // a^(-1/n) = exp(-ln(a) / n)
-            let mut x: Double = (-(r.0.ln()) / n as f64).exp().into();
-
-            x += x * (Double::ONE - r * x.powi(n)) / Double(n.into(), 0.0);
-            if self.is_sign_negative() {
-                x = -x;
-            }
-            x.recip()
         }
     }
-    
+
     /// Calculates the cube root of the `Double`.
     ///
     /// # Examples
@@ -233,57 +209,32 @@ impl Double {
     /// # }
     /// ```
     pub fn powi(self, n: i32) -> Double {
-        if n == 0 {
-            Double::ONE
-        } else if self.is_nan() {
-            Double::NAN
-        } else if self.is_zero() {
-            if n % 2 == 0 || self.is_sign_positive() {
-                if n > 0 {
-                    Double::ZERO
-                } else {
-                    Double::INFINITY
-                }
-            } else if n > 0 {
-                Double::NEG_ZERO
-            } else {
-                Double::NEG_INFINITY
-            }
-        } else if self.is_infinite() {
-            if n % 2 == 0 || self.is_sign_positive() {
-                if n > 0 {
-                    Double::INFINITY
-                } else {
-                    Double::ZERO
-                }
-            } else if n > 0 {
-                Double::NEG_INFINITY
-            } else {
-                Double::NEG_ZERO
-            }
-        } else {
-            let mut r = self;
-            let mut s = Double::ONE;
-            let mut i = n.abs();
+        match self.pre_powi(n) {
+            Some(r) => r,
+            None => {
+                let mut r = self;
+                let mut s = Double::ONE;
+                let mut i = n.abs();
 
-            if i > 1 {
-                while i > 0 {
-                    if i % 2 == 1 {
-                        s *= r;
+                if i > 1 {
+                    while i > 0 {
+                        if i % 2 == 1 {
+                            s *= r;
+                        }
+                        i /= 2;
+                        if i > 0 {
+                            r = r.sqr();
+                        }
                     }
-                    i /= 2;
-                    if i > 0 {
-                        r = r.sqr();
-                    }
+                } else {
+                    s = r;
                 }
-            } else {
-                s = r;
-            }
 
-            if n < 0 {
-                s.recip()
-            } else {
-                s
+                if n < 0 {
+                    s.recip()
+                } else {
+                    s
+                }
             }
         }
     }
@@ -315,24 +266,9 @@ impl Double {
     /// [1]: http://www.netlib.org/fdlibm/e_pow.c
     #[inline]
     pub fn powf(self, n: Double) -> Double {
-        if self.is_zero() {
-            if n.is_zero() {
-                Double::NAN
-            } else if n.is_sign_positive() {
-                Double::ZERO
-            } else {
-                Double::INFINITY
-            }
-        } else if n.is_infinite() {
-            if self == Double::ONE {
-                Double::NAN
-            } else if n.is_sign_positive() {
-                Double::INFINITY
-            } else {
-                Double::ZERO
-            }
-        } else {
-            (n * self.ln()).exp()
+        match self.pre_powf(&n) {
+            Some(r) => r,
+            None => (n * self.ln()).exp(),
         }
     }
 
@@ -353,6 +289,128 @@ impl Double {
     #[inline]
     pub fn recip(self) -> Double {
         Double::ONE / self
+    }
+
+    // Precalc functions
+    //
+    // This series of functions returns `Some` with a value that is to be returned, if it
+    // turns out that the function doesn't have to be calculated because a shortcut result
+    // is known. They return `None` if the value has to be calculated normally.
+    //
+    // This keeps the public functions from being mucked up with code that does validation
+    // rather than calculation.
+
+    #[inline]
+    fn pre_sqr(&self) -> Option<Double> {
+        if self.is_infinite() {
+            Some(Double::INFINITY)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_sqrt(&self) -> Option<Double> {
+        if self.is_zero() {
+            Some(Double::ZERO)
+        } else if self.is_sign_negative() {
+            Some(Double::NAN)
+        } else if self.is_infinite() {
+            Some(Double::INFINITY)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_nroot(&self, n: i32) -> Option<Double> {
+        if self.is_zero() {
+            if n % 2 == 0 || self.is_sign_positive() {
+                if n > 0 {
+                    Some(Double::ZERO)
+                } else {
+                    Some(Double::INFINITY)
+                }
+            } else if n > 0 {
+                Some(Double::NEG_ZERO)
+            } else {
+                Some(Double::NEG_INFINITY)
+            }
+        } else if n <= 0 {
+            Some(Double::NAN)
+        } else if self.is_infinite() {
+            if self.is_sign_positive() {
+                Some(Double::INFINITY)
+            } else if n % 2 == 0 {
+                Some(Double::NAN)
+            } else {
+                Some(Double::NEG_INFINITY)
+            }
+        } else if n == 1 {
+            Some(*self)
+        } else if n == 2 {
+            Some(self.sqrt()) // use the more specialized method in sqrt
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_powi(&self, n: i32) -> Option<Double> {
+        if n == 0 {
+            Some(Double::ONE)
+        } else if self.is_nan() {
+            Some(Double::NAN)
+        } else if self.is_zero() {
+            if n % 2 == 0 || self.is_sign_positive() {
+                if n > 0 {
+                    Some(Double::ZERO)
+                } else {
+                    Some(Double::INFINITY)
+                }
+            } else if n > 0 {
+                Some(Double::NEG_ZERO)
+            } else {
+                Some(Double::NEG_INFINITY)
+            }
+        } else if self.is_infinite() {
+            if n % 2 == 0 || self.is_sign_positive() {
+                if n > 0 {
+                    Some(Double::INFINITY)
+                } else {
+                    Some(Double::ZERO)
+                }
+            } else if n > 0 {
+                Some(Double::NEG_INFINITY)
+            } else {
+                Some(Double::NEG_ZERO)
+            }
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_powf(&self, n: &Double) -> Option<Double> {
+        if self.is_zero() {
+            if n.is_zero() {
+                Some(Double::NAN)
+            } else if n.is_sign_positive() {
+                Some(Double::ZERO)
+            } else {
+                Some(Double::INFINITY)
+            }
+        } else if n.is_infinite() {
+            if *self == Double::ONE {
+                Some(Double::NAN)
+            } else if n.is_sign_positive() {
+                Some(Double::INFINITY)
+            } else {
+                Some(Double::ZERO)
+            }
+        } else {
+            None
+        }
     }
 }
 
@@ -620,7 +678,7 @@ mod tests {
         assert_exact!(Double::NAN, dd!(3).powf(Double::NAN));
         assert_exact!(Double::NAN, dd!(-1).powf(dd!(1)));
     }
-    
+
     #[test]
     fn recip() {
         assert_close!(
