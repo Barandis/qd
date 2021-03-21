@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::core;
+use crate::common::primitive as p;
 use crate::double::Double;
 use std::ops::{Add, AddAssign};
 
@@ -20,7 +20,7 @@ impl Double {
     /// # }
     /// ```
     pub fn from_add(a: f64, b: f64) -> Double {
-        let (a, b) = core::two_sum(a, b);
+        let (a, b) = p::two_sum(a, b);
         Double(a, b)
     }
 }
@@ -49,10 +49,10 @@ impl Add for Double {
         match self.pre_add(&other) {
             Some(r) => r,
             None => {
-                let (s0, e0) = core::two_sum(self.0, other.0);
-                let (s1, e1) = core::two_sum(self.1, other.1);
-                let (s2, e2) = core::quick_two_sum(s0, s1 + e0);
-                let (a, b) = core::renorm2(s2, e1 + e2);
+                let (s0, e0) = p::two_sum(self.0, other.0);
+                let (s1, e1) = p::two_sum(self.1, other.1);
+                let (s2, e2) = p::quick_two_sum(s0, s1 + e0);
+                let (a, b) = p::renorm2(s2, e1 + e2);
                 Double(a, b)
             }
         }

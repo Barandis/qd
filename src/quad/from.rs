@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::core;
+use crate::common::primitive as p;
 use crate::double::Double;
 use crate::quad::Quad;
 use std::f64;
@@ -39,7 +39,7 @@ fn split_u128(a: u128) -> (u32, u32, u32, u32) {
 
 fn from_u64(a: u64) -> Quad {
     let (x, y) = split_u64(a);
-    let (a, b, c, d) = core::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0);
+    let (a, b, c, d) = p::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0);
     Quad(a, b, c, d)
 }
 
@@ -53,7 +53,7 @@ fn from_i64(a: i64) -> Quad {
         a.abs() as u64
     };
     let (x, y) = split_u64(a);
-    let (a, b, c, d) = core::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0);
+    let (a, b, c, d) = p::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0);
     if sign == -1 {
         Quad(-a, -b, -c, -d)
     } else {
@@ -64,7 +64,7 @@ fn from_i64(a: i64) -> Quad {
 #[allow(clippy::many_single_char_names)]
 fn from_u128(a: u128) -> Quad {
     let (w, x, y, z) = split_u128(a);
-    let (a, b, c, d) = core::renorm4(
+    let (a, b, c, d) = p::renorm4(
         w as f64 * 2f64.powi(96),
         x as f64 * 2f64.powi(64),
         y as f64 * 2f64.powi(32),
@@ -84,7 +84,7 @@ fn from_i128(a: i128) -> Quad {
         a.abs() as u128
     };
     let (w, x, y, z) = split_u128(a);
-    let (a, b, c, d) = core::renorm4(
+    let (a, b, c, d) = p::renorm4(
         w as f64 * 2f64.powi(96),
         x as f64 * 2f64.powi(64),
         y as f64 * 2f64.powi(32),
@@ -378,11 +378,11 @@ from_float_impl! {
 
 impl From<Double> for Quad {
     /// Generates a `Quad` from a `Double`.
-    /// 
+    ///
     /// The new `Quad`'s third and fourth components will be used to account for
     /// floating-point rounding error at the end of the `Double`, but it will of course
     /// otherwise only have the precision of the `Double` used to make it.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -391,7 +391,7 @@ impl From<Double> for Quad {
     /// let expected = Quad::from("0.9999999303082806237436760862691");
     /// let a = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
     /// let x = Quad::from(a);
-    /// 
+    ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
     /// # }
@@ -445,7 +445,7 @@ impl From<Quad> for f64 {
     /// has the capability of losing range (for example, no other type could be used to
     /// represent `dd!(1e308)`). Casts can be made from the `f64` provided by this function
     /// to other numeric types as needed.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -453,7 +453,7 @@ impl From<Quad> for f64 {
     /// # fn main() {
     /// let a = Quad::PI;
     /// let x = f64::from(a);
-    /// 
+    ///
     /// let diff = (x - std::f64::consts::PI).abs();
     /// assert!(diff < 1e-15);
     /// # }

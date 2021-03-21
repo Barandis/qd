@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::core;
+use crate::common::primitive as p;
 use crate::double::Double;
 use std::ops::{Div, DivAssign};
 
@@ -12,8 +12,8 @@ use std::ops::{Div, DivAssign};
 // Double::from this way in the basic arithmetic would cause a stack overflow.
 #[inline]
 fn mul_f64(a: Double, b: f64) -> Double {
-    let (p, e) = core::two_prod(a.0, b);
-    let (a, b) = core::renorm2(p, e + a.1 * b);
+    let (p, e) = p::two_prod(a.0, b);
+    let (a, b) = p::renorm2(p, e + a.1 * b);
     Double(a, b)
 }
 
@@ -41,12 +41,12 @@ impl Double {
         } else {
             let q1 = a / b;
 
-            let (p1, p2) = core::two_prod(q1, b);
-            let (s, e) = core::two_diff(a, p1);
+            let (p1, p2) = p::two_prod(q1, b);
+            let (s, e) = p::two_diff(a, p1);
 
             let q2 = (s + e - p2) / b;
 
-            let (a, b) = core::renorm2(q1, q2);
+            let (a, b) = p::renorm2(q1, q2);
             Double(a, b)
         }
     }
@@ -124,7 +124,7 @@ impl Div for Double {
 
                 let q3 = r.0 / other.0;
 
-                let (a, b) = core::renorm3(q1, q2, q3);
+                let (a, b) = p::renorm3(q1, q2, q3);
                 Double(a, b)
             }
         }

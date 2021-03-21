@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::core;
+use crate::common::primitive as p;
 use crate::quad::Quad;
 use std::ops::{Mul, MulAssign};
 
@@ -58,22 +58,22 @@ impl Mul for Quad {
             Some(r) => r,
             None => {
                 // O(1) term
-                let (h0, l0) = core::two_prod(self.0, other.0);
+                let (h0, l0) = p::two_prod(self.0, other.0);
 
                 // O(ε) terms
-                let (h1, l1) = core::two_prod(self.0, other.1);
-                let (h2, l2) = core::two_prod(self.1, other.0);
+                let (h1, l1) = p::two_prod(self.0, other.1);
+                let (h2, l2) = p::two_prod(self.1, other.0);
 
                 // O(ε²) terms
-                let (h3, l3) = core::two_prod(self.0, other.2);
-                let (h4, l4) = core::two_prod(self.1, other.1);
-                let (h5, l5) = core::two_prod(self.2, other.0);
+                let (h3, l3) = p::two_prod(self.0, other.2);
+                let (h4, l4) = p::two_prod(self.1, other.1);
+                let (h5, l5) = p::two_prod(self.2, other.0);
 
                 // O(ε³) terms
-                let (h6, l6) = core::two_prod(self.0, other.3);
-                let (h7, l7) = core::two_prod(self.1, other.2);
-                let (h8, l8) = core::two_prod(self.2, other.1);
-                let (h9, l9) = core::two_prod(self.3, other.0);
+                let (h6, l6) = p::two_prod(self.0, other.3);
+                let (h7, l7) = p::two_prod(self.1, other.2);
+                let (h8, l8) = p::two_prod(self.2, other.1);
+                let (h9, l9) = p::two_prod(self.3, other.0);
 
                 // O(ε⁴) terms - the low words aren't necessary for the accuracy we need
                 let ha = self.1 * other.3;
@@ -87,16 +87,16 @@ impl Mul for Quad {
                 // O(1) calculation (pass-through)
                 let r0 = h0;
                 // O(ε) calculation
-                let (r1, t0, t1) = core::three_three_sum(h1, h2, l0);
+                let (r1, t0, t1) = p::three_three_sum(h1, h2, l0);
                 // O(ε²) calculation
-                let (r2, t2, t3) = core::six_three_sum(t0, h3, h4, h5, l1, l2);
+                let (r2, t2, t3) = p::six_three_sum(t0, h3, h4, h5, l1, l2);
                 // O(ε³) calculation
-                let (r3, t4) = core::nine_two_sum(t1, t2, h6, h7, h8, h9, l3, l4, l5);
+                let (r3, t4) = p::nine_two_sum(t1, t2, h6, h7, h8, h9, l3, l4, l5);
                 // O(ε⁴) calculation (nine_one_sum)
                 let r4 = t3 + t4 + ha + hb + hc + l6 + l7 + l8 + l9;
 
                 // Results of the prior calculations are renormalized into four f64s.
-                let (a, b, c, d) = core::renorm5(r0, r1, r2, r3, r4);
+                let (a, b, c, d) = p::renorm5(r0, r1, r2, r3, r4);
                 Quad(a, b, c, d)
             }
         }

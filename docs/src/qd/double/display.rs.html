@@ -591,7 +591,7 @@
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">display</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">display</span> <span class="kw">as</span> <span class="ident">d</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::{<span class="ident">Debug</span>, <span class="ident">Display</span>, <span class="ident">Formatter</span>, <span class="ident">LowerExp</span>, <span class="prelude-ty">Result</span>, <span class="ident">UpperExp</span>};
 
@@ -670,8 +670,8 @@
     <span class="comment">// We pass one more than the actual precision to leave an extra digit at the end to do</span>
     <span class="comment">// rounding</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">digits</span> <span class="op">=</span> <span class="ident">extract_digits</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>, <span class="ident">precision</span> <span class="op">+</span> <span class="number">1</span>);
-    <span class="ident">display</span>::<span class="ident">correct_range</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">digits</span>);
-    <span class="ident">display</span>::<span class="ident">round_vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">digits</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">exp</span>);
+    <span class="ident">d</span>::<span class="ident">correct_range</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">digits</span>);
+    <span class="ident">d</span>::<span class="ident">round_vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">digits</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">exp</span>);
 
     (<span class="ident">digits</span>, <span class="ident">exp</span>)
 }
@@ -699,14 +699,14 @@
     <span class="kw">let</span> <span class="ident">precision</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">precision</span>().<span class="ident">unwrap_or</span>(<span class="ident">DEFAULT_PRECISION</span>);
 
     <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_nan</span>() {
-        <span class="ident">display</span>::<span class="ident">push_nan</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
+        <span class="ident">d</span>::<span class="ident">push_nan</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
     } <span class="kw">else</span> {
         <span class="ident">sign</span> <span class="op">=</span> <span class="ident">push_sign</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">value</span>, <span class="ident">f</span>);
 
         <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_infinite</span>() {
-            <span class="ident">display</span>::<span class="ident">push_inf</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
+            <span class="ident">d</span>::<span class="ident">push_inf</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_zero</span>() {
-            <span class="ident">display</span>::<span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
+            <span class="ident">d</span>::<span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">width</span> <span class="op">=</span> <span class="ident">precision</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">value</span>.<span class="ident">abs</span>().<span class="ident">log10</span>().<span class="ident">floor</span>()) <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="number">1</span>;
             <span class="comment">// Higher than the max-length number + max precision so that users can do their</span>
@@ -723,10 +723,10 @@
                     <span class="string">&#39;0&#39;</span>
                 });
             } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">width</span> <span class="op">&lt;</span> <span class="number">0</span> {
-                <span class="ident">display</span>::<span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
+                <span class="ident">d</span>::<span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
             } <span class="kw">else</span> {
                 <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">digits</span>, <span class="ident">exp</span>) <span class="op">=</span> <span class="ident">to_digits</span>(<span class="ident">value</span>, <span class="ident">extra</span> <span class="kw">as</span> <span class="ident">usize</span>);
-                <span class="ident">display</span>::<span class="ident">push_fixed_digits</span>(
+                <span class="ident">d</span>::<span class="ident">push_fixed_digits</span>(
                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>,
                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">digits</span>,
                     <span class="ident">exp</span>,
@@ -737,10 +737,10 @@
         }
 
         <span class="kw">if</span> <span class="op">!</span><span class="ident">value</span>.<span class="ident">is_infinite</span>() {
-            <span class="ident">display</span>::<span class="ident">drop_trailing_zeros</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
+            <span class="ident">d</span>::<span class="ident">drop_trailing_zeros</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
         }
     }
-    <span class="ident">display</span>::<span class="ident">align_and_fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>, <span class="ident">sign</span>);
+    <span class="ident">d</span>::<span class="ident">align_and_fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>, <span class="ident">sign</span>);
 
     <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>.<span class="ident">into_iter</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>())
 }
@@ -753,28 +753,28 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">exp</span> <span class="op">=</span> <span class="number">0</span>;
 
     <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_nan</span>() {
-        <span class="ident">display</span>::<span class="ident">push_nan</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
+        <span class="ident">d</span>::<span class="ident">push_nan</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
     } <span class="kw">else</span> {
         <span class="ident">sign</span> <span class="op">=</span> <span class="ident">push_sign</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">value</span>, <span class="ident">f</span>);
 
         <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_infinite</span>() {
-            <span class="ident">display</span>::<span class="ident">push_inf</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
+            <span class="ident">d</span>::<span class="ident">push_inf</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_zero</span>() {
-            <span class="ident">display</span>::<span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
+            <span class="ident">d</span>::<span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">width</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">precision</span>().<span class="ident">unwrap_or</span>(<span class="ident">DEFAULT_PRECISION</span>) <span class="op">+</span> <span class="number">1</span>;
             <span class="kw">let</span> (<span class="ident">digits</span>, <span class="ident">e</span>) <span class="op">=</span> <span class="ident">to_digits</span>(<span class="ident">value</span>, <span class="ident">width</span>);
             <span class="ident">exp</span> <span class="op">=</span> <span class="ident">e</span>;
-            <span class="ident">display</span>::<span class="ident">push_exp_digits</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="kw-2">&amp;</span><span class="ident">digits</span>, <span class="ident">f</span>.<span class="ident">precision</span>(), <span class="ident">DEFAULT_PRECISION</span>);
+            <span class="ident">d</span>::<span class="ident">push_exp_digits</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="kw-2">&amp;</span><span class="ident">digits</span>, <span class="ident">f</span>.<span class="ident">precision</span>(), <span class="ident">DEFAULT_PRECISION</span>);
         }
 
         <span class="kw">if</span> <span class="op">!</span><span class="ident">value</span>.<span class="ident">is_infinite</span>() {
-            <span class="ident">display</span>::<span class="ident">drop_trailing_zeros</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
+            <span class="ident">d</span>::<span class="ident">drop_trailing_zeros</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
             <span class="kw">let</span> <span class="ident">marker</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">upper</span> { <span class="string">&#39;E&#39;</span> } <span class="kw">else</span> { <span class="string">&#39;e&#39;</span> };
-            <span class="ident">display</span>::<span class="ident">push_exponent</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">marker</span>, <span class="ident">exp</span>);
+            <span class="ident">d</span>::<span class="ident">push_exponent</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">marker</span>, <span class="ident">exp</span>);
         }
     }
-    <span class="ident">display</span>::<span class="ident">align_and_fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>, <span class="ident">sign</span>);
+    <span class="ident">d</span>::<span class="ident">align_and_fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>, <span class="ident">sign</span>);
 
     <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>.<span class="ident">into_iter</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>())
 }

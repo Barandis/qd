@@ -407,13 +407,23 @@
 <span id="404">404</span>
 <span id="405">405</span>
 <span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">core</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">primitive</span> <span class="kw">as</span> <span class="ident">p</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">f64</span>;
 
@@ -438,7 +448,7 @@
 
 <span class="kw">fn</span> <span class="ident">from_u64</span>(<span class="ident">a</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
     <span class="kw">let</span> (<span class="ident">x</span>, <span class="ident">y</span>) <span class="op">=</span> <span class="ident">split_u64</span>(<span class="ident">a</span>);
-    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">renorm2</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>), <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span>);
+    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm2</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>), <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span>);
     <span class="ident">Double</span>(<span class="ident">a</span>, <span class="ident">b</span>)
 }
 
@@ -452,7 +462,7 @@
         <span class="ident">a</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">u64</span>
     };
     <span class="kw">let</span> (<span class="ident">x</span>, <span class="ident">y</span>) <span class="op">=</span> <span class="ident">split_u64</span>(<span class="ident">a</span>);
-    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">renorm2</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>), <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span>);
+    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm2</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>), <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span>);
     <span class="kw">if</span> <span class="ident">sign</span> <span class="op">=</span><span class="op">=</span> <span class="op">-</span><span class="number">1</span> {
         <span class="ident">Double</span>(<span class="op">-</span><span class="ident">a</span>, <span class="op">-</span><span class="ident">b</span>)
     } <span class="kw">else</span> {
@@ -617,6 +627,11 @@
     <span class="doccomment">/// exactly representable in binary, then the second component of the `Double` will</span>
     <span class="doccomment">/// account for the rounding error.</span>
     <span class="doccomment">///</span>
+    <span class="doccomment">/// Note that in order to do this, the `f32` needs to be parsed digit by digit. While</span>
+    <span class="doccomment">/// the parser does work quite fast with integers or any `f32` that is represented</span>
+    <span class="doccomment">/// perfectly in binary (any number that can be represented as a fraction with a power</span>
+    <span class="doccomment">/// of 2 in the denominator), it&#39;s not a particularly fast operation otherwise.</span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
@@ -640,6 +655,11 @@
     <span class="doccomment">/// first component of a `Double` is enough to fit an `f64`, if that `f64` is not</span>
     <span class="doccomment">/// exactly representable in binary, then the second component of the `Double` will</span>
     <span class="doccomment">/// account for the rounding error.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Note that in order to do this, the `f64` needs to be parsed digit by digit. While</span>
+    <span class="doccomment">/// the parser does work quite fast with integers or any `f64` that is represented</span>
+    <span class="doccomment">/// perfectly in binary (any number that can be represented as a fraction with a power</span>
+    <span class="doccomment">/// of 2 in the denominator), it&#39;s not a particularly fast operation otherwise.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>

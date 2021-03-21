@@ -802,7 +802,7 @@
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">core</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">primitive</span> <span class="kw">as</span> <span class="ident">p</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
@@ -901,10 +901,10 @@
                 <span class="comment">// where any further terms, including the low words of the final two terms,</span>
                 <span class="comment">// are unnecessary to achieve the desired accuracy.</span>
 
-                <span class="kw">let</span> (<span class="ident">h0</span>, <span class="ident">l0</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_sqr</span>(<span class="self">self</span>.<span class="number">0</span>);
-                <span class="kw">let</span> (<span class="ident">h1</span>, <span class="ident">l1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_prod</span>(<span class="number">2.0</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">1</span>);
-                <span class="kw">let</span> (<span class="ident">h2</span>, <span class="ident">l2</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_prod</span>(<span class="number">2.0</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">2</span>);
-                <span class="kw">let</span> (<span class="ident">h3</span>, <span class="ident">l3</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_sqr</span>(<span class="self">self</span>.<span class="number">1</span>);
+                <span class="kw">let</span> (<span class="ident">h0</span>, <span class="ident">l0</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sqr</span>(<span class="self">self</span>.<span class="number">0</span>);
+                <span class="kw">let</span> (<span class="ident">h1</span>, <span class="ident">l1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_prod</span>(<span class="number">2.0</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">1</span>);
+                <span class="kw">let</span> (<span class="ident">h2</span>, <span class="ident">l2</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_prod</span>(<span class="number">2.0</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">2</span>);
+                <span class="kw">let</span> (<span class="ident">h3</span>, <span class="ident">l3</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sqr</span>(<span class="self">self</span>.<span class="number">1</span>);
                 <span class="kw">let</span> <span class="ident">h4</span> <span class="op">=</span> <span class="number">2.0</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">3</span>;
                 <span class="kw">let</span> <span class="ident">h5</span> <span class="op">=</span> <span class="number">2.0</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">1</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">2</span>;
 
@@ -913,25 +913,25 @@
 
                 <span class="kw">let</span> <span class="ident">r0</span> <span class="op">=</span> <span class="ident">h0</span>;
 
-                <span class="kw">let</span> (<span class="ident">r1</span>, <span class="ident">a1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_sum</span>(<span class="ident">h1</span>, <span class="ident">l0</span>);
+                <span class="kw">let</span> (<span class="ident">r1</span>, <span class="ident">a1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sum</span>(<span class="ident">h1</span>, <span class="ident">l0</span>);
 
-                <span class="kw">let</span> (<span class="ident">b0</span>, <span class="ident">b1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_sum</span>(<span class="ident">a1</span>, <span class="ident">l1</span>);
-                <span class="kw">let</span> (<span class="ident">c0</span>, <span class="ident">c1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_sum</span>(<span class="ident">h2</span>, <span class="ident">h3</span>);
-                <span class="kw">let</span> (<span class="ident">d0</span>, <span class="ident">d1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_sum</span>(<span class="ident">b0</span>, <span class="ident">c0</span>);
-                <span class="kw">let</span> (<span class="ident">e0</span>, <span class="ident">e1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_sum</span>(<span class="ident">b1</span>, <span class="ident">c1</span>);
-                <span class="kw">let</span> (<span class="ident">f0</span>, <span class="ident">f1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_sum</span>(<span class="ident">d1</span>, <span class="ident">e0</span>);
-                <span class="kw">let</span> (<span class="ident">i0</span>, <span class="ident">i1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">quick_two_sum</span>(<span class="ident">f0</span>, <span class="ident">e1</span> <span class="op">+</span> <span class="ident">f1</span>);
-                <span class="kw">let</span> (<span class="ident">r2</span>, <span class="ident">j1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">quick_two_sum</span>(<span class="ident">d0</span>, <span class="ident">i0</span>);
+                <span class="kw">let</span> (<span class="ident">b0</span>, <span class="ident">b1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sum</span>(<span class="ident">a1</span>, <span class="ident">l1</span>);
+                <span class="kw">let</span> (<span class="ident">c0</span>, <span class="ident">c1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sum</span>(<span class="ident">h2</span>, <span class="ident">h3</span>);
+                <span class="kw">let</span> (<span class="ident">d0</span>, <span class="ident">d1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sum</span>(<span class="ident">b0</span>, <span class="ident">c0</span>);
+                <span class="kw">let</span> (<span class="ident">e0</span>, <span class="ident">e1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sum</span>(<span class="ident">b1</span>, <span class="ident">c1</span>);
+                <span class="kw">let</span> (<span class="ident">f0</span>, <span class="ident">f1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sum</span>(<span class="ident">d1</span>, <span class="ident">e0</span>);
+                <span class="kw">let</span> (<span class="ident">i0</span>, <span class="ident">i1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">quick_two_sum</span>(<span class="ident">f0</span>, <span class="ident">e1</span> <span class="op">+</span> <span class="ident">f1</span>);
+                <span class="kw">let</span> (<span class="ident">r2</span>, <span class="ident">j1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">quick_two_sum</span>(<span class="ident">d0</span>, <span class="ident">i0</span>);
 
-                <span class="kw">let</span> (<span class="ident">k0</span>, <span class="ident">k1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">quick_two_sum</span>(<span class="ident">i1</span>, <span class="ident">j1</span>);
-                <span class="kw">let</span> (<span class="ident">m0</span>, <span class="ident">m1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_sum</span>(<span class="ident">h4</span>, <span class="ident">h5</span>);
-                <span class="kw">let</span> (<span class="ident">n0</span>, <span class="ident">n1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_sum</span>(<span class="ident">l2</span>, <span class="ident">l3</span>);
-                <span class="kw">let</span> (<span class="ident">o0</span>, <span class="ident">o1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_sum</span>(<span class="ident">m0</span>, <span class="ident">n0</span>);
-                <span class="kw">let</span> (<span class="ident">r3</span>, <span class="ident">q1</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_sum</span>(<span class="ident">k0</span>, <span class="ident">o0</span>);
+                <span class="kw">let</span> (<span class="ident">k0</span>, <span class="ident">k1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">quick_two_sum</span>(<span class="ident">i1</span>, <span class="ident">j1</span>);
+                <span class="kw">let</span> (<span class="ident">m0</span>, <span class="ident">m1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sum</span>(<span class="ident">h4</span>, <span class="ident">h5</span>);
+                <span class="kw">let</span> (<span class="ident">n0</span>, <span class="ident">n1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sum</span>(<span class="ident">l2</span>, <span class="ident">l3</span>);
+                <span class="kw">let</span> (<span class="ident">o0</span>, <span class="ident">o1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sum</span>(<span class="ident">m0</span>, <span class="ident">n0</span>);
+                <span class="kw">let</span> (<span class="ident">r3</span>, <span class="ident">q1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sum</span>(<span class="ident">k0</span>, <span class="ident">o0</span>);
 
                 <span class="kw">let</span> <span class="ident">r4</span> <span class="op">=</span> <span class="ident">m1</span> <span class="op">+</span> <span class="ident">n1</span> <span class="op">+</span> <span class="ident">o1</span> <span class="op">+</span> <span class="ident">k1</span> <span class="op">+</span> <span class="ident">q1</span>;
 
-                <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">renorm5</span>(<span class="ident">r0</span>, <span class="ident">r1</span>, <span class="ident">r2</span>, <span class="ident">r3</span>, <span class="ident">r4</span>);
+                <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm5</span>(<span class="ident">r0</span>, <span class="ident">r1</span>, <span class="ident">r2</span>, <span class="ident">r3</span>, <span class="ident">r4</span>);
                 <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>)
             }
         }

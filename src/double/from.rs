@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::core;
+use crate::common::primitive as p;
 use crate::double::Double;
 use std::f64;
 
@@ -28,7 +28,7 @@ fn split_u64(a: u64) -> (u32, u32) {
 
 fn from_u64(a: u64) -> Double {
     let (x, y) = split_u64(a);
-    let (a, b) = core::renorm2(x as f64 * 2f64.powi(32), y as f64);
+    let (a, b) = p::renorm2(x as f64 * 2f64.powi(32), y as f64);
     Double(a, b)
 }
 
@@ -42,7 +42,7 @@ fn from_i64(a: i64) -> Double {
         a.abs() as u64
     };
     let (x, y) = split_u64(a);
-    let (a, b) = core::renorm2(x as f64 * 2f64.powi(32), y as f64);
+    let (a, b) = p::renorm2(x as f64 * 2f64.powi(32), y as f64);
     if sign == -1 {
         Double(-a, -b)
     } else {

@@ -517,13 +517,23 @@
 <span id="514">514</span>
 <span id="515">515</span>
 <span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">core</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">primitive</span> <span class="kw">as</span> <span class="ident">p</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">f64</span>;
@@ -559,7 +569,7 @@
 
 <span class="kw">fn</span> <span class="ident">from_u64</span>(<span class="ident">a</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
     <span class="kw">let</span> (<span class="ident">x</span>, <span class="ident">y</span>) <span class="op">=</span> <span class="ident">split_u64</span>(<span class="ident">a</span>);
-    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">renorm4</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>), <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
+    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm4</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>), <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
     <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>)
 }
 
@@ -573,7 +583,7 @@
         <span class="ident">a</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">u64</span>
     };
     <span class="kw">let</span> (<span class="ident">x</span>, <span class="ident">y</span>) <span class="op">=</span> <span class="ident">split_u64</span>(<span class="ident">a</span>);
-    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">renorm4</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>), <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
+    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm4</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>), <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
     <span class="kw">if</span> <span class="ident">sign</span> <span class="op">=</span><span class="op">=</span> <span class="op">-</span><span class="number">1</span> {
         <span class="ident">Quad</span>(<span class="op">-</span><span class="ident">a</span>, <span class="op">-</span><span class="ident">b</span>, <span class="op">-</span><span class="ident">c</span>, <span class="op">-</span><span class="ident">d</span>)
     } <span class="kw">else</span> {
@@ -584,7 +594,7 @@
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">many_single_char_names</span>)]</span>
 <span class="kw">fn</span> <span class="ident">from_u128</span>(<span class="ident">a</span>: <span class="ident">u128</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
     <span class="kw">let</span> (<span class="ident">w</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">z</span>) <span class="op">=</span> <span class="ident">split_u128</span>(<span class="ident">a</span>);
-    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">renorm4</span>(
+    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm4</span>(
         <span class="ident">w</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">96</span>),
         <span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">64</span>),
         <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>),
@@ -604,7 +614,7 @@
         <span class="ident">a</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">u128</span>
     };
     <span class="kw">let</span> (<span class="ident">w</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">z</span>) <span class="op">=</span> <span class="ident">split_u128</span>(<span class="ident">a</span>);
-    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">renorm4</span>(
+    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm4</span>(
         <span class="ident">w</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">96</span>),
         <span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">64</span>),
         <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>),
@@ -839,9 +849,14 @@
     <span class="doccomment">/// Generates a `Quad` from an `f32`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This function *does* account for floating point rounding error. Even though the</span>
-    <span class="doccomment">/// first component of a `Quad` is enough to fit an `f32`, if that `f32` is not</span>
-    <span class="doccomment">/// exactly representable in binary, then the second component of the `Quad` will</span>
-    <span class="doccomment">/// account for the rounding error.</span>
+    <span class="doccomment">/// first component of a `Quad` is enough to fit an `f32`, if that `f32` is not exactly</span>
+    <span class="doccomment">/// representable in binary, then the second component of the `Quad` will account for</span>
+    <span class="doccomment">/// the rounding error.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Note that in order to do this, the `f32` needs to be parsed digit by digit. While</span>
+    <span class="doccomment">/// the parser does work quite fast with integers or any `f32` that is represented</span>
+    <span class="doccomment">/// perfectly in binary (any number that can be represented as a fraction with a power</span>
+    <span class="doccomment">/// of 2 in the denominator), it&#39;s not a particularly fast operation otherwise.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -863,9 +878,14 @@
     <span class="doccomment">/// Generates a `Quad` from an `f64`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This function *does* account for floating point rounding error. Even though the</span>
-    <span class="doccomment">/// first component of a `Quad` is enough to fit an `f64`, if that `f64` is not</span>
-    <span class="doccomment">/// exactly representable in binary, then the second component of the `Quad` will</span>
-    <span class="doccomment">/// account for the rounding error.</span>
+    <span class="doccomment">/// first component of a `Quad` is enough to fit an `f64`, if that `f64` is not exactly</span>
+    <span class="doccomment">/// representable in binary, then the second component of the `Quad` will account for</span>
+    <span class="doccomment">/// the rounding error.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Note that in order to do this, the `f64` needs to be parsed digit by digit. While</span>
+    <span class="doccomment">/// the parser does work quite fast with integers or any `f64` that is represented</span>
+    <span class="doccomment">/// perfectly in binary (any number that can be represented as a fraction with a power</span>
+    <span class="doccomment">/// of 2 in the denominator), it&#39;s not a particularly fast operation otherwise.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -888,11 +908,11 @@
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Quad</span> {
     <span class="doccomment">/// Generates a `Quad` from a `Double`.</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// The new `Quad`&#39;s third and fourth components will be used to account for</span>
     <span class="doccomment">/// floating-point rounding error at the end of the `Double`, but it will of course</span>
     <span class="doccomment">/// otherwise only have the precision of the `Double` used to make it.</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
@@ -901,7 +921,7 @@
     <span class="doccomment">/// let expected = Quad::from(&quot;0.9999999303082806237436760862691&quot;);</span>
     <span class="doccomment">/// let a = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);</span>
     <span class="doccomment">/// let x = Quad::from(a);</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
     <span class="doccomment">/// # }</span>
@@ -955,7 +975,7 @@
     <span class="doccomment">/// has the capability of losing range (for example, no other type could be used to</span>
     <span class="doccomment">/// represent `dd!(1e308)`). Casts can be made from the `f64` provided by this function</span>
     <span class="doccomment">/// to other numeric types as needed.</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
@@ -963,7 +983,7 @@
     <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let a = Quad::PI;</span>
     <span class="doccomment">/// let x = f64::from(a);</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - std::f64::consts::PI).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; 1e-15);</span>
     <span class="doccomment">/// # }</span>

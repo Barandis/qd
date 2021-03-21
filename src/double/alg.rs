@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::core;
+use crate::common::primitive as p;
 use crate::double::Double;
 
 impl Double {
@@ -85,8 +85,8 @@ impl Double {
         match self.pre_sqr() {
             Some(r) => r,
             None => {
-                let (p, e) = core::two_sqr(self.0);
-                let (a, b) = core::renorm2(p, e + 2.0 * self.0 * self.1 + self.1 * self.1);
+                let (p, e) = p::two_sqr(self.0);
+                let (a, b) = p::renorm2(p, e + 2.0 * self.0 * self.1 + self.1 * self.1);
                 Double(a, b)
             }
         }

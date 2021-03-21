@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::core;
+use crate::common::primitive as p;
 use std::ops::Index;
 
 #[macro_use]
@@ -229,7 +229,7 @@ impl Quad {
             // the components being in this order. The `unwrap` is safe because we've
             // already dealt with the one case where ordering can fail (NaN).
             xs.sort_by(|a, b| b.abs().partial_cmp(&a.abs()).unwrap());
-            let (a, b, c, d) = core::renorm4(xs[0], xs[1], xs[2], xs[3]);
+            let (a, b, c, d) = p::renorm4(xs[0], xs[1], xs[2], xs[3]);
             Quad(a, b, c, d)
         }
     }

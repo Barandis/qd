@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::display;
+use crate::common::display as d;
 use crate::double::Double;
 use std::fmt::{Debug, Display, Formatter, LowerExp, Result, UpperExp};
 
@@ -82,8 +82,8 @@ fn to_digits(r: &Double, precision: usize) -> (Vec<i32>, i32) {
     // We pass one more than the actual precision to leave an extra digit at the end to do
     // rounding
     let mut digits = extract_digits(&mut r, precision + 1);
-    display::correct_range(&mut digits);
-    display::round_vec(&mut digits, &mut exp);
+    d::correct_range(&mut digits);
+    d::round_vec(&mut digits, &mut exp);
 
     (digits, exp)
 }
@@ -111,14 +111,14 @@ fn format_fixed(value: &Double, f: &mut Formatter) -> Result {
     let precision = f.precision().unwrap_or(DEFAULT_PRECISION);
 
     if value.is_nan() {
-        display::push_nan(&mut result);
+        d::push_nan(&mut result);
     } else {
         sign = push_sign(&mut result, value, f);
 
         if value.is_infinite() {
-            display::push_inf(&mut result);
+            d::push_inf(&mut result);
         } else if value.is_zero() {
-            display::push_zero(&mut result, f);
+            d::push_zero(&mut result, f);
         } else {
             let width = precision as i32 + f64::from(value.abs().log10().floor()) as i32 + 1;
             // Higher than the max-length number + max precision so that users can do their
@@ -135,10 +135,10 @@ fn format_fixed(value: &Double, f: &mut Formatter) -> Result {
                     '0'
                 });
             } else if width < 0 {
-                display::push_zero(&mut result, f);
+                d::push_zero(&mut result, f);
             } else {
                 let (mut digits, exp) = to_digits(value, extra as usize);
-                display::push_fixed_digits(
+                d::push_fixed_digits(
                     &mut result,
                     &mut digits,
                     exp,
@@ -149,10 +149,10 @@ fn format_fixed(value: &Double, f: &mut Formatter) -> Result {
         }
 
         if !value.is_infinite() {
-            display::drop_trailing_zeros(&mut result, f);
+            d::drop_trailing_zeros(&mut result, f);
         }
     }
-    display::align_and_fill(&mut result, f, sign);
+    d::align_and_fill(&mut result, f, sign);
 
     write!(f, "{}", result.into_iter().collect::<String>())
 }
@@ -165,28 +165,28 @@ fn format_exp(value: &Double, f: &mut Formatter, upper: bool) -> Result {
     let mut exp = 0;
 
     if value.is_nan() {
-        display::push_nan(&mut result);
+        d::push_nan(&mut result);
     } else {
         sign = push_sign(&mut result, value, f);
 
         if value.is_infinite() {
-            display::push_inf(&mut result);
+            d::push_inf(&mut result);
         } else if value.is_zero() {
-            display::push_zero(&mut result, f);
+            d::push_zero(&mut result, f);
         } else {
             let width = f.precision().unwrap_or(DEFAULT_PRECISION) + 1;
             let (digits, e) = to_digits(value, width);
             exp = e;
-            display::push_exp_digits(&mut result, &digits, f.precision(), DEFAULT_PRECISION);
+            d::push_exp_digits(&mut result, &digits, f.precision(), DEFAULT_PRECISION);
         }
 
         if !value.is_infinite() {
-            display::drop_trailing_zeros(&mut result, f);
+            d::drop_trailing_zeros(&mut result, f);
             let marker = if upper { 'E' } else { 'e' };
-            display::push_exponent(&mut result, marker, exp);
+            d::push_exponent(&mut result, marker, exp);
         }
     }
-    display::align_and_fill(&mut result, f, sign);
+    d::align_and_fill(&mut result, f, sign);
 
     write!(f, "{}", result.into_iter().collect::<String>())
 }

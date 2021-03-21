@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::core;
+use crate::common::primitive as p;
 use crate::quad::Quad;
 use std::f64;
 use std::num::FpCategory;
@@ -58,7 +58,7 @@ impl Quad {
                     d = self.3.floor();
                 }
             }
-            let (a, b, c, d) = core::renorm4(a, b, c, d);
+            let (a, b, c, d) = p::renorm4(a, b, c, d);
             Quad(a, b, c, d)
         } else {
             Quad(a, b, c, d)
@@ -94,7 +94,7 @@ impl Quad {
                     d = self.3.ceil();
                 }
             }
-            let (a, b, c, d) = core::renorm4(a, b, c, d);
+            let (a, b, c, d) = p::renorm4(a, b, c, d);
             Quad(a, b, c, d)
         } else {
             Quad(a, b, c, d)
@@ -125,7 +125,7 @@ impl Quad {
                 let c = self.2.round();
                 if (c - self.2).abs() < f64::EPSILON {
                     let d = self.3.round();
-                    let (a, b, c, d) = core::renorm4(a, b, c, d);
+                    let (a, b, c, d) = p::renorm4(a, b, c, d);
                     Quad(a, b, c, d)
                 } else if ((c - self.2).abs() - 0.5).abs() < f64::EPSILON && self.3 < 0.0 {
                     Quad(a, b, c - 1.0, 0.0)

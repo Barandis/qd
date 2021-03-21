@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::core;
+use crate::common::primitive as p;
 use crate::double::Double;
 use std::ops::{Mul, MulAssign};
 
@@ -20,7 +20,7 @@ impl Double {
     /// # }
     /// ```
     pub fn from_mul(a: f64, b: f64) -> Double {
-        let (a, b) = core::two_prod(a, b);
+        let (a, b) = p::two_prod(a, b);
         Double(a, b)
     }
 }
@@ -49,8 +49,8 @@ impl Mul for Double {
         match self.pre_mul(&other) {
             Some(r) => r,
             None => {
-                let (p, e) = core::two_prod(self.0, other.0);
-                let (a, b) = core::renorm2(p, e + self.0 * other.1 + self.1 * other.0);
+                let (p, e) = p::two_prod(self.0, other.0);
+                let (a, b) = p::renorm2(p, e + self.0 * other.1 + self.1 * other.0);
                 Double(a, b)
             }
         }

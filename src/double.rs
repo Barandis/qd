@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::core;
+use crate::common::primitive as p;
 use std::f64;
 use std::ops::Index;
 
@@ -221,9 +221,9 @@ impl Double {
     /// [`dd!`]: macro.dd.html
     pub fn new(a: f64, b: f64) -> Double {
         let (a, b) = if a.abs() > b.abs() {
-            core::renorm2(a, b)
+            p::renorm2(a, b)
         } else {
-            core::renorm2(b, a)
+            p::renorm2(b, a)
         };
         Double(a, b)
     }
