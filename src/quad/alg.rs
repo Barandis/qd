@@ -298,14 +298,17 @@ impl Quad {
 
     /// Calculates the `Quad` raised to a `Quad` power.
     ///
-    /// This function is implemented using the logarithm of the number being raised, which
-    /// means it will not work for negatives even though raising a negative number to a
-    /// non-integer power is defined. It has been extended to handle zero in accordance with
-    /// the IEEE 754 specification.
+    /// In general, x<sup>n</sup> is equal to *e*<sup>n ln x</sup>. This precludes raising
+    /// a negative `Quad` to a fractional or irrational power because *ln x* is undefined
+    /// when *x* is negative. In that case, this function returns [`NAN`].
     ///
-    /// It is possible that a new algorithm will eventually remove this restriction, though
-    /// this is a surprisingly hard problem (see [this libm implementation][1], for
-    /// example).
+    /// It's actually more complex than that; if the exponent can be expressed as a fraction
+    /// with an odd denominator, then there is an answer (a cube root, which is defined for
+    /// negative numbers, is the same as a power of 1/3). Therefore, something like
+    /// `qd!(-4).powf(qd!(0.2))` should work, as 0.2 is a fraction with an odd denominator
+    /// (1/5). However, it's impossible in general to tell whether a number is a fraction
+    /// while using floating-point numbers, so no attempt is made to make this work. If you
+    /// need a fifth root of -4, use `qd!(-4).nroot(5)`.
     ///
     /// # Examples
     /// ```
@@ -319,8 +322,8 @@ impl Quad {
     /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
-    ///
-    /// [1]: http://www.netlib.org/fdlibm/e_pow.c
+    /// 
+    /// [`NAN`]: #associatedconstant.NAN
     #[inline]
     pub fn powf(self, n: Quad) -> Quad {
         match self.pre_powf(&n) {
@@ -393,13 +396,13 @@ impl Quad {
             } else {
                 Some(Quad::NEG_INFINITY)
             }
+        } else if self.is_sign_negative() && n % 2 == 0 {
+            Some(Quad::NAN)
         } else if n <= 0 {
             Some(Quad::NAN)
         } else if self.is_infinite() {
             if self.is_sign_positive() {
                 Some(Quad::INFINITY)
-            } else if n % 2 == 0 {
-                Some(Quad::NAN)
             } else {
                 Some(Quad::NEG_INFINITY)
             }
@@ -607,6 +610,15 @@ mod tests {
     fn nroot_nan() {
         assert_exact!(Quad::NAN, qd!(2).nroot(-2));
         assert_exact!(Quad::NAN, Quad::NAN.nroot(3));
+    }
+
+    #[test]
+    fn nroot_neg() {
+        assert_close!(
+            qd!("-1.464591887561523263020142527263790391738596855627937174357255937"),
+            (-Quad::PI).nroot(3)
+        );
+        assert_exact!(Quad::NAN, (-Quad::PI).nroot(4));
     }
 
     #[test]

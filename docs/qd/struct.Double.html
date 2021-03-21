@@ -30,7 +30,7 @@ the most accurate.</li>
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from_add</span>(<span class="number">1.0</span>, <span class="number">2.0</span>);
 <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">x</span> <span class="op">=</span><span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3.0</span>));</pre></div>
-</div></div><h3 id="impl-1" class="impl"><code class="in-band">impl <a class="struct" href="../qd/struct.Double.html" title="struct qd::Double">Double</a></code><a href="#impl-1" class="anchor"></a><a class="srclink" href="../src/qd/double/alg.rs.html#9-415" title="goto source code">[src]</a></h3><div class="impl-items"><h4 id="method.ldexp" class="method"><code>pub fn <a href="#method.ldexp" class="fnname">ldexp</a>(self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>) -&gt; <a class="struct" href="../qd/struct.Double.html" title="struct qd::Double">Double</a></code><a class="srclink" href="../src/qd/double/alg.rs.html#29-32" title="goto source code">[src]</a></h4><div class="docblock"><p>Calculates x · 2<sup>n</sup>, where <em>x</em> is the <code>Double</code> and <em>n</em> is an integer.</p>
+</div></div><h3 id="impl-1" class="impl"><code class="in-band">impl <a class="struct" href="../qd/struct.Double.html" title="struct qd::Double">Double</a></code><a href="#impl-1" class="anchor"></a><a class="srclink" href="../src/qd/double/alg.rs.html#9-418" title="goto source code">[src]</a></h3><div class="impl-items"><h4 id="method.ldexp" class="method"><code>pub fn <a href="#method.ldexp" class="fnname">ldexp</a>(self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>) -&gt; <a class="struct" href="../qd/struct.Double.html" title="struct qd::Double">Double</a></code><a class="srclink" href="../src/qd/double/alg.rs.html#29-32" title="goto source code">[src]</a></h4><div class="docblock"><p>Calculates x · 2<sup>n</sup>, where <em>x</em> is the <code>Double</code> and <em>n</em> is an integer.</p>
 <p>Though this is not an everyday operation, it is often used in more advanced
 mathematical calculations (including several within this library). Therefore an
 implementation that is much more efficient than calculating it through
@@ -101,14 +101,17 @@ particular:</p>
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>);
 <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">x</span>.<span class="ident">powi</span>(<span class="number">3</span>) <span class="op">=</span><span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">27</span>));</pre></div>
-</div><h4 id="method.powf" class="method"><code>pub fn <a href="#method.powf" class="fnname">powf</a>(self, n: <a class="struct" href="../qd/struct.Double.html" title="struct qd::Double">Double</a>) -&gt; <a class="struct" href="../qd/struct.Double.html" title="struct qd::Double">Double</a></code><a class="srclink" href="../src/qd/double/alg.rs.html#268-273" title="goto source code">[src]</a></h4><div class="docblock"><p>Calculates the <code>Double</code> raised to a <code>Double</code> power.</p>
-<p>This function is implemented using the logarithm of the number being raised, which
-means it will not work for negatives even though raising a negative number to a
-non-integer power is defined. It has been extended to handle zero in accordance with
-the IEEE 754 specification.</p>
-<p>It is possible that a new algorithm will eventually remove this restriction, though
-this is a surprisingly hard problem (see <a href="http://www.netlib.org/fdlibm/e_pow.c">this libm implementation</a>, for
-example).</p>
+</div><h4 id="method.powf" class="method"><code>pub fn <a href="#method.powf" class="fnname">powf</a>(self, n: <a class="struct" href="../qd/struct.Double.html" title="struct qd::Double">Double</a>) -&gt; <a class="struct" href="../qd/struct.Double.html" title="struct qd::Double">Double</a></code><a class="srclink" href="../src/qd/double/alg.rs.html#271-276" title="goto source code">[src]</a></h4><div class="docblock"><p>Calculates the <code>Double</code> raised to a <code>Quad</code> power.</p>
+<p>In general, x<sup>n</sup> is equal to <em>e</em><sup>n ln x</sup>. This precludes raising
+a negative <code>Double</code> to a fractional or irrational power because <em>ln x</em> is undefined
+when <em>x</em> is negative. In that case, this function returns <a href="#associatedconstant.NAN"><code>NAN</code></a>.</p>
+<p>It's actually more complex than that; if the exponent can be expressed as a fraction
+with an odd denominator, then there is an answer (a cube root, which is defined for
+negative numbers, is the same as a power of 1/3). Therefore, something like
+<code>dd!(-4).powf(dd!(0.2))</code> should work, as 0.2 is a fraction with an odd denominator
+(1/5). However, it's impossible in general to tell whether a number is a fraction
+while using floating-point numbers, so no attempt is made to make this work. If you
+need a fifth root of -4, use <code>dd!(-4).nroot(5)</code>.</p>
 <h1 id="examples-8" class="section-header"><a href="#examples-8">Examples</a></h1>
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>).<span class="ident">powf</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">3.3</span>));
@@ -116,7 +119,7 @@ example).</p>
 
 <span class="kw">let</span> <span class="ident">diff</span> <span class="op">=</span> (<span class="ident">x</span> <span class="op">-</span> <span class="ident">expected</span>).<span class="ident">abs</span>();
 <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">diff</span> <span class="op">&lt;</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">1e-30</span>));</pre></div>
-</div><h4 id="method.recip" class="method"><code>pub fn <a href="#method.recip" class="fnname">recip</a>(self) -&gt; <a class="struct" href="../qd/struct.Double.html" title="struct qd::Double">Double</a></code><a class="srclink" href="../src/qd/double/alg.rs.html#290-292" title="goto source code">[src]</a></h4><div class="docblock"><p>Calculates the reciprocal of the <code>Double</code>.</p>
+</div><h4 id="method.recip" class="method"><code>pub fn <a href="#method.recip" class="fnname">recip</a>(self) -&gt; <a class="struct" href="../qd/struct.Double.html" title="struct qd::Double">Double</a></code><a class="srclink" href="../src/qd/double/alg.rs.html#293-295" title="goto source code">[src]</a></h4><div class="docblock"><p>Calculates the reciprocal of the <code>Double</code>.</p>
 <h1 id="examples-9" class="section-header"><a href="#examples-9">Examples</a></h1>
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">PI</span>.<span class="ident">recip</span>();
