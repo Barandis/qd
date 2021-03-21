@@ -113,10 +113,10 @@ mod tests {
     }
 }
 
+mod aconsts; // "a" for "associated", or maybe just to make it appear first in docs
 mod add;
 mod alg;
 mod comp;
-mod consts;
 mod display;
 mod div;
 mod from;
@@ -145,7 +145,7 @@ mod trig;
 /// * using the [`dd!`] macro
 ///
 /// What kind of number you actually end up getting depends on the method called to get it.
-/// 
+///
 /// * [`raw`] will *not* normalize its result. This is for speed, but it means that the
 ///   arguments must be pre-normalized.
 /// * [`new`], [`from_add`], [`from_sub`], [`from_mul`], and [`from_div`] will normalize

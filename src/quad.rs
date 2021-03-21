@@ -117,10 +117,10 @@ mod tests {
     }
 }
 
+mod aconsts; // "a" for "associated", or maybe just to make it appear first in docs
 mod add;
 mod alg;
 mod comp;
-mod consts;
 mod display;
 mod div;
 mod from;
