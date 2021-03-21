@@ -319,9 +319,14 @@ from_float_impl! {
     /// Generates a `Quad` from an `f32`.
     ///
     /// This function *does* account for floating point rounding error. Even though the
-    /// first component of a `Quad` is enough to fit an `f32`, if that `f32` is not
-    /// exactly representable in binary, then the second component of the `Quad` will
-    /// account for the rounding error.
+    /// first component of a `Quad` is enough to fit an `f32`, if that `f32` is not exactly
+    /// representable in binary, then the second component of the `Quad` will account for
+    /// the rounding error.
+    ///
+    /// Note that in order to do this, the `f32` needs to be parsed digit by digit. While
+    /// the parser does work quite fast with integers or any `f32` that is represented
+    /// perfectly in binary (any number that can be represented as a fraction with a power
+    /// of 2 in the denominator), it's not a particularly fast operation otherwise.
     ///
     /// # Examples
     /// ```
@@ -343,9 +348,14 @@ from_float_impl! {
     /// Generates a `Quad` from an `f64`.
     ///
     /// This function *does* account for floating point rounding error. Even though the
-    /// first component of a `Quad` is enough to fit an `f64`, if that `f64` is not
-    /// exactly representable in binary, then the second component of the `Quad` will
-    /// account for the rounding error.
+    /// first component of a `Quad` is enough to fit an `f64`, if that `f64` is not exactly
+    /// representable in binary, then the second component of the `Quad` will account for
+    /// the rounding error.
+    ///
+    /// Note that in order to do this, the `f64` needs to be parsed digit by digit. While
+    /// the parser does work quite fast with integers or any `f64` that is represented
+    /// perfectly in binary (any number that can be represented as a fraction with a power
+    /// of 2 in the denominator), it's not a particularly fast operation otherwise.
     ///
     /// # Examples
     /// ```

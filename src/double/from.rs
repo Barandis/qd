@@ -207,6 +207,11 @@ from_float_impl! {
     /// exactly representable in binary, then the second component of the `Double` will
     /// account for the rounding error.
     ///
+    /// Note that in order to do this, the `f32` needs to be parsed digit by digit. While
+    /// the parser does work quite fast with integers or any `f32` that is represented
+    /// perfectly in binary (any number that can be represented as a fraction with a power
+    /// of 2 in the denominator), it's not a particularly fast operation otherwise.
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -230,6 +235,11 @@ from_float_impl! {
     /// first component of a `Double` is enough to fit an `f64`, if that `f64` is not
     /// exactly representable in binary, then the second component of the `Double` will
     /// account for the rounding error.
+    ///
+    /// Note that in order to do this, the `f64` needs to be parsed digit by digit. While
+    /// the parser does work quite fast with integers or any `f64` that is represented
+    /// perfectly in binary (any number that can be represented as a fraction with a power
+    /// of 2 in the denominator), it's not a particularly fast operation otherwise.
     ///
     /// # Examples
     /// ```
