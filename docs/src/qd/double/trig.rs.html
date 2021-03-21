@@ -729,6 +729,71 @@
 <span id="726">726</span>
 <span id="727">727</span>
 <span id="728">728</span>
+<span id="729">729</span>
+<span id="730">730</span>
+<span id="731">731</span>
+<span id="732">732</span>
+<span id="733">733</span>
+<span id="734">734</span>
+<span id="735">735</span>
+<span id="736">736</span>
+<span id="737">737</span>
+<span id="738">738</span>
+<span id="739">739</span>
+<span id="740">740</span>
+<span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
+<span id="744">744</span>
+<span id="745">745</span>
+<span id="746">746</span>
+<span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -762,33 +827,32 @@
     <span class="doccomment">/// [`cos`]: #method.cos</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">many_single_char_names</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sin_cos</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">Double</span>, <span class="ident">Double</span>) {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
-            (<span class="ident">Double</span>::<span class="ident">ZERO</span>, <span class="ident">Double</span>::<span class="ident">ONE</span>)
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_finite</span>() {
-            (<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">NAN</span>)
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> (<span class="ident">j</span>, <span class="ident">k</span>, <span class="ident">t</span>) <span class="op">=</span> <span class="ident">reduce</span>(<span class="self">self</span>);
-            <span class="kw">let</span> <span class="ident">abs_k</span> <span class="op">=</span> <span class="ident">k</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">usize</span>;
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">pre_sin_cos</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> (<span class="ident">j</span>, <span class="ident">k</span>, <span class="ident">t</span>) <span class="op">=</span> <span class="ident">reduce</span>(<span class="self">self</span>);
+                <span class="kw">let</span> <span class="ident">abs_k</span> <span class="op">=</span> <span class="ident">k</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">usize</span>;
 
-            <span class="kw">let</span> (<span class="ident">sin_t</span>, <span class="ident">cos_t</span>) <span class="op">=</span> <span class="ident">sincos_taylor</span>(<span class="ident">t</span>);
+                <span class="kw">let</span> (<span class="ident">sin_t</span>, <span class="ident">cos_t</span>) <span class="op">=</span> <span class="ident">sincos_taylor</span>(<span class="ident">t</span>);
 
-            <span class="kw">let</span> (<span class="ident">s</span>, <span class="ident">c</span>) <span class="op">=</span> <span class="kw">if</span> <span class="ident">k</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-                (<span class="ident">sin_t</span>, <span class="ident">cos_t</span>)
-            } <span class="kw">else</span> {
-                <span class="kw">let</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">tables</span>::<span class="ident">COSINES</span>[<span class="ident">abs_k</span> <span class="op">-</span> <span class="number">1</span>];
-                <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">tables</span>::<span class="ident">SINES</span>[<span class="ident">abs_k</span> <span class="op">-</span> <span class="number">1</span>];
-                <span class="kw">if</span> <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">0</span> {
-                    (<span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>, <span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>)
+                <span class="kw">let</span> (<span class="ident">s</span>, <span class="ident">c</span>) <span class="op">=</span> <span class="kw">if</span> <span class="ident">k</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+                    (<span class="ident">sin_t</span>, <span class="ident">cos_t</span>)
                 } <span class="kw">else</span> {
-                    (<span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>, <span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>)
-                }
-            };
+                    <span class="kw">let</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">tables</span>::<span class="ident">COSINES</span>[<span class="ident">abs_k</span> <span class="op">-</span> <span class="number">1</span>];
+                    <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">tables</span>::<span class="ident">SINES</span>[<span class="ident">abs_k</span> <span class="op">-</span> <span class="number">1</span>];
+                    <span class="kw">if</span> <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">0</span> {
+                        (<span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>, <span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>)
+                    } <span class="kw">else</span> {
+                        (<span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>, <span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>)
+                    }
+                };
 
-            <span class="kw">match</span> <span class="ident">j</span> {
-                <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">s</span>, <span class="ident">c</span>),
-                <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">c</span>, <span class="op">-</span><span class="ident">s</span>),
-                <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="op">-</span><span class="ident">c</span>, <span class="ident">s</span>),
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="op">-</span><span class="ident">s</span>, <span class="op">-</span><span class="ident">c</span>),
+                <span class="kw">match</span> <span class="ident">j</span> {
+                    <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">s</span>, <span class="ident">c</span>),
+                    <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">c</span>, <span class="op">-</span><span class="ident">s</span>),
+                    <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="op">-</span><span class="ident">c</span>, <span class="ident">s</span>),
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="op">-</span><span class="ident">s</span>, <span class="op">-</span><span class="ident">c</span>),
+                }
             }
         }
     }
@@ -811,48 +875,47 @@
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">many_single_char_names</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sin</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="comment">// Strategy:</span>
-        <span class="comment">//</span>
-        <span class="comment">// We choose integers a and b so that</span>
-        <span class="comment">//</span>
-        <span class="comment">//      x = s + aπ/2 + bπ/16</span>
-        <span class="comment">//</span>
-        <span class="comment">// where |s| &lt;= π/32. Using a precomputed table of sin (kπ/16) and cos (kπ/16), we</span>
-        <span class="comment">// can compute sin x from sin s and cos s. This greatly increases the convergence of</span>
-        <span class="comment">// the Taylor series for sine and cosine.</span>
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
-            <span class="ident">Double</span>::<span class="ident">ZERO</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_finite</span>() {
-            <span class="ident">Double</span>::<span class="ident">NAN</span>
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> (<span class="ident">j</span>, <span class="ident">k</span>, <span class="ident">t</span>) <span class="op">=</span> <span class="ident">reduce</span>(<span class="self">self</span>);
-            <span class="kw">let</span> <span class="ident">abs_k</span> <span class="op">=</span> <span class="ident">k</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">usize</span>;
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">pre_sin</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="comment">// Strategy:</span>
+                <span class="comment">//</span>
+                <span class="comment">// We choose integers a and b so that</span>
+                <span class="comment">//</span>
+                <span class="comment">//      x = s + aπ/2 + bπ/16</span>
+                <span class="comment">//</span>
+                <span class="comment">// where |s| &lt;= π/32. Using a precomputed table of sin (kπ/16) and cos</span>
+                <span class="comment">// (kπ/16), we can compute sin x from sin s and cos s. This greatly</span>
+                <span class="comment">// increases the convergence of the Taylor series for sine and cosine.</span>
+                <span class="kw">let</span> (<span class="ident">j</span>, <span class="ident">k</span>, <span class="ident">t</span>) <span class="op">=</span> <span class="ident">reduce</span>(<span class="self">self</span>);
+                <span class="kw">let</span> <span class="ident">abs_k</span> <span class="op">=</span> <span class="ident">k</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">usize</span>;
 
-            <span class="kw">if</span> <span class="ident">k</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="kw">match</span> <span class="ident">j</span> {
-                    <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">sin_taylor</span>(<span class="ident">t</span>),
-                    <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cos_taylor</span>(<span class="ident">t</span>),
-                    <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">cos_taylor</span>(<span class="ident">t</span>),
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">sin_taylor</span>(<span class="ident">t</span>),
-                }
-            } <span class="kw">else</span> {
-                <span class="kw">let</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">tables</span>::<span class="ident">COSINES</span>[<span class="ident">abs_k</span> <span class="op">-</span> <span class="number">1</span>];
-                <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">tables</span>::<span class="ident">SINES</span>[<span class="ident">abs_k</span> <span class="op">-</span> <span class="number">1</span>];
-                <span class="kw">let</span> (<span class="ident">sin_t</span>, <span class="ident">cos_t</span>) <span class="op">=</span> <span class="ident">sincos_taylor</span>(<span class="ident">t</span>);
-
-                <span class="kw">if</span> <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">0</span> {
+                <span class="kw">if</span> <span class="ident">k</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="kw">match</span> <span class="ident">j</span> {
-                        <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
-                        <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
-                        <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
-                        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
+                        <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">sin_taylor</span>(<span class="ident">t</span>),
+                        <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cos_taylor</span>(<span class="ident">t</span>),
+                        <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">cos_taylor</span>(<span class="ident">t</span>),
+                        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">sin_taylor</span>(<span class="ident">t</span>),
                     }
                 } <span class="kw">else</span> {
-                    <span class="kw">match</span> <span class="ident">j</span> {
-                        <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
-                        <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
-                        <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
-                        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
+                    <span class="kw">let</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">tables</span>::<span class="ident">COSINES</span>[<span class="ident">abs_k</span> <span class="op">-</span> <span class="number">1</span>];
+                    <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">tables</span>::<span class="ident">SINES</span>[<span class="ident">abs_k</span> <span class="op">-</span> <span class="number">1</span>];
+                    <span class="kw">let</span> (<span class="ident">sin_t</span>, <span class="ident">cos_t</span>) <span class="op">=</span> <span class="ident">sincos_taylor</span>(<span class="ident">t</span>);
+
+                    <span class="kw">if</span> <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">0</span> {
+                        <span class="kw">match</span> <span class="ident">j</span> {
+                            <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
+                            <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
+                            <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
+                            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
+                        }
+                    } <span class="kw">else</span> {
+                        <span class="kw">match</span> <span class="ident">j</span> {
+                            <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
+                            <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
+                            <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
+                            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
+                        }
                     }
                 }
             }
@@ -877,39 +940,38 @@
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">many_single_char_names</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cos</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
-            <span class="ident">Double</span>::<span class="ident">ONE</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_finite</span>() {
-            <span class="ident">Double</span>::<span class="ident">NAN</span>
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> (<span class="ident">j</span>, <span class="ident">k</span>, <span class="ident">t</span>) <span class="op">=</span> <span class="ident">reduce</span>(<span class="self">self</span>);
-            <span class="kw">let</span> <span class="ident">abs_k</span> <span class="op">=</span> <span class="ident">k</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">usize</span>;
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">pre_cos</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> (<span class="ident">j</span>, <span class="ident">k</span>, <span class="ident">t</span>) <span class="op">=</span> <span class="ident">reduce</span>(<span class="self">self</span>);
+                <span class="kw">let</span> <span class="ident">abs_k</span> <span class="op">=</span> <span class="ident">k</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">usize</span>;
 
-            <span class="kw">if</span> <span class="ident">k</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="kw">match</span> <span class="ident">j</span> {
-                    <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cos_taylor</span>(<span class="ident">t</span>),
-                    <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">sin_taylor</span>(<span class="ident">t</span>),
-                    <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">sin_taylor</span>(<span class="ident">t</span>),
-                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">cos_taylor</span>(<span class="ident">t</span>),
-                }
-            } <span class="kw">else</span> {
-                <span class="kw">let</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">tables</span>::<span class="ident">COSINES</span>[<span class="ident">abs_k</span> <span class="op">-</span> <span class="number">1</span>];
-                <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">tables</span>::<span class="ident">SINES</span>[<span class="ident">abs_k</span> <span class="op">-</span> <span class="number">1</span>];
-                <span class="kw">let</span> (<span class="ident">sin_t</span>, <span class="ident">cos_t</span>) <span class="op">=</span> <span class="ident">sincos_taylor</span>(<span class="ident">t</span>);
-
-                <span class="kw">if</span> <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">0</span> {
+                <span class="kw">if</span> <span class="ident">k</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="kw">match</span> <span class="ident">j</span> {
-                        <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
-                        <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
-                        <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
-                        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
+                        <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cos_taylor</span>(<span class="ident">t</span>),
+                        <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">sin_taylor</span>(<span class="ident">t</span>),
+                        <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">sin_taylor</span>(<span class="ident">t</span>),
+                        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">cos_taylor</span>(<span class="ident">t</span>),
                     }
                 } <span class="kw">else</span> {
-                    <span class="kw">match</span> <span class="ident">j</span> {
-                        <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
-                        <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">-</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span>,
-                        <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
-                        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
+                    <span class="kw">let</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">tables</span>::<span class="ident">COSINES</span>[<span class="ident">abs_k</span> <span class="op">-</span> <span class="number">1</span>];
+                    <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">tables</span>::<span class="ident">SINES</span>[<span class="ident">abs_k</span> <span class="op">-</span> <span class="number">1</span>];
+                    <span class="kw">let</span> (<span class="ident">sin_t</span>, <span class="ident">cos_t</span>) <span class="op">=</span> <span class="ident">sincos_taylor</span>(<span class="ident">t</span>);
+
+                    <span class="kw">if</span> <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">0</span> {
+                        <span class="kw">match</span> <span class="ident">j</span> {
+                            <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
+                            <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
+                            <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
+                            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
+                        }
+                    } <span class="kw">else</span> {
+                        <span class="kw">match</span> <span class="ident">j</span> {
+                            <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">+</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
+                            <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">-</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span>,
+                            <span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">u</span> <span class="op">*</span> <span class="ident">sin_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">cos_t</span>,
+                            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="ident">u</span> <span class="op">*</span> <span class="ident">cos_t</span> <span class="op">-</span> <span class="ident">v</span> <span class="op">*</span> <span class="ident">sin_t</span>,
+                        }
                     }
                 }
             }
@@ -986,77 +1048,42 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`atan`]: #method.atan</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">atan2</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="comment">// Strategy:</span>
-        <span class="comment">//</span>
-        <span class="comment">// Use Newton&#39;s iteration to solve one of the following equations</span>
-        <span class="comment">//</span>
-        <span class="comment">//      sin z = y / r</span>
-        <span class="comment">//      cos z = x / r</span>
-        <span class="comment">//</span>
-        <span class="comment">// where r = √(x² + y²).</span>
-        <span class="comment">//</span>
-        <span class="comment">// The iteration is given by</span>
-        <span class="comment">//      z&#39; = z + (y - sin z) / cos z   (for the first equation)</span>
-        <span class="comment">//      z&#39; = z - (x - cos z) / sin z   (for the second equation)</span>
-        <span class="comment">//</span>
-        <span class="comment">// Here, x and y are normalized so that x² + y² = 1. If |x| &gt; |y|, the first</span>
-        <span class="comment">// iteration is used since the denominator is larger. Otherwise the second is used.</span>
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">pre_atan2</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>) {
+            <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="comment">// Strategy:</span>
+                <span class="comment">//</span>
+                <span class="comment">// Use Newton&#39;s iteration to solve one of the following equations</span>
+                <span class="comment">//</span>
+                <span class="comment">//      sin z = y / r</span>
+                <span class="comment">//      cos z = x / r</span>
+                <span class="comment">//</span>
+                <span class="comment">// where r = √(x² + y²).</span>
+                <span class="comment">//</span>
+                <span class="comment">// The iteration is given by</span>
+                <span class="comment">//      z&#39; = z + (y - sin z) / cos z   (for the first equation)</span>
+                <span class="comment">//      z&#39; = z - (x - cos z) / sin z   (for the second equation)</span>
+                <span class="comment">//</span>
+                <span class="comment">// Here, x and y are normalized so that x² + y² = 1. If |x| &gt; |y|, the first</span>
+                <span class="comment">// iteration is used since the denominator is larger. Otherwise the second</span>
+                <span class="comment">// is used.</span>
+                <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">sqr</span>() <span class="op">+</span> <span class="ident">other</span>.<span class="ident">sqr</span>()).<span class="ident">sqrt</span>();
+                <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">other</span> <span class="op">/</span> <span class="ident">r</span>;
+                <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="self">self</span> <span class="op">/</span> <span class="ident">r</span>;
 
-        <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_zero</span>() {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
-                <span class="ident">Double</span>::<span class="ident">NAN</span>
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() {
-                <span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>
-            } <span class="kw">else</span> {
-                <span class="op">-</span><span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>
-            }
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
-            <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_sign_positive</span>() {
-                <span class="ident">Double</span>::<span class="ident">ZERO</span>
-            } <span class="kw">else</span> {
-                <span class="ident">Double</span>::<span class="ident">PI</span>
-            }
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_infinite</span>() {
-            <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_infinite</span>() {
-                <span class="ident">Double</span>::<span class="ident">NAN</span>
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() {
-                <span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>
-            } <span class="kw">else</span> {
-                <span class="op">-</span><span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>
-            }
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_infinite</span>() {
-            <span class="ident">Double</span>::<span class="ident">ZERO</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_nan</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">other</span>.<span class="ident">is_nan</span>() {
-            <span class="ident">Double</span>::<span class="ident">NAN</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">other</span> {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() {
-                <span class="ident">Double</span>::<span class="ident">FRAC_PI_4</span>
-            } <span class="kw">else</span> {
-                <span class="op">-</span><span class="ident">Double</span>::<span class="ident">FRAC_3_PI_4</span>
-            }
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="op">-</span><span class="ident">other</span> {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() {
-                <span class="ident">Double</span>::<span class="ident">FRAC_3_PI_4</span>
-            } <span class="kw">else</span> {
-                <span class="op">-</span><span class="ident">Double</span>::<span class="ident">FRAC_PI_4</span>
-            }
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">sqr</span>() <span class="op">+</span> <span class="ident">other</span>.<span class="ident">sqr</span>()).<span class="ident">sqrt</span>();
-            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">other</span> <span class="op">/</span> <span class="ident">r</span>;
-            <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="self">self</span> <span class="op">/</span> <span class="ident">r</span>;
+                <span class="comment">// Compute f64 approximation to atan</span>
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">z</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">atan2</span>(<span class="ident">other</span>.<span class="number">0</span>));
+                <span class="kw">let</span> (<span class="ident">sin_z</span>, <span class="ident">cos_z</span>) <span class="op">=</span> <span class="ident">z</span>.<span class="ident">sin_cos</span>();
 
-            <span class="comment">// Compute f64 approximation to atan</span>
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">z</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">atan2</span>(<span class="ident">other</span>.<span class="number">0</span>));
-            <span class="kw">let</span> (<span class="ident">sin_z</span>, <span class="ident">cos_z</span>) <span class="op">=</span> <span class="ident">z</span>.<span class="ident">sin_cos</span>();
-
-            <span class="kw">if</span> <span class="ident">x</span>.<span class="number">0</span>.<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">y</span>.<span class="number">0</span>.<span class="ident">abs</span>() {
-                <span class="comment">// Use first iteration above</span>
-                <span class="ident">z</span> <span class="op">+</span><span class="op">=</span> (<span class="ident">y</span> <span class="op">-</span> <span class="ident">sin_z</span>) <span class="op">/</span> <span class="ident">cos_z</span>;
-            } <span class="kw">else</span> {
-                <span class="comment">// Use second iteration above</span>
-                <span class="ident">z</span> <span class="op">-</span><span class="op">=</span> (<span class="ident">x</span> <span class="op">-</span> <span class="ident">cos_z</span>) <span class="op">/</span> <span class="ident">sin_z</span>;
+                <span class="kw">if</span> <span class="ident">x</span>.<span class="number">0</span>.<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">y</span>.<span class="number">0</span>.<span class="ident">abs</span>() {
+                    <span class="comment">// Use first iteration above</span>
+                    <span class="ident">z</span> <span class="op">+</span><span class="op">=</span> (<span class="ident">y</span> <span class="op">-</span> <span class="ident">sin_z</span>) <span class="op">/</span> <span class="ident">cos_z</span>;
+                } <span class="kw">else</span> {
+                    <span class="comment">// Use second iteration above</span>
+                    <span class="ident">z</span> <span class="op">-</span><span class="op">=</span> (<span class="ident">x</span> <span class="op">-</span> <span class="ident">cos_z</span>) <span class="op">/</span> <span class="ident">sin_z</span>;
+                }
+                <span class="ident">z</span>
             }
-            <span class="ident">z</span>
         }
     }
 
@@ -1079,14 +1106,9 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`NAN`]: #associatedconstant.NAN</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">asin</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
-            <span class="ident">Double</span>::<span class="ident">NAN</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
-            <span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">NEG_ONE</span> {
-            <span class="op">-</span><span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>
-        } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">atan2</span>((<span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">sqr</span>()).<span class="ident">sqrt</span>())
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">pre_asin</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">atan2</span>((<span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">sqr</span>()).<span class="ident">sqrt</span>()),
         }
     }
 
@@ -1109,14 +1131,9 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`NAN`]: #associatedconstant.NAN</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">acos</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
-            <span class="ident">Double</span>::<span class="ident">NAN</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
-            <span class="ident">Double</span>::<span class="ident">ZERO</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">NEG_ONE</span> {
-            <span class="ident">Double</span>::<span class="ident">PI</span>
-        } <span class="kw">else</span> {
-            (<span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">sqr</span>()).<span class="ident">sqrt</span>().<span class="ident">atan2</span>(<span class="self">self</span>)
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">pre_acos</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">sqr</span>()).<span class="ident">sqrt</span>().<span class="ident">atan2</span>(<span class="self">self</span>),
         }
     }
 
@@ -1137,6 +1154,119 @@
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">atan</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
         <span class="self">self</span>.<span class="ident">atan2</span>(<span class="ident">Double</span>::<span class="ident">ONE</span>)
+    }
+
+    <span class="comment">// Precalc functions</span>
+    <span class="comment">//</span>
+    <span class="comment">// This series of functions returns `Some` with a value that is to be returned, if it</span>
+    <span class="comment">// turns out that the function doesn&#39;t have to be calculated because a shortcut result</span>
+    <span class="comment">// is known. They return `None` if the value has to be calculated normally.</span>
+    <span class="comment">//</span>
+    <span class="comment">// This keeps the public functions from being mucked up with code that does validation</span>
+    <span class="comment">// rather than calculation.</span>
+
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">pre_sin_cos</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Double</span>, <span class="ident">Double</span>)<span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
+            <span class="prelude-val">Some</span>((<span class="ident">Double</span>::<span class="ident">ZERO</span>, <span class="ident">Double</span>::<span class="ident">ONE</span>))
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_finite</span>() {
+            <span class="prelude-val">Some</span>((<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">NAN</span>))
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
+    }
+
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">pre_sin</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">ZERO</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_finite</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>)
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
+    }
+
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">pre_cos</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">ONE</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_finite</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>)
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
+    }
+
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">pre_atan2</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_zero</span>() {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>)
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>)
+            } <span class="kw">else</span> {
+                <span class="prelude-val">Some</span>(<span class="op">-</span><span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>)
+            }
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
+            <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_sign_positive</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">ZERO</span>)
+            } <span class="kw">else</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">PI</span>)
+            }
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_infinite</span>() {
+            <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_infinite</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>)
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>)
+            } <span class="kw">else</span> {
+                <span class="prelude-val">Some</span>(<span class="op">-</span><span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>)
+            }
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_infinite</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">ZERO</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_nan</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">other</span>.<span class="ident">is_nan</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">other</span> {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">FRAC_PI_4</span>)
+            } <span class="kw">else</span> {
+                <span class="prelude-val">Some</span>(<span class="op">-</span><span class="ident">Double</span>::<span class="ident">FRAC_3_PI_4</span>)
+            }
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="op">-</span><span class="kw-2">*</span><span class="ident">other</span> {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">FRAC_3_PI_4</span>)
+            } <span class="kw">else</span> {
+                <span class="prelude-val">Some</span>(<span class="op">-</span><span class="ident">Double</span>::<span class="ident">FRAC_PI_4</span>)
+            }
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
+    }
+
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">pre_asin</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">NEG_ONE</span> {
+            <span class="prelude-val">Some</span>(<span class="op">-</span><span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>)
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
+    }
+
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">pre_acos</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">ZERO</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">NEG_ONE</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">PI</span>)
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
     }
 }
 

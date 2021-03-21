@@ -402,6 +402,31 @@
 <span id="399">399</span>
 <span id="400">400</span>
 <span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -427,79 +452,69 @@
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">many_single_char_names</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">exp</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
-        <span class="comment">// Strategy, as gleaned from MIT papers and Wikipedia:</span>
-        <span class="comment">//</span>
-        <span class="comment">// The first step is to reduce the size of the exponent by noting that</span>
-        <span class="comment">//</span>
-        <span class="comment">//      exp(kr + m * ln(2)) = 2^m * exp(r)^k</span>
-        <span class="comment">//</span>
-        <span class="comment">// where m and k are arbitary integers. By choosing m appropriately we</span>
-        <span class="comment">// can make |kr| &lt;= ln(2) / 2 = 0.347. Then exp(r) is evaluated using a</span>
-        <span class="comment">// Taylor series, which is actually reasonably easy to figure out for</span>
-        <span class="comment">// the exponential function:</span>
-        <span class="comment">//</span>
-        <span class="comment">//      exp(x) = 1 + x + x^2/2! + x^3/3! + x^4/4! ...</span>
-        <span class="comment">//</span>
-        <span class="comment">// Reducing x substantially speeds up the convergence, so we have to use</span>
-        <span class="comment">// fewer terms to reach the required precision.</span>
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">pre_exp</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="comment">// Strategy, as gleaned from MIT papers and Wikipedia:</span>
+                <span class="comment">//</span>
+                <span class="comment">// The first step is to reduce the size of the exponent by noting that</span>
+                <span class="comment">//</span>
+                <span class="comment">//      exp(kr + m * ln(2)) = 2^m * exp(r)^k</span>
+                <span class="comment">//</span>
+                <span class="comment">// where m and k are arbitary integers. By choosing m appropriately we can</span>
+                <span class="comment">// make |kr| &lt;= ln(2) / 2 = 0.347. Then exp(r) is evaluated using a Taylor</span>
+                <span class="comment">// series, which is actually reasonably easy to figure out for the</span>
+                <span class="comment">// exponential function:</span>
+                <span class="comment">//</span>
+                <span class="comment">//      exp(x) = 1 + x + x^2/2! + x^3/3! + x^4/4! ...</span>
+                <span class="comment">//</span>
+                <span class="comment">// Reducing x substantially speeds up the convergence, so we have to use</span>
+                <span class="comment">// fewer terms to reach the required precision.</span>
+                <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">16</span>);
+                <span class="kw">let</span> <span class="ident">inv_k</span> <span class="op">=</span> <span class="number">1.0</span> <span class="op">/</span> <span class="ident">k</span>;
 
-        <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">16</span>);
-        <span class="kw">let</span> <span class="ident">inv_k</span> <span class="op">=</span> <span class="number">1.0</span> <span class="op">/</span> <span class="ident">k</span>;
+                <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> (<span class="self">self</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
+                <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> (<span class="self">self</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span> <span class="op">*</span> <span class="ident">Quad</span>(<span class="ident">m</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>)).<span class="ident">mul_pwr2</span>(<span class="ident">inv_k</span>);
+                <span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">from</span>(<span class="ident">inv_k</span>) <span class="op">*</span> <span class="ident">Quad</span>::<span class="ident">EPSILON</span>;
 
-        <span class="comment">// Common cases, including numbers too big or small to be represented</span>
-        <span class="comment">// with Quads</span>
-        <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&lt;</span><span class="op">=</span> <span class="op">-</span><span class="number">709.0</span> {
-            <span class="ident">Quad</span>::<span class="ident">ZERO</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">709.0</span> {
-            <span class="ident">Quad</span>::<span class="ident">INFINITY</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_nan</span>() {
-            <span class="ident">Quad</span>::<span class="ident">NAN</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
-            <span class="ident">Quad</span>::<span class="ident">ONE</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">ONE</span> {
-            <span class="ident">Quad</span>::<span class="ident">E</span>
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> (<span class="self">self</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
-            <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> (<span class="self">self</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span> <span class="op">*</span> <span class="ident">Quad</span>(<span class="ident">m</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>)).<span class="ident">mul_pwr2</span>(<span class="ident">inv_k</span>);
-            <span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">from</span>(<span class="ident">inv_k</span>) <span class="op">*</span> <span class="ident">Quad</span>::<span class="ident">EPSILON</span>;
-
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">+</span> <span class="ident">p</span>.<span class="ident">mul_pwr2</span>(<span class="number">0.5</span>);
-            <span class="ident">p</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">r</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">p</span> <span class="op">*</span> <span class="ident">tables</span>::<span class="ident">INV_FACTS</span>[<span class="number">0</span>];
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
-
-            <span class="kw">loop</span> {
-                <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">+</span> <span class="ident">p</span>.<span class="ident">mul_pwr2</span>(<span class="number">0.5</span>);
                 <span class="ident">p</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">r</span>;
-                <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-                <span class="ident">t</span> <span class="op">=</span> <span class="ident">p</span> <span class="op">*</span> <span class="ident">tables</span>::<span class="ident">INV_FACTS</span>[<span class="ident">i</span>];
-                <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">9</span> <span class="op">|</span><span class="op">|</span> <span class="ident">t</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">threshold</span> {
-                    <span class="kw">break</span>;
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">p</span> <span class="op">*</span> <span class="ident">tables</span>::<span class="ident">INV_FACTS</span>[<span class="number">0</span>];
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
+
+                <span class="kw">loop</span> {
+                    <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
+                    <span class="ident">p</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">r</span>;
+                    <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+                    <span class="ident">t</span> <span class="op">=</span> <span class="ident">p</span> <span class="op">*</span> <span class="ident">tables</span>::<span class="ident">INV_FACTS</span>[<span class="ident">i</span>];
+                    <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">9</span> <span class="op">|</span><span class="op">|</span> <span class="ident">t</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">threshold</span> {
+                        <span class="kw">break</span>;
+                    }
                 }
+
+                <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
+
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>;
+
+                <span class="ident">s</span>.<span class="ident">ldexp</span>(<span class="ident">m</span> <span class="kw">as</span> <span class="ident">i32</span>)
             }
-
-            <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
-
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>;
-
-            <span class="ident">s</span>.<span class="ident">ldexp</span>(<span class="ident">m</span> <span class="kw">as</span> <span class="ident">i32</span>)
         }
     }
 
@@ -518,39 +533,35 @@
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ln</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
-        <span class="comment">// Strategy:</span>
-        <span class="comment">//</span>
-        <span class="comment">// The Taylor series for logarithms converges much more slowly than that</span>
-        <span class="comment">// of exp because of the lack of a factorial term in the denominator.</span>
-        <span class="comment">// Hence this routine instead tries to determine the root of the</span>
-        <span class="comment">// function</span>
-        <span class="comment">//</span>
-        <span class="comment">//      f(x) = exp(x) - a</span>
-        <span class="comment">//</span>
-        <span class="comment">// using Newton&#39;s iteration. This iteration is given by</span>
-        <span class="comment">//</span>
-        <span class="comment">//      x&#39; = x - f(x)/f&#39;(x)</span>
-        <span class="comment">//         = x - (1 - a * exp(-x))</span>
-        <span class="comment">//         = x + a * exp(-x) - 1</span>
-        <span class="comment">//</span>
-        <span class="comment">// Testing has shown that it requires two iterations to get the required</span>
-        <span class="comment">// precision.</span>
-        <span class="kw">if</span> <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">ONE</span> {
-            <span class="ident">Quad</span>::<span class="ident">ZERO</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">is_sign_negative</span>() {
-            <span class="ident">Quad</span>::<span class="ident">NAN</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_infinite</span>() {
-            <span class="ident">Quad</span>::<span class="ident">INFINITY</span>
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">ln</span>()); <span class="comment">// initial approximation</span>
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
-            <span class="kw">loop</span> {
-                <span class="kw">let</span> <span class="ident">next</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">+</span> <span class="self">self</span> <span class="op">*</span> (<span class="op">-</span><span class="ident">x</span>).<span class="ident">exp</span>() <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>;
-                <span class="kw">if</span> (<span class="ident">x</span> <span class="op">-</span> <span class="ident">next</span>).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">EPSILON</span> <span class="op">|</span><span class="op">|</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">5</span> {
-                    <span class="kw">return</span> <span class="ident">next</span>;
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">pre_ln</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="comment">// Strategy:</span>
+                <span class="comment">//</span>
+                <span class="comment">// The Taylor series for logarithms converges much more slowly than that of</span>
+                <span class="comment">// exp because of the lack of a factorial term in the denominator. Hence</span>
+                <span class="comment">// this routine instead tries to determine the root of the function</span>
+                <span class="comment">//</span>
+                <span class="comment">//      f(x) = exp(x) - a</span>
+                <span class="comment">//</span>
+                <span class="comment">// using Newton&#39;s iteration. This iteration is given by</span>
+                <span class="comment">//</span>
+                <span class="comment">//      x&#39; = x - f(x)/f&#39;(x)</span>
+                <span class="comment">//         = x - (1 - a * exp(-x))</span>
+                <span class="comment">//         = x + a * exp(-x) - 1</span>
+                <span class="comment">//</span>
+                <span class="comment">// Testing has shown that it requires two iterations to get the required</span>
+                <span class="comment">// precision.</span>
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">ln</span>()); <span class="comment">// initial approximation</span>
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
+                <span class="kw">loop</span> {
+                    <span class="kw">let</span> <span class="ident">next</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">+</span> <span class="self">self</span> <span class="op">*</span> (<span class="op">-</span><span class="ident">x</span>).<span class="ident">exp</span>() <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>;
+                    <span class="kw">if</span> (<span class="ident">x</span> <span class="op">-</span> <span class="ident">next</span>).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">EPSILON</span> <span class="op">|</span><span class="op">|</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">5</span> {
+                        <span class="kw">return</span> <span class="ident">next</span>;
+                    }
+                    <span class="ident">x</span> <span class="op">=</span> <span class="ident">next</span>;
+                    <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                 }
-                <span class="ident">x</span> <span class="op">=</span> <span class="ident">next</span>;
-                <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
             }
         }
     }
@@ -618,6 +629,45 @@
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">log</span>(<span class="self">self</span>, <span class="ident">b</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
         <span class="self">self</span>.<span class="ident">ln</span>() <span class="op">/</span> <span class="ident">Quad</span>::<span class="ident">from</span>(<span class="ident">b</span>).<span class="ident">ln</span>()
+    }
+
+    <span class="comment">// Precalc functions</span>
+    <span class="comment">//</span>
+    <span class="comment">// This series of functions returns `Some` with a value that is to be returned, if it</span>
+    <span class="comment">// turns out that the function doesn&#39;t have to be calculated because a shortcut result</span>
+    <span class="comment">// is known. They return `None` if the value has to be calculated normally.</span>
+    <span class="comment">//</span>
+    <span class="comment">// This keeps the public functions from being mucked up with code that does validation</span>
+    <span class="comment">// rather than calculation.</span>
+
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">pre_exp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Quad</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&lt;</span><span class="op">=</span> <span class="op">-</span><span class="number">709.0</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Quad</span>::<span class="ident">ZERO</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">709.0</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Quad</span>::<span class="ident">INFINITY</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_nan</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Quad</span>::<span class="ident">ONE</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">ONE</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Quad</span>::<span class="ident">E</span>)
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
+    }
+
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">pre_ln</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Quad</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">ONE</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Quad</span>::<span class="ident">ZERO</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">is_sign_negative</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_infinite</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Quad</span>::<span class="ident">INFINITY</span>)
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
     }
 }
 
@@ -731,7 +781,7 @@
     <span class="kw">fn</span> <span class="ident">log10_neg</span>() {
         <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span>, <span class="macro">qd</span><span class="macro">!</span>(<span class="op">-</span><span class="number">1</span>).<span class="ident">log10</span>());
     }
-    
+
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">log2</span>() {
         <span class="macro">assert_close</span><span class="macro">!</span>(

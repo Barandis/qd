@@ -364,6 +364,34 @@
 <span id="361">361</span>
 <span id="362">362</span>
 <span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -389,69 +417,61 @@
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">many_single_char_names</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">exp</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="comment">// Strategy, as gleaned from MIT papers and Wikipedia:</span>
-        <span class="comment">//</span>
-        <span class="comment">// The first step is to reduce the size of the exponent by noting that</span>
-        <span class="comment">//</span>
-        <span class="comment">//      exp(kr + m * ln(2)) = 2^m * exp(r)^k</span>
-        <span class="comment">//</span>
-        <span class="comment">// where m and k are arbitary integers. By choosing m appropriately we can make |kr|</span>
-        <span class="comment">// &lt;= ln(2) / 2 = 0.347. Then exp(r) is evaluated using a Taylor series, which is</span>
-        <span class="comment">// actually reasonably easy to figure out for the exponential function:</span>
-        <span class="comment">//</span>
-        <span class="comment">//      exp(x) = 1 + x + x^2/2! + x^3/3! + x^4/4! ...</span>
-        <span class="comment">//</span>
-        <span class="comment">// Reducing x substantially speeds up the convergence, so we have to use fewer terms</span>
-        <span class="comment">// to reach the required precision.</span>
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">pre_exp</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="comment">// Strategy, as gleaned from MIT papers and Wikipedia:</span>
+                <span class="comment">//</span>
+                <span class="comment">// The first step is to reduce the size of the exponent by noting that</span>
+                <span class="comment">//</span>
+                <span class="comment">//      exp(kr + m * ln(2)) = 2^m * exp(r)^k</span>
+                <span class="comment">//</span>
+                <span class="comment">// where m and k are arbitary integers. By choosing m appropriately we can</span>
+                <span class="comment">// make |kr| &lt;= ln(2) / 2 = 0.347. Then exp(r) is evaluated using a Taylor</span>
+                <span class="comment">// series, which is actually reasonably easy to figure out for the</span>
+                <span class="comment">// exponential function:</span>
+                <span class="comment">//</span>
+                <span class="comment">//      exp(x) = 1 + x + x^2/2! + x^3/3! + x^4/4! ...</span>
+                <span class="comment">//</span>
+                <span class="comment">// Reducing x substantially speeds up the convergence, so we have to use</span>
+                <span class="comment">// fewer terms to reach the required precision.</span>
+                <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="number">512.0</span>;
+                <span class="kw">let</span> <span class="ident">inv_k</span> <span class="op">=</span> <span class="number">1.0</span> <span class="op">/</span> <span class="ident">k</span>;
 
-        <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="number">512.0</span>;
-        <span class="kw">let</span> <span class="ident">inv_k</span> <span class="op">=</span> <span class="number">1.0</span> <span class="op">/</span> <span class="ident">k</span>;
+                <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> (<span class="self">self</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">Double</span>::<span class="ident">LN_2</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
+                <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> (<span class="self">self</span> <span class="op">-</span> <span class="ident">Double</span>::<span class="ident">LN_2</span> <span class="op">*</span> <span class="ident">Double</span>(<span class="ident">m</span>, <span class="number">0.0</span>)).<span class="ident">mul_pwr2</span>(<span class="ident">inv_k</span>);
 
-        <span class="comment">// Common cases, including numbers too big or small to be represented with Doubles</span>
-        <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&lt;</span><span class="op">=</span> <span class="op">-</span><span class="number">709.0</span> {
-            <span class="ident">Double</span>::<span class="ident">ZERO</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">709.0</span> {
-            <span class="ident">Double</span>::<span class="ident">INFINITY</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_nan</span>() {
-            <span class="ident">Double</span>::<span class="ident">NAN</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
-            <span class="ident">Double</span>::<span class="ident">ONE</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
-            <span class="ident">Double</span>::<span class="ident">E</span>
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> (<span class="self">self</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">Double</span>::<span class="ident">LN_2</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
-            <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> (<span class="self">self</span> <span class="op">-</span> <span class="ident">Double</span>::<span class="ident">LN_2</span> <span class="op">*</span> <span class="ident">Double</span>(<span class="ident">m</span>, <span class="number">0.0</span>)).<span class="ident">mul_pwr2</span>(<span class="ident">inv_k</span>);
-
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">+</span> <span class="ident">p</span>.<span class="ident">mul_pwr2</span>(<span class="number">0.5</span>);
-            <span class="ident">p</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">r</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">p</span> <span class="op">*</span> <span class="ident">tables</span>::<span class="ident">INV_FACTS</span>[<span class="number">0</span>];
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
-
-            <span class="kw">loop</span> {
-                <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">+</span> <span class="ident">p</span>.<span class="ident">mul_pwr2</span>(<span class="number">0.5</span>);
                 <span class="ident">p</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">r</span>;
-                <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-                <span class="ident">t</span> <span class="op">=</span> <span class="ident">p</span> <span class="op">*</span> <span class="ident">tables</span>::<span class="ident">INV_FACTS</span>[<span class="ident">i</span>];
-                <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">5</span> <span class="op">|</span><span class="op">|</span> <span class="ident">t</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="ident">inv_k</span>) <span class="op">*</span> <span class="ident">Double</span>::<span class="ident">EPSILON</span> {
-                    <span class="kw">break</span>;
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">p</span> <span class="op">*</span> <span class="ident">tables</span>::<span class="ident">INV_FACTS</span>[<span class="number">0</span>];
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
+
+                <span class="kw">loop</span> {
+                    <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
+                    <span class="ident">p</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">r</span>;
+                    <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+                    <span class="ident">t</span> <span class="op">=</span> <span class="ident">p</span> <span class="op">*</span> <span class="ident">tables</span>::<span class="ident">INV_FACTS</span>[<span class="ident">i</span>];
+                    <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">5</span> <span class="op">|</span><span class="op">|</span> <span class="ident">t</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="ident">inv_k</span>) <span class="op">*</span> <span class="ident">Double</span>::<span class="ident">EPSILON</span> {
+                        <span class="kw">break</span>;
+                    }
                 }
+
+                <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
+
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span>;
+
+                <span class="ident">s</span>.<span class="ident">ldexp</span>(<span class="ident">m</span> <span class="kw">as</span> <span class="ident">i32</span>)
             }
-
-            <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
-
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
-            <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span>;
-
-            <span class="ident">s</span>.<span class="ident">ldexp</span>(<span class="ident">m</span> <span class="kw">as</span> <span class="ident">i32</span>)
         }
     }
 
@@ -470,37 +490,35 @@
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ln</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="comment">// Strategy:</span>
-        <span class="comment">//</span>
-        <span class="comment">// The Taylor series for logarithms converges much more slowly than that of exp</span>
-        <span class="comment">// because of the lack of a factorial term in the denominator. Hence this routine</span>
-        <span class="comment">// instead tries to determine the root of the function</span>
-        <span class="comment">//</span>
-        <span class="comment">//      f(x) = exp(x) - a</span>
-        <span class="comment">//</span>
-        <span class="comment">// using Newton&#39;s iteration. This iteration is given by</span>
-        <span class="comment">//</span>
-        <span class="comment">//      x&#39; = x - f(x)/f&#39;(x)</span>
-        <span class="comment">//         = x - (1 - a * exp(-x))</span>
-        <span class="comment">//         = x + a * exp(-x) - 1</span>
-        <span class="comment">//</span>
-        <span class="comment">// Testing has shown that it requires two iterations to get the required precision.</span>
-        <span class="kw">if</span> <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
-            <span class="ident">Double</span>::<span class="ident">ZERO</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">is_sign_negative</span>() {
-            <span class="ident">Double</span>::<span class="ident">NAN</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_infinite</span>() {
-            <span class="ident">Double</span>::<span class="ident">INFINITY</span>
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">ln</span>()); <span class="comment">// initial approximation</span>
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
-            <span class="kw">loop</span> {
-                <span class="kw">let</span> <span class="ident">next</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">+</span> <span class="self">self</span> <span class="op">*</span> (<span class="op">-</span><span class="ident">x</span>).<span class="ident">exp</span>() <span class="op">-</span> <span class="ident">Double</span>::<span class="ident">ONE</span>;
-                <span class="kw">if</span> (<span class="ident">x</span> <span class="op">-</span> <span class="ident">next</span>).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">Double</span>::<span class="ident">EPSILON</span> <span class="op">|</span><span class="op">|</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">5</span> {
-                    <span class="kw">return</span> <span class="ident">next</span>;
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">pre_ln</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="comment">// Strategy:</span>
+                <span class="comment">//</span>
+                <span class="comment">// The Taylor series for logarithms converges much more slowly than that of</span>
+                <span class="comment">// exp because of the lack of a factorial term in the denominator. Hence</span>
+                <span class="comment">// this routine instead tries to determine the root of the function</span>
+                <span class="comment">//</span>
+                <span class="comment">//      f(x) = exp(x) - a</span>
+                <span class="comment">//</span>
+                <span class="comment">// using Newton&#39;s iteration. This iteration is given by</span>
+                <span class="comment">//</span>
+                <span class="comment">//      x&#39; = x - f(x)/f&#39;(x)</span>
+                <span class="comment">//         = x - (1 - a * exp(-x))</span>
+                <span class="comment">//         = x + a * exp(-x) - 1</span>
+                <span class="comment">//</span>
+                <span class="comment">// Testing has shown that it requires two iterations to get the required</span>
+                <span class="comment">// precision.</span>
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">ln</span>()); <span class="comment">// initial approximation</span>
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
+                <span class="kw">loop</span> {
+                    <span class="kw">let</span> <span class="ident">next</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">+</span> <span class="self">self</span> <span class="op">*</span> (<span class="op">-</span><span class="ident">x</span>).<span class="ident">exp</span>() <span class="op">-</span> <span class="ident">Double</span>::<span class="ident">ONE</span>;
+                    <span class="kw">if</span> (<span class="ident">x</span> <span class="op">-</span> <span class="ident">next</span>).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">Double</span>::<span class="ident">EPSILON</span> <span class="op">|</span><span class="op">|</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">5</span> {
+                        <span class="kw">return</span> <span class="ident">next</span>;
+                    }
+                    <span class="ident">x</span> <span class="op">=</span> <span class="ident">next</span>;
+                    <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                 }
-                <span class="ident">x</span> <span class="op">=</span> <span class="ident">next</span>;
-                <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
             }
         }
     }
@@ -562,12 +580,51 @@
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// [`ln`]: #method.ln </span>
-    <span class="doccomment">/// [`log2`]: #method.log2 </span>
+    <span class="doccomment">/// [`ln`]: #method.ln</span>
+    <span class="doccomment">/// [`log2`]: #method.log2</span>
     <span class="doccomment">/// [`log10`]: #method.log10</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">log</span>(<span class="self">self</span>, <span class="ident">b</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
         <span class="self">self</span>.<span class="ident">ln</span>() <span class="op">/</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="ident">b</span>).<span class="ident">ln</span>()
+    }
+
+    <span class="comment">// Precalc functions</span>
+    <span class="comment">//</span>
+    <span class="comment">// This series of functions returns `Some` with a value that is to be returned, if it</span>
+    <span class="comment">// turns out that the function doesn&#39;t have to be calculated because a shortcut result</span>
+    <span class="comment">// is known. They return `None` if the value has to be calculated normally.</span>
+    <span class="comment">//</span>
+    <span class="comment">// This keeps the public functions from being mucked up with code that does validation</span>
+    <span class="comment">// rather than calculation.</span>
+
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">pre_exp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&lt;</span><span class="op">=</span> <span class="op">-</span><span class="number">709.0</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">ZERO</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">709.0</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">INFINITY</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_nan</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">ONE</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">E</span>)
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
+    }
+
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">pre_ln</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">ZERO</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">is_sign_negative</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_infinite</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">INFINITY</span>)
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
     }
 }
 
@@ -727,6 +784,5 @@
         <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="macro">dd</span><span class="macro">!</span>(<span class="op">-</span><span class="number">1</span>).<span class="ident">log</span>(<span class="number">1.8</span>));
     }
 }
-
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "qd";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

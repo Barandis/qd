@@ -295,6 +295,27 @@
 <span id="292">292</span>
 <span id="293">293</span>
 <span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -344,34 +365,13 @@
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">mul</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_nan</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">other</span>.<span class="ident">is_nan</span>() {
-            <span class="ident">Double</span>::<span class="ident">NAN</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
-            <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_infinite</span>() {
-                <span class="ident">Double</span>::<span class="ident">NAN</span>
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">is_sign_positive</span>() {
-                <span class="ident">Double</span>::<span class="ident">ZERO</span>
-            } <span class="kw">else</span> {
-                <span class="ident">Double</span>::<span class="ident">NEG_ZERO</span>
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">pre_mul</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>) {
+            <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> (<span class="ident">p</span>, <span class="ident">e</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_prod</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">other</span>.<span class="number">0</span>);
+                <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">renorm2</span>(<span class="ident">p</span>, <span class="ident">e</span> <span class="op">+</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">*</span> <span class="ident">other</span>.<span class="number">1</span> <span class="op">+</span> <span class="self">self</span>.<span class="number">1</span> <span class="op">*</span> <span class="ident">other</span>.<span class="number">0</span>);
+                <span class="ident">Double</span>(<span class="ident">a</span>, <span class="ident">b</span>)
             }
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_infinite</span>() {
-            <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_zero</span>() {
-                <span class="ident">Double</span>::<span class="ident">NAN</span>
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">is_sign_positive</span>() {
-                <span class="ident">Double</span>::<span class="ident">INFINITY</span>
-            } <span class="kw">else</span> {
-                <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>
-            }
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_infinite</span>() {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">is_sign_positive</span>() {
-                <span class="ident">Double</span>::<span class="ident">INFINITY</span>
-            } <span class="kw">else</span> {
-                <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>
-            }
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> (<span class="ident">p</span>, <span class="ident">e</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">two_prod</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">other</span>.<span class="number">0</span>);
-            <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">core</span>::<span class="ident">renorm2</span>(<span class="ident">p</span>, <span class="ident">e</span> <span class="op">+</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">*</span> <span class="ident">other</span>.<span class="number">1</span> <span class="op">+</span> <span class="self">self</span>.<span class="number">1</span> <span class="op">*</span> <span class="ident">other</span>.<span class="number">0</span>);
-            <span class="ident">Double</span>(<span class="ident">a</span>, <span class="ident">b</span>)
         }
     }
 }
@@ -504,6 +504,48 @@
         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">mul</span>(<span class="kw-2">*</span><span class="ident">other</span>);
         <span class="self">self</span>.<span class="number">0</span> <span class="op">=</span> <span class="ident">r</span>.<span class="number">0</span>;
         <span class="self">self</span>.<span class="number">1</span> <span class="op">=</span> <span class="ident">r</span>.<span class="number">1</span>;
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">Double</span> {
+    <span class="comment">// Precalc functions</span>
+    <span class="comment">//</span>
+    <span class="comment">// This series of functions returns `Some` with a value that is to be returned, if it</span>
+    <span class="comment">// turns out that the function doesn&#39;t have to be calculated because a shortcut result</span>
+    <span class="comment">// is known. They return `None` if the value has to be calculated normally.</span>
+    <span class="comment">//</span>
+    <span class="comment">// This keeps the public functions from being mucked up with code that does validation</span>
+    <span class="comment">// rather than calculation.</span>
+
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">pre_mul</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_nan</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">other</span>.<span class="ident">is_nan</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
+            <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_infinite</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>)
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">is_sign_positive</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">ZERO</span>)
+            } <span class="kw">else</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NEG_ZERO</span>)
+            }
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_infinite</span>() {
+            <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_zero</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>)
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">is_sign_positive</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">INFINITY</span>)
+            } <span class="kw">else</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>)
+            }
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">is_infinite</span>() {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_sign_positive</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">is_sign_positive</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">INFINITY</span>)
+            } <span class="kw">else</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>)
+            }
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
     }
 }
 
