@@ -229,54 +229,12 @@
 <span id="226">226</span>
 <span id="227">227</span>
 <span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
-<span id="243">243</span>
-<span id="244">244</span>
-<span id="245">245</span>
-<span id="246">246</span>
-<span id="247">247</span>
-<span id="248">248</span>
-<span id="249">249</span>
-<span id="250">250</span>
-<span id="251">251</span>
-<span id="252">252</span>
-<span id="253">253</span>
-<span id="254">254</span>
-<span id="255">255</span>
-<span id="256">256</span>
-<span id="257">257</span>
-<span id="258">258</span>
-<span id="259">259</span>
-<span id="260">260</span>
-<span id="261">261</span>
-<span id="262">262</span>
-<span id="263">263</span>
-<span id="264">264</span>
-<span id="265">265</span>
-<span id="266">266</span>
-<span id="267">267</span>
-<span id="268">268</span>
-<span id="269">269</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">primitive</span> <span class="kw">as</span> <span class="ident">p</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">f64</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Index</span>;
 
@@ -366,17 +324,10 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">raw</span>() {
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">raw</span>(<span class="number">0.0</span>, <span class="number">10.0</span>);
+    <span class="kw">fn</span> <span class="ident">new</span>() {
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">new</span>(<span class="number">0.0</span>, <span class="number">10.0</span>);
         <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">a</span>.<span class="number">0</span>, <span class="number">0.0</span>);
         <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">a</span>.<span class="number">1</span>, <span class="number">10.0</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">new</span>() {
-        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">new</span>(<span class="number">0.0</span>, <span class="number">10.1</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">a</span>.<span class="number">0</span>, <span class="number">10.1</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">a</span>.<span class="number">1</span>, <span class="number">0.0</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -411,36 +362,37 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// There are several ways to create a new `Double`:</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// * calling the [`new`] or [`raw`] functions</span>
+<span class="doccomment">/// * calling the [`new`] function</span>
 <span class="doccomment">/// * calling [`from`] with a primitive number (except for `u128` and `i128`) or a string</span>
 <span class="doccomment">/// * calling [`parse`] on a string (or equivalently using [`from_str`])</span>
-<span class="doccomment">/// * calling [`from_add`], [`from_sub`], [`from_mul`], or [`from_div`]</span>
 <span class="doccomment">/// * using the [`dd!`] macro</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// What kind of number you actually end up getting depends on the method called to get it.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// * [`raw`] will *not* normalize its result. This is for speed, but it means that the</span>
-<span class="doccomment">///   arguments must be pre-normalized.</span>
-<span class="doccomment">/// * [`new`], [`from_add`], [`from_sub`], [`from_mul`], and [`from_div`] will normalize</span>
-<span class="doccomment">///   their results but will *not* account for floating-point rounding error. `f64`s passed</span>
-<span class="doccomment">///   to these functions are assumed to be exactly what&#39;s desired, including the rounding</span>
-<span class="doccomment">///   error.</span>
-<span class="doccomment">/// * [`from`], [`parse`], and [`dd!`] will both account for floating-point rounding error</span>
-<span class="doccomment">///   *and* produce normalized results. This is the slowest of the three choices but also</span>
-<span class="doccomment">///   the most accurate.</span>
+<span class="doccomment">/// [`new`] will *not* normalize its result. This means that the arguments must be</span>
+<span class="doccomment">/// pre-normalized. [`from`], [`parse`], and [`dd!`] will both account for floating-point</span>
+<span class="doccomment">/// rounding error *and* produce normalized results.</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// The reason for these two different ways of going about creation is speed. If the number</span>
+<span class="doccomment">/// is already pre-computed to take normalization and error into account (as all of the</span>
+<span class="doccomment">/// constants in this library are), then [`new`] offers a way to avoid having to pay the</span>
+<span class="doccomment">/// efficiency cost of unnecessary normalization.</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// For the other methods, shortcuts can be taken if the input is a number and that number</span>
+<span class="doccomment">/// is [*dyadic*] (i.e., it can be represented in binary exactly, without rounding). In this</span>
+<span class="doccomment">/// case, [`from`] and [`dd!`] can also skip normalization and accounting for rounding, and</span>
+<span class="doccomment">/// they won&#39;t be much slower than [`new`].</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// Parsing from strings or from numbers that are not dyadic cannot take these shortcuts.</span>
+<span class="doccomment">/// The results will be precise, but at the cost of speed.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// See the [module-level documentation](index.html) for more information.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// [`new`]: #method.new</span>
-<span class="doccomment">/// [`raw`]: #method.raw</span>
 <span class="doccomment">/// [`from`]: #impl-From&lt;f64&gt;</span>
 <span class="doccomment">/// [`parse`]: #impl-FromStr</span>
 <span class="doccomment">/// [`from_str`]: #method.from_str</span>
-<span class="doccomment">/// [`from_add`]: #method.from_add</span>
-<span class="doccomment">/// [`from_sub`]: #method.from_sub</span>
-<span class="doccomment">/// [`from_mul`]: #method.from_mul</span>
-<span class="doccomment">/// [`from_div`]: #method.from_div</span>
 <span class="doccomment">/// [`dd!`]: macro.dd.html</span>
+<span class="doccomment">/// [*dyadic*]: https://en.wikipedia.org/wiki/Dyadic_rational</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Double</span>(<span class="ident">f64</span>, <span class="ident">f64</span>);
 
@@ -454,50 +406,16 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This function is primarily for creating constants where the normalization is</span>
     <span class="doccomment">/// obviously unnecessary. For example, if a `Double` version of the number `10` is</span>
-    <span class="doccomment">/// needed, `Double::raw(10.0, 0.0)` is a good way to do it in order to save the cost</span>
+    <span class="doccomment">/// needed, `Double::new(10.0, 0.0)` is a good way to do it in order to save the cost</span>
     <span class="doccomment">/// of the normalization that is obviously not needed.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// let d = Double::raw(0.0, 0.0);</span>
+    <span class="doccomment">/// let d = Double::new(0.0, 0.0);</span>
     <span class="doccomment">/// assert!(d.is_zero());</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">raw</span>(<span class="ident">a</span>: <span class="ident">f64</span>, <span class="ident">b</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="ident">Double</span>(<span class="ident">a</span>, <span class="ident">b</span>)
-    }
-
-    <span class="doccomment">/// Creates a `Double` by normalizing its two arguments.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This function normalizes the input arguments (if this is obviously unnecessary, use</span>
-    <span class="doccomment">/// [`raw`] instead) and assigns the normalized values to the new `Double`&#39;s components.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// It&#39;s assumed that the two numbers passed in are exactly what&#39;s desired, and aside</span>
-    <span class="doccomment">/// from normalization, they will not be manipulated further. That means that any</span>
-    <span class="doccomment">/// floating-point rounding error will be retained. For instance, `Double::new(1.1,</span>
-    <span class="doccomment">/// 0.0)` actually produces the number `1.10000000000000008881784197001253`. To account</span>
-    <span class="doccomment">/// for that rounding error, use [`from`] or the [`dd!`] macro; `dd!(1.1)` is</span>
-    <span class="doccomment">/// effectively the same as `Double::new(1.1, -8.881784197001253e-17)`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let d = Double::new(2.0, 1.0);</span>
-    <span class="doccomment">/// assert!(d == dd!(3.0));</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// [`raw`]: #method.raw</span>
-    <span class="doccomment">/// [`from`]: #impl-From&lt;f64&gt;</span>
-    <span class="doccomment">/// [`dd!`]: macro.dd.html</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">a</span>: <span class="ident">f64</span>, <span class="ident">b</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">b</span>.<span class="ident">abs</span>() {
-            <span class="ident">p</span>::<span class="ident">renorm2</span>(<span class="ident">a</span>, <span class="ident">b</span>)
-        } <span class="kw">else</span> {
-            <span class="ident">p</span>::<span class="ident">renorm2</span>(<span class="ident">b</span>, <span class="ident">a</span>)
-        };
         <span class="ident">Double</span>(<span class="ident">a</span>, <span class="ident">b</span>)
     }
 }

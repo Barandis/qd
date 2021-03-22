@@ -3,22 +3,10 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::primitive as p;
+use crate::common::utils as u;
 use crate::double::Double;
 use crate::quad::Quad;
 use std::f64;
-
-// Determines whether a number is exact (true) or has floating-point error (false)
-fn is_dyadic(n: f64) -> bool {
-    let f = n.fract();
-    if f == 0.0 {
-        true
-    } else {
-        let len = f.to_string().len() - 2; // ignore the leading "0."
-        let base = 2f64.powi(-(len as i32));
-        f % base == 0.0
-    }
-}
 
 #[inline]
 fn split_u64(a: u64) -> (u32, u32) {
@@ -39,7 +27,7 @@ fn split_u128(a: u128) -> (u32, u32, u32, u32) {
 
 fn from_u64(a: u64) -> Quad {
     let (x, y) = split_u64(a);
-    let (a, b, c, d) = p::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0);
+    let (a, b, c, d) = u::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0);
     Quad(a, b, c, d)
 }
 
@@ -53,7 +41,7 @@ fn from_i64(a: i64) -> Quad {
         a.abs() as u64
     };
     let (x, y) = split_u64(a);
-    let (a, b, c, d) = p::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0);
+    let (a, b, c, d) = u::renorm4(x as f64 * 2f64.powi(32), y as f64, 0.0, 0.0);
     if sign == -1 {
         Quad(-a, -b, -c, -d)
     } else {
@@ -64,7 +52,7 @@ fn from_i64(a: i64) -> Quad {
 #[allow(clippy::many_single_char_names)]
 fn from_u128(a: u128) -> Quad {
     let (w, x, y, z) = split_u128(a);
-    let (a, b, c, d) = p::renorm4(
+    let (a, b, c, d) = u::renorm4(
         w as f64 * 2f64.powi(96),
         x as f64 * 2f64.powi(64),
         y as f64 * 2f64.powi(32),
@@ -84,7 +72,7 @@ fn from_i128(a: i128) -> Quad {
         a.abs() as u128
     };
     let (w, x, y, z) = split_u128(a);
-    let (a, b, c, d) = p::renorm4(
+    let (a, b, c, d) = u::renorm4(
         w as f64 * 2f64.powi(96),
         x as f64 * 2f64.powi(64),
         y as f64 * 2f64.powi(32),
@@ -157,7 +145,7 @@ macro_rules! from_float_impl {
                     } else {
                         Quad::INFINITY
                     }
-                } else if is_dyadic(a as f64) {
+                } else if u::is_dyadic(a as f64) {
                     Quad(a.into(), 0.0, 0.0, 0.0)
                 } else {
                     // Yes, this converts an f32/f64 to a string and then parses it. After a
@@ -466,21 +454,6 @@ impl From<Quad> for f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn dyadic() {
-        assert!(is_dyadic(1.0));
-        assert!(is_dyadic(1.5));
-        assert!(is_dyadic(1.75));
-        assert!(is_dyadic(1.625));
-        assert!(is_dyadic(1.8125));
-        assert!(is_dyadic(1.40625));
-        assert!(is_dyadic(1.203125));
-        assert!(is_dyadic(1.1015625));
-        assert!(is_dyadic(1.14453125));
-        assert!(is_dyadic(1.0005645751953125));
-        assert!(!is_dyadic(1.1));
-    }
 
     #[test]
     fn from_f32() {

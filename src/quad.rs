@@ -3,7 +3,6 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::primitive as p;
 use std::ops::Index;
 
 #[macro_use]
@@ -91,21 +90,12 @@ mod tests {
     }
 
     #[test]
-    fn raw() {
-        let a = Quad::raw(0.0, 10.0, -3.0, 5.0);
+    fn new() {
+        let a = Quad::new(0.0, 10.0, -3.0, 5.0);
         assert_exact!(a.0, 0.0);
         assert_exact!(a.1, 10.0);
         assert_exact!(a.2, -3.0);
         assert_exact!(a.3, 5.0);
-    }
-
-    #[test]
-    fn new() {
-        let a = Quad::new(0.0, 10.1, -3.0, 5.0);
-        assert_exact!(a.0, 12.1);
-        assert_exact!(a.1, 0.0);
-        assert_exact!(a.2, 0.0);
-        assert_exact!(a.3, 0.0);
     }
 
     #[test]
@@ -142,30 +132,37 @@ mod trig;
 ///
 /// There are several ways to create a new `Quad`:
 ///
-/// * calling the [`new`] or [`raw`] functions
+/// * calling the [`new`] function
 /// * calling [`from`] with a primitive number or a string
 /// * calling [`parse`] on a string (or equivalently using [`from_str`])
 /// * using the [`qd!`] macro
 ///
 /// What kind of number you actually end up getting depends on the method called to get it.
-///
-/// * [`raw`] will *not* normalize its result. This is for speed, but it means that the
-///   arguments must be pre-normalized.
-/// * [`new`] will normalize its result but will *not* account for floating-point rounding
-///   error. `f64`s passed to this functions are assumed to be exactly what's desired,
-///   including the rounding error.
-/// * [`from`], [`parse`], and [`qd!`] will both account for floating-point rounding error
-///   *and* produce normalized results. This is the slowest of the three choices but also
-///   the most accurate.
+/// [`new`] will *not* normalize its result. This means that the arguments must be
+/// pre-normalized. [`from`], [`parse`], and [`qd!`] will both account for floating-point
+/// rounding error *and* produce normalized results.
+/// 
+/// The reason for these two different ways of going about creation is speed. If the number
+/// is already pre-computed to take normalization and error into account (as all of the
+/// constants in this library are), then [`new`] offers a way to avoid having to pay the
+/// efficiency cost of unnecessary normalization.
+/// 
+/// For the other methods, shortcuts can be taken if the input is a number and that number
+/// is [*dyadic*] (i.e., it can be represented in binary exactly, without rounding). In this
+/// case, [`from`] and [`qd!`] can also skip normalization and accounting for rounding, and
+/// they won't be much slower than [`new`].
+/// 
+/// Parsing from strings or from numbers that are not dyadic cannot take these shortcuts.
+/// The results will be precise, but at the cost of speed.
 ///
 /// See the [module-level documentation](index.html) for more information.
 ///
 /// [`new`]: #method.new
-/// [`raw`]: #method.raw
 /// [`from`]: #impl-From<f64>
 /// [`parse`]: #impl-FromStr
 /// [`from_str`]: #method.from_str
 /// [`qd!`]: macro.qd.html
+/// [*dyadic*]: https://en.wikipedia.org/wiki/Dyadic_rational
 #[derive(Clone, Copy)]
 pub struct Quad(f64, f64, f64, f64);
 
@@ -179,59 +176,17 @@ impl Quad {
     ///
     /// This function is primarily for creating constants where the normalization is
     /// obviously unnecessary. For example, if a `Quad` version of the number `10` is
-    /// needed, `Quad::raw(10.0, 0.0, 0.0, 0.0)` is a good way to do it in order to save the
+    /// needed, `Quad::new(10.0, 0.0, 0.0, 0.0)` is a good way to do it in order to save the
     /// cost of the normalization that is obviously not needed.
     ///
     /// # Examples
     /// ```
     /// # use qd::Quad;
-    /// let q = Quad::raw(0.0, 0.0, 0.0, 0.0);
+    /// let q = Quad::new(0.0, 0.0, 0.0, 0.0);
     /// assert!(q.is_zero());
     /// ```
-    pub fn raw(a: f64, b: f64, c: f64, d: f64) -> Quad {
-        Quad(a, b, c, d)
-    }
-
-    /// Creates a `Quad` by normalizing its four arguments.
-    ///
-    /// This function normalizes the input arguments (if this is obviously unnecessary, use
-    /// [`raw`] instead) and assigns the normalized values to the new `Quad`'s components.
-    ///
-    /// It's assumed that the four numbers passed in are exactly what's desired, and aside
-    /// from normalization, they will not be manipulated further. That means that any
-    /// floating-point rounding error will be retained. For instance, `Quad::new(1.1, 0.0,
-    /// 0.0, 0.0)` actually produces the number
-    /// `1.100000000000000088817841970012523233890533447265625`. To account for that
-    /// rounding error, use [`from`] or the [`qd!`] macro; `qd!(1.1)` is effectively the
-    /// same as `Quad::new(1.1, -8.881784197001253e-17, 4.930380657631324e-33,
-    /// -2.7369110631344085e-49)`.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
-    /// let d = Quad::new(2.0, 1.0, 3.0, -4.5);
-    /// assert!(d == qd!(1.5));
-    /// # }
-    /// ```
-    ///
-    /// [`raw`]: #method.raw
-    /// [`from`]: #impl-From<f64>
-    /// [`qd!`]: macro.qd.html
     pub fn new(a: f64, b: f64, c: f64, d: f64) -> Quad {
-        let mut xs = [a, b, c, d];
-        if xs.iter().any(|&x| x.is_nan()) {
-            // Returns NaN if any component is NaN
-            Quad::NAN
-        } else {
-            // Reverse sort, largest absolute value to smallest. Normalization depends on
-            // the components being in this order. The `unwrap` is safe because we've
-            // already dealt with the one case where ordering can fail (NaN).
-            xs.sort_by(|a, b| b.abs().partial_cmp(&a.abs()).unwrap());
-            let (a, b, c, d) = p::renorm4(xs[0], xs[1], xs[2], xs[3]);
-            Quad(a, b, c, d)
-        }
+        Quad(a, b, c, d)
     }
 }
 

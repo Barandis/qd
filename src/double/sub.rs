@@ -4,26 +4,9 @@
 // https://opensource.org/licenses/MIT
 
 use crate::common::primitive as p;
+use crate::common::utils as u;
 use crate::double::Double;
 use std::ops::{Sub, SubAssign};
-
-impl Double {
-    /// Creates a new `Double` representing the difference of two floats.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// let x = Double::from_sub(1.0, 2.0);
-    /// assert!(x == dd!(-1.0));
-    /// # }
-    /// ```
-    pub fn from_sub(a: f64, b: f64) -> Double {
-        let (a, b) = p::two_diff(a, b);
-        Double(a, b)
-    }
-}
 
 #[allow(clippy::suspicious_arithmetic_impl)]
 impl Sub for Double {
@@ -52,7 +35,7 @@ impl Sub for Double {
                 let (s0, e0) = p::two_diff(self.0, other.0);
                 let (s1, e1) = p::two_diff(self.1, other.1);
                 let (s2, e2) = p::quick_two_sum(s0, s1 + e0);
-                let (a, b) = p::renorm2(s2, e1 + e2);
+                let (a, b) = u::renorm2(s2, e1 + e2);
                 Double(a, b)
             }
         }

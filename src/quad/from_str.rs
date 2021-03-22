@@ -13,7 +13,7 @@ impl FromStr for Quad {
     type Err = ParseQuadError;
 
     /// Parses a string to create a `Quad`.
-    /// 
+    ///
     /// The parser works pretty similarly to parsers for `f32` and `f64`. It will fail if
     /// characters are present that are not digits, decimal points, signs, or exponent
     /// markers. It will also fail if there are multiples of these or if they're in the
@@ -21,16 +21,16 @@ impl FromStr for Quad {
     /// rejected, for instance.
     ///
     /// Failure will return a [`ParseQuadError`] of some kind.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
     /// use std::str::FromStr;
-    /// 
+    ///
     /// # fn main() {
     /// let expected = (qd!(3).powi(15) - qd!(1)) / qd!(3).powi(15);
-    /// 
+    ///
     /// let x1 = Quad::from_str(
     ///     "0.9999999303082806237436760862691492808476631704421807180156648865"
     /// ).unwrap();
@@ -41,15 +41,15 @@ impl FromStr for Quad {
     /// let x2 = "0.9999999303082806237436760862691492808476631704421807180156648865"
     ///     .parse::<Quad>()
     ///     .unwrap();
-    /// 
+    ///
     /// let diff1 = (x1 - expected).abs();
     /// assert!(diff1 < qd!(1e-60));
-    /// 
+    ///
     /// let diff2 = (x2 - expected).abs();
     /// assert!(diff2 < qd!(1e-60));
     /// # }
     /// ```
-    /// 
+    ///
     /// [`ParseQuadError`]: error/struct.ParseQuadError.html
     fn from_str(s: &str) -> Result<Quad, ParseQuadError> {
         let mut result = Quad::ZERO;
@@ -60,95 +60,105 @@ impl FromStr for Quad {
 
         let s = s.trim().to_ascii_lowercase();
 
-        if s.is_empty() {
-            Err(ParseQuadError {
-                kind: ErrorKind::Empty,
-            })
-        } else if s == "nan" {
-            Ok(Quad::NAN)
-        } else if s == "inf" || s == "infinity" {
-            Ok(Quad::INFINITY)
-        } else if s == "-inf" || s == "-infinity" {
-            Ok(Quad::NEG_INFINITY)
-        } else {
-            for (index, ch) in s.chars().enumerate() {
-                match ch.to_digit(10) {
-                    Some(d) => {
-                        result *= TEN;
-                        result += Quad(d as f64, 0.0, 0.0, 0.0);
-                        digits += 1;
-                    }
-                    None => match ch {
-                        '.' => {
-                            if point >= 0 {
-                                return Err(ParseQuadError {
-                                    kind: ErrorKind::Invalid,
-                                });
-                            }
-                            point = digits;
+        match pre_from_str(&s) {
+            Some(r) => r,
+            None => {
+                for (index, ch) in s.chars().enumerate() {
+                    match ch.to_digit(10) {
+                        Some(d) => {
+                            result *= TEN;
+                            result += Quad(d as f64, 0.0, 0.0, 0.0);
+                            digits += 1;
                         }
-                        '-' => {
-                            if sign != 0 || digits > 0 {
-                                return Err(ParseQuadError {
-                                    kind: ErrorKind::Invalid,
-                                });
-                            }
-                            sign = -1;
-                        }
-                        '+' => {
-                            if sign != 0 || digits > 0 {
-                                return Err(ParseQuadError {
-                                    kind: ErrorKind::Invalid,
-                                });
-                            }
-                            sign = 1;
-                        }
-                        'e' => {
-                            let end = &s[(index + 1)..];
-                            match end.parse::<i32>() {
-                                Ok(e) => {
-                                    exp = e;
-                                    break;
-                                }
-                                Err(_) => {
+                        None => match ch {
+                            '.' => {
+                                if point >= 0 {
                                     return Err(ParseQuadError {
                                         kind: ErrorKind::Invalid,
                                     });
                                 }
+                                point = digits;
                             }
-                        }
-                        '_' => {
-                            // just continue; _ is a no-op but not an error
-                        }
-                        _ => {
-                            return Err(ParseQuadError {
-                                kind: ErrorKind::Invalid,
-                            });
-                        }
-                    },
+                            '-' => {
+                                if sign != 0 || digits > 0 {
+                                    return Err(ParseQuadError {
+                                        kind: ErrorKind::Invalid,
+                                    });
+                                }
+                                sign = -1;
+                            }
+                            '+' => {
+                                if sign != 0 || digits > 0 {
+                                    return Err(ParseQuadError {
+                                        kind: ErrorKind::Invalid,
+                                    });
+                                }
+                                sign = 1;
+                            }
+                            'e' => {
+                                let end = &s[(index + 1)..];
+                                match end.parse::<i32>() {
+                                    Ok(e) => {
+                                        exp = e;
+                                        break;
+                                    }
+                                    Err(_) => {
+                                        return Err(ParseQuadError {
+                                            kind: ErrorKind::Invalid,
+                                        });
+                                    }
+                                }
+                            }
+                            '_' => {
+                                // just continue; _ is a no-op but not an error
+                            }
+                            _ => {
+                                return Err(ParseQuadError {
+                                    kind: ErrorKind::Invalid,
+                                });
+                            }
+                        },
+                    }
                 }
-            }
 
-            if point >= 0 {
-                exp -= digits - point;
-            }
-            if exp != 0 {
-                // Do this in two stages if the exponent is too small For exmaple, a number
-                // with 30 digits could have an exponent as low as -337 and still not
-                // overflow, but doing the -337 all at once WOULD overflow
-                if exp < -307 {
-                    let adjust = exp + 307;
-                    result *= TEN.powi(adjust);
-                    exp -= adjust;
+                if point >= 0 {
+                    exp -= digits - point;
                 }
-                result *= TEN.powi(exp);
-            }
-            if sign == -1 {
-                result = -result;
-            }
+                if exp != 0 {
+                    // Do this in two stages if the exponent is too small For exmaple, a
+                    // number with 30 digits could have an exponent as low as -337 and still
+                    // not overflow, but doing the -337 all at once WOULD overflow
+                    if exp < -307 {
+                        let adjust = exp + 307;
+                        result *= TEN.powi(adjust);
+                        exp -= adjust;
+                    }
+                    result *= TEN.powi(exp);
+                }
+                if sign == -1 {
+                    result = -result;
+                }
 
-            Ok(result)
+                Ok(result)
+            }
         }
+    }
+}
+
+#[inline]
+fn pre_from_str(s: &str) -> Option<Result<Quad, ParseQuadError>> {
+    if s.is_empty() {
+        Some(Err(ParseQuadError {
+            kind: ErrorKind::Empty,
+        }))
+    } else if s == "nan" {
+        Some(Ok(Quad::NAN))
+    } else if s == "inf" || s == "infinity" {
+        Some(Ok(Quad::INFINITY))
+    } else if s == "-inf" || s == "-infinity" {
+        Some(Ok(Quad::NEG_INFINITY))
+    } else {
+        None
     }
 }
 

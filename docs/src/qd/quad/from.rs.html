@@ -500,55 +500,16 @@
 <span id="497">497</span>
 <span id="498">498</span>
 <span id="499">499</span>
-<span id="500">500</span>
-<span id="501">501</span>
-<span id="502">502</span>
-<span id="503">503</span>
-<span id="504">504</span>
-<span id="505">505</span>
-<span id="506">506</span>
-<span id="507">507</span>
-<span id="508">508</span>
-<span id="509">509</span>
-<span id="510">510</span>
-<span id="511">511</span>
-<span id="512">512</span>
-<span id="513">513</span>
-<span id="514">514</span>
-<span id="515">515</span>
-<span id="516">516</span>
-<span id="517">517</span>
-<span id="518">518</span>
-<span id="519">519</span>
-<span id="520">520</span>
-<span id="521">521</span>
-<span id="522">522</span>
-<span id="523">523</span>
-<span id="524">524</span>
-<span id="525">525</span>
-<span id="526">526</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">primitive</span> <span class="kw">as</span> <span class="ident">p</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">utils</span> <span class="kw">as</span> <span class="ident">u</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">f64</span>;
-
-<span class="comment">// Determines whether a number is exact (true) or has floating-point error (false)</span>
-<span class="kw">fn</span> <span class="ident">is_dyadic</span>(<span class="ident">n</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-    <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">n</span>.<span class="ident">fract</span>();
-    <span class="kw">if</span> <span class="ident">f</span> <span class="op">=</span><span class="op">=</span> <span class="number">0.0</span> {
-        <span class="bool-val">true</span>
-    } <span class="kw">else</span> {
-        <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">to_string</span>().<span class="ident">len</span>() <span class="op">-</span> <span class="number">2</span>; <span class="comment">// ignore the leading &quot;0.&quot;</span>
-        <span class="kw">let</span> <span class="ident">base</span> <span class="op">=</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="op">-</span>(<span class="ident">len</span> <span class="kw">as</span> <span class="ident">i32</span>));
-        <span class="ident">f</span> <span class="op">%</span> <span class="ident">base</span> <span class="op">=</span><span class="op">=</span> <span class="number">0.0</span>
-    }
-}
 
 <span class="attribute">#[<span class="ident">inline</span>]</span>
 <span class="kw">fn</span> <span class="ident">split_u64</span>(<span class="ident">a</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">u32</span>, <span class="ident">u32</span>) {
@@ -569,7 +530,7 @@
 
 <span class="kw">fn</span> <span class="ident">from_u64</span>(<span class="ident">a</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
     <span class="kw">let</span> (<span class="ident">x</span>, <span class="ident">y</span>) <span class="op">=</span> <span class="ident">split_u64</span>(<span class="ident">a</span>);
-    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm4</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>), <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
+    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">renorm4</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>), <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
     <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>)
 }
 
@@ -583,7 +544,7 @@
         <span class="ident">a</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">u64</span>
     };
     <span class="kw">let</span> (<span class="ident">x</span>, <span class="ident">y</span>) <span class="op">=</span> <span class="ident">split_u64</span>(<span class="ident">a</span>);
-    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm4</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>), <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
+    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">renorm4</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>), <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
     <span class="kw">if</span> <span class="ident">sign</span> <span class="op">=</span><span class="op">=</span> <span class="op">-</span><span class="number">1</span> {
         <span class="ident">Quad</span>(<span class="op">-</span><span class="ident">a</span>, <span class="op">-</span><span class="ident">b</span>, <span class="op">-</span><span class="ident">c</span>, <span class="op">-</span><span class="ident">d</span>)
     } <span class="kw">else</span> {
@@ -594,7 +555,7 @@
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">many_single_char_names</span>)]</span>
 <span class="kw">fn</span> <span class="ident">from_u128</span>(<span class="ident">a</span>: <span class="ident">u128</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
     <span class="kw">let</span> (<span class="ident">w</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">z</span>) <span class="op">=</span> <span class="ident">split_u128</span>(<span class="ident">a</span>);
-    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm4</span>(
+    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">renorm4</span>(
         <span class="ident">w</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">96</span>),
         <span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">64</span>),
         <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>),
@@ -614,7 +575,7 @@
         <span class="ident">a</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">u128</span>
     };
     <span class="kw">let</span> (<span class="ident">w</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">z</span>) <span class="op">=</span> <span class="ident">split_u128</span>(<span class="ident">a</span>);
-    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm4</span>(
+    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">renorm4</span>(
         <span class="ident">w</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">96</span>),
         <span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">64</span>),
         <span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">32</span>),
@@ -687,7 +648,7 @@
                     } <span class="kw">else</span> {
                         <span class="ident">Quad</span>::<span class="ident">INFINITY</span>
                     }
-                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">is_dyadic</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">f64</span>) {
+                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">u</span>::<span class="ident">is_dyadic</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">f64</span>) {
                     <span class="ident">Quad</span>(<span class="ident">a</span>.<span class="ident">into</span>(), <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>)
                 } <span class="kw">else</span> {
                     <span class="comment">// Yes, this converts an f32/f64 to a string and then parses it. After a</span>
@@ -996,21 +957,6 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">dyadic</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_dyadic</span>(<span class="number">1.0</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_dyadic</span>(<span class="number">1.5</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_dyadic</span>(<span class="number">1.75</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_dyadic</span>(<span class="number">1.625</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_dyadic</span>(<span class="number">1.8125</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_dyadic</span>(<span class="number">1.40625</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_dyadic</span>(<span class="number">1.203125</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_dyadic</span>(<span class="number">1.1015625</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_dyadic</span>(<span class="number">1.14453125</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_dyadic</span>(<span class="number">1.0005645751953125</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">is_dyadic</span>(<span class="number">1.1</span>));
-    }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">from_f32</span>() {

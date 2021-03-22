@@ -3,5 +3,6 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-pub(crate) mod display;
-pub(crate) mod primitive;
+pub mod display;
+pub mod primitive;
+pub mod utils;

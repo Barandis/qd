@@ -4,6 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 use crate::common::primitive as p;
+use crate::common::utils as u;
 use crate::quad::Quad;
 use std::ops::{Mul, MulAssign};
 
@@ -87,16 +88,16 @@ impl Mul for Quad {
                 // O(1) calculation (pass-through)
                 let r0 = h0;
                 // O(ε) calculation
-                let (r1, t0, t1) = p::three_three_sum(h1, h2, l0);
+                let (r1, t0, t1) = u::three_three_sum(h1, h2, l0);
                 // O(ε²) calculation
-                let (r2, t2, t3) = p::six_three_sum(t0, h3, h4, h5, l1, l2);
+                let (r2, t2, t3) = u::six_three_sum(t0, h3, h4, h5, l1, l2);
                 // O(ε³) calculation
-                let (r3, t4) = p::nine_two_sum(t1, t2, h6, h7, h8, h9, l3, l4, l5);
+                let (r3, t4) = u::nine_two_sum(t1, t2, h6, h7, h8, h9, l3, l4, l5);
                 // O(ε⁴) calculation (nine_one_sum)
                 let r4 = t3 + t4 + ha + hb + hc + l6 + l7 + l8 + l9;
 
                 // Results of the prior calculations are renormalized into four f64s.
-                let (a, b, c, d) = p::renorm5(r0, r1, r2, r3, r4);
+                let (a, b, c, d) = u::renorm5(r0, r1, r2, r3, r4);
                 Quad(a, b, c, d)
             }
         }

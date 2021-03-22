@@ -4,6 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 use crate::common::primitive as p;
+use crate::common::utils as u;
 use crate::double::Double;
 use std::ops::{Div, DivAssign};
 
@@ -13,83 +14,8 @@ use std::ops::{Div, DivAssign};
 #[inline]
 fn mul_f64(a: Double, b: f64) -> Double {
     let (p, e) = p::two_prod(a.0, b);
-    let (a, b) = p::renorm2(p, e + a.1 * b);
+    let (a, b) = u::renorm2(p, e + a.1 * b);
     Double(a, b)
-}
-
-impl Double {
-    /// Creates a new `Double` representing the quotient of two floats.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// let x = Double::from_div(1.0, 2.0);
-    /// assert!(x == dd!(0.5));
-    /// # }
-    /// ```
-    pub fn from_div(a: f64, b: f64) -> Double {
-        if b == 0.0 {
-            if a == 0.0 {
-                Double::NAN
-            } else if a.is_sign_negative() == b.is_sign_positive() {
-                Double::NEG_INFINITY
-            } else {
-                Double::INFINITY
-            }
-        } else {
-            let q1 = a / b;
-
-            let (p1, p2) = p::two_prod(q1, b);
-            let (s, e) = p::two_diff(a, p1);
-
-            let q2 = (s + e - p2) / b;
-
-            let (a, b) = p::renorm2(q1, q2);
-            Double(a, b)
-        }
-    }
-
-    // precalc functions
-    //
-    // This series of functions returns `Some` with a value that is to be returned, if it
-    // turns out that the function doesn't have to be calculated because a shortcut result
-    // is known. They return `None` if the value has to be calculated normally.
-    //
-    // This keeps the public functions from being mucked up with code that does validation
-    // rather than calculation.
-
-    #[inline]
-    fn pre_div(&self, other: &Double) -> Option<Double> {
-        if self.is_nan() || other.is_nan() {
-            Some(Double::NAN)
-        } else if other.is_zero() {
-            if self.is_zero() {
-                Some(Double::NAN)
-            } else if self.is_sign_negative() == other.is_sign_positive() {
-                Some(Double::NEG_INFINITY)
-            } else {
-                Some(Double::INFINITY)
-            }
-        } else if self.is_infinite() {
-            if other.is_infinite() {
-                Some(Double::NAN)
-            } else if self.is_sign_positive() == other.is_sign_positive() {
-                Some(Double::INFINITY)
-            } else {
-                Some(Double::NEG_INFINITY)
-            }
-        } else if other.is_infinite() {
-            if self.is_sign_positive() == other.is_sign_positive() {
-                Some(Double::ZERO)
-            } else {
-                Some(Double::NEG_ZERO)
-            }
-        } else {
-            None
-        }
-    }
 }
 
 #[allow(clippy::suspicious_arithmetic_impl)]
@@ -124,7 +50,7 @@ impl Div for Double {
 
                 let q3 = r.0 / other.0;
 
-                let (a, b) = p::renorm3(q1, q2, q3);
+                let (a, b) = u::renorm3(q1, q2, q3);
                 Double(a, b)
             }
         }
@@ -257,6 +183,48 @@ impl DivAssign<&Double> for Double {
         let r = self.div(*other);
         self.0 = r.0;
         self.1 = r.1;
+    }
+}
+
+impl Double {
+    // precalc functions
+    //
+    // This series of functions returns `Some` with a value that is to be returned, if it
+    // turns out that the function doesn't have to be calculated because a shortcut result
+    // is known. They return `None` if the value has to be calculated normally.
+    //
+    // This keeps the public functions from being mucked up with code that does validation
+    // rather than calculation.
+
+    #[inline]
+    fn pre_div(&self, other: &Double) -> Option<Double> {
+        if self.is_nan() || other.is_nan() {
+            Some(Double::NAN)
+        } else if other.is_zero() {
+            if self.is_zero() {
+                Some(Double::NAN)
+            } else if self.is_sign_negative() == other.is_sign_positive() {
+                Some(Double::NEG_INFINITY)
+            } else {
+                Some(Double::INFINITY)
+            }
+        } else if self.is_infinite() {
+            if other.is_infinite() {
+                Some(Double::NAN)
+            } else if self.is_sign_positive() == other.is_sign_positive() {
+                Some(Double::INFINITY)
+            } else {
+                Some(Double::NEG_INFINITY)
+            }
+        } else if other.is_infinite() {
+            if self.is_sign_positive() == other.is_sign_positive() {
+                Some(Double::ZERO)
+            } else {
+                Some(Double::NEG_ZERO)
+            }
+        } else {
+            None
+        }
     }
 }
 

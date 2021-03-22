@@ -234,12 +234,12 @@ impl Double {
     /// // -π/4 radians (45 degrees clockwise)
     /// let x1 = dd!(3);
     /// let y1 = dd!(-3);
-    /// let expected1 = -pi / dd!(4);
+    /// let expected1 = -Double::FRAC_PI_4;
     ///
     /// // 3π/4 radians (135 degrees counter-clockwise)
     /// let x2 = dd!(-3);
     /// let y2 = dd!(3);
-    /// let expected2 = Double::from_div(3.0, 4.0) * pi;
+    /// let expected2 = Double::FRAC_3_PI_4;
     ///
     /// let diff1 = (y1.atan2(x1) - expected1).abs();
     /// let diff2 = (y2.atan2(x2) - expected2).abs();

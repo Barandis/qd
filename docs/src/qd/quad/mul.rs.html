@@ -359,6 +359,7 @@
 <span id="356">356</span>
 <span id="357">357</span>
 <span id="358">358</span>
+<span id="359">359</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -366,6 +367,7 @@
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">primitive</span> <span class="kw">as</span> <span class="ident">p</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">utils</span> <span class="kw">as</span> <span class="ident">u</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::{<span class="ident">Mul</span>, <span class="ident">MulAssign</span>};
 
@@ -449,16 +451,16 @@
                 <span class="comment">// O(1) calculation (pass-through)</span>
                 <span class="kw">let</span> <span class="ident">r0</span> <span class="op">=</span> <span class="ident">h0</span>;
                 <span class="comment">// O(ε) calculation</span>
-                <span class="kw">let</span> (<span class="ident">r1</span>, <span class="ident">t0</span>, <span class="ident">t1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">three_three_sum</span>(<span class="ident">h1</span>, <span class="ident">h2</span>, <span class="ident">l0</span>);
+                <span class="kw">let</span> (<span class="ident">r1</span>, <span class="ident">t0</span>, <span class="ident">t1</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">three_three_sum</span>(<span class="ident">h1</span>, <span class="ident">h2</span>, <span class="ident">l0</span>);
                 <span class="comment">// O(ε²) calculation</span>
-                <span class="kw">let</span> (<span class="ident">r2</span>, <span class="ident">t2</span>, <span class="ident">t3</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">six_three_sum</span>(<span class="ident">t0</span>, <span class="ident">h3</span>, <span class="ident">h4</span>, <span class="ident">h5</span>, <span class="ident">l1</span>, <span class="ident">l2</span>);
+                <span class="kw">let</span> (<span class="ident">r2</span>, <span class="ident">t2</span>, <span class="ident">t3</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">six_three_sum</span>(<span class="ident">t0</span>, <span class="ident">h3</span>, <span class="ident">h4</span>, <span class="ident">h5</span>, <span class="ident">l1</span>, <span class="ident">l2</span>);
                 <span class="comment">// O(ε³) calculation</span>
-                <span class="kw">let</span> (<span class="ident">r3</span>, <span class="ident">t4</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">nine_two_sum</span>(<span class="ident">t1</span>, <span class="ident">t2</span>, <span class="ident">h6</span>, <span class="ident">h7</span>, <span class="ident">h8</span>, <span class="ident">h9</span>, <span class="ident">l3</span>, <span class="ident">l4</span>, <span class="ident">l5</span>);
+                <span class="kw">let</span> (<span class="ident">r3</span>, <span class="ident">t4</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">nine_two_sum</span>(<span class="ident">t1</span>, <span class="ident">t2</span>, <span class="ident">h6</span>, <span class="ident">h7</span>, <span class="ident">h8</span>, <span class="ident">h9</span>, <span class="ident">l3</span>, <span class="ident">l4</span>, <span class="ident">l5</span>);
                 <span class="comment">// O(ε⁴) calculation (nine_one_sum)</span>
                 <span class="kw">let</span> <span class="ident">r4</span> <span class="op">=</span> <span class="ident">t3</span> <span class="op">+</span> <span class="ident">t4</span> <span class="op">+</span> <span class="ident">ha</span> <span class="op">+</span> <span class="ident">hb</span> <span class="op">+</span> <span class="ident">hc</span> <span class="op">+</span> <span class="ident">l6</span> <span class="op">+</span> <span class="ident">l7</span> <span class="op">+</span> <span class="ident">l8</span> <span class="op">+</span> <span class="ident">l9</span>;
 
                 <span class="comment">// Results of the prior calculations are renormalized into four f64s.</span>
-                <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm5</span>(<span class="ident">r0</span>, <span class="ident">r1</span>, <span class="ident">r2</span>, <span class="ident">r3</span>, <span class="ident">r4</span>);
+                <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">renorm5</span>(<span class="ident">r0</span>, <span class="ident">r1</span>, <span class="ident">r2</span>, <span class="ident">r3</span>, <span class="ident">r4</span>);
                 <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>)
             }
         }

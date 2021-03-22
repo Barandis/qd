@@ -717,6 +717,7 @@
 <span id="714">714</span>
 <span id="715">715</span>
 <span id="716">716</span>
+<span id="717">717</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -724,6 +725,7 @@
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">primitive</span> <span class="kw">as</span> <span class="ident">p</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">utils</span> <span class="kw">as</span> <span class="ident">u</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
 <span class="kw">impl</span> <span class="ident">Double</span> {
@@ -806,7 +808,7 @@
             <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> (<span class="ident">p</span>, <span class="ident">e</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_sqr</span>(<span class="self">self</span>.<span class="number">0</span>);
-                <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm2</span>(<span class="ident">p</span>, <span class="ident">e</span> <span class="op">+</span> <span class="number">2.0</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">1</span> <span class="op">+</span> <span class="self">self</span>.<span class="number">1</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">1</span>);
+                <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">renorm2</span>(<span class="ident">p</span>, <span class="ident">e</span> <span class="op">+</span> <span class="number">2.0</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">1</span> <span class="op">+</span> <span class="self">self</span>.<span class="number">1</span> <span class="op">*</span> <span class="self">self</span>.<span class="number">1</span>);
                 <span class="ident">Double</span>(<span class="ident">a</span>, <span class="ident">b</span>)
             }
         }
@@ -838,7 +840,7 @@
                 <span class="comment">// The approximation is accurate to twice the accuracy of x. This can be</span>
                 <span class="comment">// repeated an arbitrary number of times, but this method when used on</span>
                 <span class="comment">// double-doubles only requires one iteration.</span>
-                <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from_div</span>(<span class="number">1.0</span>, <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sqrt</span>());
+                <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">1.0</span> <span class="op">/</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sqrt</span>());
                 <span class="kw">let</span> <span class="ident">ax</span> <span class="op">=</span> <span class="self">self</span> <span class="op">*</span> <span class="ident">x</span>;
                 <span class="ident">ax</span> <span class="op">+</span> (<span class="self">self</span> <span class="op">-</span> <span class="ident">ax</span>.<span class="ident">sqr</span>()) <span class="op">*</span> <span class="ident">x</span>.<span class="ident">mul_pwr2</span>(<span class="number">0.5</span>)
             }

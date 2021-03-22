@@ -13,7 +13,7 @@ impl FromStr for Double {
     type Err = ParseDoubleError;
 
     /// Parses a string to create a `Double`.
-    /// 
+    ///
     /// The parser works pretty similarly to parsers for `f32` and `f64`. It will fail if
     /// characters are present that are not digits, decimal points, signs, or exponent
     /// markers. It will also fail if there are multiples of these or if they're in the
@@ -21,31 +21,31 @@ impl FromStr for Double {
     /// rejected, for instance.
     ///
     /// Failure will return a [`ParseDoubleError`] of some kind.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// use std::str::FromStr;
-    /// 
+    ///
     /// # fn main() {
     /// let expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
-    /// 
+    ///
     /// let x1 = Double::from_str("0.9999999303082806237436760862691").unwrap();
     /// // `parse` calls `from_str` in the background, so this is equivalent. In fact it's
     /// // probably preferred because it doesn't require importing `FromStr`. The turbofish
     /// // (or type annotation on x2, if you prefer) is required instead if the type can't
     /// // otherwise be inferred.
     /// let x2 = "0.9999999303082806237436760862691".parse::<Double>().unwrap();
-    /// 
+    ///
     /// let diff1 = (x1 - expected).abs();
     /// assert!(diff1 < dd!(1e-30));
-    /// 
+    ///
     /// let diff2 = (x2 - expected).abs();
     /// assert!(diff2 < dd!(1e-30));
     /// # }
     /// ```
-    /// 
+    ///
     /// [`ParseDoubleError`]: error/struct.ParseDoubleError.html
     fn from_str(s: &str) -> Result<Double, ParseDoubleError> {
         let mut result = Double::ZERO;
@@ -56,95 +56,105 @@ impl FromStr for Double {
 
         let s = s.trim().to_ascii_lowercase();
 
-        if s.is_empty() {
-            Err(ParseDoubleError {
-                kind: ErrorKind::Empty,
-            })
-        } else if s == "nan" {
-            Ok(Double::NAN)
-        } else if s == "inf" || s == "infinity" {
-            Ok(Double::INFINITY)
-        } else if s == "-inf" || s == "-infinity" {
-            Ok(Double::NEG_INFINITY)
-        } else {
-            for (index, ch) in s.chars().enumerate() {
-                match ch.to_digit(10) {
-                    Some(d) => {
-                        result *= TEN;
-                        result += Double(d as f64, 0.0);
-                        digits += 1;
-                    }
-                    None => match ch {
-                        '.' => {
-                            if point >= 0 {
-                                return Err(ParseDoubleError {
-                                    kind: ErrorKind::Invalid,
-                                });
-                            }
-                            point = digits;
+        match pre_from_str(&s) {
+            Some(r) => r,
+            None => {
+                for (index, ch) in s.chars().enumerate() {
+                    match ch.to_digit(10) {
+                        Some(d) => {
+                            result *= TEN;
+                            result += Double(d as f64, 0.0);
+                            digits += 1;
                         }
-                        '-' => {
-                            if sign != 0 || digits > 0 {
-                                return Err(ParseDoubleError {
-                                    kind: ErrorKind::Invalid,
-                                });
-                            }
-                            sign = -1;
-                        }
-                        '+' => {
-                            if sign != 0 || digits > 0 {
-                                return Err(ParseDoubleError {
-                                    kind: ErrorKind::Invalid,
-                                });
-                            }
-                            sign = 1;
-                        }
-                        'e' => {
-                            let end = &s[(index + 1)..];
-                            match end.parse::<i32>() {
-                                Ok(e) => {
-                                    exp = e;
-                                    break;
-                                }
-                                Err(_) => {
+                        None => match ch {
+                            '.' => {
+                                if point >= 0 {
                                     return Err(ParseDoubleError {
                                         kind: ErrorKind::Invalid,
                                     });
                                 }
+                                point = digits;
                             }
-                        }
-                        '_' => {
-                            // just continue; _ is a no-op but not an error
-                        }
-                        _ => {
-                            return Err(ParseDoubleError {
-                                kind: ErrorKind::Invalid,
-                            });
-                        }
-                    },
+                            '-' => {
+                                if sign != 0 || digits > 0 {
+                                    return Err(ParseDoubleError {
+                                        kind: ErrorKind::Invalid,
+                                    });
+                                }
+                                sign = -1;
+                            }
+                            '+' => {
+                                if sign != 0 || digits > 0 {
+                                    return Err(ParseDoubleError {
+                                        kind: ErrorKind::Invalid,
+                                    });
+                                }
+                                sign = 1;
+                            }
+                            'e' => {
+                                let end = &s[(index + 1)..];
+                                match end.parse::<i32>() {
+                                    Ok(e) => {
+                                        exp = e;
+                                        break;
+                                    }
+                                    Err(_) => {
+                                        return Err(ParseDoubleError {
+                                            kind: ErrorKind::Invalid,
+                                        });
+                                    }
+                                }
+                            }
+                            '_' => {
+                                // just continue; _ is a no-op but not an error
+                            }
+                            _ => {
+                                return Err(ParseDoubleError {
+                                    kind: ErrorKind::Invalid,
+                                });
+                            }
+                        },
+                    }
                 }
-            }
 
-            if point >= 0 {
-                exp -= digits - point;
-            }
-            if exp != 0 {
-                // Do this in two stages if the exponent is too small. For exmaple, a number
-                // with 30 digits could have an exponent as low as -337 and still not
-                // overflow, but doing the -337 all at once WOULD overflow
-                if exp < -307 {
-                    let adjust = exp + 307;
-                    result *= TEN.powi(adjust);
-                    exp -= adjust;
+                if point >= 0 {
+                    exp -= digits - point;
                 }
-                result *= TEN.powi(exp);
-            }
-            if sign == -1 {
-                result = -result;
-            }
+                if exp != 0 {
+                    // Do this in two stages if the exponent is too small. For exmaple, a
+                    // number with 30 digits could have an exponent as low as -337 and still
+                    // not overflow, but doing the -337 all at once WOULD overflow
+                    if exp < -307 {
+                        let adjust = exp + 307;
+                        result *= TEN.powi(adjust);
+                        exp -= adjust;
+                    }
+                    result *= TEN.powi(exp);
+                }
+                if sign == -1 {
+                    result = -result;
+                }
 
-            Ok(result)
+                Ok(result)
+            }
         }
+    }
+}
+
+#[inline]
+fn pre_from_str(s: &str) -> Option<Result<Double, ParseDoubleError>> {
+    if s.is_empty() {
+        Some(Err(ParseDoubleError {
+            kind: ErrorKind::Empty,
+        }))
+    } else if s == "nan" {
+        Some(Ok(Double::NAN))
+    } else if s == "inf" || s == "infinity" {
+        Some(Ok(Double::INFINITY))
+    } else if s == "-inf" || s == "-infinity" {
+        Some(Ok(Double::NEG_INFINITY))
+    } else {
+        None
     }
 }
 

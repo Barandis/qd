@@ -291,23 +291,6 @@
 <span id="288">288</span>
 <span id="289">289</span>
 <span id="290">290</span>
-<span id="291">291</span>
-<span id="292">292</span>
-<span id="293">293</span>
-<span id="294">294</span>
-<span id="295">295</span>
-<span id="296">296</span>
-<span id="297">297</span>
-<span id="298">298</span>
-<span id="299">299</span>
-<span id="300">300</span>
-<span id="301">301</span>
-<span id="302">302</span>
-<span id="303">303</span>
-<span id="304">304</span>
-<span id="305">305</span>
-<span id="306">306</span>
-<span id="307">307</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -315,26 +298,9 @@
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">primitive</span> <span class="kw">as</span> <span class="ident">p</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">utils</span> <span class="kw">as</span> <span class="ident">u</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::{<span class="ident">Sub</span>, <span class="ident">SubAssign</span>};
-
-<span class="kw">impl</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Creates a new `Double` representing the difference of two floats.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = Double::from_sub(1.0, 2.0);</span>
-    <span class="doccomment">/// assert!(x == dd!(-1.0));</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_sub</span>(<span class="ident">a</span>: <span class="ident">f64</span>, <span class="ident">b</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_diff</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-        <span class="ident">Double</span>(<span class="ident">a</span>, <span class="ident">b</span>)
-    }
-}
 
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">suspicious_arithmetic_impl</span>)]</span>
 <span class="kw">impl</span> <span class="ident">Sub</span> <span class="kw">for</span> <span class="ident">Double</span> {
@@ -363,7 +329,7 @@
                 <span class="kw">let</span> (<span class="ident">s0</span>, <span class="ident">e0</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_diff</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">other</span>.<span class="number">0</span>);
                 <span class="kw">let</span> (<span class="ident">s1</span>, <span class="ident">e1</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">two_diff</span>(<span class="self">self</span>.<span class="number">1</span>, <span class="ident">other</span>.<span class="number">1</span>);
                 <span class="kw">let</span> (<span class="ident">s2</span>, <span class="ident">e2</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">quick_two_sum</span>(<span class="ident">s0</span>, <span class="ident">s1</span> <span class="op">+</span> <span class="ident">e0</span>);
-                <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm2</span>(<span class="ident">s2</span>, <span class="ident">e1</span> <span class="op">+</span> <span class="ident">e2</span>);
+                <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">renorm2</span>(<span class="ident">s2</span>, <span class="ident">e1</span> <span class="op">+</span> <span class="ident">e2</span>);
                 <span class="ident">Double</span>(<span class="ident">a</span>, <span class="ident">b</span>)
             }
         }

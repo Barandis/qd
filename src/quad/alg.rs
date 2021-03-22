@@ -4,6 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 use crate::common::primitive as p;
+use crate::common::utils as u;
 use crate::quad::Quad;
 
 impl Quad {
@@ -132,7 +133,7 @@ impl Quad {
 
                 let r4 = m1 + n1 + o1 + k1 + q1;
 
-                let (a, b, c, d) = p::renorm5(r0, r1, r2, r3, r4);
+                let (a, b, c, d) = u::renorm5(r0, r1, r2, r3, r4);
                 Quad(a, b, c, d)
             }
         }

@@ -4,6 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 use crate::common::primitive as p;
+use crate::common::utils as u;
 use crate::double::Double;
 
 impl Double {
@@ -86,7 +87,7 @@ impl Double {
             Some(r) => r,
             None => {
                 let (p, e) = p::two_sqr(self.0);
-                let (a, b) = p::renorm2(p, e + 2.0 * self.0 * self.1 + self.1 * self.1);
+                let (a, b) = u::renorm2(p, e + 2.0 * self.0 * self.1 + self.1 * self.1);
                 Double(a, b)
             }
         }
@@ -118,7 +119,7 @@ impl Double {
                 // The approximation is accurate to twice the accuracy of x. This can be
                 // repeated an arbitrary number of times, but this method when used on
                 // double-doubles only requires one iteration.
-                let x = Double::from_div(1.0, self.0.sqrt());
+                let x = Double::from(1.0 / self.0.sqrt());
                 let ax = self * x;
                 ax + (self - ax.sqr()) * x.mul_pwr2(0.5)
             }

@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::primitive as p;
+use crate::common::utils as u;
 use crate::double::Double;
 use std::f64;
 use std::num::FpCategory;
@@ -50,7 +50,8 @@ impl Double {
         let hi = self.0.floor();
 
         if (hi - self.0).abs() < f64::EPSILON {
-            Double::new(hi, self.1.floor())
+            let (a, b) = u::renorm2(hi, self.1.floor());
+            Double(a, b)
         } else {
             Double(hi, 0.0)
         }
@@ -77,7 +78,8 @@ impl Double {
         let hi = self.0.ceil();
 
         if (hi - self.0).abs() < f64::EPSILON {
-            Double::new(hi, self.1.ceil())
+            let (a, b) = u::renorm2(hi, self.1.ceil());
+            Double(a, b)
         } else {
             Double(hi, 0.0)
         }
@@ -106,7 +108,7 @@ impl Double {
 
         if (hi - self.0).abs() < f64::EPSILON {
             let lo = self.1.round();
-            let (a, b) = p::renorm2(hi, lo);
+            let (a, b) = u::renorm2(hi, lo);
             Double(a, b)
         } else if ((hi - self.0).abs() - 0.5).abs() < f64::EPSILON && self.1 < 0.0 {
             Double(hi - 1.0, 0.0)

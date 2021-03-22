@@ -88,13 +88,13 @@ impl Double {
                     let mut s = self;
                     let mut t = self;
                     let r = t.sqr();
-                    let mut m = 1.0;
+                    let mut m = 1;
                     let threshold = (self * Double::EPSILON).abs();
 
                     loop {
-                        m += 2.0;
+                        m += 2;
                         t *= r;
-                        t /= Double::from_mul(m - 1.0, m);
+                        t /= Double::from((m - 1) * m);
                         s += t;
                         if t.abs() <= threshold {
                             break;

@@ -3,21 +3,9 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::common::primitive as p;
+use crate::common::utils as u;
 use crate::double::Double;
 use std::f64;
-
-// Determines whether a number is exact (true) or has floating-point error (false)
-fn is_dyadic(n: f64) -> bool {
-    let f = n.fract();
-    if f == 0.0 {
-        true
-    } else {
-        let len = f.to_string().len() - 2; // ignore the leading "0."
-        let base = 2f64.powi(-(len as i32));
-        f % base == 0.0
-    }
-}
 
 #[inline]
 fn split_u64(a: u64) -> (u32, u32) {
@@ -28,7 +16,7 @@ fn split_u64(a: u64) -> (u32, u32) {
 
 fn from_u64(a: u64) -> Double {
     let (x, y) = split_u64(a);
-    let (a, b) = p::renorm2(x as f64 * 2f64.powi(32), y as f64);
+    let (a, b) = u::renorm2(x as f64 * 2f64.powi(32), y as f64);
     Double(a, b)
 }
 
@@ -42,7 +30,7 @@ fn from_i64(a: i64) -> Double {
         a.abs() as u64
     };
     let (x, y) = split_u64(a);
-    let (a, b) = p::renorm2(x as f64 * 2f64.powi(32), y as f64);
+    let (a, b) = u::renorm2(x as f64 * 2f64.powi(32), y as f64);
     if sign == -1 {
         Double(-a, -b)
     } else {
@@ -96,7 +84,7 @@ macro_rules! from_float_impl {
                     } else {
                         Double::INFINITY
                     }
-                } else if is_dyadic(a as f64) {
+                } else if u::is_dyadic(a as f64) {
                     Double(a.into(), 0.0)
                 } else {
                     // Yes, this converts an f32/f64 to a string and then parses it. After a
@@ -361,21 +349,6 @@ impl From<Double> for f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn dyadic() {
-        assert!(is_dyadic(1.0));
-        assert!(is_dyadic(1.5));
-        assert!(is_dyadic(1.75));
-        assert!(is_dyadic(1.625));
-        assert!(is_dyadic(1.8125));
-        assert!(is_dyadic(1.40625));
-        assert!(is_dyadic(1.203125));
-        assert!(is_dyadic(1.1015625));
-        assert!(is_dyadic(1.14453125));
-        assert!(is_dyadic(1.0005645751953125));
-        assert!(!is_dyadic(1.1));
-    }
 
     #[test]
     fn from_f32() {

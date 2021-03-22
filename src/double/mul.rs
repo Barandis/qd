@@ -4,26 +4,9 @@
 // https://opensource.org/licenses/MIT
 
 use crate::common::primitive as p;
+use crate::common::utils as u;
 use crate::double::Double;
 use std::ops::{Mul, MulAssign};
-
-impl Double {
-    /// Creates a new `Double` representing the product of two floats.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
-    /// let x = Double::from_mul(1.0, 2.0);
-    /// assert!(x == dd!(2.0));
-    /// # }
-    /// ```
-    pub fn from_mul(a: f64, b: f64) -> Double {
-        let (a, b) = p::two_prod(a, b);
-        Double(a, b)
-    }
-}
 
 #[allow(clippy::suspicious_arithmetic_impl)]
 impl Mul for Double {
@@ -50,7 +33,7 @@ impl Mul for Double {
             Some(r) => r,
             None => {
                 let (p, e) = p::two_prod(self.0, other.0);
-                let (a, b) = p::renorm2(p, e + self.0 * other.1 + self.1 * other.0);
+                let (a, b) = u::renorm2(p, e + self.0 * other.1 + self.1 * other.0);
                 Double(a, b)
             }
         }

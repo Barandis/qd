@@ -1031,12 +1031,12 @@
     <span class="doccomment">/// // -π/4 radians (45 degrees clockwise)</span>
     <span class="doccomment">/// let x1 = dd!(3);</span>
     <span class="doccomment">/// let y1 = dd!(-3);</span>
-    <span class="doccomment">/// let expected1 = -pi / dd!(4);</span>
+    <span class="doccomment">/// let expected1 = -Double::FRAC_PI_4;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// // 3π/4 radians (135 degrees counter-clockwise)</span>
     <span class="doccomment">/// let x2 = dd!(-3);</span>
     <span class="doccomment">/// let y2 = dd!(3);</span>
-    <span class="doccomment">/// let expected2 = Double::from_div(3.0, 4.0) * pi;</span>
+    <span class="doccomment">/// let expected2 = Double::FRAC_3_PI_4;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff1 = (y1.atan2(x1) - expected1).abs();</span>
     <span class="doccomment">/// let diff2 = (y2.atan2(x2) - expected2).abs();</span>

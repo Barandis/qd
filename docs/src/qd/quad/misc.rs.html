@@ -719,7 +719,7 @@
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">primitive</span> <span class="kw">as</span> <span class="ident">p</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">utils</span> <span class="kw">as</span> <span class="ident">u</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">f64</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">num</span>::<span class="ident">FpCategory</span>;
@@ -774,7 +774,7 @@
                     <span class="ident">d</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">3</span>.<span class="ident">floor</span>();
                 }
             }
-            <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm4</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>);
+            <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">renorm4</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>);
             <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>)
         } <span class="kw">else</span> {
             <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>)
@@ -810,7 +810,7 @@
                     <span class="ident">d</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">3</span>.<span class="ident">ceil</span>();
                 }
             }
-            <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm4</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>);
+            <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">renorm4</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>);
             <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>)
         } <span class="kw">else</span> {
             <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>)
@@ -841,7 +841,7 @@
                 <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">2</span>.<span class="ident">round</span>();
                 <span class="kw">if</span> (<span class="ident">c</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">2</span>).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">f64</span>::<span class="ident">EPSILON</span> {
                     <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">3</span>.<span class="ident">round</span>();
-                    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">p</span>::<span class="ident">renorm4</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>);
+                    <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> <span class="ident">u</span>::<span class="ident">renorm4</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>);
                     <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>)
                 } <span class="kw">else</span> <span class="kw">if</span> ((<span class="ident">c</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">2</span>).<span class="ident">abs</span>() <span class="op">-</span> <span class="number">0.5</span>).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">f64</span>::<span class="ident">EPSILON</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="number">3</span> <span class="op">&lt;</span> <span class="number">0.0</span> {
                     <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span> <span class="op">-</span> <span class="number">1.0</span>, <span class="number">0.0</span>)
