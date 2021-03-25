@@ -120,7 +120,7 @@ fn format_fixed(value: &Double, f: &mut Formatter) -> Result {
         } else if value.is_zero() {
             d::push_zero(&mut result, f);
         } else {
-            let width = precision as i32 + f64::from(value.abs().log10().floor()) as i32 + 1;
+            let width = precision as i32 + value.0.abs().log10().floor() as i32 + 1;
             // Higher than the max-length number + max precision so that users can do their
             // format!("{:.30}", Double::from_str("999999999999999999999999999999")) in
             // peace

@@ -1,5 +1,5 @@
 // Copyright (c) 2021 Thomas J. Otterson
-// 
+//
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
@@ -197,7 +197,7 @@ pub fn renorm5(a: f64, b: f64, c: f64, d: f64, e: f64) -> (f64, f64, f64, f64) {
 }
 
 /// Determines whether a number is exact (true) or has floating-point error (false).
-/// 
+///
 /// A number is exactly representable in binary if it can be rendered as a fraction with a
 /// power of two as an exponent. If so, then floating-point error doesn't exist and the
 /// number can be turned into a quad- or double-double much more efficiently.

@@ -4,6 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 use crate::quad::{tables, Quad};
+use std::f64;
 
 impl Quad {
     /// Computes the exponential function, *e*<sup>x</sup>, for the `Quad`.
@@ -40,12 +41,11 @@ impl Quad {
                 //
                 // Reducing x substantially speeds up the convergence, so we have to use
                 // fewer terms to reach the required precision.
-                let k = 2f64.powi(16);
-                let inv_k = 1.0 / k;
+                let inv_k = 1.52587890625e-05;  // 1/65536;
 
-                let m = (self.0 / Quad::LN_2.0 + 0.5).floor();
+                let m = (self.0 / f64::consts::LN_2 + 0.5).floor();
                 let r = (self - Quad::LN_2 * Quad(m, 0.0, 0.0, 0.0)).mul_pwr2(inv_k);
-                let threshold = Quad::from(inv_k) * Quad::EPSILON;
+                let threshold = Quad::EPSILON.mul_pwr2(inv_k);
 
                 let mut p = r.sqr();
                 let mut s = r + p.mul_pwr2(0.5);

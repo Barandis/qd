@@ -263,7 +263,7 @@ impl Double {
     /// let expected = dd!("37.540507598529552193101865954634");
     ///
     /// let diff = (x - expected).abs();
-    /// assert!(diff < dd!(1e-30));
+    /// assert!(diff < dd!(1e-28));
     /// # }
     /// ```
     ///

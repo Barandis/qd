@@ -185,7 +185,7 @@ impl Quad {
     /// let q = Quad::new(0.0, 0.0, 0.0, 0.0);
     /// assert!(q.is_zero());
     /// ```
-    pub fn new(a: f64, b: f64, c: f64, d: f64) -> Quad {
+    pub const fn new(a: f64, b: f64, c: f64, d: f64) -> Quad {
         Quad(a, b, c, d)
     }
 }
