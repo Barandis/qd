@@ -434,6 +434,7 @@
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::{<span class="ident">tables</span>, <span class="ident">Quad</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">f64</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
     <span class="doccomment">/// Computes the exponential function, *e*&lt;sup&gt;x&lt;/sup&gt;, for the `Quad`.</span>
@@ -470,12 +471,11 @@
                 <span class="comment">//</span>
                 <span class="comment">// Reducing x substantially speeds up the convergence, so we have to use</span>
                 <span class="comment">// fewer terms to reach the required precision.</span>
-                <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="number">2f64</span>.<span class="ident">powi</span>(<span class="number">16</span>);
-                <span class="kw">let</span> <span class="ident">inv_k</span> <span class="op">=</span> <span class="number">1.0</span> <span class="op">/</span> <span class="ident">k</span>;
+                <span class="kw">let</span> <span class="ident">inv_k</span> <span class="op">=</span> <span class="number">1.52587890625e-05</span>;  <span class="comment">// 1/65536;</span>
 
-                <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> (<span class="self">self</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
+                <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> (<span class="self">self</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">f64</span>::<span class="ident">consts</span>::<span class="ident">LN_2</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
                 <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> (<span class="self">self</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span> <span class="op">*</span> <span class="ident">Quad</span>(<span class="ident">m</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>)).<span class="ident">mul_pwr2</span>(<span class="ident">inv_k</span>);
-                <span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">from</span>(<span class="ident">inv_k</span>) <span class="op">*</span> <span class="ident">Quad</span>::<span class="ident">EPSILON</span>;
+                <span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">EPSILON</span>.<span class="ident">mul_pwr2</span>(<span class="ident">inv_k</span>);
 
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">+</span> <span class="ident">p</span>.<span class="ident">mul_pwr2</span>(<span class="number">0.5</span>);

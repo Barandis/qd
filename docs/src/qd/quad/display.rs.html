@@ -722,7 +722,7 @@
         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_zero</span>() {
             <span class="ident">d</span>::<span class="ident">push_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="ident">f</span>);
         } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">width</span> <span class="op">=</span> <span class="ident">precision</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">value</span>.<span class="ident">abs</span>().<span class="ident">log10</span>().<span class="ident">floor</span>()) <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="number">1</span>;
+            <span class="kw">let</span> <span class="ident">width</span> <span class="op">=</span> <span class="ident">precision</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="ident">value</span>.<span class="number">0</span>.<span class="ident">abs</span>().<span class="ident">log10</span>().<span class="ident">floor</span>() <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="number">1</span>;
             <span class="comment">// Higher than the max-length number + max precision so that users</span>
             <span class="comment">// can do their format!(&quot;{:.60}&quot;,</span>
             <span class="comment">// Quad::from_str(&quot;999999999999999999999999999999...&quot;)) in peace</span>

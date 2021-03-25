@@ -229,6 +229,28 @@
 <span id="226">226</span>
 <span id="227">227</span>
 <span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -277,22 +299,29 @@
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">digits</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>);
             <span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>);
-            <span class="kw">let</span> <span class="ident">mag</span> <span class="op">=</span> <span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">expected</span>.<span class="ident">abs</span>().<span class="ident">log10</span>().<span class="ident">floor</span>()) <span class="kw">as</span> <span class="ident">i32</span>;
+            <span class="kw">let</span> <span class="ident">mag</span> <span class="op">=</span> <span class="ident">expected</span>.<span class="number">0</span>.<span class="ident">abs</span>().<span class="ident">log10</span>().<span class="ident">ceil</span>() <span class="kw">as</span> <span class="ident">i32</span>;
             <span class="kw">let</span> <span class="ident">epsilon</span> <span class="op">=</span> <span class="ident">Double</span>(<span class="number">10.0</span>, <span class="number">0.0</span>).<span class="ident">powi</span>(<span class="ident">mag</span> <span class="op">-</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">digits</span>);
             <span class="kw">let</span> <span class="ident">diff</span> <span class="op">=</span> (<span class="ident">expected</span> <span class="op">-</span> <span class="ident">actual</span>).<span class="ident">abs</span>();
             <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(
                 <span class="macro">concat</span><span class="macro">!</span>(
                     <span class="string">&quot;\n&quot;</span>,
                     <span class="string">&quot;Expected: {0}\n&quot;</span>,
-                    <span class="string">&quot;          ({0:?})\n&quot;</span>,
+                    <span class="string">&quot;          {0:?}\n&quot;</span>,
                     <span class="string">&quot;Actual:   {1}\n&quot;</span>,
-                    <span class="string">&quot;          ({1:?})\n&quot;</span>,
-                    <span class="string">&quot;Delta:    {2:e}&quot;</span>
+                    <span class="string">&quot;          {1:?}\n&quot;</span>,
+                    <span class="string">&quot;Delta:    {2:e}\n&quot;</span>,
+                    <span class="string">&quot;Epsilon:  {3:e}\n&quot;</span>,
                 ),
-                <span class="ident">expected</span>, <span class="ident">actual</span>, <span class="ident">diff</span>
+                <span class="ident">expected</span>, <span class="ident">actual</span>, <span class="ident">diff</span>, <span class="ident">epsilon</span>
             );
             <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">diff</span> <span class="op">&lt;</span> <span class="ident">epsilon</span>, <span class="ident">message</span>);
         };
+    }
+
+    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">assert_precision_all</span> {
+        ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">digits</span>:<span class="ident">expr</span>);<span class="op">*</span> $(;)<span class="question-mark">?</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            $(<span class="macro">assert_precision</span><span class="macro">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">digits</span>);)<span class="op">*</span>
+        }
     }
 
     <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">assert_close</span> {
@@ -301,19 +330,28 @@
         };
     }
 
+    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">assert_all_close</span> {
+        ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>:<span class="ident">expr</span>);<span class="op">*</span> $(;)<span class="question-mark">?</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            $(<span class="macro">assert_close</span><span class="macro">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>);)<span class="op">*</span>
+        }
+    }
+
     <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">assert_exact</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>);
             <span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>);
+            <span class="kw">let</span> <span class="ident">diff</span> <span class="op">=</span> (<span class="ident">expected</span> <span class="op">-</span> <span class="ident">actual</span>).<span class="ident">abs</span>();
             <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(
                 <span class="macro">concat</span><span class="macro">!</span>(
                     <span class="string">&quot;\n&quot;</span>,
                     <span class="string">&quot;Expected: {0}\n&quot;</span>,
-                    <span class="string">&quot;          ({0:?})\n&quot;</span>,
+                    <span class="string">&quot;          {0:?}\n&quot;</span>,
                     <span class="string">&quot;Actual:   {1}\n&quot;</span>,
-                    <span class="string">&quot;          ({1:?})&quot;</span>
+                    <span class="string">&quot;          {1:?}\n&quot;</span>,
+                    <span class="string">&quot;Delta:    {2:e}\n&quot;</span>,
+                    <span class="string">&quot;Epsilon:  0\n&quot;</span>,
                 ),
-                <span class="ident">expected</span>, <span class="ident">actual</span>
+                <span class="ident">expected</span>, <span class="ident">actual</span>, <span class="ident">diff</span>
             );
             <span class="kw">if</span> <span class="ident">expected</span>.<span class="ident">is_nan</span>() {
                 <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">actual</span>.<span class="ident">is_nan</span>(), <span class="ident">message</span>);
@@ -321,6 +359,12 @@
                 <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">expected</span> <span class="op">=</span><span class="op">=</span> <span class="ident">actual</span>, <span class="ident">message</span>);
             }
         };
+    }
+
+    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">assert_all_exact</span> {
+        ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>:<span class="ident">expr</span>);<span class="op">*</span> $(;)<span class="question-mark">?</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            $(<span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">actual</span>);)<span class="op">*</span>
+        }
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -371,17 +415,17 @@
 <span class="doccomment">/// [`new`] will *not* normalize its result. This means that the arguments must be</span>
 <span class="doccomment">/// pre-normalized. [`from`], [`parse`], and [`dd!`] will both account for floating-point</span>
 <span class="doccomment">/// rounding error *and* produce normalized results.</span>
-<span class="doccomment">/// </span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// The reason for these two different ways of going about creation is speed. If the number</span>
 <span class="doccomment">/// is already pre-computed to take normalization and error into account (as all of the</span>
 <span class="doccomment">/// constants in this library are), then [`new`] offers a way to avoid having to pay the</span>
 <span class="doccomment">/// efficiency cost of unnecessary normalization.</span>
-<span class="doccomment">/// </span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// For the other methods, shortcuts can be taken if the input is a number and that number</span>
 <span class="doccomment">/// is [*dyadic*] (i.e., it can be represented in binary exactly, without rounding). In this</span>
 <span class="doccomment">/// case, [`from`] and [`dd!`] can also skip normalization and accounting for rounding, and</span>
 <span class="doccomment">/// they won&#39;t be much slower than [`new`].</span>
-<span class="doccomment">/// </span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// Parsing from strings or from numbers that are not dyadic cannot take these shortcuts.</span>
 <span class="doccomment">/// The results will be precise, but at the cost of speed.</span>
 <span class="doccomment">///</span>
@@ -415,7 +459,7 @@
     <span class="doccomment">/// let d = Double::new(0.0, 0.0);</span>
     <span class="doccomment">/// assert!(d.is_zero());</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">a</span>: <span class="ident">f64</span>, <span class="ident">b</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">a</span>: <span class="ident">f64</span>, <span class="ident">b</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
         <span class="ident">Double</span>(<span class="ident">a</span>, <span class="ident">b</span>)
     }
 }
