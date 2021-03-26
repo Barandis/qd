@@ -69,9 +69,10 @@ impl Double {
                 // into our target range. After we have our answer, we must square that the
                 // same number of times to compensate.
 
-                // Start with the absolute value of the original number. This will keep
-                // log2() from blowing up on us later. If the number is negative, we will
-                // compensate at the end by taking the positive answer's reciprocal.
+                // Start with the absolute value of the original number, which prevents the
+                // evaluated number from being on the negative side of [0, 0.25]. If the
+                // number is negative, we will compensate at the end by taking the positive
+                // answer's reciprocal.
                 let mut x = self.abs();
 
                 // Calculate k. m is the number of times that we have to divide by 2 to get
@@ -88,10 +89,10 @@ impl Double {
                     2f64.powi(m)
                 };
                 // Divide by 2, m times. This is the same as dividing by 2^m, which is what
-                // we defined k to be. We divide by multiplying by the reciprocal of k. We
-                // do **not** use `mul_pwr2` here even though it's much faster than division
-                // because it loses accuracy with even moderately large numbers. Division
-                // happens only once so this shouldn't be too bad.
+                // we defined k to be. We do **not** use `mul_pwr2` here even though it's
+                // much faster than division because it loses accuracy with even moderately
+                // large numbers. Division happens only once so this shouldn't be too bad.
+                // After this division, x will be between 0.0 and 0.25 inclusive.
                 x /= Double::from(k);
 
                 // Evaluate the polynomial. We have to then raise it to the 2^m power (again,
@@ -137,21 +138,25 @@ impl Double {
                 //
                 // using Newton's iteration. This iteration is given by
                 //
-                //      x' = x - f(x)/f'(x)
+                //      x' = x - f(x)/f'(x)              (general Newton's iteration)
+                //         = x - (exp(x) - a) / exp(x)
+                //         = x - (1 - a / exp(x))
                 //         = x - (1 - a * exp(-x))
                 //         = x + a * exp(-x) - 1
                 //
-                // Testing has shown that it typically requires two iterations to get the
-                // required precision.
-                let mut x = Double::from(self.0.ln()); // initial approximation
-                let mut i = 0;
+                // Because the derivative of exp(x) is exp(x), this is perhaps the simplest
+                // of all Newton iterations.
+                let mut x = Double(self.0.ln(), 0.0); // initial approximation
+
+                let k = x.0.abs().log2().floor() as i32;
+                let eps = Double::EPSILON.mul_pwr2(2f64.powi(k + 2));
+
                 loop {
-                    let next = x + self * (-x).exp() - Double::ONE;
-                    if (x - next).abs() < Double::EPSILON || i >= 5 {
-                        return next;
+                    let r = x + self * (-x).exp() - Double::ONE;
+                    if (x - r).abs() < eps {
+                        return r;
                     }
-                    x = next;
-                    i += 1;
+                    x = r;
                 }
             }
         }
@@ -250,12 +255,16 @@ impl Double {
 
     #[inline]
     fn pre_ln(&self) -> Option<Double> {
-        if *self == Double::ONE {
-            Some(Double::ZERO)
-        } else if self.is_zero() || self.is_sign_negative() {
+        if self.is_nan() {
             Some(Double::NAN)
+        } else if self.is_sign_negative() {
+            Some(Double::NAN)
+        } else if self.is_zero() {
+            Some(Double::NEG_INFINITY)
         } else if self.is_infinite() {
             Some(Double::INFINITY)
+        } else if *self == Double::ONE {
+            Some(Double::ZERO)
         } else {
             None
         }
@@ -334,14 +343,15 @@ mod tests {
             dd!("0.45158270528945486472619522989488"), Double::FRAC_PI_2.ln();
             dd!("0.34657359027997265470861606072909"), Double::SQRT_2.ln();
             dd!("-0.34657359027997265470861606072909"), Double::FRAC_1_SQRT_2.ln();
-            dd!("46.051701859880913680359829093687287"), dd!(1e20).ln();
-            dd!("-667.74967696827324836521752185847"), dd!(1e-290).ln();
+            dd!("46.051701859880913680359829093687287"), dd!("1e20").ln();
+            dd!("69.077552789821370520539743640530926"), dd!("1e30").ln();
+            dd!("-667.74967696827324836521752185847"), dd!("1e-290").ln();
         );
         assert_all_exact!(
             Double::NAN, (-Double::PI).ln();
             Double::NAN, (-Double::E).ln();
             Double::ZERO, Double::ONE.ln();
-            Double::NAN, Double::ZERO.ln();
+            Double::NEG_INFINITY, Double::ZERO.ln();
             Double::NAN, Double::NEG_ZERO.ln();
             Double::INFINITY, Double::INFINITY.ln();
             Double::NAN, Double::NEG_INFINITY.ln();
