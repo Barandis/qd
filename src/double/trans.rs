@@ -239,6 +239,9 @@ impl Double {
     }
 
     /// Calculates the base `b` logarithm (log<sub>`b`</sub>) of the `Double`.
+    /// 
+    /// This function will have limits at extreme arguments like the other logarithm
+    /// functions. The difference is that those limits will depend on the base argument.
     ///
     /// If the goal is to calculate the base *e*, base 2, or base 10 logarithms of `self`,
     /// the specialized functions for those purposes([`ln`], [`log2`], and [`log10`]
@@ -249,7 +252,7 @@ impl Double {
     /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
     /// # fn main() {
-    /// let x = dd!(10).log(7.0);
+    /// let x = dd!(10).log(dd!(7.0));
     /// let expected = dd!("1.18329466245493832681792856164686");
     ///
     /// let diff = (x - expected).abs();

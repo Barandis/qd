@@ -483,6 +483,9 @@
 <span id="480">480</span>
 <span id="481">481</span>
 <span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -725,6 +728,9 @@
     }
 
     <span class="doccomment">/// Calculates the base `b` logarithm (log&lt;sub&gt;`b`&lt;/sub&gt;) of the `Double`.</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// This function will have limits at extreme arguments like the other logarithm</span>
+    <span class="doccomment">/// functions. The difference is that those limits will depend on the base argument.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// If the goal is to calculate the base *e*, base 2, or base 10 logarithms of `self`,</span>
     <span class="doccomment">/// the specialized functions for those purposes([`ln`], [`log2`], and [`log10`]</span>
@@ -735,7 +741,7 @@
     <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
     <span class="doccomment">/// # use qd::Double;</span>
     <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = dd!(10).log(7.0);</span>
+    <span class="doccomment">/// let x = dd!(10).log(dd!(7.0));</span>
     <span class="doccomment">/// let expected = dd!(&quot;1.18329466245493832681792856164686&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
