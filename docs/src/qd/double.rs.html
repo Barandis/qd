@@ -251,6 +251,9 @@
 <span id="248">248</span>
 <span id="249">249</span>
 <span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -306,13 +309,16 @@
                 <span class="macro">concat</span><span class="macro">!</span>(
                     <span class="string">&quot;\n&quot;</span>,
                     <span class="string">&quot;Expected: {0}\n&quot;</span>,
-                    <span class="string">&quot;          {0:?}\n&quot;</span>,
                     <span class="string">&quot;Actual:   {1}\n&quot;</span>,
-                    <span class="string">&quot;          {1:?}\n&quot;</span>,
+                    <span class="string">&quot;\n&quot;</span>,
                     <span class="string">&quot;Delta:    {2:e}\n&quot;</span>,
                     <span class="string">&quot;Epsilon:  {3:e}\n&quot;</span>,
+                    <span class="string">&quot;\n&quot;</span>,
+                    <span class="string">&quot;Components:\n&quot;</span>,
+                    <span class="string">&quot;  Expected: {4:&lt;22e} {5:e}\n&quot;</span>,
+                    <span class="string">&quot;  Actual:   {6:&lt;22e} {7:e}\n&quot;</span>,
                 ),
-                <span class="ident">expected</span>, <span class="ident">actual</span>, <span class="ident">diff</span>, <span class="ident">epsilon</span>
+                <span class="ident">expected</span>, <span class="ident">actual</span>, <span class="ident">diff</span>, <span class="ident">epsilon</span>, <span class="ident">expected</span>[<span class="number">0</span>], <span class="ident">expected</span>[<span class="number">1</span>], <span class="ident">actual</span>[<span class="number">0</span>], <span class="ident">actual</span>[<span class="number">1</span>]
             );
             <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">diff</span> <span class="op">&lt;</span> <span class="ident">epsilon</span>, <span class="ident">message</span>);
         };

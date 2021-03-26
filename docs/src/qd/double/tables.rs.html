@@ -44,28 +44,6 @@
 <span id="41">41</span>
 <span id="42">42</span>
 <span id="43">43</span>
-<span id="44">44</span>
-<span id="45">45</span>
-<span id="46">46</span>
-<span id="47">47</span>
-<span id="48">48</span>
-<span id="49">49</span>
-<span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
-<span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
-<span id="57">57</span>
-<span id="58">58</span>
-<span id="59">59</span>
-<span id="60">60</span>
-<span id="61">61</span>
-<span id="62">62</span>
-<span id="63">63</span>
-<span id="64">64</span>
-<span id="65">65</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas J. Otterson</span>
 <span class="comment">//</span>
@@ -74,8 +52,9 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
-<span class="doccomment">/// Reciprocals of factorials, rendered as Doubles. These are used in Taylor series</span>
-<span class="doccomment">/// calculations.</span>
+<span class="doccomment">/// Table of the reciprocals of factorials. This starts with 1/3!, as the inverse factorials</span>
+<span class="doccomment">/// before that are trivial (1/1! is 1 and 1/2! is 1/2). These are used in Taylor series</span>
+<span class="doccomment">/// calculations for exp, sin, and cos. </span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INV_FACTS</span>: [<span class="ident">Double</span>; <span class="number">15</span>] <span class="op">=</span> [
     <span class="ident">Double</span>(<span class="number">1.6666666666666666e-1</span>, <span class="number">9.25185853854297e-18</span>),
     <span class="ident">Double</span>(<span class="number">4.1666666666666664e-2</span>, <span class="number">2.3129646346357427e-18</span>),
@@ -94,30 +73,7 @@
     <span class="ident">Double</span>(<span class="number">2.8114572543455206e-15</span>, <span class="number">1.6508842730861433e-31</span>),
 ];
 
-<span class="doccomment">/// Coefficients of a Remez-algorithm-generated polynomial that simulates exp(x) where x is</span>
-<span class="doccomment">/// in the range [0, 0.25]. The first element is the constant term, so the element at index</span>
-<span class="doccomment">/// *i* will be the coefficient for the x^i term.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COEFFS_EXP</span>: [<span class="ident">Double</span>; <span class="number">17</span>] <span class="op">=</span> [
-    <span class="ident">Double</span>(<span class="number">1e0</span>, <span class="number">5.700752635386218e-32</span>),
-    <span class="ident">Double</span>(<span class="number">1e0</span>, <span class="op">-</span><span class="number">5.546678239835239e-32</span>),
-    <span class="ident">Double</span>(<span class="number">5e-1</span>, <span class="number">1.9132958439520556e-29</span>),
-    <span class="ident">Double</span>(<span class="number">1.6666666666666666e-1</span>, <span class="number">9.251858535636339e-18</span>),
-    <span class="ident">Double</span>(<span class="number">4.1666666666666664e-2</span>, <span class="number">2.3129648669590502e-18</span>),
-    <span class="ident">Double</span>(<span class="number">8.333333333333333e-3</span>, <span class="number">1.1563696712831638e-19</span>),
-    <span class="ident">Double</span>(<span class="number">1.388888888888889e-3</span>, <span class="op">-</span><span class="number">5.26453518972086e-20</span>),
-    <span class="ident">Double</span>(<span class="number">1.984126984126984e-4</span>, <span class="op">-</span><span class="number">7.827423575810297e-21</span>),
-    <span class="ident">Double</span>(<span class="number">2.480158730158743e-5</span>, <span class="op">-</span><span class="number">9.088510300188971e-22</span>),
-    <span class="ident">Double</span>(<span class="number">2.755731922397088e-6</span>, <span class="op">-</span><span class="number">1.6537254970616428e-22</span>),
-    <span class="ident">Double</span>(<span class="number">2.7557319225298207e-7</span>, <span class="op">-</span><span class="number">1.2646289355573392e-23</span>),
-    <span class="ident">Double</span>(<span class="number">2.5052108299753353e-8</span>, <span class="number">1.5117167551423136e-24</span>),
-    <span class="ident">Double</span>(<span class="number">2.087676114728279e-9</span>, <span class="number">1.491311291313656e-25</span>),
-    <span class="ident">Double</span>(<span class="number">1.605889602605414e-10</span>, <span class="op">-</span><span class="number">6.721704574528207e-27</span>),
-    <span class="ident">Double</span>(<span class="number">1.1474475261065964e-11</span>, <span class="op">-</span><span class="number">6.833152708496626e-28</span>),
-    <span class="ident">Double</span>(<span class="number">7.584053348445579e-13</span>, <span class="number">4.724366315262144e-29</span>),
-    <span class="ident">Double</span>(<span class="number">5.417171084430837e-14</span>, <span class="number">2.1022980583719787e-30</span>),
-];
-
-<span class="comment">// Table of sin(kπ/16), for k in [1, 4]</span>
+<span class="doccomment">/// Table of sines of kπ/16, where k is in [1, 4].</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SINES</span>: [<span class="ident">Double</span>; <span class="number">4</span>] <span class="op">=</span> [
     <span class="ident">Double</span>(<span class="number">1.9509032201612828e-1</span>, <span class="op">-</span><span class="number">7.991079068461734e-18</span>),
     <span class="ident">Double</span>(<span class="number">3.826834323650898e-1</span>, <span class="op">-</span><span class="number">1.005077269646159e-17</span>),
@@ -125,7 +81,7 @@
     <span class="ident">Double</span>(<span class="number">7.071067811865476e-1</span>, <span class="op">-</span><span class="number">4.8336466567264573e-17</span>),
 ];
 
-<span class="comment">// Table of cos(kπ/16), for k in [1, 4]</span>
+<span class="doccomment">/// Table of cosines of kπ/16, where k is in [1, 4].</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COSINES</span>: [<span class="ident">Double</span>; <span class="number">4</span>] <span class="op">=</span> [
     <span class="ident">Double</span>(<span class="number">9.807852804032304e-1</span>, <span class="number">1.8546939997824996e-17</span>),
     <span class="ident">Double</span>(<span class="number">9.238795325112867e-1</span>, <span class="number">1.764504708433667e-17</span>),

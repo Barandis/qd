@@ -4,11 +4,10 @@
 // https://opensource.org/licenses/MIT
 
 use crate::double::{tables, Double};
-use std::f64;
 
 const TWO: Double = Double(2.0, 0.0);
 
-const INV_K: Double = Double(0.001953125, 0.0);  //   1/512, used for exp
+const INV_K: Double = Double(0.001953125, 0.0); //   1/512, used for exp
 
 impl Double {
     /// Computes the exponential function, *e*<sup>x</sup>, where *x* is this `Double`.
@@ -50,7 +49,7 @@ impl Double {
                 //
                 //      exp(kx) = exp(x)^k
                 //
-                // We in fact go a little further because it makes the reduction easier. 
+                // We in fact go a little further because it makes the reduction easier.
                 //
                 //      exp(kx + m * ln(2)) = 2^m * exp(x)^k
                 //
@@ -121,6 +120,17 @@ impl Double {
 
     /// Calculates the natural logarithm, log<sub>*e*</sub>, of the `Double`.
     ///
+    /// This calculation relies upon the [`exp`] calculation, in the opposite direction. A
+    /// large positive logarithm, for example, will require the calculation of a large
+    /// negative exponential.
+    ///
+    /// For the same reasons that negative values of [`exp`] are limited to -600, the
+    /// accurate results of this function are limited to the number whose logarithm is 600,
+    /// which is around 2.65 &times; 10<sup>261</sup>. Take care with this; unlike in
+    /// [`exp`], [`INFINITY`] is *not* returned. In that function, exceeding the maximum
+    /// refers to actually overflowing an `f64`, which is appropriate to call [`INFINITY`];
+    /// here, it means `601`.
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -133,6 +143,9 @@ impl Double {
     /// assert!(diff < dd!(1e-29));
     /// # }
     /// ```
+    ///
+    /// [`exp`]: #method.exp
+    /// [`INFINITY`]: #associatedconstant.INFINITY
     pub fn ln(self) -> Double {
         match self.pre_ln() {
             Some(r) => r,
@@ -160,18 +173,25 @@ impl Double {
                 let k = x.0.abs().log2().floor() as i32;
                 let eps = Double::EPSILON.mul_pwr2(2f64.powi(k + 2));
 
+                let mut i = 0;
                 loop {
                     let r = x + self * (-x).exp() - Double::ONE;
-                    if (x - r).abs() < eps {
+                    if (x - r).abs() < eps || i > 5 {
                         return r;
                     }
                     x = r;
+                    i += 1;
                 }
             }
         }
     }
 
-    /// Calculates log<sub>10</sub> of the `Double`.
+    /// Calculates the base-10 logarithm, log<sub>10</sub>, of the `Double`.
+    ///
+    /// As with `ln`, this has an upper usable range less than the size of the numbers
+    /// themselves. In this case, that upper limit is around 10<sup>261</sup>. Over this
+    /// number, the output is not reliable, but it does not return [`INFINITY`] because the
+    /// number 261 is so plainly not infinite.
     ///
     /// # Examples
     /// ```
@@ -185,12 +205,18 @@ impl Double {
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
+    ///
+    /// [`INFINITY`]: #associatedconstant.INFINITY
     #[inline]
     pub fn log10(self) -> Double {
         self.ln() / Double::LN_10
     }
 
-    /// Calculates log<sub>2</sub> of the `Double`.
+    /// Calculates the base-2 logarithm, log<sub>2</sub>, of the `Double`.
+    ///
+    /// Since 2 is smaller than *e*, this function is constrained even more than [`ln`]. It
+    /// will start returning [`NEG_INFINITY`] at around 10<sup>-213</sup> and will start
+    /// to fail on the positive side at around 2.6 &times; 10<sup>180</sup>.
     ///
     /// # Examples
     /// ```
@@ -204,6 +230,9 @@ impl Double {
     /// assert!(diff < dd!(1e-29));
     /// # }
     /// ```
+    ///
+    /// [`ln`]: #method.ln
+    /// [`NEG_INFINITY`]: #associatedconstant.NEG_INFINITY
     #[inline]
     pub fn log2(self) -> Double {
         self.ln() / Double::LN_2
@@ -232,8 +261,11 @@ impl Double {
     /// [`log2`]: #method.log2
     /// [`log10`]: #method.log10
     #[inline]
-    pub fn log(self, b: f64) -> Double {
-        self.ln() / Double::from(b).ln()
+    pub fn log(self, b: Double) -> Double {
+        match self.pre_log(&b) {
+            Some(r) => r,
+            None => self.ln() / b.ln(),
+        }
     }
 
     // Precalc functions
@@ -274,6 +306,17 @@ impl Double {
             Some(Double::INFINITY)
         } else if *self == Double::ONE {
             Some(Double::ZERO)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_log(&self, b: &Double) -> Option<Double> {
+        if self.is_nan() {
+            Some(Double::NAN)
+        } else if b.is_sign_negative() || b.is_zero() {
+            Some(Double::NAN)
         } else {
             None
         }
@@ -341,9 +384,10 @@ mod tests {
             dd!("0.45158270528945486472619522989488"), Double::FRAC_PI_2.ln();
             dd!("0.34657359027997265470861606072909"), Double::SQRT_2.ln();
             dd!("-0.34657359027997265470861606072909"), Double::FRAC_1_SQRT_2.ln();
-            dd!("46.051701859880913680359829093687287"), dd!("1e20").ln();
-            dd!("69.077552789821370520539743640530926"), dd!("1e30").ln();
-            dd!("-667.74967696827324836521752185847"), dd!("1e-290").ln();
+            dd!("69.077552789821370520539743640530881"), dd!("1e30").ln();
+            dd!("-69.077552789821370520539743640530881"), dd!("1e-30").ln();
+            dd!("575.64627324851142100449786367109143"), dd!("1e250").ln();
+            dd!("-667.7496769682732483652175218584658"), dd!("1e-290").ln();
         );
         assert_all_exact!(
             Double::NAN, (-Double::PI).ln();
@@ -359,94 +403,80 @@ mod tests {
 
     #[test]
     fn log10() {
-        assert_close!(dd!("1.62324929039790046322098305657224"), dd!(42).log10());
-        assert_close!(dd!("2.38560627359831218647513951627558"), dd!(243).log10());
-        assert_exact!(Double::ZERO, dd!(1).log10());
-        assert_close!(Double::ONE, dd!(10).log10());
-    }
-
-    #[test]
-    fn log10_zero() {
-        assert_exact!(Double::NAN, Double::ZERO.log10());
-        assert_exact!(Double::NAN, Double::NEG_ZERO.log10());
-    }
-
-    #[test]
-    fn log10_inf() {
-        assert_exact!(Double::INFINITY, Double::INFINITY.log10());
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.log10());
-    }
-
-    #[test]
-    fn log10_nan() {
-        assert_exact!(Double::NAN, Double::NAN.log10());
-    }
-
-    #[test]
-    fn log10_neg() {
-        assert_exact!(Double::NAN, dd!(-1).log10());
+        assert_all_close!(
+            dd!("0.49714987269413385435126828829089873"), Double::PI.log10();
+            dd!("0.4342944819032518276511289189166051"), Double::E.log10();
+            dd!("0.7981798683581150495650071830153917"), Double::MUL_2_PI.log10();
+            dd!("0.19611987703015265913752939356640576"), Double::FRAC_PI_2.log10();
+            dd!("0.15051499783199059760686944736224668"), Double::SQRT_2.log10();
+            dd!("-0.15051499783199059760686944736224687"), Double::FRAC_1_SQRT_2.log10();
+            dd!("30.0"), dd!("1e30").log10();
+            dd!("-30.0"), dd!("1e-30").log10();
+            dd!("260.41497334797081796442024405266689"), dd!("2.6e260").log10();
+            dd!("-290.0"), dd!("1e-290").log10();
+        );
+        assert_all_exact!(
+            Double::NAN, (-Double::PI).log10();
+            Double::NAN, (-Double::E).log10();
+            Double::ZERO, Double::ONE.log10();
+            Double::NEG_INFINITY, Double::ZERO.log10();
+            Double::NAN, Double::NEG_ZERO.log10();
+            Double::INFINITY, Double::INFINITY.log10();
+            Double::NAN, Double::NEG_INFINITY.log10();
+            Double::NAN, Double::NAN.log10();
+        );
     }
 
     #[test]
     fn log2() {
-        assert_close!(dd!("3.32192809488736234787031942948939"), dd!(10).log2());
-        assert_close!(dd!("7.92481250360578090726869471973908"), dd!(243).log2());
-        assert_exact!(Double::ZERO, dd!(1).log2());
-        assert_close!(Double::ONE, dd!(2).log2());
-    }
-
-    #[test]
-    fn log2_zero() {
-        assert_exact!(Double::NAN, Double::ZERO.log2());
-        assert_exact!(Double::NAN, Double::NEG_ZERO.log2());
-    }
-
-    #[test]
-    fn log2_inf() {
-        assert_exact!(Double::INFINITY, Double::INFINITY.log2());
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.log2());
-    }
-
-    #[test]
-    fn log2_nan() {
-        assert_exact!(Double::NAN, Double::NAN.log2());
-    }
-
-    #[test]
-    fn log2_neg() {
-        assert_exact!(Double::NAN, dd!(-1).log2());
+        assert_all_close!(
+            dd!("1.6514961294723187980432792951080072"), Double::PI.log2();
+            dd!("1.4426950408889634073599246810018917"), Double::E.log2();
+            dd!("2.6514961294723187980432792951080087"), Double::MUL_2_PI.log2();
+            dd!("0.65149612947231879804327929510800716"), Double::FRAC_PI_2.log2();
+            dd!("0.5"), Double::SQRT_2.log2();
+            dd!("-0.5"), Double::FRAC_1_SQRT_2.log2();
+            dd!("99.657842846620870436109582884681684"), dd!("1e30").log2();
+            dd!("-99.657842846620870436109582884681684"), dd!("1e-30").log2();
+            dd!("599.32556870297895242918399053285747"), dd!("2.6e180").log2();
+            dd!("-707.57068421100818009637803848124024"), dd!("1e-213").log2();
+        );
+        assert_all_exact!(
+            Double::NAN, (-Double::PI).log2();
+            Double::NAN, (-Double::E).log2();
+            Double::ZERO, Double::ONE.log2();
+            Double::NEG_INFINITY, Double::ZERO.log2();
+            Double::NAN, Double::NEG_ZERO.log2();
+            Double::INFINITY, Double::INFINITY.log2();
+            Double::NAN, Double::NEG_INFINITY.log2();
+            Double::NAN, Double::NAN.log2();
+        );
     }
 
     #[test]
     fn log() {
-        assert_close!(dd!("1.17473150366718002267187494833236"), dd!(10).log(7.1));
-        assert_close!(
-            dd!("4.22480900593537861528922880434435"),
-            dd!(243).log(3.67)
+        assert_all_close!(
+            dd!("1.6514961294723187980432792951080072"), Double::PI.log(dd!(2.0));
+            dd!("0.87356852683023186835397746476334251"), Double::E.log(Double::PI);
+            dd!("1.8378770664093454835606594728112364"), Double::MUL_2_PI.log(Double::E);
+            dd!("0.19611987703015265913752939356640576"), Double::FRAC_PI_2.log(dd!(10.0));
+            dd!("0.12159929443072307483899992782618255"), Double::SQRT_2.log(dd!(17.29));
+            dd!("0.075257498915995298803434723681123436"), Double::FRAC_1_SQRT_2.log(dd!(0.01));
+            dd!("99.657842846620870436109582884681684"), dd!("1e30").log(dd!(2.0));
+            dd!("-60.343976027641828162941661418661277"), dd!("1e-30").log(Double::PI);
+            dd!("415.4208281839556594846911899515249"), dd!("2.6e180").log(Double::E);
+            dd!("-213.0"), dd!("1e-213").log(dd!(10.0));
         );
-        assert_exact!(Double::ZERO, dd!(1).log(6.3));
-        assert_close!(Double::ONE, dd!(3.3).log(3.3));
-    }
-
-    #[test]
-    fn log_zero() {
-        assert_exact!(Double::NAN, Double::ZERO.log(9.2));
-        assert_exact!(Double::NAN, Double::NEG_ZERO.log(1.8));
-    }
-
-    #[test]
-    fn log_inf() {
-        assert_exact!(Double::INFINITY, Double::INFINITY.log(7.3));
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.log(7.3));
-    }
-
-    #[test]
-    fn log_nan() {
-        assert_exact!(Double::NAN, Double::NAN.log(3.4));
-    }
-
-    #[test]
-    fn log_neg() {
-        assert_exact!(Double::NAN, dd!(-1).log(1.8));
+        assert_all_exact!(
+            Double::NAN, (-Double::PI).log(dd!(2.0));
+            Double::NAN, (-Double::E).log(Double::PI);
+            Double::ZERO, Double::ONE.log(Double::E);
+            Double::NEG_INFINITY, Double::ZERO.log(dd!(10.0));
+            Double::NAN, Double::NEG_ZERO.log(dd!(3.2));
+            Double::INFINITY, Double::INFINITY.log(dd!(7.1));
+            Double::NAN, Double::NEG_INFINITY.log(dd!(3.0));
+            Double::NAN, Double::NAN.log(dd!(5.0));
+            Double::NAN, Double::PI.log(Double::NAN);
+        );
     }
 }

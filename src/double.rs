@@ -52,13 +52,16 @@ mod tests {
                 concat!(
                     "\n",
                     "Expected: {0}\n",
-                    "          {0:?}\n",
                     "Actual:   {1}\n",
-                    "          {1:?}\n",
+                    "\n",
                     "Delta:    {2:e}\n",
                     "Epsilon:  {3:e}\n",
+                    "\n",
+                    "Components:\n",
+                    "  Expected: {4:<22e} {5:e}\n",
+                    "  Actual:   {6:<22e} {7:e}\n",
                 ),
-                expected, actual, diff, epsilon
+                expected, actual, diff, epsilon, expected[0], expected[1], actual[0], actual[1]
             );
             assert!(diff < epsilon, message);
         };
