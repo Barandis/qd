@@ -486,6 +486,7 @@
 <span id="483">483</span>
 <span id="484">484</span>
 <span id="485">485</span>
+<span id="486">486</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -493,8 +494,6 @@
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::{<span class="ident">tables</span>, <span class="ident">Double</span>};
-
-<span class="kw">const</span> <span class="ident">TWO</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="ident">Double</span>(<span class="number">2.0</span>, <span class="number">0.0</span>);
 
 <span class="kw">const</span> <span class="ident">INV_K</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="ident">Double</span>(<span class="number">0.001953125</span>, <span class="number">0.0</span>); <span class="comment">//   1/512, used for exp</span>
 
@@ -555,7 +554,7 @@
                 <span class="comment">// answer, we expand it to compensate for the earlier reduction.</span>
 
                 <span class="comment">// k = 512 is chosen; INV_K is defined above as that reciprocal</span>
-                <span class="kw">let</span> <span class="ident">eps</span> <span class="op">=</span> <span class="ident">INV_K</span> <span class="op">*</span> <span class="ident">Double</span>::<span class="ident">EPSILON</span>;
+                <span class="kw">let</span> <span class="ident">eps</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">EPSILON</span>.<span class="ident">mul_pwr2</span>(<span class="ident">INV_K</span>.<span class="number">0</span>);
                 <span class="comment">// m doesn&#39;t need to be *that* accurate, so we calculate it with f64</span>
                 <span class="comment">// arithmetic instead of the more expensive Double arithmetic</span>
                 <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> (<span class="self">self</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">Double</span>::<span class="ident">LN_2</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
@@ -589,15 +588,17 @@
                 <span class="comment">// times that we reduced earlier.</span>
                 <span class="ident">r</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
 
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">TWO</span> <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">TWO</span> <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">TWO</span> <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">TWO</span> <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">TWO</span> <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">TWO</span> <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">TWO</span> <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">TWO</span> <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident">TWO</span> <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="comment">// mul_pwr2 can be used here because multiplication doesn&#39;t lose precision</span>
+                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">mul_pwr2</span>(<span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+
                 <span class="comment">// Finally, add the &quot;1 +&quot; part of the Taylor series.</span>
                 <span class="ident">r</span> <span class="op">+</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">ONE</span>;
 
@@ -677,7 +678,7 @@
 
     <span class="doccomment">/// Calculates the base-10 logarithm, log&lt;sub&gt;10&lt;/sub&gt;, of the `Double`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// As with `ln`, this has an upper usable range less than the size of the numbers</span>
+    <span class="doccomment">/// As with [`ln`], this has an upper usable range less than the size of the numbers</span>
     <span class="doccomment">/// themselves. In this case, that upper limit is around 10&lt;sup&gt;261&lt;/sup&gt;. Over this</span>
     <span class="doccomment">/// number, the output is not reliable, but it does not return [`INFINITY`] because the</span>
     <span class="doccomment">/// number 261 is so plainly not infinite.</span>
@@ -696,6 +697,7 @@
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`INFINITY`]: #associatedconstant.INFINITY</span>
+    <span class="doccomment">/// [`ln`]: #method.ln</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">log10</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
         <span class="self">self</span>.<span class="ident">ln</span>() <span class="op">/</span> <span class="ident">Double</span>::<span class="ident">LN_10</span>

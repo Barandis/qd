@@ -5,8 +5,6 @@
 
 use crate::double::{tables, Double};
 
-const TWO: Double = Double(2.0, 0.0);
-
 const INV_K: Double = Double(0.001953125, 0.0); //   1/512, used for exp
 
 impl Double {
@@ -66,7 +64,7 @@ impl Double {
                 // answer, we expand it to compensate for the earlier reduction.
 
                 // k = 512 is chosen; INV_K is defined above as that reciprocal
-                let eps = INV_K * Double::EPSILON;
+                let eps = Double::EPSILON.mul_pwr2(INV_K.0);
                 // m doesn't need to be *that* accurate, so we calculate it with f64
                 // arithmetic instead of the more expensive Double arithmetic
                 let m = (self.0 / Double::LN_2.0 + 0.5).floor();
@@ -100,15 +98,17 @@ impl Double {
                 // times that we reduced earlier.
                 r += t;
 
-                r = r * TWO + r.sqr();
-                r = r * TWO + r.sqr();
-                r = r * TWO + r.sqr();
-                r = r * TWO + r.sqr();
-                r = r * TWO + r.sqr();
-                r = r * TWO + r.sqr();
-                r = r * TWO + r.sqr();
-                r = r * TWO + r.sqr();
-                r = r * TWO + r.sqr();
+                // mul_pwr2 can be used here because multiplication doesn't lose precision
+                r = r.mul_pwr2(2.0) + r.sqr();
+                r = r.mul_pwr2(2.0) + r.sqr();
+                r = r.mul_pwr2(2.0) + r.sqr();
+                r = r.mul_pwr2(2.0) + r.sqr();
+                r = r.mul_pwr2(2.0) + r.sqr();
+                r = r.mul_pwr2(2.0) + r.sqr();
+                r = r.mul_pwr2(2.0) + r.sqr();
+                r = r.mul_pwr2(2.0) + r.sqr();
+                r = r.mul_pwr2(2.0) + r.sqr();
+
                 // Finally, add the "1 +" part of the Taylor series.
                 r += Double::ONE;
 
@@ -188,7 +188,7 @@ impl Double {
 
     /// Calculates the base-10 logarithm, log<sub>10</sub>, of the `Double`.
     ///
-    /// As with `ln`, this has an upper usable range less than the size of the numbers
+    /// As with [`ln`], this has an upper usable range less than the size of the numbers
     /// themselves. In this case, that upper limit is around 10<sup>261</sup>. Over this
     /// number, the output is not reliable, but it does not return [`INFINITY`] because the
     /// number 261 is so plainly not infinite.
@@ -207,6 +207,7 @@ impl Double {
     /// ```
     ///
     /// [`INFINITY`]: #associatedconstant.INFINITY
+    /// [`ln`]: #method.ln
     #[inline]
     pub fn log10(self) -> Double {
         self.ln() / Double::LN_10

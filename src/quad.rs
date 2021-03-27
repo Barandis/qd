@@ -43,28 +43,55 @@ mod tests {
         ($expected:expr, $actual:expr, $digits:expr) => {
             let expected = Quad::from($expected);
             let actual = Quad::from($actual);
-            let mag = f64::from(expected.abs().log10().floor()) as i32;
+            let mag = expected.0.abs().log10().floor() as i32;
             let epsilon = Quad(10.0, 0.0, 0.0, 0.0).powi(mag - $digits);
             let diff = (expected - actual).abs();
             let message = format!(
                 concat!(
                     "\n",
                     "Expected: {0}\n",
-                    "          ({0:?})\n",
                     "Actual:   {1}\n",
-                    "          ({1:?})\n",
-                    "Delta:    {2:e}"
+                    "\n",
+                    "Delta:    {2:e}\n",
+                    "Epsilon:  {3:e}\n",
+                    "\n",
+                    "Components:\n",
+                    "  Expected: {4:<22e} {5:<22e} {6:<22e} {7:e}\n",
+                    "  Actual:   {8:<22e} {9:<22e} {10:<22e} {11:e}\n",
                 ),
-                expected, actual, diff
+                expected,
+                actual,
+                diff,
+                epsilon,
+                expected[0],
+                expected[1],
+                expected[2],
+                expected[3],
+                actual[0],
+                actual[1],
+                actual[2],
+                actual[3],
             );
             assert!(diff < epsilon, message);
         };
+    }
+
+    macro_rules! assert_precision_all {
+        ($($expected:expr, $actual:expr, $digits:expr);* $(;)?) => {
+            $(assert_precision!($expected, $actual, $digits);)*
+        }
     }
 
     macro_rules! assert_close {
         ($expected:expr, $actual:expr $(,)*) => {
             assert_precision!($expected, $actual, 60);
         };
+    }
+
+    macro_rules! assert_all_close {
+        ($($expected:expr, $actual:expr);* $(;)?) => {
+            $(assert_close!($expected, $actual);)*
+        }
     }
 
     macro_rules! assert_exact {
@@ -75,11 +102,22 @@ mod tests {
                 concat!(
                     "\n",
                     "Expected: {0}\n",
-                    "          ({0:?})\n",
                     "Actual:   {1}\n",
-                    "          ({1:?})"
+                    "\n",
+                    "Components:\n",
+                    "  Expected: {2:<22e} {3:<22e} {4:<22e} {5:e}\n",
+                    "  Actual:   {6:<22e} {7:<22e} {8:<22e} {9:e}\n",
                 ),
-                expected, actual
+                expected,
+                actual,
+                expected[0],
+                expected[1],
+                expected[2],
+                expected[3],
+                actual[0],
+                actual[1],
+                actual[2],
+                actual[3],
             );
             if expected.is_nan() {
                 assert!(actual.is_nan(), message);
@@ -87,6 +125,12 @@ mod tests {
                 assert!(expected == actual, message);
             }
         };
+    }
+
+    macro_rules! assert_all_exact {
+        ($($expected:expr, $actual:expr);* $(;)?) => {
+            $(assert_exact!($expected, $actual);)*
+        }
     }
 
     #[test]
@@ -141,17 +185,17 @@ mod trig;
 /// [`new`] will *not* normalize its result. This means that the arguments must be
 /// pre-normalized. [`from`], [`parse`], and [`qd!`] will both account for floating-point
 /// rounding error *and* produce normalized results.
-/// 
+///
 /// The reason for these two different ways of going about creation is speed. If the number
 /// is already pre-computed to take normalization and error into account (as all of the
 /// constants in this library are), then [`new`] offers a way to avoid having to pay the
 /// efficiency cost of unnecessary normalization.
-/// 
+///
 /// For the other methods, shortcuts can be taken if the input is a number and that number
 /// is [*dyadic*] (i.e., it can be represented in binary exactly, without rounding). In this
 /// case, [`from`] and [`qd!`] can also skip normalization and accounting for rounding, and
 /// they won't be much slower than [`new`].
-/// 
+///
 /// Parsing from strings or from numbers that are not dyadic cannot take these shortcuts.
 /// The results will be precise, but at the cost of speed.
 ///

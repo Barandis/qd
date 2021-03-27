@@ -89,18 +89,17 @@ mod tests {
         ($expected:expr, $actual:expr) => {
             let expected = Double::from($expected);
             let actual = Double::from($actual);
-            let diff = (expected - actual).abs();
             let message = format!(
                 concat!(
                     "\n",
                     "Expected: {0}\n",
-                    "          {0:?}\n",
                     "Actual:   {1}\n",
-                    "          {1:?}\n",
-                    "Delta:    {2:e}\n",
-                    "Epsilon:  0\n",
+                    "\n",
+                    "Components:\n",
+                    "  Expected: {2:<22e} {3:e}\n",
+                    "  Actual:   {4:<22e} {5:e}\n",
                 ),
-                expected, actual, diff
+                expected, actual, expected[0], expected[1], actual[0], actual[1]
             );
             if expected.is_nan() {
                 assert!(actual.is_nan(), message);
