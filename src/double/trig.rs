@@ -3,7 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::double::{tables, Double};
+use crate::double::common as c;
+use crate::double::Double;
 
 impl Double {
     /// Simultaneously computes the sine (sin) and the cosine (cos) of the `Double`. This is
@@ -41,8 +42,8 @@ impl Double {
                 let (s, c) = if k == 0 {
                     (sin_t, cos_t)
                 } else {
-                    let u = tables::COSINES[abs_k - 1];
-                    let v = tables::SINES[abs_k - 1];
+                    let u = c::COSINES[abs_k - 1];
+                    let v = c::SINES[abs_k - 1];
                     if k > 0 {
                         (u * sin_t + v * cos_t, u * cos_t - v * sin_t)
                     } else {
@@ -101,8 +102,8 @@ impl Double {
                         _ => -sin_taylor(t),
                     }
                 } else {
-                    let u = tables::COSINES[abs_k - 1];
-                    let v = tables::SINES[abs_k - 1];
+                    let u = c::COSINES[abs_k - 1];
+                    let v = c::SINES[abs_k - 1];
                     let (sin_t, cos_t) = sincos_taylor(t);
 
                     if k > 0 {
@@ -157,8 +158,8 @@ impl Double {
                         _ => -cos_taylor(t),
                     }
                 } else {
-                    let u = tables::COSINES[abs_k - 1];
-                    let v = tables::SINES[abs_k - 1];
+                    let u = c::COSINES[abs_k - 1];
+                    let v = c::SINES[abs_k - 1];
                     let (sin_t, cos_t) = sincos_taylor(t);
 
                     if k > 0 {
@@ -382,7 +383,7 @@ impl Double {
     #[inline]
     fn pre_sin(&self) -> Option<Double> {
         if self.is_zero() {
-            Some(Double::ZERO)
+            Some(*self)
         } else if !self.is_finite() {
             Some(Double::NAN)
         } else {
@@ -479,7 +480,7 @@ fn sin_taylor(a: Double) -> Double {
     if a.is_zero() {
         Double::ZERO
     } else {
-        let threshold = (a.abs() * Double::EPSILON).mul_pwr2(0.5);
+        let threshold = c::mul_pwr2(a.abs() * Double::EPSILON, 0.5);
         let x = -a.sqr();
         let mut s = a;
         let mut r = a;
@@ -487,10 +488,10 @@ fn sin_taylor(a: Double) -> Double {
 
         loop {
             r *= x;
-            let t = r * tables::INV_FACTS[i];
+            let t = r * c::INV_FACTS[i];
             s += t;
             i += 2;
-            if i >= tables::INV_FACTS.len() || t.abs() <= threshold {
+            if i >= c::INV_FACTS.len() || t.abs() <= threshold {
                 break;
             }
         }
@@ -504,18 +505,18 @@ fn cos_taylor(a: Double) -> Double {
     if a.is_zero() {
         Double::ONE
     } else {
-        let threshold = Double::EPSILON.mul_pwr2(0.5);
+        let threshold = c::mul_pwr2(Double::EPSILON, 0.5);
         let x = -a.sqr();
         let mut r = x;
-        let mut s = Double::ONE + r.mul_pwr2(0.5);
+        let mut s = Double::ONE + c::mul_pwr2(r, 0.5);
         let mut i = 1;
 
         loop {
             r *= x;
-            let t = r * tables::INV_FACTS[i];
+            let t = r * c::INV_FACTS[i];
             s += t;
             i += 2;
-            if i >= tables::INV_FACTS.len() || t.abs() <= threshold {
+            if i >= c::INV_FACTS.len() || t.abs() <= threshold {
                 break;
             }
         }
@@ -543,8 +544,8 @@ fn sincos_taylor(a: Double) -> (Double, Double) {
 #[allow(clippy::many_single_char_names)]
 fn reduce(a: Double) -> (i32, i32, Double) {
     // reduce modulo 2π
-    let z = (a / Double::MUL_2_PI).round();
-    let r = a - z * Double::MUL_2_PI;
+    let z = (a / Double::TAU).round();
+    let r = a - z * Double::TAU;
 
     // reduce modulo π/2
     let mut q = (r.0 / Double::FRAC_PI_2.0 + 0.5).floor();
@@ -563,231 +564,600 @@ fn reduce(a: Double) -> (i32, i32, Double) {
 mod tests {
     use super::*;
 
-    #[test]
-    fn sin_cos() {
-        let (s, c) = dd!(1).sin_cos();
-        assert_close!(dd!("0.84147098480789650665250232163030"), s);
-        assert_close!(dd!("0.54030230586813971740093660744298"), c);
+    // sin tests
+    test_all_near!(
+        sin_zero:
+            Double::ZERO,
+            Double::ZERO.sin();
+        sin_pi_2:
+            Double::ONE,
+            Double::FRAC_PI_2.sin();
+        sin_pi:
+            Double::ZERO,
+            Double::PI.sin();
+        sin_3_pi_2:
+            Double::NEG_ONE,
+            Double::FRAC_3_PI_2.sin();
+    );
+    test_all_near!(
+        sin_one:
+            dd!("0.84147098480789650665250232163029915"),
+            Double::ONE.sin();
+        sin_pi_6:
+            dd!("0.5"),
+            Double::FRAC_PI_6.sin();
+        sin_e:
+            dd!("0.41078129050290869547600949201836151"),
+            Double::E.sin();
+        sin_5_pi_4:
+            dd!("-0.70710678118654752440084436210484928"),
+            Double::FRAC_5_PI_4.sin();
+        sin_2e:
+            dd!("-0.74904646822291702360901060145877393"),
+            (Double::E + Double::E).sin();
+        sin_7_pi_3:
+            dd!("0.86602540378443864676372317075293693"),
+            (Double::TAU + Double::FRAC_PI_3).sin();
+        sin_neg_one:
+            dd!("-0.84147098480789650665250232163029915"),
+            Double::NEG_ONE.sin();
+        sin_neg_pi_6:
+            dd!("-0.5"),
+            (-Double::FRAC_PI_6).sin();
+        sin_neg_e:
+            dd!("-0.41078129050290869547600949201836151"),
+            (-Double::E).sin();
+        sin_neg_5_pi_4:
+            dd!("0.70710678118654752440084436210484928"),
+            (-Double::FRAC_5_PI_4).sin();
+        sin_neg_2e:
+            dd!("0.74904646822291702360901060145877393"),
+            (-Double::E - Double::E).sin();
+        sin_neg_7_pi_3:
+            dd!("-0.86602540378443864676372317075293693"),
+            (-Double::TAU - Double::FRAC_PI_3).sin();
+    );
+    test_all_prec!(
+        sin_150:
+            dd!("-0.71487642962916463143638609739662987"),
+            dd!(150).sin(),
+            29;
+        sin_neg_140:
+            dd!("-0.98023965944031151566962646061837217"),
+            dd!(-140).sin(),
+            29;
+    );
+    test_all_exact!(
+        sin_neg_zero:
+            Double::NEG_ZERO,
+            Double::NEG_ZERO.sin();
+        sin_inf:
+            Double::NAN,
+            Double::INFINITY.sin();
+        sin_neg_inf:
+            Double::NAN,
+            Double::NEG_INFINITY.sin();
+        sin_nan:
+            Double::NAN,
+            Double::NAN.sin();
+    );
 
-        let (s, c) = dd!(Double::PI / dd!(4)).sin_cos();
-        assert_close!(dd!("0.70710678118654752440084436210485"), s);
-        assert_close!(dd!("0.70710678118654752440084436210485"), c);
-        assert_close!(dd!(0.5), Double::FRAC_PI_6.sin());
+    // cos tests
+    test_all_near!(
+        cos_zero:
+            Double::ONE,
+            Double::ZERO.cos();
+        cos_pi_2:
+            Double::ZERO,
+            Double::FRAC_PI_2.cos();
+        cos_pi:
+            Double::NEG_ONE,
+            Double::PI.cos();
+        cos_3_pi_2:
+            Double::ZERO,
+            Double::FRAC_3_PI_2.cos();
+    );
+    test_all_near!(
+        cos_one:
+            dd!("0.54030230586813971740093660744297627"),
+            Double::ONE.cos();
+        cos_pi_6:
+            dd!("0.86602540378443864676372317075293616"),
+            Double::FRAC_PI_6.cos();
+        cos_e:
+            dd!("-0.91173391478696509789371731780543172"),
+            Double::E.cos();
+        cos_5_pi_4:
+            dd!("-0.70710678118654752440084436210484851"),
+            Double::FRAC_5_PI_4.cos();
+        cos_2e:
+            dd!("0.66251746274552986877475631529504789"),
+            (Double::E + Double::E).cos();
+        cos_7_pi_3:
+            dd!("0.5"),
+            (Double::TAU + Double::FRAC_PI_3).cos();
+        cos_neg_one:
+            dd!("0.54030230586813971740093660744297627"),
+            Double::NEG_ONE.cos();
+        cos_neg_pi_6:
+            dd!("0.86602540378443864676372317075293616"),
+            (-Double::FRAC_PI_6).cos();
+        cos_neg_e:
+            dd!("-0.91173391478696509789371731780543172"),
+            (-Double::E).cos();
+        cos_neg_5_pi_4:
+            dd!("-0.70710678118654752440084436210484851"),
+            (-Double::FRAC_5_PI_4).cos();
+        cos_neg_2e:
+            dd!("0.66251746274552986877475631529504789"),
+            (-Double::E - Double::E).cos();
+        cos_neg_7_pi_3:
+            dd!("0.5"),
+            (-Double::TAU - Double::FRAC_PI_3).cos();
+    );
+    test_all_prec!(
+        cos_150:
+            dd!("0.69925080647837513141645161882552848"),
+            dd!(150).cos(),
+            29;
+        cos_neg_145:
+            dd!("0.88386337370850022845621852749526465"),
+            dd!(-145).cos(),
+            29;
+    );
+    test_all_exact!(
+        cos_neg_zero:
+            Double::ONE,
+            Double::NEG_ZERO.cos();
+        cos_inf:
+            Double::NAN,
+            Double::INFINITY.cos();
+        cos_neg_inf:
+            Double::NAN,
+            Double::NEG_INFINITY.cos();
+        cos_nan:
+            Double::NAN,
+            Double::NAN.cos();
+    );
 
-        assert_exact!(Double::ONE, Double::FRAC_PI_2.sin_cos().0);
-        assert_exact!(Double::ZERO, Double::FRAC_PI_2.sin_cos().1);
-    }
+    // sin_cos tests
+    test_all_near!(
+        sin_cos_zero_sin:
+            Double::ZERO.sin(),
+            Double::ZERO.sin_cos().0;
+        sin_cos_zero_cos:
+            Double::ZERO.cos(),
+            Double::ZERO.sin_cos().1;
+        sin_cos_pi_2_sin:
+            Double::FRAC_PI_2.sin(),
+            Double::FRAC_PI_2.sin_cos().0;
+        sin_cos_pi_2_cos:
+            Double::FRAC_PI_2.cos(),
+            Double::FRAC_PI_2.sin_cos().1;
+        sin_cos_pi_sin:
+            Double::PI.sin(),
+            Double::PI.sin_cos().0;
+        sin_cos_pi_cos:
+            Double::PI.cos(),
+            Double::PI.sin_cos().1;
+        sin_cos_3_pi_2_sin:
+            Double::FRAC_3_PI_2.sin(),
+            Double::FRAC_3_PI_2.sin_cos().0;
+        sin_cos_3_pi_2_cos:
+            Double::FRAC_3_PI_2.cos(),
+            Double::FRAC_3_PI_2.sin_cos().1;
+    );
+    test_all_near!(
+        sin_cos_one_sin:
+            Double::ONE.sin(),
+            Double::ONE.sin_cos().0;
+        sin_cos_one_cos:
+            Double::ONE.cos(),
+            Double::ONE.sin_cos().1;
+        sin_cos_pi_6_sin:
+            Double::FRAC_PI_6.sin(),
+            Double::FRAC_PI_6.sin_cos().0;
+        sin_cos_pi_6_cos:
+            Double::FRAC_PI_6.cos(),
+            Double::FRAC_PI_6.sin_cos().1;
+        sin_cos_e_sin:
+            Double::E.sin(),
+            Double::E.sin_cos().0;
+        sin_cos_e_cos:
+            Double::E.cos(),
+            Double::E.sin_cos().1;
+        sin_cos_5_pi_4_sin:
+            Double::FRAC_5_PI_4.sin(),
+            Double::FRAC_5_PI_4.sin_cos().0;
+        sin_cos_5_pi_4_cos:
+            Double::FRAC_5_PI_4.cos(),
+            Double::FRAC_5_PI_4.sin_cos().1;
+        sin_cos_2e_sin:
+            (Double::E + Double::E).sin(),
+            (Double::E + Double::E).sin_cos().0;
+        sin_cos_2e_cos:
+            (Double::E + Double::E).cos(),
+            (Double::E + Double::E).sin_cos().1;
+        sin_cos_7_pi_3_sin:
+            (Double::TAU + Double::FRAC_PI_3).sin(),
+            (Double::TAU + Double::FRAC_PI_3).sin_cos().0;
+        sin_cos_7_pi_3_cos:
+            (Double::TAU + Double::FRAC_PI_3).cos(),
+            (Double::TAU + Double::FRAC_PI_3).sin_cos().1;
+        sin_cos_neg_one_sin:
+            Double::NEG_ONE.sin(),
+            Double::NEG_ONE.sin_cos().0;
+        sin_cos_neg_one_cos:
+            Double::NEG_ONE.cos(),
+            Double::NEG_ONE.sin_cos().1;
+        sin_cos_neg_pi_6_sin:
+            (-Double::FRAC_PI_6).sin(),
+            (-Double::FRAC_PI_6).sin_cos().0;
+        sin_cos_neg_pi_6_cos:
+            (-Double::FRAC_PI_6).cos(),
+            (-Double::FRAC_PI_6).sin_cos().1;
+        sin_cos_neg_e_sin:
+            (-Double::E).sin(),
+            (-Double::E).sin_cos().0;
+        sin_cos_neg_e_cos:
+            (-Double::E).cos(),
+            (-Double::E).sin_cos().1;
+        sin_cos_neg_5_pi_4_sin:
+            (-Double::FRAC_5_PI_4).sin(),
+            (-Double::FRAC_5_PI_4).sin_cos().0;
+        sin_cos_neg_5_pi_4_cos:
+            (-Double::FRAC_5_PI_4).cos(),
+            (-Double::FRAC_5_PI_4).sin_cos().1;
+        sin_cos_neg_2e_sin:
+            (-Double::E - Double::E).sin(),
+            (-Double::E - Double::E).sin_cos().0;
+        sin_cos_neg_2e_cos:
+            (-Double::E - Double::E).cos(),
+            (-Double::E - Double::E).sin_cos().1;
+        sin_cos_neg_7_pi_3_sin:
+            (-Double::TAU - Double::FRAC_PI_3).sin(),
+            (-Double::TAU - Double::FRAC_PI_3).sin_cos().0;
+        sin_cos_neg_7_pi_3_cos:
+            (-Double::TAU - Double::FRAC_PI_3).cos(),
+            (-Double::TAU - Double::FRAC_PI_3).sin_cos().1;
+        sin_cos_150_sin:
+            dd!(150).sin(),
+            dd!(150).sin_cos().0;
+        sin_cos_150_cos:
+            dd!(150).cos(),
+            dd!(150).sin_cos().1;
+        sin_cos_neg_145_sin:
+            dd!(-145).sin(),
+            dd!(-145).sin_cos().0;
+        sin_cos_neg_145_cos:
+            dd!(-145).cos(),
+            dd!(-145).sin_cos().1;
+    );
+    test_all_exact!(
+        sin_cos_neg_zero_sin:
+            Double::NEG_ZERO.sin(),
+            Double::NEG_ZERO.sin_cos().0;
+        sin_cos_neg_zero_cos:
+            Double::NEG_ZERO.cos(),
+            Double::NEG_ZERO.sin_cos().1;
+        sin_cos_inf_sin:
+            Double::INFINITY.sin(),
+            Double::INFINITY.sin_cos().0;
+        sin_cos_inf_cos:
+            Double::INFINITY.cos(),
+            Double::INFINITY.sin_cos().1;
+        sin_cos_neg_inf_sin:
+            Double::NEG_INFINITY.sin(),
+            Double::NEG_INFINITY.sin_cos().0;
+        sin_cos_neg_inf_cos:
+            Double::NEG_INFINITY.cos(),
+            Double::NEG_INFINITY.sin_cos().1;
+        sin_cos_nan_sin:
+            Double::NAN.sin(),
+            Double::NAN.sin_cos().0;
+        sin_cos_nan_cos:
+            Double::NAN.cos(),
+            Double::NAN.sin_cos().1;
+    );
 
-    #[test]
-    fn sin_cos_zero() {
-        assert_exact!(Double::ZERO, Double::ZERO.sin_cos().0);
-        assert_exact!(Double::ONE, Double::ZERO.sin_cos().1);
-    }
+    // tan tests
+    test_all_near!(
+        tan_zero:
+            Double::ZERO,
+            Double::ZERO.tan();
+        tan_pi_4:
+            Double::ONE,
+            Double::FRAC_PI_4.tan();
+        tan_3_pi_4:
+            Double::NEG_ONE,
+            Double::FRAC_3_PI_4.tan();
+        tan_pi:
+            Double::ZERO,
+            Double::PI.tan();
+    );
+    test_all_near!(
+        tan_one:
+            dd!("1.55740772465490223050697480745836"),
+            Double::ONE.tan();
+        tan_pi_6:
+            dd!("0.57735026918962576450914878050195693"),
+            Double::FRAC_PI_6.tan();
+        tan_e:
+            dd!("-0.4505495340698074957106341777012804"),
+            Double::E.tan();
+        tan_5_pi_4:
+            dd!("1.0"),
+            Double::FRAC_5_PI_4.tan();
+        tan_2e:
+            dd!("-1.1306063769531499529943348786199917"),
+            (Double::E + Double::E).tan();
+        tan_7_pi_3:
+            dd!("1.7320508075688772935274463415058754"),
+            (Double::TAU + Double::FRAC_PI_3).tan();
+        tan_neg_one:
+            dd!("-1.55740772465490223050697480745836"),
+            Double::NEG_ONE.tan();
+        tan_neg_pi_6:
+            dd!("-0.57735026918962576450914878050195693"),
+            (-Double::FRAC_PI_6).tan();
+        tan_neg_e:
+            dd!("0.4505495340698074957106341777012804"),
+            (-Double::E).tan();
+        tan_neg_5_pi_4:
+            dd!("-1.0"),
+            (-Double::FRAC_5_PI_4).tan();
+        tan_neg_2e:
+            dd!("1.1306063769531499529943348786199917"),
+            (-Double::E - Double::E).tan();
+        tan_neg_7_pi_3:
+            dd!("-1.7320508075688772935274463415058754"),
+            (-Double::TAU - Double::FRAC_PI_3).tan();
+    );
+    test_all_prec!(
+        tan_150:
+            dd!("-1.0223462354365875649863661852619368"),
+            dd!(150).tan(),
+            29;
+        tan_neg_130:
+            dd!("-2.5323384274693234710763369451550171"),
+            dd!(-130).tan(),
+            29;
+    );
+    test_all_exact!(
+        tan_neg_zero:
+            Double::NEG_ZERO,
+            Double::NEG_ZERO.tan();
+        tan_inf:
+            Double::NAN,
+            Double::INFINITY.tan();
+        tan_neg_inf:
+            Double::NAN,
+            Double::NEG_INFINITY.tan();
+        tan_nan:
+            Double::NAN,
+            Double::NAN.tan();
+    );
 
-    #[test]
-    fn sin_cos_inf() {
-        assert_exact!(Double::NAN, Double::INFINITY.sin_cos().0);
-        assert_exact!(Double::NAN, Double::INFINITY.sin_cos().1);
+    // atan2 test
+    test_all_near!(
+        atan2_pos_pos:
+            dd!("0.35251342177761899747085992272395371"),
+            Double::ONE.atan2(Double::E);
+        atan2_pos_neg:
+            dd!("2.8334235824738083026756437752454511"),
+            Double::ONE.atan2(-Double::PI);
+        atan2_neg_pos:
+            dd!("-0.3081690711159849357869996080340532"),
+            Double::NEG_ONE.atan2(Double::PI);
+        atan2_neg_neg:
+            dd!("-2.7890792318121742409917834605555499"),
+            Double::NEG_ONE.atan2(-Double::E);
+        atan2_pi_6:
+            dd!("0.48234790710102497548087851189637084"),
+            Double::FRAC_PI_6.atan2(Double::ONE);
+        atan2_e:
+            dd!("1.2182829050172776217604617689157985"),
+            Double::E.atan2(Double::ONE);
+        atan2_neg_e:
+            dd!("-1.2182829050172776217604617689157985"),
+            (-Double::E).atan2(Double::ONE);
+        atan2_neg_pi_6:
+            dd!("-0.48234790710102497548087851189637084"),
+            (-Double::FRAC_PI_6).atan2(Double::ONE);
+    );
+    test_all_near!(
+        atan2_ones_pos_pos:
+            Double::FRAC_PI_4,
+            Double::ONE.atan2(Double::ONE);
+        atan2_ones_pos_neg:
+            Double::FRAC_3_PI_4,
+            Double::ONE.atan2(Double::NEG_ONE);
+        atan2_ones_neg_pos:
+            -Double::FRAC_PI_4,
+            Double::NEG_ONE.atan2(Double::ONE);
+        atan2_ones_neg_neg:
+            -Double::FRAC_3_PI_4,
+            Double::NEG_ONE.atan2(Double::NEG_ONE);
 
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.sin_cos().0);
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.sin_cos().1);
-    }
+        atan2_zero_one:
+            Double::ZERO,
+            Double::ZERO.atan2(Double::ONE);
+        atan2_zero_neg_one:
+            Double::PI,
+            Double::ZERO.atan2(Double::NEG_ONE);
+        atan2_one_zero:
+            Double::FRAC_PI_2,
+            Double::ONE.atan2(Double::ZERO);
+        atan2_neg_one_zero:
+            -Double::FRAC_PI_2,
+            Double::NEG_ONE.atan2(Double::ZERO);
 
-    #[test]
-    fn sin_cos_nan() {
-        assert_exact!(Double::NAN, Double::NAN.sin_cos().0);
-        assert_exact!(Double::NAN, Double::NAN.sin_cos().1);
-    }
+        atan2_inf_one:
+            Double::FRAC_PI_2,
+            Double::INFINITY.atan2(Double::ONE);
+        atan2_neg_inf_one:
+            -Double::FRAC_PI_2,
+            Double::NEG_INFINITY.atan2(Double::ONE);
+    );
+    test_all_exact!(
+        atan2_zero_zero:
+            Double::NAN,
+            Double::ZERO.atan2(Double::ZERO);
+        atan2_inf_inf:
+            Double::NAN,
+            Double::INFINITY.atan2(Double::INFINITY);
+        atan2_one_inf:
+            Double::ZERO,
+            Double::ONE.atan2(Double::INFINITY);
+        atan2_nan_one:
+            Double::NAN,
+            Double::NAN.atan2(Double::ONE);
+        atan2_one_nan:
+            Double::NAN,
+            Double::ONE.atan2(Double::NAN);
+        atan2_nan_nan:
+            Double::NAN,
+            Double::NAN.atan2(Double::NAN);
+    );
 
-    #[test]
-    fn sin() {
-        assert_close!(dd!("0.84147098480789650665250232163030"), dd!(1).sin());
-        assert_close!(
-            dd!("0.70710678118654752440084436210485"),
-            (Double::PI / dd!(4)).sin()
-        );
-        assert_close!(dd!(0.5), Double::FRAC_PI_6.sin());
-        assert_exact!(Double::ONE, Double::FRAC_PI_2.sin());
-    }
+    // asin tests
+    test_all_near!(
+        asin_one:
+            Double::FRAC_PI_2,
+            Double::ONE.asin();
+        asin_neg_one:
+            -Double::FRAC_PI_2,
+            Double::NEG_ONE.asin();
+        asin_half:
+            dd!("0.52359877559829887307710723054658354"),
+            dd!(0.5).asin();
+        asin_neg_half:
+            dd!("-0.52359877559829887307710723054658354"),
+            dd!(-0.5).asin();
+        asin_pi_4:
+            dd!("0.90333911076651284735893593015790267"),
+            Double::FRAC_PI_4.asin();
+        asin_neg_pi_4:
+            dd!("-0.90333911076651284735893593015790267"),
+            (-Double::FRAC_PI_4).asin();
+    );
+    test_all_exact!(
+        asin_zero:
+            Double::ZERO,
+            Double::ZERO.asin();
+        asin_neg_zero:
+            Double::NEG_ZERO,
+            Double::NEG_ZERO.asin();
+        asin_inf:
+            Double::NAN,
+            Double::INFINITY.asin();
+        asin_neg_inf:
+            Double::NAN,
+            Double::NEG_INFINITY.asin();
+        asin_pi:
+            Double::NAN,
+            Double::PI.asin();
+        asin_neg_pi:
+            Double::NAN,
+            (-Double::PI).asin();
+        asin_nan:
+            Double::NAN,
+            Double::NAN.asin();
+    );
 
-    #[test]
-    fn sin_zero() {
-        assert_exact!(Double::ZERO, Double::ZERO.sin());
-    }
+    // acos tests
+    test_all_near!(
+        acos_zero:
+            Double::FRAC_PI_2,
+            Double::ZERO.acos();
+        acos_neg_zero:
+            Double::FRAC_PI_2,
+            Double::NEG_ZERO.acos();
+        acos_neg_one:
+            Double::PI,
+            Double::NEG_ONE.acos();
+        acos_half:
+            dd!("1.0471975511965977461542144610931671"),
+            dd!(0.5).acos();
+        acos_neg_half:
+            dd!("2.0943951023931954923084289221863342"),
+            dd!(-0.5).acos();
+        acos_pi_4:
+            dd!("0.66745721602838377187238576148184873"),
+            Double::FRAC_PI_4.acos();
+        acos_neg_pi_4:
+            dd!("2.4741354375614094665902576217976541"),
+            (-Double::FRAC_PI_4).acos();
+    );
+    test_all_exact!(
+        acos_one:
+            Double::ZERO,
+            Double::ONE.acos();
+        acos_inf:
+            Double::NAN,
+            Double::INFINITY.acos();
+        acos_neg_inf:
+            Double::NAN,
+            Double::NEG_INFINITY.acos();
+        acos_pi:
+            Double::NAN,
+            Double::PI.acos();
+        acos_neg_pi:
+            Double::NAN,
+            (-Double::PI).acos();
+        acos_nan:
+            Double::NAN,
+            Double::NAN.acos();
+    );
 
-    #[test]
-    fn sin_inf() {
-        assert_exact!(Double::NAN, Double::INFINITY.sin());
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.sin());
-    }
-
-    #[test]
-    fn sin_nan() {
-        assert_exact!(Double::NAN, Double::NAN.sin());
-    }
-
-    #[test]
-    fn cos() {
-        assert_close!(dd!("0.54030230586813971740093660744298"), dd!(1).cos());
-        assert_close!(
-            dd!("0.70710678118654752440084436210485"),
-            (Double::PI / dd!(4)).cos()
-        );
-        assert_close!(dd!(0.5), Double::FRAC_PI_3.cos());
-        assert_exact!(Double::ZERO, Double::FRAC_PI_2.cos());
-    }
-
-    #[test]
-    fn cos_zero() {
-        assert_exact!(Double::ONE, Double::ZERO.cos());
-        assert_exact!(Double::ONE, Double::NEG_ZERO.cos());
-    }
-
-    #[test]
-    fn cos_inf() {
-        assert_exact!(Double::NAN, Double::INFINITY.cos());
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.cos());
-    }
-
-    #[test]
-    fn cos_nan() {
-        assert_exact!(Double::NAN, Double::NAN.cos());
-    }
-
-    #[test]
-    fn tan() {
-        assert_close!(dd!("1.5574077246549022305069748074584"), dd!(1).tan());
-        assert_close!(dd!(1), Double::FRAC_PI_4.tan());
-        assert!(Double::FRAC_PI_2.tan().is_infinite());
-    }
-
-    #[test]
-    fn tan_zero() {
-        assert_exact!(Double::ZERO, Double::ZERO.tan());
-    }
-
-    #[test]
-    fn tan_inf() {
-        assert_exact!(Double::NAN, Double::INFINITY.tan());
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.tan());
-    }
-
-    #[test]
-    fn tan_nan() {
-        assert_exact!(Double::NAN, Double::NAN.tan());
-    }
-
-    #[test]
-    fn atan2() {
-        assert_close!(
-            dd!("0.46364760900080611621425623146121"),
-            Double::ONE.atan2(dd!(2))
-        );
-        assert_close!(
-            dd!("2.6779450445889871222483871518183"),
-            Double::ONE.atan2(dd!(-2))
-        );
-        assert_close!(
-            dd!("-0.46364760900080611621425623146121"),
-            Double::NEG_ONE.atan2(dd!(2))
-        );
-        assert_close!(
-            dd!("-2.6779450445889871222483871518183"),
-            Double::NEG_ONE.atan2(dd!(-2))
-        );
-    }
-
-    #[test]
-    fn atan2_zero() {
-        assert_exact!(Double::NAN, Double::ZERO.atan2(Double::ZERO));
-        assert_exact!(Double::ZERO, Double::ZERO.atan2(Double::ONE));
-        assert_close!(Double::PI, Double::ZERO.atan2(Double::NEG_ONE));
-        assert_close!(Double::FRAC_PI_2, Double::ONE.atan2(Double::ZERO));
-        assert_close!(-Double::FRAC_PI_2, Double::NEG_ONE.atan2(Double::ZERO));
-    }
-
-    #[test]
-    fn atan2_one() {
-        assert_close!(Double::FRAC_PI_4, Double::ONE.atan2(Double::ONE));
-        assert_close!(-Double::FRAC_3_PI_4, Double::NEG_ONE.atan2(Double::NEG_ONE));
-        assert_close!(Double::FRAC_3_PI_4, Double::ONE.atan2(Double::NEG_ONE));
-        assert_close!(-Double::FRAC_PI_4, Double::NEG_ONE.atan2(Double::ONE));
-    }
-
-    #[test]
-    fn atan2_inf() {
-        assert_exact!(Double::NAN, Double::INFINITY.atan2(Double::INFINITY));
-        assert_close!(Double::FRAC_PI_2, Double::INFINITY.atan2(Double::ONE));
-        assert_close!(-Double::FRAC_PI_2, Double::NEG_INFINITY.atan2(Double::ONE));
-        assert_exact!(Double::ZERO, Double::ONE.atan2(Double::INFINITY));
-    }
-
-    #[test]
-    fn atan2_nan() {
-        assert_exact!(Double::NAN, Double::NAN.atan2(Double::ONE));
-        assert_exact!(Double::NAN, Double::ONE.atan2(Double::NAN));
-        assert_exact!(Double::NAN, Double::NAN.atan2(Double::NAN));
-    }
-
-    #[test]
-    fn asin() {
-        assert_close!(dd!("0.52359877559829887307710723054658"), dd!(0.5).asin());
-        assert_close!(Double::FRAC_PI_2, dd!(1).asin());
-        assert_close!(-Double::FRAC_PI_2, dd!(-1).asin());
-    }
-
-    #[test]
-    fn asin_inf() {
-        assert_exact!(Double::NAN, Double::INFINITY.asin());
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.asin());
-    }
-
-    #[test]
-    fn asin_nan() {
-        assert_exact!(Double::NAN, Double::NAN.asin());
-        assert_exact!(Double::NAN, dd!(1.5).asin());
-        assert_exact!(Double::NAN, dd!(-1.5).asin());
-    }
-
-    #[test]
-    fn acos() {
-        assert_close!(dd!("1.0471975511965977461542144610932"), dd!(0.5).acos());
-        assert_exact!(Double::ZERO, dd!(1).acos());
-        assert_close!(Double::PI, dd!(-1).acos());
-    }
-
-    #[test]
-    fn acos_inf() {
-        assert_exact!(Double::NAN, Double::INFINITY.acos());
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.acos());
-    }
-
-    #[test]
-    fn acos_nan() {
-        assert_exact!(Double::NAN, Double::NAN.acos());
-        assert_exact!(Double::NAN, dd!(1.5).acos());
-        assert_exact!(Double::NAN, dd!(-1.5).acos());
-    }
-
-    #[test]
-    fn atan() {
-        assert_close!(dd!("0.98279372324732906798571061101467"), dd!(1.5).atan());
-        assert_close!(Double::FRAC_PI_4, dd!(1).atan());
-    }
-
-    #[test]
-    fn atan_zero() {
-        assert_exact!(Double::ZERO, dd!(0).atan());
-    }
-
-    #[test]
-    fn atan_inf() {
-        assert_close!(Double::FRAC_PI_2, Double::INFINITY.atan());
-        assert_close!(-Double::FRAC_PI_2, Double::NEG_INFINITY.atan());
-    }
-
-    #[test]
-    fn atan_nan() {
-        assert_exact!(Double::NAN, Double::NAN.atan());
-    }
+    // atan tests
+    test_all_near!(
+        atan_pi:
+            dd!("1.2626272556789116834443220836056982"),
+            Double::PI.atan();
+        atan_e:
+            dd!("1.2182829050172776217604617689157985"),
+            Double::E.atan();
+        atan_neg_pi:
+            dd!("-1.2626272556789116834443220836056982"),
+            (-Double::PI).atan();
+        atan_neg_e:
+            dd!("-1.2182829050172776217604617689157985"),
+            (-Double::E).atan();
+        atan_2_pi:
+            dd!("1.4129651365067377590637129498569318"),
+            Double::TAU.atan();
+        atan_pi_2:
+            dd!("1.0038848218538872141484239449171319"),
+            Double::FRAC_PI_2.atan();
+        atan_sqrt_2:
+            dd!("0.9553166181245092781638571025157583"),
+            Double::SQRT_2.atan();
+        atan_1_sqrt_2:
+            dd!("0.6154797086703873410674645891239931"),
+            Double::FRAC_1_SQRT_2.atan();
+        atan_150:
+            dd!("1.5641297588910283900821777041381461"),
+            dd!(150).atan();
+        atan_neg_140:
+            dd!("-1.5636535911254832167367110323350709"),
+            dd!(-140).atan();
+    );
+    test_all_exact!(
+        atan_zero:
+            Double::ZERO,
+            Double::ZERO.atan();
+        atan_neg_zero:
+            Double::NEG_ZERO,
+            Double::NEG_ZERO.atan();
+        atan_inf:
+            Double::FRAC_PI_2,
+            Double::INFINITY.atan();
+        atan_neg_inf:
+            -Double::FRAC_PI_2,
+            Double::NEG_INFINITY.atan();
+        atan_nan:
+            Double::NAN,
+            Double::NAN.atan();
+    );
 }
