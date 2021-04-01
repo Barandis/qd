@@ -580,260 +580,592 @@ fn reduce(a: Quad) -> (i32, i32, Quad) {
 mod tests {
     use super::*;
 
-    #[test]
-    fn sin_cos() {
-        let (s, c) = qd!(1).sin_cos();
-        assert_close!(
-            qd!("0.8414709848078965066525023216302989996225630607983710656727517100"),
-            s
-        );
-        assert_close!(
-            qd!("0.5403023058681397174009366074429766037323104206179222276700972554"),
-            c
-        );
-        let (s, c) = qd!(Quad::PI / qd!(4)).sin_cos();
-        assert_close!(
-            qd!("0.7071067811865475244008443621048490392848359376884740365883398690"),
-            s
-        );
-        assert_close!(
-            qd!("0.7071067811865475244008443621048490392848359376884740365883398690"),
-            c
-        );
-        assert_close!(qd!(0.5), Quad::FRAC_PI_6.sin());
+    // sin tests
+    test_all_near!(
+        sin_zero:
+            Quad::ZERO,
+            Quad::ZERO.sin();
+        sin_pi_2:
+            Quad::ONE,
+            Quad::FRAC_PI_2.sin();
+        sin_pi:
+            Quad::ZERO,
+            Quad::PI.sin();
+        sin_3_pi_2:
+            Quad::NEG_ONE,
+            Quad::FRAC_3_PI_2.sin();
+    );
+    test_all_near!(
+        sin_one:
+            qd!("0.84147098480789650665250232163029899962256306079837106567275170999192"),
+            Quad::ONE.sin();
+        sin_pi_6:
+            qd!("0.5"),
+            Quad::FRAC_PI_6.sin();
+        sin_e:
+            qd!("0.41078129050290869547600949201836059188830697039341534530457165880643"),
+            Quad::E.sin();
+        sin_5_pi_4:
+            qd!("-0.70710678118654752440084436210484903928483593768847403658833986899397"),
+            Quad::FRAC_5_PI_4.sin();
+        sin_2e:
+            qd!("-0.74904646822291702360901060145877281237145151015215871652540204145216"),
+            (Quad::E + Quad::E).sin();
+        sin_7_pi_3:
+            qd!("0.8660254037844386467637231707529361834714026269051903140279034897264"),
+            (Quad::TAU + Quad::FRAC_PI_3).sin();
+        sin_neg_one:
+            qd!("-0.84147098480789650665250232163029899962256306079837106567275170999192"),
+            Quad::NEG_ONE.sin();
+        sin_neg_pi_6:
+            qd!("-0.5"),
+            (-Quad::FRAC_PI_6).sin();
+        sin_neg_e:
+            qd!("-0.41078129050290869547600949201836059188830697039341534530457165880643"),
+            (-Quad::E).sin();
+        sin_neg_5_pi_4:
+            qd!("0.70710678118654752440084436210484903928483593768847403658833986899397"),
+            (-Quad::FRAC_5_PI_4).sin();
+        sin_neg_2e:
+            qd!("0.74904646822291702360901060145877281237145151015215871652540204145216"),
+            (-Quad::E - Quad::E).sin();
+        sin_neg_7_pi_3:
+            qd!("-0.8660254037844386467637231707529361834714026269051903140279034897264"),
+            (-Quad::TAU - Quad::FRAC_PI_3).sin();
+        sin_150:
+            qd!("-0.71487642962916463143638609739662998937292172507126621479610892999516"),
+            qd!(150).sin();
+        sin_neg_140:
+            qd!("-0.98023965944031151566962646061837215778826865408679490002662721963484"),
+            qd!(-140).sin();
+    );
+    test_all_exact!(
+        sin_neg_zero:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.sin();
+        sin_inf:
+            Quad::NAN,
+            Quad::INFINITY.sin();
+        sin_neg_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY.sin();
+        sin_nan:
+            Quad::NAN,
+            Quad::NAN.sin();
+    );
 
-        assert_exact!(Quad::ONE, Quad::FRAC_PI_2.sin_cos().0);
-        assert_exact!(Quad::ZERO, Quad::FRAC_PI_2.sin_cos().1);
-    }
+    // cos tests
+    test_all_near!(
+        cos_zero:
+            Quad::ONE,
+            Quad::ZERO.cos();
+        cos_pi_2:
+            Quad::ZERO,
+            Quad::FRAC_PI_2.cos();
+        cos_pi:
+            Quad::NEG_ONE,
+            Quad::PI.cos();
+        cos_3_pi_2:
+            Quad::ZERO,
+            Quad::FRAC_3_PI_2.cos();
+    );
+    test_all_near!(
+        cos_one:
+            qd!("0.54030230586813971740093660744297660373231042061792222767009725538107"),
+            Quad::ONE.cos();
+        cos_pi_6:
+            qd!("0.8660254037844386467637231707529361834714026269051903140279034897264"),
+            Quad::FRAC_PI_6.cos();
+        cos_e:
+            qd!("-0.911733914786965097893717317805431845250413429215695401335640464733"),
+            Quad::E.cos();
+        cos_5_pi_4:
+            qd!("-0.70710678118654752440084436210484903928483593768847403658833986899694"),
+            Quad::FRAC_5_PI_4.cos();
+        cos_2e:
+            qd!("0.66251746274552986877475631529504922930839426893614457876918234325527"),
+            (Quad::E + Quad::E).cos();
+        cos_7_pi_3:
+            qd!("0.5"),
+            (Quad::TAU + Quad::FRAC_PI_3).cos();
+        cos_neg_one:
+            qd!("0.54030230586813971740093660744297660373231042061792222767009725538107"),
+            Quad::NEG_ONE.cos();
+        cos_neg_pi_6:
+            qd!("0.8660254037844386467637231707529361834714026269051903140279034897264"),
+            (-Quad::FRAC_PI_6).cos();
+        cos_neg_e:
+            qd!("-0.911733914786965097893717317805431845250413429215695401335640464733"),
+            (-Quad::E).cos();
+        cos_neg_5_pi_4:
+            qd!("-0.70710678118654752440084436210484903928483593768847403658833986899694"),
+            (-Quad::FRAC_5_PI_4).cos();
+        cos_neg_2e:
+            qd!("0.66251746274552986877475631529504922930839426893614457876918234325527"),
+            (-Quad::E - Quad::E).cos();
+        cos_neg_7_pi_3:
+            qd!("0.5"),
+            (-Quad::TAU - Quad::FRAC_PI_3).cos();
+    );
+    test_all_prec!(
+        cos_150:
+            qd!("0.69925080647837513141645161882552838949168176160550728024440292367885"),
+            qd!(150).cos(),
+            60;
+        cos_neg_145:
+            qd!("0.88386337370850022845621852749526436111574645997871066688312136066014"),
+            qd!(-145).cos(),
+            60;
+    );
+    test_all_exact!(
+        cos_neg_zero:
+            Quad::ONE,
+            Quad::NEG_ZERO.cos();
+        cos_inf:
+            Quad::NAN,
+            Quad::INFINITY.cos();
+        cos_neg_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY.cos();
+        cos_nan:
+            Quad::NAN,
+            Quad::NAN.cos();
+    );
 
-    #[test]
-    fn sin_cos_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.sin_cos().0);
-        assert_exact!(Quad::ONE, Quad::ZERO.sin_cos().1);
-    }
+    // sin_cos tests
+    test_all_near!(
+        sin_cos_zero_sin:
+            Quad::ZERO.sin(),
+            Quad::ZERO.sin_cos().0;
+        sin_cos_zero_cos:
+            Quad::ZERO.cos(),
+            Quad::ZERO.sin_cos().1;
+        sin_cos_pi_2_sin:
+            Quad::FRAC_PI_2.sin(),
+            Quad::FRAC_PI_2.sin_cos().0;
+        sin_cos_pi_2_cos:
+            Quad::FRAC_PI_2.cos(),
+            Quad::FRAC_PI_2.sin_cos().1;
+        sin_cos_pi_sin:
+            Quad::PI.sin(),
+            Quad::PI.sin_cos().0;
+        sin_cos_pi_cos:
+            Quad::PI.cos(),
+            Quad::PI.sin_cos().1;
+        sin_cos_3_pi_2_sin:
+            Quad::FRAC_3_PI_2.sin(),
+            Quad::FRAC_3_PI_2.sin_cos().0;
+        sin_cos_3_pi_2_cos:
+            Quad::FRAC_3_PI_2.cos(),
+            Quad::FRAC_3_PI_2.sin_cos().1;
+    );
+    test_all_near!(
+        sin_cos_one_sin:
+            Quad::ONE.sin(),
+            Quad::ONE.sin_cos().0;
+        sin_cos_one_cos:
+            Quad::ONE.cos(),
+            Quad::ONE.sin_cos().1;
+        sin_cos_pi_6_sin:
+            Quad::FRAC_PI_6.sin(),
+            Quad::FRAC_PI_6.sin_cos().0;
+        sin_cos_pi_6_cos:
+            Quad::FRAC_PI_6.cos(),
+            Quad::FRAC_PI_6.sin_cos().1;
+        sin_cos_e_sin:
+            Quad::E.sin(),
+            Quad::E.sin_cos().0;
+        sin_cos_e_cos:
+            Quad::E.cos(),
+            Quad::E.sin_cos().1;
+        sin_cos_5_pi_4_sin:
+            Quad::FRAC_5_PI_4.sin(),
+            Quad::FRAC_5_PI_4.sin_cos().0;
+        sin_cos_5_pi_4_cos:
+            Quad::FRAC_5_PI_4.cos(),
+            Quad::FRAC_5_PI_4.sin_cos().1;
+        sin_cos_2e_sin:
+            (Quad::E + Quad::E).sin(),
+            (Quad::E + Quad::E).sin_cos().0;
+        sin_cos_2e_cos:
+            (Quad::E + Quad::E).cos(),
+            (Quad::E + Quad::E).sin_cos().1;
+        sin_cos_7_pi_3_sin:
+            (Quad::TAU + Quad::FRAC_PI_3).sin(),
+            (Quad::TAU + Quad::FRAC_PI_3).sin_cos().0;
+        sin_cos_7_pi_3_cos:
+            (Quad::TAU + Quad::FRAC_PI_3).cos(),
+            (Quad::TAU + Quad::FRAC_PI_3).sin_cos().1;
+        sin_cos_neg_one_sin:
+            Quad::NEG_ONE.sin(),
+            Quad::NEG_ONE.sin_cos().0;
+        sin_cos_neg_one_cos:
+            Quad::NEG_ONE.cos(),
+            Quad::NEG_ONE.sin_cos().1;
+        sin_cos_neg_pi_6_sin:
+            (-Quad::FRAC_PI_6).sin(),
+            (-Quad::FRAC_PI_6).sin_cos().0;
+        sin_cos_neg_pi_6_cos:
+            (-Quad::FRAC_PI_6).cos(),
+            (-Quad::FRAC_PI_6).sin_cos().1;
+        sin_cos_neg_e_sin:
+            (-Quad::E).sin(),
+            (-Quad::E).sin_cos().0;
+        sin_cos_neg_e_cos:
+            (-Quad::E).cos(),
+            (-Quad::E).sin_cos().1;
+        sin_cos_neg_5_pi_4_sin:
+            (-Quad::FRAC_5_PI_4).sin(),
+            (-Quad::FRAC_5_PI_4).sin_cos().0;
+        sin_cos_neg_5_pi_4_cos:
+            (-Quad::FRAC_5_PI_4).cos(),
+            (-Quad::FRAC_5_PI_4).sin_cos().1;
+        sin_cos_neg_2e_sin:
+            (-Quad::E - Quad::E).sin(),
+            (-Quad::E - Quad::E).sin_cos().0;
+        sin_cos_neg_2e_cos:
+            (-Quad::E - Quad::E).cos(),
+            (-Quad::E - Quad::E).sin_cos().1;
+        sin_cos_neg_7_pi_3_sin:
+            (-Quad::TAU - Quad::FRAC_PI_3).sin(),
+            (-Quad::TAU - Quad::FRAC_PI_3).sin_cos().0;
+        sin_cos_neg_7_pi_3_cos:
+            (-Quad::TAU - Quad::FRAC_PI_3).cos(),
+            (-Quad::TAU - Quad::FRAC_PI_3).sin_cos().1;
+        sin_cos_150_sin:
+            qd!(150).sin(),
+            qd!(150).sin_cos().0;
+        sin_cos_150_cos:
+            qd!(150).cos(),
+            qd!(150).sin_cos().1;
+        sin_cos_neg_145_sin:
+            qd!(-145).sin(),
+            qd!(-145).sin_cos().0;
+        sin_cos_neg_145_cos:
+            qd!(-145).cos(),
+            qd!(-145).sin_cos().1;
+    );
+    test_all_exact!(
+        sin_cos_neg_zero_sin:
+            Quad::NEG_ZERO.sin(),
+            Quad::NEG_ZERO.sin_cos().0;
+        sin_cos_neg_zero_cos:
+            Quad::NEG_ZERO.cos(),
+            Quad::NEG_ZERO.sin_cos().1;
+        sin_cos_inf_sin:
+            Quad::INFINITY.sin(),
+            Quad::INFINITY.sin_cos().0;
+        sin_cos_inf_cos:
+            Quad::INFINITY.cos(),
+            Quad::INFINITY.sin_cos().1;
+        sin_cos_neg_inf_sin:
+            Quad::NEG_INFINITY.sin(),
+            Quad::NEG_INFINITY.sin_cos().0;
+        sin_cos_neg_inf_cos:
+            Quad::NEG_INFINITY.cos(),
+            Quad::NEG_INFINITY.sin_cos().1;
+        sin_cos_nan_sin:
+            Quad::NAN.sin(),
+            Quad::NAN.sin_cos().0;
+        sin_cos_nan_cos:
+            Quad::NAN.cos(),
+            Quad::NAN.sin_cos().1;
+    );
 
-    #[test]
-    fn sin_cos_inf() {
-        assert_exact!(Quad::NAN, Quad::INFINITY.sin_cos().0);
-        assert_exact!(Quad::NAN, Quad::INFINITY.sin_cos().1);
+    // tan tests
+    test_all_near!(
+        tan_zero:
+            Quad::ZERO,
+            Quad::ZERO.tan();
+        tan_pi_4:
+            Quad::ONE,
+            Quad::FRAC_PI_4.tan();
+        tan_3_pi_4:
+            Quad::NEG_ONE,
+            Quad::FRAC_3_PI_4.tan();
+        tan_pi:
+            Quad::ZERO,
+            Quad::PI.tan();
+    );
+    test_all_near!(
+        tan_one:
+            qd!("1.5574077246549022305069748074583601730872507723815200383839466056984"),
+            Quad::ONE.tan();
+        tan_pi_6:
+            qd!("0.57735026918962576450914878050195745564760175127012687601860232648328"),
+            Quad::FRAC_PI_6.tan();
+        tan_e:
+            qd!("-0.45054953406980749571063417770127929443957091173203671001233561163239"),
+            Quad::E.tan();
+        tan_5_pi_4:
+            qd!("1.0"),
+            Quad::FRAC_5_PI_4.tan();
+        tan_2e:
+            qd!("-1.1306063769531499529943348786199875289786690773262622824786562271995"),
+            (Quad::E + Quad::E).tan();
+        tan_7_pi_3:
+            qd!("1.7320508075688772935274463415058723669428052538103806280558069794564"),
+            (Quad::TAU + Quad::FRAC_PI_3).tan();
+        tan_neg_one:
+            qd!("-1.5574077246549022305069748074583601730872507723815200383839466056984"),
+            Quad::NEG_ONE.tan();
+        tan_neg_pi_6:
+            qd!("-0.57735026918962576450914878050195745564760175127012687601860232648328"),
+            (-Quad::FRAC_PI_6).tan();
+        tan_neg_e:
+            qd!("0.45054953406980749571063417770127929443957091173203671001233561163239"),
+            (-Quad::E).tan();
+        tan_neg_5_pi_4:
+            qd!("-1.0"),
+            (-Quad::FRAC_5_PI_4).tan();
+        tan_neg_2e:
+            qd!("1.1306063769531499529943348786199875289786690773262622824786562271995"),
+            (-Quad::E - Quad::E).tan();
+        tan_neg_7_pi_3:
+            qd!("-1.7320508075688772935274463415058723669428052538103806280558069794564"),
+            (-Quad::TAU - Quad::FRAC_PI_3).tan();
+        tan_150:
+            qd!("-1.0223462354365875649863661852619364491718160692421925115947880505178"),
+            qd!(150).tan();
+        tan_neg_130:
+            qd!("-2.532338427469323471076336945155016099803788824677643099814349339576"),
+            qd!(-130).tan();
+    );
+    test_all_exact!(
+        tan_neg_zero:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.tan();
+        tan_inf:
+            Quad::NAN,
+            Quad::INFINITY.tan();
+        tan_neg_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY.tan();
+        tan_nan:
+            Quad::NAN,
+            Quad::NAN.tan();
+    );
 
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.sin_cos().0);
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.sin_cos().1);
-    }
+    // atan2 test
+    test_all_near!(
+        atan2_pos_pos:
+            qd!("0.35251342177761899747085992272395350035945275021939640543781203320579"),
+            Quad::ONE.atan2(Quad::E);
+        atan2_pos_neg:
+            qd!("2.8334235824738083026756437752454497856075323701119365074612822484066"),
+            Quad::ONE.atan2(-Quad::PI);
+        atan2_neg_pos:
+            qd!("-0.3081690711159849357869996080340530985896370292631693135136623439018"),
+            Quad::NEG_ONE.atan2(Quad::PI);
+        atan2_neg_neg:
+            qd!("-2.7890792318121742409917834605555493838377166491557094155371325591014"),
+            Quad::NEG_ONE.atan2(-Quad::E);
+        atan2_pi_6:
+            qd!("0.48234790710102497548087851189637102255315375602186930768577892528851"),
+            Quad::FRAC_PI_6.atan2(Quad::ONE);
+        atan2_e:
+            qd!("1.218282905017277621760461768915797941739131949468156505049660262948"),
+            Quad::E.atan2(Quad::ONE);
+        atan2_neg_e:
+            qd!("-1.218282905017277621760461768915797941739131949468156505049660262948"),
+            (-Quad::E).atan2(Quad::ONE);
+        atan2_neg_pi_6:
+            qd!("-0.48234790710102497548087851189637102255315375602186930768577892528851"),
+            (-Quad::FRAC_PI_6).atan2(Quad::ONE);
+    );
+    test_all_near!(
+        atan2_ones_pos_pos:
+            Quad::FRAC_PI_4,
+            Quad::ONE.atan2(Quad::ONE);
+        atan2_ones_pos_neg:
+            Quad::FRAC_3_PI_4,
+            Quad::ONE.atan2(Quad::NEG_ONE);
+        atan2_ones_neg_pos:
+            -Quad::FRAC_PI_4,
+            Quad::NEG_ONE.atan2(Quad::ONE);
+        atan2_ones_neg_neg:
+            -Quad::FRAC_3_PI_4,
+            Quad::NEG_ONE.atan2(Quad::NEG_ONE);
 
-    #[test]
-    fn sin_cos_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.sin_cos().0);
-        assert_exact!(Quad::NAN, Quad::NAN.sin_cos().1);
-    }
+        atan2_zero_one:
+            Quad::ZERO,
+            Quad::ZERO.atan2(Quad::ONE);
+        atan2_zero_neg_one:
+            Quad::PI,
+            Quad::ZERO.atan2(Quad::NEG_ONE);
+        atan2_one_zero:
+            Quad::FRAC_PI_2,
+            Quad::ONE.atan2(Quad::ZERO);
+        atan2_neg_one_zero:
+            -Quad::FRAC_PI_2,
+            Quad::NEG_ONE.atan2(Quad::ZERO);
 
-    #[test]
-    fn sin() {
-        assert_close!(
-            qd!("0.8414709848078965066525023216302989996225630607983710656727517100"),
-            qd!(1).sin()
-        );
-        assert_close!(
-            qd!("0.7071067811865475244008443621048490392848359376884740365883398690"),
-            (Quad::PI / qd!(4)).sin()
-        );
-        assert_close!(qd!(0.5), Quad::FRAC_PI_6.sin());
-        assert_exact!(Quad::ONE, Quad::FRAC_PI_2.sin());
-    }
+        atan2_inf_one:
+            Quad::FRAC_PI_2,
+            Quad::INFINITY.atan2(Quad::ONE);
+        atan2_neg_inf_one:
+            -Quad::FRAC_PI_2,
+            Quad::NEG_INFINITY.atan2(Quad::ONE);
+    );
+    test_all_exact!(
+        atan2_zero_zero:
+            Quad::NAN,
+            Quad::ZERO.atan2(Quad::ZERO);
+        atan2_inf_inf:
+            Quad::NAN,
+            Quad::INFINITY.atan2(Quad::INFINITY);
+        atan2_one_inf:
+            Quad::ZERO,
+            Quad::ONE.atan2(Quad::INFINITY);
+        atan2_nan_one:
+            Quad::NAN,
+            Quad::NAN.atan2(Quad::ONE);
+        atan2_one_nan:
+            Quad::NAN,
+            Quad::ONE.atan2(Quad::NAN);
+        atan2_nan_nan:
+            Quad::NAN,
+            Quad::NAN.atan2(Quad::NAN);
+    );
 
-    #[test]
-    fn sin_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.sin());
-    }
+    // asin tests
+    test_all_near!(
+        asin_one:
+            Quad::FRAC_PI_2,
+            Quad::ONE.asin();
+        asin_neg_one:
+            -Quad::FRAC_PI_2,
+            Quad::NEG_ONE.asin();
+        asin_half:
+            qd!("0.52359877559829887307710723054658381403286156656251763682915743205154"),
+            qd!(0.5).asin();
+        asin_neg_half:
+            qd!("-0.52359877559829887307710723054658381403286156656251763682915743205154"),
+            qd!(-0.5).asin();
+        asin_pi_4:
+            qd!("0.90333911076651284735893593015790303136770970711460887617465049079307"),
+            Quad::FRAC_PI_4.asin();
+        asin_neg_pi_4:
+            qd!("-0.90333911076651284735893593015790303136770970711460887617465049079307"),
+            (-Quad::FRAC_PI_4).asin();
+    );
+    test_all_exact!(
+        asin_zero:
+            Quad::ZERO,
+            Quad::ZERO.asin();
+        asin_neg_zero:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.asin();
+        asin_inf:
+            Quad::NAN,
+            Quad::INFINITY.asin();
+        asin_neg_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY.asin();
+        asin_pi:
+            Quad::NAN,
+            Quad::PI.asin();
+        asin_neg_pi:
+            Quad::NAN,
+            (-Quad::PI).asin();
+        asin_nan:
+            Quad::NAN,
+            Quad::NAN.asin();
+    );
 
-    #[test]
-    fn sin_inf() {
-        assert_exact!(Quad::NAN, Quad::INFINITY.sin());
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.sin());
-    }
+    // acos tests
+    test_all_near!(
+        acos_zero:
+            Quad::FRAC_PI_2,
+            Quad::ZERO.acos();
+        acos_neg_zero:
+            Quad::FRAC_PI_2,
+            Quad::NEG_ZERO.acos();
+        acos_neg_one:
+            Quad::PI,
+            Quad::NEG_ONE.acos();
+        acos_half:
+            qd!("1.0471975511965977461542144610931676280657231331250352736583148641031"),
+            qd!(0.5).acos();
+        acos_neg_half:
+            qd!("2.0943951023931954923084289221863352561314462662500705473166297282062"),
+            qd!(-0.5).acos();
+        acos_pi_4:
+            qd!("0.66745721602838377187238576148184841073087499257294403431282180536097"),
+            Quad::FRAC_PI_4.acos();
+        acos_neg_pi_4:
+            qd!("2.4741354375614094665902576217976544734662944068021617866621227869471"),
+            (-Quad::FRAC_PI_4).acos();
+    );
+    test_all_exact!(
+        acos_one:
+            Quad::ZERO,
+            Quad::ONE.acos();
+        acos_inf:
+            Quad::NAN,
+            Quad::INFINITY.acos();
+        acos_neg_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY.acos();
+        acos_pi:
+            Quad::NAN,
+            Quad::PI.acos();
+        acos_neg_pi:
+            Quad::NAN,
+            (-Quad::PI).acos();
+        acos_nan:
+            Quad::NAN,
+            Quad::NAN.acos();
+    );
 
-    #[test]
-    fn sin_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.sin());
-    }
-
-    #[test]
-    fn cos() {
-        assert_close!(
-            qd!("0.5403023058681397174009366074429766037323104206179222276700972554"),
-            qd!(1).cos()
-        );
-        assert_close!(
-            qd!("0.7071067811865475244008443621048490392848359376884740365883398690"),
-            (Quad::PI / qd!(4)).cos()
-        );
-        assert_close!(qd!(0.5), Quad::FRAC_PI_3.cos());
-        assert_exact!(Quad::ZERO, Quad::FRAC_PI_2.cos());
-    }
-
-    #[test]
-    fn cos_zero() {
-        assert_exact!(Quad::ONE, Quad::ZERO.cos());
-        assert_exact!(Quad::ONE, Quad::NEG_ZERO.cos());
-    }
-
-    #[test]
-    fn cos_inf() {
-        assert_exact!(Quad::NAN, Quad::INFINITY.cos());
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.cos());
-    }
-
-    #[test]
-    fn cos_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.cos());
-    }
-
-    #[test]
-    fn tan() {
-        assert_close!(
-            qd!("1.557407724654902230506974807458360173087250772381520038383946606"),
-            qd!(1).tan()
-        );
-        assert_close!(qd!(1), Quad::FRAC_PI_4.tan());
-        assert!(Quad::FRAC_PI_2.tan().is_infinite());
-    }
-
-    #[test]
-    fn tan_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.tan());
-    }
-
-    #[test]
-    fn tan_inf() {
-        assert_exact!(Quad::NAN, Quad::INFINITY.tan());
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.tan());
-    }
-
-    #[test]
-    fn tan_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.tan());
-    }
-
-    #[test]
-    fn atan2() {
-        assert_close!(
-            qd!("0.4636476090008061162142562314612144020285370542861202638109330887"),
-            qd!(1).atan2(qd!(2))
-        );
-        assert_close!(
-            qd!("2.677945044588987122248387151818288482168632345088985557164011504"),
-            qd!(1).atan2(qd!(-2))
-        );
-        assert_close!(
-            qd!("-0.4636476090008061162142562314612144020285370542861202638109330887"),
-            qd!(-1).atan2(qd!(2))
-        );
-        assert_close!(
-            qd!("-2.677945044588987122248387151818288482168632345088985557164011504"),
-            qd!(-1).atan2(qd!(-2))
-        );
-    }
-
-    #[test]
-    fn atan2_zero() {
-        assert_exact!(Quad::NAN, Quad::ZERO.atan2(Quad::ZERO));
-        assert_exact!(Quad::ZERO, Quad::ZERO.atan2(Quad::ONE));
-        assert_close!(Quad::PI, Quad::ZERO.atan2(Quad::NEG_ONE));
-        assert_close!(Quad::FRAC_PI_2, Quad::ONE.atan2(Quad::ZERO));
-        assert_close!(-Quad::FRAC_PI_2, Quad::NEG_ONE.atan2(Quad::ZERO));
-    }
-
-    #[test]
-    fn atan2_one() {
-        assert_close!(Quad::FRAC_PI_4, Quad::ONE.atan2(Quad::ONE));
-        assert_close!(-Quad::FRAC_3_PI_4, Quad::NEG_ONE.atan2(Quad::NEG_ONE));
-        assert_close!(Quad::FRAC_3_PI_4, Quad::ONE.atan2(Quad::NEG_ONE));
-        assert_close!(-Quad::FRAC_PI_4, Quad::NEG_ONE.atan2(Quad::ONE));
-    }
-
-    #[test]
-    fn atan2_inf() {
-        assert_exact!(Quad::NAN, Quad::INFINITY.atan2(Quad::INFINITY));
-        assert_close!(Quad::FRAC_PI_2, Quad::INFINITY.atan2(Quad::ONE));
-        assert_close!(-Quad::FRAC_PI_2, Quad::NEG_INFINITY.atan2(Quad::ONE));
-        assert_exact!(Quad::ZERO, Quad::ONE.atan2(Quad::INFINITY));
-    }
-
-    #[test]
-    fn atan2_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.atan2(Quad::ONE));
-        assert_exact!(Quad::NAN, Quad::ONE.atan2(Quad::NAN));
-        assert_exact!(Quad::NAN, Quad::NAN.atan2(Quad::NAN));
-    }
-
-    #[test]
-    fn asin() {
-        assert_close!(
-            qd!("0.5235987755982988730771072305465838140328615665625176368291574321"),
-            qd!(0.5).asin()
-        );
-        assert_close!(Quad::FRAC_PI_2, qd!(1).asin());
-        assert_close!(-Quad::FRAC_PI_2, qd!(-1).asin());
-    }
-
-    #[test]
-    fn asin_inf() {
-        assert_exact!(Quad::NAN, Quad::INFINITY.asin());
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.asin());
-    }
-
-    #[test]
-    fn asin_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.asin());
-        assert_exact!(Quad::NAN, qd!(1.5).asin());
-        assert_exact!(Quad::NAN, qd!(-1.5).asin());
-    }
-
-    #[test]
-    fn acos() {
-        assert_close!(
-            qd!("1.047197551196597746154214461093167628065723133125035273658314864"),
-            qd!(0.5).acos()
-        );
-        assert_exact!(Quad::ZERO, qd!(1).acos());
-        assert_close!(Quad::PI, qd!(-1).acos());
-    }
-
-    #[test]
-    fn acos_inf() {
-        assert_exact!(Quad::NAN, Quad::INFINITY.acos());
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.acos());
-    }
-
-    #[test]
-    fn acos_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.acos());
-        assert_exact!(Quad::NAN, qd!(1.5).acos());
-        assert_exact!(Quad::NAN, qd!(-1.5).acos());
-    }
-
-    #[test]
-    fn atan() {
-        assert_close!(
-            qd!("0.9827937232473290679857106110146660144968774536316285567614250883"),
-            qd!(1.5).atan()
-        );
-        assert_close!(Quad::FRAC_PI_4, qd!(1).atan());
-    }
-
-    #[test]
-    fn atan_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.atan());
-    }
-
-    #[test]
-    fn atan_inf() {
-        assert_close!(Quad::FRAC_PI_2, Quad::INFINITY.atan());
-        assert_close!(-Quad::FRAC_PI_2, Quad::NEG_INFINITY.atan());
-    }
-
-    #[test]
-    fn atan_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.atan());
-    }
+    // atan tests
+    test_all_near!(
+        atan_pi:
+            qd!("1.2626272556789116834443220836056983435089476704243835969738099522519"),
+            Quad::PI.atan();
+        atan_e:
+            qd!("1.218282905017277621760461768915797941739131949468156505049660262948"),
+            Quad::E.atan();
+        atan_neg_pi:
+            qd!("-1.2626272556789116834443220836056983435089476704243835969738099522519"),
+            (-Quad::PI).atan();
+        atan_neg_e:
+            qd!("-1.218282905017277621760461768915797941739131949468156505049660262948"),
+            (-Quad::E).atan();
+        atan_2_pi:
+            qd!("1.4129651365067377590637129498569325184935134590885018500719143289403"),
+            Quad::TAU.atan();
+        atan_pi_2:
+            qd!("1.0038848218538872141484239449171322882921044605948705747297128241082"),
+            Quad::FRAC_PI_2.atan();
+        atan_sqrt_2:
+            qd!("0.9553166181245092781638571025157577542434146950100054909596981293215"),
+            Quad::SQRT_2.atan();
+        atan_1_sqrt_2:
+            qd!("0.61547970867038734106746458912399368785517000467754741952777416683254"),
+            Quad::FRAC_1_SQRT_2.atan();
+        atan_150:
+            qd!("1.5641297588910283900821777041381460114763644584636508267920449540683"),
+            qd!(150).atan();
+        atan_neg_140:
+            qd!("-1.5636535911254832167367110323350712639130068527674200722161387211928"),
+            qd!(-140).atan();
+    );
+    test_all_exact!(
+        atan_zero:
+            Quad::ZERO,
+            Quad::ZERO.atan();
+        atan_neg_zero:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.atan();
+        atan_inf:
+            Quad::FRAC_PI_2,
+            Quad::INFINITY.atan();
+        atan_neg_inf:
+            -Quad::FRAC_PI_2,
+            Quad::NEG_INFINITY.atan();
+        atan_nan:
+            Quad::NAN,
+            Quad::NAN.atan();
+    );
 }

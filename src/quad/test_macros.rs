@@ -46,7 +46,7 @@ macro_rules! prec {
 
 macro_rules! near {
     ($expected:expr, $actual:expr $(,)?) => {
-        prec!($expected, $actual, 30);
+        prec!($expected, $actual, 60);
     };
 }
 
