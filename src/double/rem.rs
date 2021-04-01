@@ -273,12 +273,12 @@ mod tests {
         assign_num: {
             let mut a = Double::PI;
             a %= Double::E;
-            assert_close!(dd!("0.42331082513074800310235591192684125"), a);
+            near!(dd!("0.42331082513074800310235591192684125"), a);
         }
         assign_ref: {
             let mut b = Double::PI;
             b %= &Double::E;
-            assert_close!(dd!("0.42331082513074800310235591192684125"), b);
+            near!(dd!("0.42331082513074800310235591192684125"), b);
         }
     );
 }

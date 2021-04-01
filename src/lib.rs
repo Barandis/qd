@@ -95,7 +95,7 @@
 //! There is no other pair of components that satisfies the criteria for normalization.
 //! Since the form is now unique, comparisons can be made easily, arithmetic can be done
 //! efficiently, and generally everything works better.
-//! 
+//!
 //! *Nearly* every function in qd normalizes when necessary. The sole exceptions are
 //! [`Double::raw`][4] and [`Quad::raw`][5], which specifically skip normalization and
 //! should only be used on numbers that are already known to be normalized.
