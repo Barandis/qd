@@ -559,8 +559,8 @@ fn sincos_taylor(a: Quad) -> (Quad, Quad) {
 #[allow(clippy::many_single_char_names)]
 fn reduce(a: Quad) -> (i32, i32, Quad) {
     // reduce modulo 2π
-    let z = (a / Quad::MUL_2_PI).round();
-    let r = a - z * Quad::MUL_2_PI;
+    let z = (a / Quad::TAU).round();
+    let r = a - z * Quad::TAU;
 
     // reduce modulo π/2
     let mut q = (r.0 / Quad::FRAC_PI_2.0 + 0.5).floor();
