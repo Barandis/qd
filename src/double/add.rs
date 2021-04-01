@@ -220,72 +220,108 @@ impl Double {
 mod tests {
     use super::*;
 
-    #[test]
-    fn num_num() {
-        let expected = dd!("5.8598744820488384738229308546322");
-        assert_close!(expected, Double::PI + Double::E);
-    }
-
-    #[test]
-    fn ref_ref() {
-        let expected = dd!("5.8598744820488384738229308546322");
-        assert_close!(expected, &Double::PI + &Double::E);
-    }
-
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn num_ref() {
-        let expected = dd!("5.8598744820488384738229308546322");
-        assert_close!(expected, Double::PI + &Double::E);
-    }
-
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn ref_num() {
-        let expected = dd!("5.8598744820488384738229308546322");
-        assert_close!(expected, &Double::PI + Double::E);
-    }
-
-    #[test]
-    fn assign_num() {
-        let expected = dd!("5.8598744820488384738229308546322");
-        let mut a = Double::PI;
-        a += Double::E;
-        assert_close!(expected, a);
-    }
-
-    #[test]
-    fn assign_ref() {
-        let expected = dd!("5.8598744820488384738229308546322");
-        let mut b = Double::PI;
-        b += &Double::E;
-        assert_close!(expected, b);
-    }
-
-    #[test]
-    fn inf() {
-        assert_exact!(Double::INFINITY, Double::INFINITY + Double::ONE);
-        assert_exact!(Double::INFINITY, Double::ONE + Double::INFINITY);
-        assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY + Double::ONE);
-        assert_exact!(Double::NEG_INFINITY, Double::ONE + Double::NEG_INFINITY);
-    }
-
-    #[test]
-    fn infs() {
-        assert_exact!(Double::INFINITY, Double::INFINITY + Double::INFINITY);
-        assert_exact!(
+    // add tests
+    test_all_near!(
+        num_num:
+            dd!("5.8598744820488384738229308546321643"),
+            Double::PI + Double::E;
+        num_ref:
+            dd!("5.8598744820488384738229308546321643"),
+            Double::PI + &Double::E;
+        ref_num:
+            dd!("5.8598744820488384738229308546321643"),
+            &Double::PI + Double::E;
+        ref_ref:
+            dd!("5.8598744820488384738229308546321643"),
+            &Double::PI + &Double::E;
+        num_neg_num:
+            dd!("0.42331082513074800310235591192684125"),
+            Double::PI + -Double::E;
+        num_neg_ref:
+            dd!("0.42331082513074800310235591192684125"),
+            Double::PI + -&Double::E;
+        ref_neg_num:
+            dd!("0.42331082513074800310235591192684125"),
+            &Double::PI + -Double::E;
+        ref_neg_ref:
+            dd!("0.42331082513074800310235591192684125"),
+            &Double::PI + -&Double::E;
+        num_id:
+            Double::PI,
+            Double::PI + Double::ZERO;
+        id_num:
+            Double::PI,
+            Double::ZERO + Double::PI;
+        num_small:
+            dd!("3.1415926535897932384626433832805043"),
+            Double::PI + dd!("1e-30");
+        small_num:
+            dd!("3.1415926535897932384626433832805043"),
+            dd!("1e-30") + Double::PI;
+        three_nums:
+            dd!("6.5530216626087837832401629760903434"),
+            Double::PI + Double::E + Double::LN_2;
+        lassoc:
+            dd!("6.5530216626087837832401629760903434"),
+            (Double::PI + Double::E) + Double::LN_2;
+        rassoc:
+            dd!("6.5530216626087837832401629760903434"),
+            Double::PI + (Double::LN_2 + Double::E);
+    );
+    test_all_exact!(
+        inf_num:
+            Double::INFINITY,
+            Double::INFINITY + Double::ONE;
+        num_inf:
+            Double::INFINITY,
+            Double::ONE + Double::INFINITY;
+        neg_inf_num:
             Double::NEG_INFINITY,
-            Double::NEG_INFINITY + Double::NEG_INFINITY
-        );
-        assert_exact!(Double::NAN, Double::INFINITY + Double::NEG_INFINITY);
-        assert_exact!(Double::NAN, Double::NEG_INFINITY + Double::INFINITY);
-        assert_exact!(Double::NAN, Double::INFINITY + Double::NAN);
-        assert_exact!(Double::NAN, Double::NEG_INFINITY + Double::NAN);
-    }
+            Double::NEG_INFINITY + Double::ONE;
+        num_neg_inf:
+            Double::NEG_INFINITY,
+            Double::ONE + Double::NEG_INFINITY;
+        inf_inf:
+            Double::INFINITY,
+            Double::INFINITY + Double::INFINITY;
+        neg_inf_neg_inf:
+            Double::NEG_INFINITY,
+            Double::NEG_INFINITY + Double::NEG_INFINITY;
+        inf_neg_inf:
+            Double::NAN,
+            Double::INFINITY + Double::NEG_INFINITY;
+        neg_inf_inf:
+            Double::NAN,
+            Double::NEG_INFINITY + Double::INFINITY;
+        inf_nan:
+            Double::NAN,
+            Double::INFINITY + Double::NAN;
+        neg_inf_nan:
+            Double::NAN,
+            Double::NEG_INFINITY + Double::NAN;
+        nan_num:
+            Double::NAN,
+            Double::NAN + Double::ONE;
+        num_nan:
+            Double::NAN,
+            Double::ONE + Double::NAN;
+        nan_nan:
+            Double::NAN,
+            Double::NAN + Double::NAN;
+    );
 
-    #[test]
-    fn nan() {
-        assert_exact!(Double::NAN, Double::NAN + Double::ONE);
-        assert_exact!(Double::NAN, Double::ONE + Double::NAN);
-    }
+    // Assign tests. Assign code delegates to add code, so there's no need to re-test all
+    // of the cases above.
+    test_all!(
+        assign_num: {
+            let mut a = Double::PI;
+            a += Double::E;
+            near!(dd!("5.8598744820488384738229308546322"), a);
+        }
+        assign_ref: {
+            let mut b = Double::PI;
+            b += &Double::E;
+            near!(dd!("5.8598744820488384738229308546322"), b);
+        }
+    );
 }

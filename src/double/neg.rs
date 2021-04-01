@@ -10,9 +10,9 @@ impl Neg for Double {
     type Output = Double;
 
     /// Negates this `Double`, producing a new `Double`.
-    /// 
+    ///
     /// This implements the unary `-` operator for `Double`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -20,7 +20,7 @@ impl Neg for Double {
     /// # fn main() {
     /// let x = -Double::PI;
     /// let expected = dd!("-3.1415926535897932384626433832795");
-    /// 
+    ///
     /// let diff = (x - expected).abs();
     /// assert!(x < dd!(1e-30));
     /// # }
@@ -35,9 +35,9 @@ impl Neg for &Double {
     type Output = Double;
 
     /// Negates a reference to this `Double`, producing a new `Double`.
-    /// 
+    ///
     /// This implements the unary `-` operator for references to `Double`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -45,7 +45,7 @@ impl Neg for &Double {
     /// # fn main() {
     /// let x = -&Double::PI;
     /// let expected = dd!("-3.1415926535897932384626433832795");
-    /// 
+    ///
     /// let diff = (x - expected).abs();
     /// assert!(x < dd!(1e-30));
     /// # }
@@ -60,32 +60,35 @@ impl Neg for &Double {
 mod tests {
     use super::*;
 
-    #[test]
-    fn neg() {
-        assert_close!(dd!("-3.1415926535897932384626433832795"), -Double::PI);
-        assert_close!(dd!("-2.7182818284590452353602874713527"), -Double::E);
-    }
-
-    #[test]
-    fn neg_ref() {
-        assert_close!(dd!("-3.1415926535897932384626433832795"), -&Double::PI);
-        assert_close!(dd!("-2.7182818284590452353602874713527"), -&Double::E);
-    }
-
-    #[test]
-    fn zero() {
-        assert_exact!(Double::NEG_ZERO, -Double::ZERO);
-        assert_exact!(Double::ZERO, -Double::NEG_ZERO);
-    }
-
-    #[test]
-    fn inf() {
-        assert_exact!(Double::NEG_INFINITY, -Double::INFINITY);
-        assert_exact!(Double::INFINITY, -Double::NEG_INFINITY);
-    }
-
-    #[test]
-    fn nan() {
-        assert_exact!(Double::NAN, -Double::NAN);
-    }
+    test_all_near!(
+        num_pi:
+            dd!("-3.1415926535897932384626433832795028"),
+            -Double::PI;
+        num_e:
+            dd!("-2.7182818284590452353602874713526615"),
+            -Double::E;
+        ref_pi:
+            dd!("-3.1415926535897932384626433832795028"),
+            -&Double::PI;
+        ref_e:
+            dd!("-2.7182818284590452353602874713526615"),
+            -&Double::E;
+    );
+    test_all_exact!(
+        zero:
+            Double::NEG_ZERO,
+            -Double::ZERO;
+        neg_zero:
+            Double::ZERO,
+            -Double::NEG_ZERO;
+        inf:
+            Double::NEG_INFINITY,
+            -Double::INFINITY;
+        neg_inf:
+            Double::INFINITY,
+            -Double::NEG_INFINITY;
+        nan:
+            Double::NAN,
+            -Double::NAN;
+    );
 }

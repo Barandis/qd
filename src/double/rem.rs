@@ -28,7 +28,7 @@ impl Rem for Double {
     /// ```
     #[inline]
     fn rem(self, other: Double) -> Double {
-        let n = self.div(other).trunc();
+        let n = self.div(other).floor();
         self - other * n
     }
 }
@@ -55,7 +55,7 @@ impl Rem for &Double {
     /// ```
     #[inline]
     fn rem(self, other: &Double) -> Double {
-        let n = self.div(*other).trunc();
+        let n = self.div(*other).floor();
         *self - *other * n
     }
 }
@@ -82,7 +82,7 @@ impl Rem<&Double> for Double {
     /// ```
     #[inline]
     fn rem(self, other: &Double) -> Double {
-        let n = self.div(*other).trunc();
+        let n = self.div(*other).floor();
         self - *other * n
     }
 }
@@ -109,16 +109,16 @@ impl Rem<Double> for &Double {
     /// ```
     #[inline]
     fn rem(self, other: Double) -> Double {
-        let n = self.div(other).trunc();
+        let n = self.div(other).floor();
         *self - other * n
     }
 }
 
 impl RemAssign for Double {
     /// Divides this `Double` by another, modifying this one to equal the remainder.
-    /// 
+    ///
     /// This implements the `%=` operator between two `Double`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -171,76 +171,114 @@ impl RemAssign<&Double> for Double {
 mod tests {
     use super::*;
 
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn num_num() {
-        let expected = dd!("0.42331082513074800310235591192684");
-        assert_close!(expected, Double::PI % Double::E);
-    }
+    // rem tests
+    test_all_near!(
+        num_num:
+            dd!("0.42331082513074800310235591192684125"),
+            Double::PI % Double::E;
+        num_ref:
+            dd!("0.42331082513074800310235591192684125"),
+            Double::PI % &Double::E;
+        ref_num:
+            dd!("0.42331082513074800310235591192684125"),
+            &Double::PI % Double::E;
+        ref_ref:
+            dd!("0.42331082513074800310235591192684125"),
+            &Double::PI % &Double::E;
+        num_neg_num:
+            dd!("-2.2949710033282972322579315594258203"),
+            Double::PI % -Double::E;
+        num_neg_ref:
+            dd!("-2.2949710033282972322579315594258203"),
+            Double::PI % -&Double::E;
+        ref_neg_num:
+            dd!("-2.2949710033282972322579315594258203"),
+            &Double::PI % -Double::E;
+        ref_neg_ref:
+            dd!("-2.2949710033282972322579315594258203"),
+            &Double::PI % -&Double::E;
+        num_id:
+            dd!("0.1415926535897932384626433832795028"),
+            Double::PI % Double::ONE;
+        id_num:
+            Double::ONE,
+            Double::ONE % Double::PI;
+        three_nums:
+            dd!("0.42331082513074800310235591192684125"),
+            Double::PI % Double::E % Double::LN_2;
+        lassoc:
+            dd!("0.42331082513074800310235591192684125"),
+            (Double::PI % Double::E) % Double::LN_2;
+        rassoc:
+            dd!("0.36900393135001200079371489744679573"),
+            Double::PI % (Double::LN_2 % Double::E);
+    );
+    test_all_exact!(
+        nan_zero:
+            Double::NAN,
+            Double::NAN % Double::ZERO;
+        zero_nan:
+            Double::NAN,
+            Double::ZERO % Double::NAN;
+        inf_zero:
+            Double::NAN,
+            Double::INFINITY % Double::ZERO;
+        zero_inf:
+            Double::NAN,
+            Double::ZERO % Double::INFINITY;
+        neg_inf_zero:
+            Double::NAN,
+            Double::NEG_INFINITY % Double::ZERO;
+        zero_neg_inf:
+            Double::NAN,
+            Double::ZERO % Double::NEG_INFINITY;
 
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn ref_ref() {
-        let expected = dd!("0.42331082513074800310235591192684");
-        assert_close!(expected, &Double::PI % &Double::E);
-    }
+        inf_one:
+            Double::NAN,
+            Double::INFINITY % Double::ONE;
+        one_inf:
+            Double::NAN,
+            Double::ONE % Double::INFINITY;
+        neg_inf_one:
+            Double::NAN,
+            Double::NEG_INFINITY % Double::ONE;
+        one_neg_inf:
+            Double::NAN,
+            Double::ONE % Double::NEG_INFINITY;
+        inf_inf:
+            Double::NAN,
+            Double::INFINITY % Double::INFINITY;
+        inf_neg_inf:
+            Double::NAN,
+            Double::INFINITY % Double::NEG_INFINITY;
+        neg_inf_inf:
+            Double::NAN,
+            Double::NEG_INFINITY % Double::INFINITY;
+        neg_inf_neg_inf:
+            Double::NAN,
+            Double::NEG_INFINITY % Double::NEG_INFINITY;
 
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn num_ref() {
-        let expected = dd!("0.42331082513074800310235591192684");
-        assert_close!(expected, Double::PI % &Double::E);
-    }
+        nan_nan:
+            Double::NAN,
+            Double::NAN % Double::NAN;
+        nan_one:
+            Double::NAN,
+            Double::NAN % Double::ONE;
+        one_nan:
+            Double::NAN,
+            Double::ONE % Double::NAN;
+    );
 
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn ref_num() {
-        let expected = dd!("0.42331082513074800310235591192684");
-        assert_close!(expected, &Double::PI % Double::E);
-    }
-
-    #[test]
-    fn assign_num() {
-        let expected = dd!("0.42331082513074800310235591192684");
-        let mut a = Double::PI;
-        a %= Double::E;
-        assert_close!(expected, a);
-    }
-
-    #[test]
-    fn assign_ref() {
-        let expected = dd!("0.42331082513074800310235591192684");
-        let mut b = Double::PI;
-        b %= &Double::E;
-        assert_close!(expected, b);
-    }
-
-    #[test]
-    fn zero() {
-        assert_exact!(Double::NAN, Double::NAN % Double::ZERO);
-        assert_exact!(Double::NAN, Double::ZERO % Double::NAN);
-        assert_exact!(Double::NAN, Double::INFINITY % Double::ZERO);
-        assert_exact!(Double::NAN, Double::ZERO % Double::INFINITY);
-        assert_exact!(Double::NAN, Double::NEG_INFINITY % Double::ZERO);
-        assert_exact!(Double::NAN, Double::ZERO % Double::NEG_INFINITY);
-    }
-
-    #[test]
-    fn inf() {
-        assert_exact!(Double::NAN, Double::INFINITY % Double::ONE);
-        assert_exact!(Double::NAN, Double::ONE % Double::INFINITY);
-        assert_exact!(Double::NAN, Double::NEG_INFINITY % Double::ONE);
-        assert_exact!(Double::NAN, Double::ONE % Double::NEG_INFINITY);
-        assert_exact!(Double::NAN, Double::INFINITY % Double::INFINITY);
-        assert_exact!(Double::NAN, Double::INFINITY % Double::NEG_INFINITY);
-        assert_exact!(Double::NAN, Double::NEG_INFINITY % Double::INFINITY);
-        assert_exact!(Double::NAN, Double::NEG_INFINITY % Double::NEG_INFINITY);
-    }
-
-    #[test]
-    fn nan() {
-        assert_exact!(Double::NAN, Double::NAN % Double::NAN);
-        assert_exact!(Double::NAN, Double::NAN % Double::ONE);
-        assert_exact!(Double::NAN, Double::ONE % Double::NAN);
-    }
+    test_all!(
+        assign_num: {
+            let mut a = Double::PI;
+            a %= Double::E;
+            assert_close!(dd!("0.42331082513074800310235591192684125"), a);
+        }
+        assign_ref: {
+            let mut b = Double::PI;
+            b %= &Double::E;
+            assert_close!(dd!("0.42331082513074800310235591192684125"), b);
+        }
+    );
 }
