@@ -38,100 +38,12 @@ mod macros {
 
 #[cfg(test)]
 #[macro_use]
-mod tests {
-    use super::Double;
-
-    macro_rules! assert_precision {
-        ($expected:expr, $actual:expr, $digits:expr) => {
-            let expected = Double::from($expected);
-            let actual = Double::from($actual);
-            let mag = expected.0.abs().log10().ceil() as i32;
-            let epsilon = Double(10.0, 0.0).powi(mag - $digits);
-            let diff = (expected - actual).abs();
-            let message = format!(
-                concat!(
-                    "\n",
-                    "Expected: {0}\n",
-                    "Actual:   {1}\n",
-                    "\n",
-                    "Delta:    {2:e}\n",
-                    "Epsilon:  {3:e}\n",
-                    "\n",
-                    "Components:\n",
-                    "  Expected: {4:<22e} {5:e}\n",
-                    "  Actual:   {6:<22e} {7:e}\n",
-                ),
-                expected, actual, diff, epsilon, expected[0], expected[1], actual[0], actual[1]
-            );
-            assert!(diff < epsilon, message);
-        };
-    }
-
-    macro_rules! assert_precision_all {
-        ($($expected:expr, $actual:expr, $digits:expr);* $(;)?) => {
-            $(assert_precision!($expected, $actual, $digits);)*
-        }
-    }
-
-    macro_rules! assert_close {
-        ($expected:expr, $actual:expr $(,)*) => {
-            assert_precision!($expected, $actual, 30);
-        };
-    }
-
-    macro_rules! assert_all_close {
-        ($($expected:expr, $actual:expr);* $(;)?) => {
-            $(assert_close!($expected, $actual);)*
-        }
-    }
-
-    macro_rules! assert_exact {
-        ($expected:expr, $actual:expr) => {
-            let expected = Double::from($expected);
-            let actual = Double::from($actual);
-            let message = format!(
-                concat!(
-                    "\n",
-                    "Expected: {0}\n",
-                    "Actual:   {1}\n",
-                    "\n",
-                    "Components:\n",
-                    "  Expected: {2:<22e} {3:e}\n",
-                    "  Actual:   {4:<22e} {5:e}\n",
-                ),
-                expected, actual, expected[0], expected[1], actual[0], actual[1]
-            );
-            if expected.is_nan() {
-                assert!(actual.is_nan(), message);
-            } else {
-                assert!(expected == actual, message);
-            }
-        };
-    }
-
-    macro_rules! assert_all_exact {
-        ($($expected:expr, $actual:expr);* $(;)?) => {
-            $(assert_exact!($expected, $actual);)*
-        }
-    }
-
-    #[test]
-    fn new() {
-        let a = Double::new(0.0, 10.0);
-        assert_exact!(a.0, 0.0);
-        assert_exact!(a.1, 10.0);
-    }
-
-    #[test]
-    fn index() {
-        assert_exact!(Double::PI[0], Double::PI.0);
-        assert_exact!(Double::PI[1], Double::PI.1);
-    }
-}
+mod test_macros;
 
 mod aconsts; // "a" for "associated", or maybe just to make it appear first in docs
 mod add;
 mod alg;
+mod common;
 mod comp;
 mod display;
 mod div;
@@ -144,7 +56,6 @@ mod mul;
 mod neg;
 mod rem;
 mod sub;
-mod tables;
 mod trans;
 mod trig;
 
@@ -249,4 +160,20 @@ impl Index<usize> for Double {
             ),
         }
     }
+}
+#[cfg(test)]
+#[macro_use]
+mod tests {
+    use super::*;
+
+    test!(new: {
+        let a = Double::new(0.0, 10.0);
+        exact!(a.0, 0.0);
+        exact!(a.1, 10.0);
+    });
+
+    test_all_exact!(
+        index_zero: Double::PI[0], Double::PI.0;
+        index_one: Double::PI[1], Double::PI.1;
+    );
 }
