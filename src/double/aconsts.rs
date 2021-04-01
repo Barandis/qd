@@ -69,63 +69,72 @@ impl Double {
     /// Archimedes' constant (π)
     pub const PI: Double = Double(3.141592653589793e0, 1.2246467991473532e-16);
 
-    /// 2π
-    pub const MUL_2_PI: Double = Double(6.283185307179586e0, 2.449293598294706e-16);
+    /// The full circle constant (τ), or 2π
+    pub const TAU: Double = Double(6.283185307179586e0, 2.449293598294704e-16);
 
     /// π/2
-    pub const FRAC_PI_2: Double = Double(1.5707963267948966e0, 6.123233995736766e-17);
+    pub const FRAC_PI_2: Double = Double(1.5707963267948966e0, 6.12323399573676e-17);
 
     /// π/3
-    pub const FRAC_PI_3: Double = Double(1.0471975511965979e0, -1.072081766451091e-16);
+    pub const FRAC_PI_3: Double = Double(1.0471975511965979e0, -1.0720817664510912e-16);
 
     /// π/4
-    pub const FRAC_PI_4: Double = Double(7.853981633974483e-1, 3.061616997868386e-17);
+    pub const FRAC_PI_4: Double = Double(7.853981633974483e-1, 3.0616169978683836e-17);
 
     /// π/6
     pub const FRAC_PI_6: Double = Double(5.235987755982989e-1, -5.360408832255455e-17);
 
     /// π/8
-    pub const FRAC_PI_8: Double = Double(3.9269908169872414e-1, 1.5308084989341915e-17);
+    pub const FRAC_PI_8: Double = Double(3.9269908169872414e-1, 1.5308084989341906e-17);
 
     /// π/16
-    pub const FRAC_PI_16: Double = Double(1.9634954084936207e-1, 7.654042494670959e-18);
+    pub const FRAC_PI_16: Double = Double(1.9634954084936207e-1, 7.654042494670953e-18);
+
+    /// 3π/2
+    pub const FRAC_3_PI_2: Double = Double(4.71238898038469e0, 1.8369701987210292e-16);
 
     /// 3π/4
     pub const FRAC_3_PI_4: Double = Double(2.356194490192345e0, 9.184850993605146e-17);
 
+    /// 5π/4
+    pub const FRAC_5_PI_4: Double = Double(3.9269908169872414e0, 1.5308084989341908e-16);
+
+    /// 7π/4
+    pub const FRAC_7_PI_4: Double = Double(5.497787143782138e0, 2.143131898507869e-16);
+
     /// 1/π
-    pub const FRAC_1_PI: Double = Double(3.183098861837907e-1, -1.9678676675182486e-17);
+    pub const FRAC_1_PI: Double = Double(3.183098861837907e-1, -1.967867667518248e-17);
 
     /// 2/π
-    pub const FRAC_2_PI: Double = Double(6.366197723675814e-1, -3.9357353350364984e-17);
+    pub const FRAC_2_PI: Double = Double(6.366197723675814e-1, -3.935735335036497e-17);
 
     /// 2/√π
-    pub const FRAC_2_SQRT_PI: Double = Double(1.1283791670955126e0, 1.533545961316587e-17);
+    pub const FRAC_2_SQRT_PI: Double = Double(1.1283791670955126e0, 1.533545961316588e-17);
 
     /// √2
-    pub const SQRT_2: Double = Double(1.4142135623730951e0, -9.667293313452916e-17);
+    pub const SQRT_2: Double = Double(1.4142135623730951e0, -9.667293313452915e-17);
 
     /// 1/√2
     pub const FRAC_1_SQRT_2: Double = Double(7.071067811865476e-1, -4.833646656726457e-17);
 
     /// Euler's number (e)
-    pub const E: Double = Double(2.718281828459045e0, 1.44564689172925e-16);
+    pub const E: Double = Double(2.718281828459045e0, 1.4456468917292497e-16);
 
     /// log₂ 10
-    pub const LOG210: Double = Double(3.321928094887362e0, 1.6616175169735918e-16);
+    pub const LOG2_10: Double = Double(3.321928094887362e0, 1.6616175169735918e-16);
 
     /// log₂ e
-    pub const LOG2_E: Double = Double(1.4426950408889634e0, 2.0355273740931027e-17);
+    pub const LOG2_E: Double = Double(1.4426950408889634e0, 2.035527374093102e-17);
 
     /// log 2
-    pub const LOG102: Double = Double(3.010299956639812e-1, -2.8037281277851685e-18);
+    pub const LOG10_2: Double = Double(3.010299956639812e-1, -2.8037281277851654e-18);
 
     /// log e
-    pub const LOG10_E: Double = Double(4.342944819032518e-1, 1.0983196502167652e-17);
+    pub const LOG10_E: Double = Double(4.342944819032518e-1, 1.0983196502167654e-17);
 
     /// ln 2
     pub const LN_2: Double = Double(6.931471805599453e-1, 2.319046813846301e-17);
 
     /// ln 10
-    pub const LN_10: Double = Double(2.302585092994046e0, -2.1707562233822494e-16);
+    pub const LN_10: Double = Double(2.302585092994046e0, -2.1707562233822496e-16);
 }
