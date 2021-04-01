@@ -36,120 +36,7 @@ mod macros {
 
 #[cfg(test)]
 #[macro_use]
-mod tests {
-    use super::Quad;
-
-    macro_rules! assert_precision {
-        ($expected:expr, $actual:expr, $digits:expr) => {
-            let expected = Quad::from($expected);
-            let actual = Quad::from($actual);
-            let mag = expected.0.abs().log10().floor() as i32;
-            let epsilon = Quad(10.0, 0.0, 0.0, 0.0).powi(mag - $digits);
-            let diff = (expected - actual).abs();
-            let message = format!(
-                concat!(
-                    "\n",
-                    "Expected: {0}\n",
-                    "Actual:   {1}\n",
-                    "\n",
-                    "Delta:    {2:e}\n",
-                    "Epsilon:  {3:e}\n",
-                    "\n",
-                    "Components:\n",
-                    "  Expected: {4:<22e} {5:<22e} {6:<22e} {7:e}\n",
-                    "  Actual:   {8:<22e} {9:<22e} {10:<22e} {11:e}\n",
-                ),
-                expected,
-                actual,
-                diff,
-                epsilon,
-                expected[0],
-                expected[1],
-                expected[2],
-                expected[3],
-                actual[0],
-                actual[1],
-                actual[2],
-                actual[3],
-            );
-            assert!(diff < epsilon, message);
-        };
-    }
-
-    macro_rules! assert_precision_all {
-        ($($expected:expr, $actual:expr, $digits:expr);* $(;)?) => {
-            $(assert_precision!($expected, $actual, $digits);)*
-        }
-    }
-
-    macro_rules! assert_close {
-        ($expected:expr, $actual:expr $(,)*) => {
-            assert_precision!($expected, $actual, 60);
-        };
-    }
-
-    macro_rules! assert_all_close {
-        ($($expected:expr, $actual:expr);* $(;)?) => {
-            $(assert_close!($expected, $actual);)*
-        }
-    }
-
-    macro_rules! assert_exact {
-        ($expected:expr, $actual:expr) => {
-            let expected = Quad::from($expected);
-            let actual = Quad::from($actual);
-            let message = format!(
-                concat!(
-                    "\n",
-                    "Expected: {0}\n",
-                    "Actual:   {1}\n",
-                    "\n",
-                    "Components:\n",
-                    "  Expected: {2:<22e} {3:<22e} {4:<22e} {5:e}\n",
-                    "  Actual:   {6:<22e} {7:<22e} {8:<22e} {9:e}\n",
-                ),
-                expected,
-                actual,
-                expected[0],
-                expected[1],
-                expected[2],
-                expected[3],
-                actual[0],
-                actual[1],
-                actual[2],
-                actual[3],
-            );
-            if expected.is_nan() {
-                assert!(actual.is_nan(), message);
-            } else {
-                assert!(expected == actual, message);
-            }
-        };
-    }
-
-    macro_rules! assert_all_exact {
-        ($($expected:expr, $actual:expr);* $(;)?) => {
-            $(assert_exact!($expected, $actual);)*
-        }
-    }
-
-    #[test]
-    fn new() {
-        let a = Quad::new(0.0, 10.0, -3.0, 5.0);
-        assert_exact!(a.0, 0.0);
-        assert_exact!(a.1, 10.0);
-        assert_exact!(a.2, -3.0);
-        assert_exact!(a.3, 5.0);
-    }
-
-    #[test]
-    fn index() {
-        assert_exact!(Quad::PI[0], Quad::PI.0);
-        assert_exact!(Quad::PI[1], Quad::PI.1);
-        assert_exact!(Quad::PI[2], Quad::PI.2);
-        assert_exact!(Quad::PI[3], Quad::PI.3);
-    }
-}
+mod test_macros;
 
 mod aconsts; // "a" for "associated", or maybe just to make it appear first in docs
 mod add;
@@ -275,4 +162,25 @@ impl Index<usize> for Quad {
             ),
         }
     }
+}
+
+#[cfg(test)]
+#[macro_use]
+mod tests {
+    use super::Quad;
+
+    test!(new: {
+        let a = Quad::new(0.0, 10.0, -3.0, 5.0);
+        exact!(a.0, 0.0);
+        exact!(a.1, 10.0);
+        exact!(a.2, -3.0);
+        exact!(a.3, 5.0);
+    });
+
+    test_all_exact!(
+        index_zero: Quad::PI[0], Quad::PI.0;
+        index_one: Quad::PI[1], Quad::PI.1;
+        index_two: Quad::PI[2], Quad::PI.2;
+        index_three: Quad::PI[3], Quad::PI.3;
+    );
 }
