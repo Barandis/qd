@@ -71,90 +71,69 @@ impl PartialOrd for Double {
 mod tests {
     use super::*;
 
-    #[test]
-    #[allow(clippy::eq_op)]
-    fn equal() {
-        assert!(Double::PI == Double::PI);
-    }
+    // eq tests
+    test_all_assert!(
+        eq_pi_pi:
+            Double::PI == Double::PI;
+        eq_pi_e:
+            Double::PI != Double::E;
+        eq_zero_neg_zero:
+            Double::ZERO == Double::NEG_ZERO;
+        eq_inf_inf:
+            Double::INFINITY == Double::INFINITY;
+        eq_neg_inf_neg_inf:
+            Double::NEG_INFINITY == Double::NEG_INFINITY;
+        eq_inf_neg_inf:
+            Double::INFINITY != Double::NEG_INFINITY;
+        eq_nan_nan:
+            Double::NAN != Double::NAN;
+    );
 
-    #[test]
-    fn not_equal() {
-        assert!(Double::PI != Double::E);
-    }
-
-    #[test]
-    fn equal_zero() {
-        assert!(Double::ZERO == Double::NEG_ZERO);
-    }
-
-    #[test]
-    #[allow(clippy::eq_op)]
-    fn equal_inf() {
-        assert!(Double::INFINITY == Double::INFINITY);
-        assert!(Double::NEG_INFINITY == Double::NEG_INFINITY);
-        assert!(Double::INFINITY != Double::NEG_INFINITY);
-    }
-
-    #[test]
-    #[allow(clippy::eq_op)]
-    fn equal_nan() {
-        assert!(Double::NAN != Double::NAN);
-    }
-
-    #[test]
-    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
-    fn gt() {
-        assert!(Double::PI > Double::E);
-        assert!(!(Double::PI > Double::PI));
-        assert!(!(Double::E > Double::PI));
-    }
-
-    #[test]
-    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
-    fn gte() {
-        assert!(Double::PI >= Double::E);
-        assert!(Double::PI >= Double::PI);
-        assert!(!(Double::E >= Double::PI));
-    }
-
-    #[test]
-    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
-    fn lt() {
-        assert!(Double::E < Double::PI);
-        assert!(!(Double::E < Double::E));
-        assert!(!(Double::PI < Double::E));
-    }
-
-    #[test]
-    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
-    fn lte() {
-        assert!(Double::E <= Double::PI);
-        assert!(Double::E <= Double::E);
-        assert!(!(Double::PI <= Double::E));
-    }
-
-    #[test]
-    fn ord_zero() {
-        assert!(Double::ZERO <= Double::NEG_ZERO);
-        assert!(Double::ZERO >= Double::NEG_ZERO);
-    }
-
-    #[test]
-    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
-    fn ord_inf() {
-        assert!(Double::NEG_INFINITY < Double::INFINITY);
-        assert!(Double::NEG_INFINITY <= Double::NEG_INFINITY);
-        assert!(Double::NEG_INFINITY >= Double::NEG_INFINITY);
-        assert!(!(Double::NEG_INFINITY > Double::NEG_INFINITY));
-    }
-
-    #[test]
-    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
-    fn ord_nan() {
-        assert!(!(Double::NAN < Double::NAN));
-        assert!(!(Double::NAN <= Double::NAN));
-        assert!(!(Double::NAN > Double::NAN));
-        assert!(!(Double::NAN >= Double::NAN));
-    }
+    // ord tests
+    test_all_assert!(
+        gt_pi_e:
+            Double::PI > Double::E;
+        gt_pi_pi:
+            !(Double::PI > Double::PI);
+        gt_e_pi:
+            !(Double::E > Double::PI);
+        gte_pi_e:
+            Double::PI >= Double::E;
+        gte_pi_pi:
+            Double::PI >= Double::PI;
+        gte_e_pi:
+            !(Double::E >= Double::PI);
+        lt_pi_e:
+            !(Double::PI < Double::E);
+        lt_pi_pi:
+            !(Double::PI < Double::PI);
+        lt_e_pi:
+            Double::E < Double::PI;
+        lte_pi_e:
+            !(Double::PI <= Double::E);
+        lte_pi_pi:
+            Double::PI <= Double::PI;
+        lte_e_pi:
+            Double::E <= Double::PI;
+        lte_zero_neg_zero:
+            Double::ZERO <= Double::NEG_ZERO;
+        gte_zero_neg_zero:
+            Double::ZERO >= Double::NEG_ZERO;
+        lt_neg_inf_inf:
+            Double::NEG_INFINITY < Double::INFINITY;
+        lte_neg_inf_inf:
+            Double::NEG_INFINITY <= Double::NEG_INFINITY;
+        gte_neg_inf_neg_inf:
+            Double::NEG_INFINITY >= Double::NEG_INFINITY;
+        gt_neg_inf_neg_inf:
+            !(Double::NEG_INFINITY > Double::NEG_INFINITY);
+        lt_nan_nan:
+            !(Double::NAN < Double::NAN);
+        lte_nan_nan:
+            !(Double::NAN <= Double::NAN);
+        gt_nan_nan:
+            !(Double::NAN > Double::NAN);
+        gte_nan_nan:
+            !(Double::NAN >= Double::NAN);
+    );
 }
-
