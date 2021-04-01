@@ -286,7 +286,7 @@ impl From<i64> for Double {
 
 impl From<&str> for Double {
     /// Parses a string to create a `Double`.
-    /// 
+    ///
     /// The parser works pretty similarly to parsers for `f32` and `f64`. It will fail if
     /// characters are present that are not digits, decimal points, signs, or exponent
     /// markers. It will also fail if there are multiples of these or if they're in the
@@ -297,7 +297,7 @@ impl From<&str> for Double {
     /// *also* produces [`NAN`]. For this reason it's suggested to use [`from_str`] (or its
     /// associated `parse` function) instead of this function if there is any chance that
     /// the parsed string will be legitimately [`NAN`].
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -305,12 +305,12 @@ impl From<&str> for Double {
     /// # fn main() {
     /// let expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
     /// let x = Double::from("0.9999999303082806237436760862691");
-    /// 
+    ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
     /// # }
     /// ```
-    /// 
+    ///
     /// [`NAN`]: #associatedconstant.NAN
     /// [`from_str`]: #method.from_str
     fn from(s: &str) -> Double {
@@ -328,7 +328,7 @@ impl From<Double> for f64 {
     /// has the capability of losing range (for example, no other type could be used to
     /// represent `dd!(1e308)`). Casts can be made from the `f64` provided by this function
     /// to other numeric types as needed.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -336,7 +336,7 @@ impl From<Double> for f64 {
     /// # fn main() {
     /// let a = Double::PI;
     /// let x = f64::from(a);
-    /// 
+    ///
     /// let diff = (x - std::f64::consts::PI).abs();
     /// assert!(diff < 1e-15);
     /// # }
@@ -350,40 +350,74 @@ impl From<Double> for f64 {
 mod tests {
     use super::*;
 
-    #[test]
-    fn from_f32() {
-        assert_exact!(dd!(1.0f32), Double(1.0, 0.0));
-        assert_exact!(dd!(1.203125f32), Double(1.203125, 0.0));
+    // f32 tests
+    test_all_exact!(
+        f32_int:
+            Double(1.0, 0.0),
+            dd!(1.0f32);
+        f32_float:
+            Double(1.203125, 0.0),
+            dd!(1.203125f32);
+        f32_zero:
+            Double::ZERO,
+            dd!(0f32);
+        f32_neg_zero:
+            Double::NEG_ZERO,
+            dd!(-0.0f32);
+        f32_inf:
+            Double::INFINITY,
+            std::f32::INFINITY;
+        f32_neg_inf:
+            Double::NEG_INFINITY,
+            std::f32::NEG_INFINITY;
+        f32_nan:
+            Double::NAN,
+            std::f32::NAN;
+    );
+    test!(f32_nonrep: {
         assert_ne!(dd!(1.1f32).1, 0.0);
-        assert_exact!(dd!(0f32), Double::ZERO);
-        assert_exact!(dd!(-0.0f32), Double::NEG_ZERO);
-        assert_exact!(dd!(std::f32::INFINITY), Double::INFINITY);
-        assert_exact!(dd!(std::f32::NEG_INFINITY), Double::NEG_INFINITY);
-        assert_exact!(dd!(std::f32::NAN), Double::NAN);
-    }
+    });
 
-    #[test]
-    fn from_f64() {
-        assert_exact!(dd!(1.0), Double(1.0, 0.0));
-        assert_exact!(dd!(1.203125), Double(1.203125, 0.0));
-        assert_exact!(dd!(1.0005645751953125), Double(1.0005645751953125, 0.0));
+    // f64 tests
+    test_all_exact!(
+        f64_int:
+            Double(1.0, 0.0),
+            dd!(1.0);
+        f64_float:
+            Double(1.203125, 0.0),
+            dd!(1.203125);
+        f64_double:
+            Double(1.0005645751953125, 0.0),
+            dd!(1.0005645751953125);
+        f64_zero:
+            Double::ZERO,
+            dd!(0.0);
+        f64_neg_zero:
+            Double::NEG_ZERO,
+            dd!(-0.0);
+        f64_inf:
+            Double::INFINITY,
+            std::f64::INFINITY;
+        f64_neg_inf:
+            Double::NEG_INFINITY,
+            std::f64::NEG_INFINITY;
+        f64_nan:
+            Double::NAN,
+            std::f64::NAN;
+    );
+    test!(f64_nonrep: {
         assert_ne!(dd!(1.1).1, 0.0);
-        assert_exact!(dd!(0), Double::ZERO);
-        assert_exact!(dd!(-0.0), Double::NEG_ZERO);
-        assert_exact!(dd!(std::f64::INFINITY), Double::INFINITY);
-        assert_exact!(dd!(std::f64::NEG_INFINITY), Double::NEG_INFINITY);
-        assert_exact!(dd!(std::f64::NAN), Double::NAN);
-    }
+    });
 
-    #[test]
-    fn from_int() {
-        assert_eq!(i8::MIN.to_string(), dd!(i8::MIN).to_string());
-        assert_eq!(u8::MAX.to_string(), dd!(u8::MAX).to_string());
-        assert_eq!(i16::MIN.to_string(), dd!(i16::MIN).to_string());
-        assert_eq!(u16::MAX.to_string(), dd!(u16::MAX).to_string());
-        assert_eq!(i32::MIN.to_string(), dd!(i32::MIN).to_string());
-        assert_eq!(u32::MAX.to_string(), dd!(u32::MAX).to_string());
-        assert_eq!(i64::MIN.to_string(), dd!(i64::MIN).to_string());
-        assert_eq!(u64::MAX.to_string(), dd!(u64::MAX).to_string());
-    }
+    // integer tests
+    test_all_eq!(
+        i8_min: i8::MIN.to_string(), dd!(i8::MIN).to_string();
+        u8_max: u8::MAX.to_string(), dd!(u8::MAX).to_string();
+        i16_min: i16::MIN.to_string(), dd!(i16::MIN).to_string();
+        u16_max: u16::MAX.to_string(), dd!(u16::MAX).to_string();
+        i32_min: i32::MIN.to_string(), dd!(i32::MIN).to_string();
+        u32_max: u32::MAX.to_string(), dd!(u32::MAX).to_string();
+        i64_min: i64::MIN.to_string(), dd!(i64::MIN).to_string();
+        u64_max: u64::MAX.to_string(), dd!(u64::MAX).to_string();
+    );
 }

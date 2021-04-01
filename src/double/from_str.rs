@@ -177,36 +177,55 @@ mod tests {
         s.parse::<Double>().unwrap_err().kind
     }
 
-    #[test]
-    fn empty() {
-        assert_eq!(parse_err(""), ErrorKind::Empty);
-    }
+    // error tests
+    test_all_eq!(
+        empty:
+            ErrorKind::Empty,
+            parse_err("");
+        double_sign:
+            ErrorKind::Invalid,
+            parse_err("++2317");
+        double_point:
+            ErrorKind::Invalid,
+            parse_err("2.31.7");
+        mid_sign:
+            ErrorKind::Invalid,
+            parse_err("2-317");
+        end_letter:
+            ErrorKind::Invalid,
+            parse_err("2.317err");
+        mid_letter:
+            ErrorKind::Invalid,
+            parse_err("2.3j7");
+    );
 
-    #[test]
-    fn invalid() {
-        assert_eq!(parse_err("++2317"), ErrorKind::Invalid);
-        assert_eq!(parse_err("2.31.7"), ErrorKind::Invalid);
-        assert_eq!(parse_err("2-317"), ErrorKind::Invalid);
-        assert_eq!(parse_err("2.317err"), ErrorKind::Invalid);
-        assert_eq!(parse_err("2.3j7"), ErrorKind::Invalid);
-    }
+    // zero tests
+    test_all_exact!(
+        zero_int:
+            Double::ZERO,
+            parse("0");
+        zero_float:
+            Double::ZERO,
+            parse("0.0");
+        zero_plus_int:
+            Double::ZERO,
+            parse("+0");
+        zero_plus_float:
+            Double::ZERO,
+            parse("+0.0");
+        zero_minus_int:
+            Double::NEG_ZERO,
+            parse("-0");
+        zero_minus_float:
+            Double::NEG_ZERO,
+            parse("-0.0");
+    );
 
-    #[test]
-    fn zero() {
-        assert_exact!(Double::ZERO, parse("0"));
-        assert_exact!(Double::ZERO, parse("0.0"));
-        assert_exact!(Double::ZERO, parse("+0"));
-        assert_exact!(Double::ZERO, parse("+0.0"));
-        assert_exact!(Double::NEG_ZERO, parse("-0"));
-        assert_exact!(Double::NEG_ZERO, parse("-0.0"));
-    }
-
-    #[test]
-    fn single_int() {
+    test!(single_int: {
         assert_single!(1.0, parse("1"));
         assert_single!(2317.0, parse("2317"));
         assert_single!(16_777_216.0, parse("16_777_216"));
-    }
+    });
 
     // With any number big enough to use more than one component, the half-ulp normalization
     // requirement and the possibility of having differing floating-point precisions between
@@ -227,16 +246,15 @@ mod tests {
     // directly through math between double-precision values. The components of each should
     // be the same if the parsing is being done correctly.
 
-    #[test]
-    fn double_int() {
+    test!(double_int: {
         let s = parse("12345678901234561234567890123456");
         let a = dd!(1_234_567_890_123_456.0);
 
         let mut n = dd!(a);
         n *= dd!(10).powi(16);
         n += dd!(a);
-        assert_exact!(n, s);
-    }
+        exact!(n, s);
+    });
 
     // The parsed values in the first asserts in each test below are of the form (2ⁿ - 1) /
     // 2ⁿ. Since this is the same as the sum of the series 1/2⁰ + 1/2¹ + 1/2² + ... 1/2ⁿ,
@@ -251,40 +269,33 @@ mod tests {
     // precision offered by the type (most of them are accurate to about 68 digits when only
     // 63-64 is offered). Therefore `assert_close` is used rather than `assert_exact`.
 
-    #[test]
-    fn single_float() {
+    test!(single_float: {
         // n = 15
         assert_single!(0.999_084_472_656_25, parse("0.99908447265625"));
         let three_expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
-        assert_precision!(three_expected, parse("0.9999999303082806"), 15);
-    }
+        prec!(three_expected, parse("0.9999999303082806"), 15);
+    });
 
-    #[test]
-    fn double_float() {
+    test!(double_float: {
         // n = 31
         let s = parse("0.9999999995343387126922607421875");
         let t = dd!(2).powi(31);
         let x = (t - dd!(1)) / t;
-        assert_close!(x, s);
+        near!(x, s);
 
         let three_expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
-        assert_precision!(
-            three_expected,
-            parse("0.9999999303082806237436760862691"),
-            30
-        );
-    }
+        near!(three_expected, parse("0.9999999303082806237436760862691"));
+    });
 
-    #[test]
-    fn exponent() {
+    test!(exp: {
         let s = parse("0.9999999995343387126922607421875e100");
         let t = dd!(2).powi(31);
         let x = ((t - dd!(1)) / t) * dd!(10).powi(100);
-        assert_close!(x, s);
+        near!(x, s);
 
         let s = parse("0.9999999995343387126922607421875e-100");
         let t = dd!(2).powi(31);
         let x = ((t - dd!(1)) / t) * dd!(10).powi(-100);
-        assert_close!(x, s);
-    }
+        near!(x, s);
+    });
 }
