@@ -107,92 +107,77 @@ impl<'a> Product<&'a Double> for Double {
 mod tests {
     use super::*;
 
-    #[test]
-    fn sum() {
-        let actual: Double = [dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().sum();
-        assert_exact!(dd!(15), actual);
+    // sum tests
+    test_all_near!(
+        sum_nums_pi_234:
+            dd!("3.403392041388942675001196998552795"),
+            vec![Double::FRAC_PI_2, Double::FRAC_PI_3, Double::FRAC_PI_4]
+                .into_iter()
+                .sum::<Double>();
+        sum_refs_pi_234:
+            dd!("3.403392041388942675001196998552795"),
+            vec![Double::FRAC_PI_2, Double::FRAC_PI_3, Double::FRAC_PI_4]
+                .iter()
+                .sum::<Double>();
+    );
+    test_all_exact!(
+        sum_nums_15:
+            dd!(15),
+            vec![dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].into_iter().sum::<Double>();
+        sum_refs_15:
+            dd!(15),
+            vec![dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().sum::<Double>();
+        sum_empty:
+            Double::ZERO,
+            vec![].iter().sum::<Double>();
+        sum_inf:
+            Double::INFINITY,
+            vec![dd!(1), Double::INFINITY, dd!(3)].iter().sum::<Double>();
+        sum_neg_inf:
+            Double::NEG_INFINITY,
+            vec![dd!(1), Double::NEG_INFINITY, dd!(3)].iter().sum::<Double>();
+        sum_both_inf:
+            Double::NAN,
+            vec![Double::INFINITY, Double::NEG_INFINITY].iter().sum::<Double>();
+        sum_nan:
+            Double::NAN,
+            vec![dd!(1), dd!(2), Double::NAN].iter().sum::<Double>();
+    );
 
-        let actual: Double = vec![Double::FRAC_PI_2, Double::FRAC_PI_3, Double::FRAC_PI_4]
-            .into_iter()
-            .sum();
-        assert_close!(dd!("3.4033920413889426750011969985528"), actual);
-
-        let actual: Double = [dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().sum();
-        assert_exact!(dd!(15), actual);
-
-        let actual: Double = vec![Double::FRAC_PI_2, Double::FRAC_PI_3, Double::FRAC_PI_4]
-            .iter()
-            .sum();
-        assert_close!(dd!("3.4033920413889426750011969985528"), actual);
-    }
-
-    #[test]
-    fn sum_empty() {
-        let actual: Double = vec![].iter().sum();
-        assert_exact!(Double::ZERO, actual);
-    }
-
-    #[test]
-    fn sum_inf() {
-        let actual: Double = vec![dd!(1), Double::INFINITY, dd!(3)].iter().sum();
-        assert_exact!(Double::INFINITY, actual);
-
-        let actual: Double = vec![dd!(1), Double::NEG_INFINITY, dd!(3)].iter().sum();
-        assert_exact!(Double::NEG_INFINITY, actual);
-
-        let actual: Double = vec![Double::INFINITY, Double::NEG_INFINITY].iter().sum();
-        assert_exact!(Double::NAN, actual);
-    }
-
-    #[test]
-    fn sum_nan() {
-        let actual: Double = vec![dd!(1), dd!(2), Double::NAN].iter().sum();
-        assert_exact!(Double::NAN, actual);
-    }
-
-    #[test]
-    fn product() {
-        let actual: Double = [dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().product();
-        assert_exact!(dd!(120), actual);
-
-        let actual: Double = vec![Double::FRAC_PI_2, Double::FRAC_PI_3, Double::FRAC_PI_4]
-            .into_iter()
-            .product();
-        assert_close!(dd!("1.2919281950124925073115131277959"), actual);
-
-        let actual: Double = [dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().product();
-        assert_exact!(dd!(120), actual);
-
-        let actual: Double = vec![Double::FRAC_PI_2, Double::FRAC_PI_3, Double::FRAC_PI_4]
-            .iter()
-            .product();
-        assert_close!(dd!("1.2919281950124925073115131277959"), actual);
-    }
-
-    #[test]
-    fn product_empty() {
-        let actual: Double = vec![].iter().product();
-        assert_exact!(Double::ONE, actual);
-    }
-
-    #[test]
-    fn product_inf() {
-        let actual: Double = vec![dd!(1), Double::INFINITY, dd!(3)].iter().product();
-        assert_exact!(Double::INFINITY, actual);
-
-        let actual: Double = vec![dd!(1), Double::NEG_INFINITY, dd!(3)].iter().product();
-        assert_exact!(Double::NEG_INFINITY, actual);
-
-        let actual: Double = vec![Double::INFINITY, Double::NEG_INFINITY]
-            .iter()
-            .product();
-        assert_exact!(Double::NEG_INFINITY, actual);
-    }
-
-    #[test]
-    fn product_nan() {
-        let actual: Double = vec![dd!(1), dd!(2), Double::NAN].iter().product();
-        assert_exact!(Double::NAN, actual);
-    }
+    // product tests
+    test_all_near!(
+        product_nums_pi_234:
+            dd!("1.2919281950124925073115131277958906"),
+            vec![Double::FRAC_PI_2, Double::FRAC_PI_3, Double::FRAC_PI_4]
+                .into_iter()
+                .product::<Double>();
+        product_refs_pi_234:
+            dd!("1.2919281950124925073115131277958906"),
+            vec![Double::FRAC_PI_2, Double::FRAC_PI_3, Double::FRAC_PI_4]
+                .iter()
+                .product::<Double>();
+    );
+    test_all_exact!(
+        product_nums_15:
+            dd!(120),
+            vec![dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].into_iter().product::<Double>();
+        product_refs_15:
+            dd!(120),
+            vec![dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().product::<Double>();
+        product_empty:
+            Double::ONE,
+            vec![].iter().product::<Double>();
+        product_inf:
+            Double::INFINITY,
+            vec![dd!(1), Double::INFINITY, dd!(3)].iter().product::<Double>();
+        product_neg_inf:
+            Double::NEG_INFINITY,
+            vec![dd!(1), Double::NEG_INFINITY, dd!(3)].iter().product::<Double>();
+        product_both_inf:
+            Double::NEG_INFINITY,
+            vec![Double::INFINITY, Double::NEG_INFINITY].iter().product::<Double>();
+        product_nan:
+            Double::NAN,
+            vec![dd!(1), dd!(2), Double::NAN].iter().product::<Double>();
+    );
 }
-
