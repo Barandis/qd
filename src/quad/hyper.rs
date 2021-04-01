@@ -3,6 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+use crate::quad::common as c;
 use crate::quad::Quad;
 
 impl Quad {
@@ -46,8 +47,8 @@ impl Quad {
                 } else {
                     let a = self.exp();
                     let inv_a = a.recip();
-                    let s = (a - inv_a).mul_pwr2(0.5);
-                    let c = (a + inv_a).mul_pwr2(0.5);
+                    let s = c::mul_pwr2(a - inv_a, 0.5);
+                    let c = c::mul_pwr2(a + inv_a, 0.5);
                     (s, c)
                 }
             }
@@ -76,7 +77,7 @@ impl Quad {
             None => {
                 if self.abs().0 > 0.05 {
                     let a = self.exp();
-                    (a - a.recip()).mul_pwr2(0.5)
+                    c::mul_pwr2(a - a.recip(), 0.5)
                 } else {
                     // The above formula is not accurate enough with very small numbers.
                     // Use a Taylor series instead.
@@ -122,7 +123,7 @@ impl Quad {
             Some(r) => r,
             None => {
                 let a = self.exp();
-                (a + a.recip()).mul_pwr2(0.5)
+                c::mul_pwr2(a + a.recip(), 0.5)
             }
         }
     }
@@ -230,7 +231,7 @@ impl Quad {
     pub fn atanh(self) -> Quad {
         match self.pre_atanh() {
             Some(r) => r,
-            None => ((Quad::ONE + self) / (Quad::ONE - self)).ln().mul_pwr2(0.5),
+            None => c::mul_pwr2(((Quad::ONE + self) / (Quad::ONE - self)).ln(), 0.5),
         }
     }
 

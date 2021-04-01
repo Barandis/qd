@@ -5,6 +5,7 @@
 
 use crate::common::primitive as p;
 use crate::common::utils as u;
+use crate::quad::common as c;
 use crate::quad::Quad;
 
 impl Quad {
@@ -35,41 +36,6 @@ impl Quad {
             self.2 * factor,
             self.3 * factor,
         )
-    }
-
-    /// Mutiplies the `Quad` by an `f64` that must be a power of 2.
-    ///
-    /// Like [`ldexp`], this function is not present in the `f64` API. However, it is *much*
-    /// faster than regular multiplication for its very particular use. A regular
-    /// multiplication between two `Quad`s takes around 150 floating-point operations
-    /// (depending on the numbers); this function takes 4.
-    ///
-    /// The caveat is that this function will work *only* when `n` is a power of two
-    /// (including negative powers, so 0.5, 0.25, etc. will also work). If this function is
-    /// used with a number that is *not* a power of two, **it will still return a result but
-    /// that result will be wrong.** Use this function *only* when you are 100% certain that
-    /// the argument will be a power of two.
-    ///
-    /// `mul_pwr2` is primarily useful for implementing mathematical algorithms. It is used
-    /// extensively in this library.
-    ///
-    /// # Examples
-    /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
-    /// let x = Quad::PI.mul_pwr2(0.5); // MUCH faster than Quad::PI / 2
-    /// let expected = qd!("1.570796326794896619231321691639751442098584699687552910487472296");
-    ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < qd!(1e-60));
-    /// # }
-    /// ```
-    ///
-    /// [`ldexp`]: #methods.ldexp
-    #[inline]
-    pub fn mul_pwr2(self, n: f64) -> Quad {
-        Quad(self.0 * n, self.1 * n, self.2 * n, self.3 * n)
     }
 
     /// Calculates the square of the `Quad`.
@@ -168,7 +134,7 @@ impl Quad {
                 // pass, so performing it three times should be enough.
 
                 let mut r = Quad::ONE / Quad::from(self.0.sqrt());
-                let h = self.mul_pwr2(0.5);
+                let h = c::mul_pwr2(self, 0.5);
                 let k = Quad(0.5, 0.0, 0.0, 0.0);
 
                 r += (k - h * r.sqr()) * r;
@@ -323,7 +289,7 @@ impl Quad {
     /// assert!(diff < qd!(1e-60));
     /// # }
     /// ```
-    /// 
+    ///
     /// [`NAN`]: #associatedconstant.NAN
     #[inline]
     pub fn powf(self, n: Quad) -> Quad {

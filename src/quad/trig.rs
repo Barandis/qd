@@ -3,7 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::quad::{tables, Quad};
+use crate::quad::common as c;
+use crate::quad::Quad;
 
 impl Quad {
     /// Simultaneously computes the sine (sin) and the cosine (cos) of the `Quad`. This is
@@ -41,8 +42,8 @@ impl Quad {
                 let (s, c) = if k == 0 {
                     (sin_t, cos_t)
                 } else {
-                    let u = tables::COSINES[abs_k - 1];
-                    let v = tables::SINES[abs_k - 1];
+                    let u = c::COSINES[abs_k - 1];
+                    let v = c::SINES[abs_k - 1];
                     if k > 0 {
                         (u * sin_t + v * cos_t, u * cos_t - v * sin_t)
                     } else {
@@ -101,8 +102,8 @@ impl Quad {
                         _ => -sin_taylor(t),
                     }
                 } else {
-                    let u = tables::COSINES[abs_k - 1];
-                    let v = tables::SINES[abs_k - 1];
+                    let u = c::COSINES[abs_k - 1];
+                    let v = c::SINES[abs_k - 1];
                     let (sin_t, cos_t) = sincos_taylor(t);
 
                     if k > 0 {
@@ -157,8 +158,8 @@ impl Quad {
                         _ => -cos_taylor(t),
                     }
                 } else {
-                    let u = tables::COSINES[abs_k - 1];
-                    let v = tables::SINES[abs_k - 1];
+                    let u = c::COSINES[abs_k - 1];
+                    let v = c::SINES[abs_k - 1];
                     let (sin_t, cos_t) = sincos_taylor(t);
 
                     if k > 0 {
@@ -494,7 +495,7 @@ fn sin_taylor(a: Quad) -> Quad {
     if a.is_zero() {
         Quad::ZERO
     } else {
-        let threshold = (Quad::EPSILON * a.abs()).mul_pwr2(0.5);
+        let threshold = c::mul_pwr2(Quad::EPSILON * a.abs(), 0.5);
         let x = -a.sqr();
         let mut s = a;
         let mut r = a;
@@ -502,10 +503,10 @@ fn sin_taylor(a: Quad) -> Quad {
 
         loop {
             r *= x;
-            let t = r * tables::INV_FACTS[i];
+            let t = r * c::INV_FACTS[i];
             s += t;
             i += 2;
-            if i >= tables::INV_FACTS.len() || t.abs() <= threshold {
+            if i >= c::INV_FACTS.len() || t.abs() <= threshold {
                 break;
             }
         }
@@ -519,18 +520,18 @@ fn cos_taylor(a: Quad) -> Quad {
     if a.is_zero() {
         Quad::ONE
     } else {
-        let threshold = Quad::EPSILON.mul_pwr2(0.5);
+        let threshold = c::mul_pwr2(Quad::EPSILON, 0.5);
         let x = -a.sqr();
         let mut r = x;
-        let mut s = Quad::ONE + r.mul_pwr2(0.5);
+        let mut s = Quad::ONE + c::mul_pwr2(r, 0.5);
         let mut i = 1;
 
         loop {
             r *= x;
-            let t = r * tables::INV_FACTS[i];
+            let t = r * c::INV_FACTS[i];
             s += t;
             i += 2;
-            if i >= tables::INV_FACTS.len() || t.abs() <= threshold {
+            if i >= c::INV_FACTS.len() || t.abs() <= threshold {
                 break;
             }
         }

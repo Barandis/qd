@@ -5,6 +5,11 @@
 
 use crate::quad::Quad;
 
+#[inline]
+pub fn mul_pwr2(a: Quad, n: f64) -> Quad {
+    Quad(a.0 * n, a.1 * n, a.2 * n, a.3 * n)
+}
+
 /// Reciprocals of factorials, rendered as Quads. These are used in Taylor series
 /// calculations.
 pub const INV_FACTS: [Quad; 15] = [

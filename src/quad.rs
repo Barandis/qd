@@ -41,6 +41,7 @@ mod test_macros;
 mod aconsts; // "a" for "associated", or maybe just to make it appear first in docs
 mod add;
 mod alg;
+mod common;
 mod comp;
 mod display;
 mod div;
@@ -53,7 +54,6 @@ mod mul;
 mod neg;
 mod rem;
 mod sub;
-mod tables;
 mod trans;
 mod trig;
 

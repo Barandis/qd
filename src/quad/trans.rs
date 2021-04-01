@@ -3,7 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use crate::quad::{tables, Quad};
+use crate::quad::common as c;
+use crate::quad::Quad;
 
 const INV_K: Quad = Quad(1.52587890625e-05, 0.0, 0.0, 0.0); //   1/65536, used for exp
 
@@ -65,7 +66,7 @@ impl Quad {
                 // answer, we expand it to compensate for the earlier reduction.
 
                 // k = 65536 is chosen; INV_K is defined above as that reciprocal
-                let threshold = Quad::EPSILON.mul_pwr2(INV_K.0);
+                let threshold = c::mul_pwr2(Quad::EPSILON, INV_K.0);
                 // m doesn't need to be *that* accurate, so we calculate it with f64
                 // arithmetic instead of the more expensive Quad arithmetic
                 let m = (self.0 / Quad::LN_2.0 + 0.5).floor();
@@ -78,9 +79,9 @@ impl Quad {
 
                 // This is the "x + x^2/2! + x^3/3!" part of the Taylor series.
                 let mut p = x.sqr();
-                let mut r = x + p.mul_pwr2(0.5);
+                let mut r = x + c::mul_pwr2(p, 0.5);
                 p *= x;
-                let mut t = p * tables::INV_FACTS[0];
+                let mut t = p * c::INV_FACTS[0];
                 let mut i = 0;
 
                 // This is the rest of the Taylor series. We perform it as many times as
@@ -89,7 +90,7 @@ impl Quad {
                     r += t;
                     p *= x;
                     i += 1;
-                    t = p * tables::INV_FACTS[i];
+                    t = p * c::INV_FACTS[i];
                     if i >= 9 || t.abs() <= threshold {
                         break;
                     }
@@ -100,22 +101,22 @@ impl Quad {
                 r += t;
 
                 // mul_pwr2 can be used here because multiplication doesn't lose precision
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
-                r = r.mul_pwr2(2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                r = c::mul_pwr2(r, 2.0) + r.sqr();
 
                 // Finally, add the "1 +" part of the Taylor series.
                 r += Quad::ONE;
@@ -179,7 +180,7 @@ impl Quad {
                 let mut x = Quad(self.0.ln(), 0.0, 0.0, 0.0); // initial approximation
 
                 let k = x.0.abs().log2().floor() as i32;
-                let eps = Quad::EPSILON.mul_pwr2(2f64.powi(k + 2));
+                let eps = c::mul_pwr2(Quad::EPSILON, 2f64.powi(k + 2));
 
                 let mut i = 0;
                 loop {
