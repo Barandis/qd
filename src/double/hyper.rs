@@ -8,6 +8,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+use crate::double::common as c;
 use crate::double::Double;
 
 impl Double {
@@ -51,8 +52,8 @@ impl Double {
                 } else {
                     let a = self.exp();
                     let inv_a = a.recip();
-                    let s = (a - inv_a).mul_pwr2(0.5);
-                    let c = (a + inv_a).mul_pwr2(0.5);
+                    let s = c::mul_pwr2(a - inv_a, 0.5);
+                    let c = c::mul_pwr2(a + inv_a, 0.5);
                     (s, c)
                 }
             }
@@ -61,7 +62,9 @@ impl Double {
 
     /// Computes the hyperbolic sine (sinh) of the `Double`.
     ///
-    /// The domain and range of this function are both (-∞, ∞).
+    /// The domain and range of this function are both (-∞, ∞). Large values will start to
+    /// cause a loss of precision; by the time the number is ±130 or so, precision is down
+    /// to 29 digits.
     ///
     /// # Examples
     /// ```
@@ -81,7 +84,7 @@ impl Double {
             None => {
                 if self.abs().0 > 0.05 {
                     let a = self.exp();
-                    (a - a.recip()).mul_pwr2(0.5)
+                    c::mul_pwr2(a - a.recip(), 0.5)
                 } else {
                     // The above formula is not accurate enough with very small numbers. Use
                     // a Taylor series instead.
@@ -127,7 +130,7 @@ impl Double {
             Some(r) => r,
             None => {
                 let a = self.exp();
-                (a + a.recip()).mul_pwr2(0.5)
+                c::mul_pwr2(a + a.recip(), 0.5)
             }
         }
     }
@@ -235,9 +238,7 @@ impl Double {
     pub fn atanh(self) -> Double {
         match self.pre_atanh() {
             Some(r) => r,
-            None => ((Double::ONE + self) / (Double::ONE - self))
-                .ln()
-                .mul_pwr2(0.5),
+            None => c::mul_pwr2(((Double::ONE + self) / (Double::ONE - self)).ln(), 0.5),
         }
     }
 
@@ -266,7 +267,9 @@ impl Double {
         if self.is_nan() {
             Some(Double::NAN)
         } else if self.is_zero() {
-            Some(Double::ZERO)
+            Some(*self)
+        } else if self.is_infinite() {
+            Some(*self)
         } else {
             None
         }
@@ -278,6 +281,8 @@ impl Double {
             Some(Double::NAN)
         } else if self.is_zero() {
             Some(Double::ONE)
+        } else if self.is_infinite() {
+            Some(Double::INFINITY)
         } else {
             None
         }
@@ -338,182 +343,460 @@ impl Double {
 mod tests {
     use super::*;
 
-    #[test]
-    fn sinh_cosh() {
-        let (sinh_pi, cosh_pi) = Double::PI.sinh_cosh();
-        assert_close!(dd!("11.548739357257748377977334315388"), sinh_pi);
-        assert_close!(dd!("11.591953275521520627751752052560"), cosh_pi);
+    // sinh tests
+    test_all_near!(
+        sinh_pi:
+            dd!("11.548739357257748377977334315388404"),
+            Double::PI.sinh();
+        sinh_e:
+            dd!("7.5441371028169758263418200425165246"),
+            Double::E.sinh();
+        sinh_neg_pi:
+            dd!("-11.548739357257748377977334315388404"),
+            (-Double::PI).sinh();
+        sinh_neg_e:
+            dd!("-7.5441371028169758263418200425165246"),
+            (-Double::E).sinh();
+        sinh_2_pi:
+            dd!("267.74489404101651425711744968805619"),
+            Double::TAU.sinh();
+        sinh_pi_2:
+            dd!("2.3012989023072948734630400234344263"),
+            Double::FRAC_PI_2.sinh();
+        sinh_sqrt_2:
+            dd!("1.935066822174356653184359747320181"),
+            Double::SQRT_2.sinh();
+        sinh_1_sqrt_2:
+            dd!("0.76752314512611633163108436606558639"),
+            Double::FRAC_1_SQRT_2.sinh();
+        sinh_small:
+            dd!("0.000010000000000166666666667500000000012"),
+            dd!("0.00001").sinh();
+        sinh_neg_small:
+            dd!("-0.00010000000016666666675000000001984131"),
+            dd!("-0.0001").sinh();
+    );
+    test_all_prec!(
+        sinh_150:
+            dd!("6.9685479033318984865917096857072841e+64"),
+            dd!(150).sinh(),
+            29;
+        sinh_neg_140:
+            dd!("-3.1637158535777926821715122561755732e+60"),
+            dd!(-140).sinh(),
+            29;
+    );
+    test_all_exact!(
+        sinh_zero:
+            Double::ZERO,
+            Double::ZERO.sinh();
+        sinh_neg_zero:
+            Double::NEG_ZERO,
+            Double::NEG_ZERO.sinh();
+        sinh_inf:
+            Double::INFINITY,
+            Double::INFINITY.sinh();
+        sinh_neg_inf:
+            Double::NEG_INFINITY,
+            Double::NEG_INFINITY.sinh();
+        sinh_nan:
+            Double::NAN,
+            Double::NAN.sinh();
+    );
 
-        let (sinh_e, cosh_e) = Double::E.sinh_cosh();
-        assert_close!(dd!("7.5441371028169758263418200425165"), sinh_e);
-        assert_close!(dd!("7.6101251386622883634186102301134"), cosh_e);
-    }
+    // cosh tests
+    test_all_near!(
+        cosh_pi:
+            dd!("11.591953275521520627751752052560135"),
+            Double::PI.cosh();
+        cosh_e:
+            dd!("7.6101251386622883634186102301133709"),
+            Double::E.cosh();
+        cosh_neg_pi:
+            dd!("11.591953275521520627751752052560135"),
+            (-Double::PI).cosh();
+        cosh_neg_e:
+            dd!("7.6101251386622883634186102301133709"),
+            (-Double::E).cosh();
+        cosh_2_pi:
+            dd!("267.74676148374822224593187990099087"),
+            Double::TAU.cosh();
+        cosh_pi_2:
+            dd!("2.5091784786580567820099956432694066"),
+            Double::FRAC_PI_2.cosh();
+        cosh_sqrt_2:
+            dd!("2.178183556608570863989222067820125"),
+            Double::SQRT_2.cosh();
+        cosh_1_sqrt_2:
+            dd!("1.2605918365213561194770417466807639"),
+            Double::FRAC_1_SQRT_2.cosh();
+        cosh_small:
+            dd!("1.0000000000500000000004166666666678"),
+            dd!("0.00001").cosh();
+        cosh_neg_small:
+            dd!("1.0000000050000000041666666680555555"),
+            dd!("-0.0001").cosh();
+    );
+    test_all_prec!(
+        cosh_150:
+            dd!("6.9685479033318984865917096857072841e+64"),
+            dd!(150).cosh(),
+            29;
+        cosh_neg_140:
+            dd!("3.1637158535777926821715122561755732e+60"),
+            dd!(-140).cosh(),
+            29;
+    );
+    test_all_exact!(
+        cosh_zero:
+            Double::ONE,
+            Double::ZERO.cosh();
+        cosh_neg_zero:
+            Double::ONE,
+            Double::NEG_ZERO.cosh();
+        cosh_inf:
+            Double::INFINITY,
+            Double::INFINITY.cosh();
+        cosh_neg_inf:
+            Double::INFINITY,
+            Double::NEG_INFINITY.cosh();
+        cosh_nan:
+            Double::NAN,
+            Double::NAN.cosh();
+    );
 
-    #[test]
-    fn sinh_cosh_zero() {
-        assert_exact!(Double::ZERO, Double::ZERO.sinh_cosh().0);
-        assert_exact!(Double::ONE, Double::ZERO.sinh_cosh().1);
-    }
+    // sinh_cosh tests
+    test_all_near!(
+        sinh_cosh_pi_sinh:
+            Double::PI.sinh(),
+            Double::PI.sinh_cosh().0;
+        sinh_cosh_pi_cosh:
+            Double::PI.cosh(),
+            Double::PI.sinh_cosh().1;
+        sinh_cosh_e_sinh:
+            Double::E.sinh(),
+            Double::E.sinh_cosh().0;
+        sinh_cosh_e_cosh:
+            Double::E.cosh(),
+            Double::E.sinh_cosh().1;
+        sinh_cosh_neg_pi_sinh:
+            (-Double::PI).sinh(),
+            (-Double::PI).sinh_cosh().0;
+        sinh_cosh_neg_pi_cosh:
+            (-Double::PI).cosh(),
+            (-Double::PI).sinh_cosh().1;
+        sinh_cosh_neg_e_sinh:
+            (-Double::E).sinh(),
+            (-Double::E).sinh_cosh().0;
+        sinh_cosh_neg_e_cosh:
+            (-Double::E).cosh(),
+            (-Double::E).sinh_cosh().1;
+        sinh_cosh_2_pi_sinh:
+            Double::TAU.sinh(),
+            Double::TAU.sinh_cosh().0;
+        sinh_cosh_2_pi_cosh:
+            Double::TAU.cosh(),
+            Double::TAU.sinh_cosh().1;
+        sinh_cosh_pi_2_sinh:
+            Double::FRAC_PI_2.sinh(),
+            Double::FRAC_PI_2.sinh_cosh().0;
+        sinh_cosh_pi_2_cosh:
+            Double::FRAC_PI_2.cosh(),
+            Double::FRAC_PI_2.sinh_cosh().1;
+        sinh_cosh_sqrt_2_sinh:
+            Double::SQRT_2.sinh(),
+            Double::SQRT_2.sinh_cosh().0;
+        sinh_cosh_sqrt_2_cosh:
+            Double::SQRT_2.cosh(),
+            Double::SQRT_2.sinh_cosh().1;
+        sinh_cosh_1_sqrt_2_sinh:
+            Double::FRAC_1_SQRT_2.sinh(),
+            Double::FRAC_1_SQRT_2.sinh_cosh().0;
+        sinh_cosh_1_sqrt_2_cosh:
+            Double::FRAC_1_SQRT_2.cosh(),
+            Double::FRAC_1_SQRT_2.sinh_cosh().1;
+        sinh_cosh_small_sinh:
+            dd!("0.00001").sinh(),
+            dd!("0.00001").sinh_cosh().0;
+        sinh_cosh_small_cosh:
+            dd!("0.00001").cosh(),
+            dd!("0.00001").sinh_cosh().1;
+        sinh_cosh_neg_small_sinh:
+            dd!("-0.0001").sinh(),
+            dd!("-0.0001").sinh_cosh().0;
+        sinh_cosh_neg_small_cosh:
+            dd!("-0.0001").cosh(),
+            dd!("-0.0001").sinh_cosh().1;
+        sinh_cosh_150_sinh:
+            dd!(150).sinh(),
+            dd!(150).sinh_cosh().0;
+        sinh_cosh_150_cosh:
+            dd!(150).cosh(),
+            dd!(150).sinh_cosh().1;
+        sinh_cosh_neg_140_sinh:
+            dd!(-140).sinh(),
+            dd!(-140).sinh_cosh().0;
+        sinh_cosh_neg_140_cosh:
+            dd!(-140).cosh(),
+            dd!(-140).sinh_cosh().1;
+    );
+    test_all_exact!(
+        sinh_cosh_zero_sinh:
+            Double::ZERO,
+            Double::ZERO.sinh_cosh().0;
+        sinh_cosh_zero_cosh:
+            Double::ONE,
+            Double::ZERO.sinh_cosh().1;
+        sinh_cosh_neg_zero_sinh:
+            Double::NEG_ZERO,
+            Double::NEG_ZERO.sinh_cosh().0;
+        sinh_cosh_neg_zero_cosh:
+            Double::ONE,
+            Double::NEG_ZERO.sinh_cosh().1;
+        sinh_cosh_inf_sinh:
+            Double::INFINITY,
+            Double::INFINITY.sinh_cosh().0;
+        sinh_cosh_inf_cosh:
+            Double::INFINITY,
+            Double::INFINITY.sinh_cosh().1;
+        sinh_cosh_neg_inf_sinh:
+            Double::NEG_INFINITY,
+            Double::NEG_INFINITY.sinh_cosh().0;
+        sinh_cosh_neg_inf_cosh:
+            Double::INFINITY,
+            Double::NEG_INFINITY.sinh_cosh().1;
+        sinh_cosh_nan_sinh:
+            Double::NAN,
+            Double::NAN.sinh_cosh().0;
+        sinh_cosh_nan_cosh:
+            Double::NAN,
+            Double::NAN.sinh_cosh().1;
+    );
 
-    #[test]
-    fn sinh_cosh_inf() {
-        assert_exact!(Double::INFINITY, Double::INFINITY.sinh_cosh().0);
-        assert_exact!(Double::INFINITY, Double::INFINITY.sinh_cosh().1);
+    // tanh tests
+    test_all_near!(
+        tanh_pi:
+            dd!("0.99627207622074994426469058001253668"),
+            Double::PI.tanh();
+        tanh_e:
+            dd!("0.99132891580059983779555761569968412"),
+            Double::E.tanh();
+        tanh_neg_pi:
+            dd!("-0.99627207622074994426469058001253668"),
+            (-Double::PI).tanh();
+        tanh_neg_e:
+            dd!("-0.99132891580059983779555761569968412"),
+            (-Double::E).tanh();
+        tanh_2_pi:
+            dd!("0.9999930253396106106051072118323457"),
+            Double::TAU.tanh();
+        tanh_pi_2:
+            dd!("0.91715233566727434637309292144261871"),
+            Double::FRAC_PI_2.tanh();
+        tanh_sqrt_2:
+            dd!("0.888385561585660544953000305:2803144"),
+            Double::SQRT_2.tanh();
+        tanh_1_sqrt_2:
+            dd!("0.60885936501391381038594521400112353"),
+            Double::FRAC_1_SQRT_2.tanh();
+        tanh_150:
+            dd!("1.0"),
+            dd!(150).tanh();
+        tanh_neg_140:
+            dd!("-1.0"),
+            dd!(-140).tanh();
+        tanh_small:
+            dd!("0.0000099999999996666666666799999999994698"),
+            dd!("0.00001").tanh();
+        tanh_neg_small:
+            dd!("-0.000099999999666666667999999994603174675"),
+            dd!("-0.0001").tanh();
+    );
+    test_all_exact!(
+        tanh_zero:
+            Double::ZERO,
+            Double::ZERO.tanh();
+        tanh_neg_zero:
+            Double::NEG_ZERO,
+            Double::NEG_ZERO.tanh();
+        tanh_inf:
+            Double::ONE,
+            Double::INFINITY.tanh();
+        tanh_neg_inf:
+            Double::NEG_ONE,
+            Double::NEG_INFINITY.tanh();
+        tanh_nan:
+            Double::NAN,
+            Double::NAN.tanh();
+    );
 
-        assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.sinh_cosh().0);
-        assert_exact!(Double::INFINITY, Double::NEG_INFINITY.sinh_cosh().1);
-    }
+    // asinh tests
+    test_all_near!(
+        asinh_pi:
+            dd!("1.8622957433108482198883613251826208"),
+            Double::PI.asinh();
+        asinh_e:
+            dd!("1.7253825588523150939450979704048887"),
+            Double::E.asinh();
+        asinh_neg_pi:
+            dd!("-1.8622957433108482198883613251826208"),
+            (-Double::PI).asinh();
+        asinh_neg_e:
+            dd!("-1.7253825588523150939450979704048887"),
+            (-Double::E).asinh();
+        asinh_2_pi:
+            dd!("2.537297501373361176677507103769674"),
+            Double::TAU.asinh();
+        asinh_pi_2:
+            dd!("1.2334031175112170570731083915452966"),
+            Double::FRAC_PI_2.asinh();
+        asinh_sqrt_2:
+            dd!("1.1462158347805888439003936556740084"),
+            Double::SQRT_2.asinh();
+        asinh_1_sqrt_2:
+            dd!("0.65847894846240835431252317365398395"),
+            Double::FRAC_1_SQRT_2.asinh();
+        asinh_150:
+            dd!("5.703793585582131557697502799400447"),
+            dd!(150).asinh();
+    );
+    test_all_prec!(
+        asinh_neg_140:
+            dd!("-5.6348023580272583991488640099283842"),
+            dd!(-140).asinh(),
+            28;
+        asinh_small:
+            dd!("0.0000099999999998333333333408333333328982"),
+            dd!("0.00001").asinh(),
+            26;
+        asinh_neg_small:
+            dd!("-0.000099999999833333334083333328869047707"),
+            dd!("-0.0001").asinh(),
+            28;
+    );
+    test_all_exact!(
+        asinh_zero:
+            Double::ZERO,
+            Double::ZERO.asinh();
+        asinh_neg_zero:
+            Double::NEG_ZERO,
+            Double::NEG_ZERO.asinh();
+        asinh_inf:
+            Double::INFINITY,
+            Double::INFINITY.asinh();
+        asinh_neg_inf:
+            Double::NEG_INFINITY,
+            Double::NEG_INFINITY.asinh();
+        asinh_nan:
+            Double::NAN,
+            Double::NAN.asinh();
+    );
 
-    #[test]
-    fn sinh_cosh_nan() {
-        assert_exact!(Double::NAN, Double::NAN.sinh_cosh().0);
-        assert_exact!(Double::NAN, Double::NAN.sinh_cosh().1);
-    }
+    // acosh tests
+    test_all_near!(
+        acosh_pi:
+            dd!("1.8115262724608531070218520493054203"),
+            Double::PI.acosh();
+        acosh_e:
+            dd!("1.6574544541530772725938287422805339"),
+            Double::E.acosh();
+        acosh_2_pi:
+            dd!("2.5246306599334672302074913165530261"),
+            Double::TAU.acosh();
+        acosh_pi_2:
+            dd!("1.0232274785475505793174956779493034"),
+            Double::FRAC_PI_2.acosh();
+        acosh_sqrt_2:
+            dd!("0.88137358701954302523260932497979278"),
+            Double::SQRT_2.acosh();
+        acosh_150:
+            dd!("5.7037713633599001905278554895391333"),
+            dd!(150).acosh();
+    );
+    test_all_prec!(
+        acosh_small:
+            dd!("0.0044721322282280021231284466331917651"),
+            dd!("1.00001").acosh(),
+            28;
+    );
+    test_all_exact!(
+        acosh_neg_pi:
+            Double::NAN,
+            (-Double::PI).acosh();
+        acosh_neg_e:
+            Double::NAN,
+            (-Double::E).acosh();
+        acosh_1_sqrt_2:
+            Double::NAN,
+            Double::FRAC_1_SQRT_2.acosh();
+        acosh_zero:
+            Double::NAN,
+            Double::ZERO.acosh();
+        acosh_neg_zero:
+            Double::NAN,
+            Double::NEG_ZERO.acosh();
+        acosh_one:
+            Double::ZERO,
+            Double::ONE.acosh();
+        acosh_inf:
+            Double::INFINITY,
+            Double::INFINITY.acosh();
+        acosh_neg_inf:
+            Double::NAN,
+            Double::NEG_INFINITY.acosh();
+        acosh_nan:
+            Double::NAN,
+            Double::NAN.acosh();
+    );
 
-    #[test]
-    fn sinh() {
-        assert_close!(dd!("11.548739357257748377977334315388"), Double::PI.sinh());
-        assert_close!(dd!("7.5441371028169758263418200425165"), Double::E.sinh());
-    }
-
-    #[test]
-    fn sinh_zero() {
-        assert_exact!(Double::ZERO, Double::ZERO.sinh());
-    }
-
-    #[test]
-    fn sinh_inf() {
-        assert_exact!(Double::INFINITY, Double::INFINITY.sinh());
-        assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.sinh());
-    }
-
-    #[test]
-    fn sinh_nan() {
-        assert_exact!(Double::NAN, Double::NAN.sinh());
-    }
-
-    #[test]
-    fn cosh() {
-        assert_close!(dd!("11.591953275521520627751752052560"), Double::PI.cosh());
-        assert_close!(dd!("7.6101251386622883634186102301134"), Double::E.cosh());
-    }
-
-    #[test]
-    fn cosh_one() {
-        assert_exact!(Double::ONE, Double::ZERO.cosh());
-    }
-
-    #[test]
-    fn cosh_inf() {
-        assert_exact!(Double::INFINITY, Double::INFINITY.cosh());
-        assert_exact!(Double::INFINITY, Double::NEG_INFINITY.cosh());
-    }
-
-    #[test]
-    fn cosh_nan() {
-        assert_exact!(Double::NAN, Double::NAN.cosh());
-    }
-
-    #[test]
-    fn tanh() {
-        assert_close!(dd!("0.99627207622074994426469058001254"), Double::PI.tanh());
-        assert_close!(dd!("0.99132891580059983779555761569968"), Double::E.tanh());
-    }
-
-    #[test]
-    fn tanh_zero() {
-        assert_exact!(Double::ZERO, Double::ZERO.tanh());
-    }
-
-    #[test]
-    fn tanh_inf() {
-        assert_exact!(Double::ONE, Double::INFINITY.tanh());
-        assert_exact!(Double::NEG_ONE, Double::NEG_INFINITY.tanh());
-    }
-
-    #[test]
-    fn tanh_nan() {
-        assert_exact!(Double::NAN, Double::NAN.tanh());
-    }
-
-    #[test]
-    fn asinh() {
-        assert_close!(dd!("1.8622957433108482198883613251826"), Double::PI.asinh());
-        assert_close!(dd!("1.7253825588523150939450979704049"), Double::E.asinh());
-    }
-
-    #[test]
-    fn asin_zero() {
-        assert_exact!(Double::ZERO, dd!(0.0).asinh());
-        assert_exact!(Double::NEG_ZERO, dd!(-0.0).asinh());
-    }
-
-    #[test]
-    fn asin_inf() {
-        assert_exact!(Double::INFINITY, Double::INFINITY.asinh());
-        assert_exact!(Double::NEG_INFINITY, Double::NEG_INFINITY.asinh());
-    }
-
-    #[test]
-    fn asin_nan() {
-        assert_exact!(Double::NAN, Double::NAN.asinh());
-    }
-
-    #[test]
-    fn acosh() {
-        assert_close!(
-            dd!("1.81152627246085310702185204930542"),
-            Double::PI.acosh()
-        );
-        assert_close!(dd!("1.65745445415307727259382874228053"), Double::E.acosh());
-    }
-
-    #[test]
-    fn acosh_zero() {
-        assert_exact!(Double::NAN, Double::ZERO.acosh());
-    }
-
-    #[test]
-    fn acosh_one() {
-        assert_exact!(Double::ZERO, Double::ONE.acosh());
-    }
-
-    #[test]
-    fn acosh_inf() {
-        assert_exact!(Double::INFINITY, Double::INFINITY.acosh());
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.acosh());
-    }
-
-    #[test]
-    fn acosh_nan() {
-        assert_exact!(Double::NAN, Double::NAN.acosh());
-    }
-
-    #[test]
-    fn atanh() {
-        assert_close!(
-            dd!("0.3297653149566991076178634175552186"),
-            Double::PI.recip().atanh()
-        );
-        assert_close!(
-            dd!("0.3859684164526523625353195700175927"),
-            Double::E.recip().atanh()
-        );
-    }
-
-    #[test]
-    fn atanh_zero() {
-        assert_exact!(Double::ZERO, Double::ZERO.atanh());
-    }
-
-    #[test]
-    fn atanh_inf() {
-        assert_exact!(Double::NAN, Double::INFINITY.atanh());
-        assert_exact!(Double::NAN, Double::NEG_INFINITY.atanh());
-    }
-
-    #[test]
-    fn atanh_nan() {
-        assert_exact!(Double::NAN, Double::NAN.atanh());
-    }
+    // atanh tests
+    test_all_near!(
+        atanh_pi_6:
+            dd!("0.58128501169472315834806278002976886"),
+            Double::FRAC_PI_6.atanh();
+        atanh_pi_8:
+            dd!("0.41498725684198892721883143584943144"),
+            Double::FRAC_PI_8.atanh();
+        atanh_1_sqrt_2:
+            dd!("0.88137358701954302523260932497979124"),
+            Double::FRAC_1_SQRT_2.atanh();
+        atanh_99:
+            dd!("2.6466524123622461977050606459342783"),
+            dd!("0.99").atanh();
+        atanh_neg_pi_6:
+            dd!("-0.58128501169472315834806278002976886"),
+            (-Double::FRAC_PI_6).atanh();
+        atanh_neg_pi_8:
+            dd!("-0.41498725684198892721883143584943144"),
+            (-Double::FRAC_PI_8).atanh();
+        atanh_neg_1_sqrt_2:
+            dd!("-0.88137358701954302523260932497979124"),
+            (-Double::FRAC_1_SQRT_2).atanh();
+        atanh_neg_99:
+            dd!("-2.6466524123622461977050606459342783"),
+            dd!("-0.99").atanh();
+    );
+    test_all_exact!(
+        atanh_pi:
+            Double::NAN,
+            Double::PI.atanh();
+        atanh_neg_pi:
+            Double::NAN,
+            (-Double::PI).atanh();
+        atanh_zero:
+            Double::ZERO,
+            Double::ZERO.atanh();
+        atanh_neg_zero:
+            Double::NEG_ZERO,
+            Double::NEG_ZERO.atanh();
+        atanh_inf:
+            Double::NAN,
+            Double::INFINITY.atanh();
+        atanh_neg_inf:
+            Double::NAN,
+            Double::NEG_INFINITY.atanh();
+        atanh_nan:
+            Double::NAN,
+            Double::NAN.atanh();
+    );
 }
