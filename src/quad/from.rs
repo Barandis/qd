@@ -85,6 +85,16 @@ fn from_i128(a: i128) -> Quad {
     }
 }
 
+// FROM INTEGER IMPLEMENTATIONS
+//
+// These are simple enough - since integers are inherently dyadic (as long as they fit into
+// `f64`s - see below), they can just be cast to `f64`s and sent directly into the `Quad`
+// constructor.
+//
+// The exceptions are the 64- and 128-bit integers, which don't fit into `f64`s. They get
+// their own separate functions that split them into 32-bit parts which are then
+// renormalized into a proper `Quad`.
+
 macro_rules! from_int_impl {
     ($(
         $(#[$m:meta])*
@@ -94,74 +104,6 @@ macro_rules! from_int_impl {
         impl From<$t> for Quad {
             fn from(a: $t) -> Quad {
                 Quad(a.into(), 0.0, 0.0, 0.0)
-            }
-        }
-    )*);
-}
-
-macro_rules! from_long_int_impl {
-    ($(
-        $(#[$m:meta])*
-        $t:ident
-        $f:ident
-    )*) => ($(
-        $(#[$m])*
-        impl From<$t> for Quad {
-            fn from(a: $t) -> Quad {
-                $f(a)
-            }
-        }
-    )*);
-}
-
-// The Rust conversion from f32 to f64 is a bit-for-bit translation. It does not attempt to
-// account for floating point rounding error, so the parsed f64 is different from the
-// "equivalent" parsed f32. So rather than having a helper function that takes an f64, we
-// put the entire function into this macro so that `a.to_string().parse().unwrap()` calls
-// the f32 parser if an f32 is being converted.
-//
-// is_dyadic is still fine to convert for, because a dyadic f32 will convert accurately
-// into an f64 (and still return true) while a non-dyadic f32 may not convert accurately,
-// but it'll still be non-dyadic after the conversion.
-macro_rules! from_float_impl {
-    ($(
-        $(#[$m:meta])*
-        $t:ident
-    )*) => ($(
-        $(#[$m])*
-        impl From<$t> for Quad {
-            fn from(a: $t) -> Quad {
-                if a == 0.0 {
-                    if a.is_sign_negative() {
-                        Quad::NEG_ZERO
-                    } else {
-                        Quad::ZERO
-                    }
-                } else if a.is_nan() {
-                    Quad::NAN
-                } else if a.is_infinite() {
-                    if a.is_sign_negative() {
-                        Quad::NEG_INFINITY
-                    } else {
-                        Quad::INFINITY
-                    }
-                } else if u::is_dyadic(a as f64) {
-                    Quad(a.into(), 0.0, 0.0, 0.0)
-                } else {
-                    // Yes, this converts an f32/f64 to a string and then parses it. After a
-                    // lot of study, doing it decimal-digit-by-decimal-digit seems to be the
-                    // only way to do this accurately, because doing it as a whole f64
-                    // causes floating-point error to cancel itself out. And parsing from a
-                    // string is the most reasonable way to do it digit-by-digit.
-                    //
-                    // I'm concerned about the effect on the speed of math functions that
-                    // use it, like `log` and `exp` and `powf`, but the answer seems to be
-                    // to optimize the parsing.
-                    //
-                    // `unwrap` is safe because `n.to_string` will never return a string
-                    // that can't be parsed into a Quad.
-                    a.to_string().parse().unwrap()
-                }
             }
         }
     )*);
@@ -248,6 +190,24 @@ from_int_impl! {
     u32
 }
 
+// Separate implementations for the 64-bit and 128-bit integers because they require
+// splitting to fit into 53-bit mantissas, so their code is different.
+
+macro_rules! from_long_int_impl {
+    ($(
+        $(#[$m:meta])*
+        $t:ident
+        $f:ident
+    )*) => ($(
+        $(#[$m])*
+        impl From<$t> for Quad {
+            fn from(a: $t) -> Quad {
+                $f(a)
+            }
+        }
+    )*);
+}
+
 from_long_int_impl! {
     /// Generates a `Quad` from an `i64`.
     ///
@@ -301,6 +261,54 @@ from_long_int_impl! {
     /// # }
     /// ```
     u128 from_u128
+}
+
+// FROM FLOAT IMPLEMENTATIONS
+//
+// The Rust conversion from f32 to f64 is a bit-for-bit translation. It does not attempt to
+// account for floating point rounding error, so the parsed f64 is different from the
+// "equivalent" parsed f32. So rather than having a helper function that takes an f64, we
+// put the entire function into this macro so that `a.to_string().parse().unwrap()` calls
+// the f32 parser if an f32 is being converted.
+//
+// is_dyadic is still fine to convert for, because a dyadic f32 will convert accurately
+// into an f64 (and still return true) while a non-dyadic f32 may not convert accurately,
+// but it'll still be non-dyadic after the conversion.
+macro_rules! from_float_impl {
+    ($(
+        $(#[$m:meta])*
+        $t:ident
+    )*) => ($(
+        $(#[$m])*
+        impl From<$t> for Quad {
+            fn from(a: $t) -> Quad {
+                if a == 0.0 {
+                    if a.is_sign_negative() {
+                        Quad::NEG_ZERO
+                    } else {
+                        Quad::ZERO
+                    }
+                } else if a.is_nan() {
+                    Quad::NAN
+                } else if a.is_infinite() {
+                    if a.is_sign_negative() {
+                        Quad::NEG_INFINITY
+                    } else {
+                        Quad::INFINITY
+                    }
+                } else if u::is_dyadic(a as f64) {
+                    Quad(a.into(), 0.0, 0.0, 0.0)
+                } else {
+                    // Parsing digit-by-digit from a string is the only way to do this
+                    // accurately.
+                    //
+                    // `unwrap` is safe because `a.to_string` will never return a string
+                    // that can't be parsed into a Quad.
+                    a.to_string().parse().unwrap()
+                }
+            }
+        }
+    )*);
 }
 
 from_float_impl! {
@@ -362,6 +370,98 @@ from_float_impl! {
     /// # }
     /// ```
     f64
+}
+
+impl From<(f64, f64)> for Quad {
+    /// Generates a `Quad` from a 2-tuple of `f64`s.
+    ///
+    /// This conversion acts like [`new`] does: it assumes that if you're creating a `Quad`
+    /// out of a pair of numbers, you already know what you want those numbers to be.
+    /// Therefore it neither renormalizes or accounts for rounding error.
+    ///
+    /// The third and fourth components of the new `Quad` are set to 0.
+    ///
+    /// No `From` implementations are provided for 2-tuples of other types. There is no way
+    /// to provide a pre-normalized pair of integers, and since tuple conversion doesn't
+    /// adjust for rounding error, it's better to make the user explicity cast `f32`s first
+    /// in the manner of their choosing.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::{qd, Quad};
+    /// // These are the first two components used to define Quad::PI
+    /// let a = Quad::from((3.141592653589793e0, 1.2246467991473532e-16));
+    /// let diff = (a - Quad::PI).abs();
+    /// assert!(diff < qd!(1e-30));
+    /// ```
+    ///
+    /// [`new`]: #method.new
+    #[inline]
+    fn from((a, b): (f64, f64)) -> Quad {
+        Quad(a, b, 0.0, 0.0)
+    }
+}
+
+impl From<(f64, f64, f64)> for Quad {
+    /// Generates a `Quad` from a 3-tuple of `f64`s.
+    ///
+    /// This conversion acts like [`new`] does: it assumes that if you're creating a `Quad`
+    /// out of a pair of numbers, you already know what you want those numbers to be.
+    /// Therefore it neither renormalizes or accounts for rounding error.
+    ///
+    /// The fourth component of the new `Quad` is set to 0.
+    ///
+    /// No `From` implementations are provided for 3-tuples of other types. There is no way
+    /// to provide a pre-normalized pair of integers, and since tuple conversion doesn't
+    /// adjust for rounding error, it's better to make the user explicity cast `f32`s first
+    /// in the manner of their choosing.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::*;
+    /// // These are the first three components used to define Quad::PI
+    /// let a = Quad::from((3.141592653589793e0, 1.2246467991473532e-16, -2.9947698097183397e-33));
+    /// let diff = (a - Quad::PI).abs();
+    /// assert!(diff < qd!(1e-45));
+    /// ```
+    ///
+    /// [`new`]: #method.new
+    #[inline]
+    fn from((a, b, c): (f64, f64, f64)) -> Quad {
+        Quad(a, b, c, 0.0)
+    }
+}
+
+impl From<(f64, f64, f64, f64)> for Quad {
+    /// Generates a `Quad` from a 4-tuple of `f64`s.
+    ///
+    /// This conversion acts like [`new`] does: it assumes that if you're creating a `Quad`
+    /// out of a pair of numbers, you already know what you want those numbers to be.
+    /// Therefore it neither renormalizes or accounts for rounding error.
+    ///
+    /// No `From` implementations are provided for 4-tuples of other types. There is no way
+    /// to provide a pre-normalized pair of integers, and since tuple conversion doesn't
+    /// adjust for rounding error, it's better to make the user explicity cast `f32`s first
+    /// in the manner of their choosing.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::Quad;
+    /// // These are the components used to define Quad::PI
+    /// let a = Quad::from((
+    ///     3.141592653589793e0,
+    ///     1.2246467991473532e-16,
+    ///     -2.9947698097183397e-33,
+    ///     1.1124542208633655e-49,
+    /// ));
+    /// assert!(a == Quad::PI);
+    /// ```
+    ///
+    /// [`new`]: #method.new
+    #[inline]
+    fn from((a, b, c, d): (f64, f64, f64, f64)) -> Quad {
+        Quad(a, b, c, d)
+    }
 }
 
 impl From<Double> for Quad {
@@ -448,6 +548,75 @@ impl From<Quad> for f64 {
     #[inline]
     fn from(a: Quad) -> f64 {
         a.0
+    }
+}
+
+impl From<Quad> for (f64, f64) {
+    /// Converts a `Quad` into a 2-tuple of `f64`s.
+    ///
+    /// The first two components of the `Quad` become the components of the returned tuple.
+    /// Note that, while the value of the first component is simply the `f64` cast of the
+    /// `Quad` itself, the second component encodes the next digits of the `Quad` *plus*
+    /// the rounding error in the first component. For that reason, it's not likely to be
+    /// very useful outside of a `Quad` context.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::Quad;
+    /// let (a, b) = <(f64, f64)>::from(Quad::PI);
+    /// assert!(a == 3.141592653589793e0);
+    /// assert!(b == 1.2246467991473532e-16); // *not* the next 16 digits of π
+    /// ```
+    #[inline]
+    fn from(a: Quad) -> (f64, f64) {
+        (a.0, a.1)
+    }
+}
+
+impl From<Quad> for (f64, f64, f64) {
+    /// Converts a `Quad` into a 3-tuple of `f64`s.
+    ///
+    /// The first three components of the `Quad` become the components of the returned
+    /// tuple. Note that, while the value of the first component is simply the `f64` cast of
+    /// the `Quad` itself, the other components encode the next digits of the `Quad` *plus*
+    /// the rounding error in the prior components. For that reason, they're not likely to
+    /// be very useful outside of a `Quad` context.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::Quad;
+    /// let (a, b, c) = <(f64, f64, f64)>::from(Quad::PI);
+    /// assert!(a == 3.141592653589793e0);
+    /// assert!(b == 1.2246467991473532e-16);
+    /// assert!(c == -2.9947698097183397e-33);
+    /// ```
+    #[inline]
+    fn from(a: Quad) -> (f64, f64, f64) {
+        (a.0, a.1, a.2)
+    }
+}
+
+impl From<Quad> for (f64, f64, f64, f64) {
+    /// Converts a `Quad` into a 4-tuple of `f64`s.
+    ///
+    /// The components of the `Quad` become the components of the returned tuple. Note that,
+    /// while the value of the first component is simply the `f64` cast of the `Quad`
+    /// itself, the other components encode the next digits of the `Quad` *plus* the
+    /// rounding error in the prior components. For that reason, they're not likely to be
+    /// very useful outside of a `Quad` context.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::Quad;
+    /// let (a, b, c, d) = <(f64, f64, f64, f64)>::from(Quad::PI);
+    /// assert!(a == 3.141592653589793e0);
+    /// assert!(b == 1.2246467991473532e-16);
+    /// assert!(c == -2.9947698097183397e-33);
+    /// assert!(d == 1.1124542208633655e-49);
+    /// ```
+    #[inline]
+    fn from(a: Quad) -> (f64, f64, f64, f64) {
+        (a.0, a.1, a.2, a.3)
     }
 }
 

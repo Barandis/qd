@@ -38,6 +38,16 @@ fn from_i64(a: i64) -> Double {
     }
 }
 
+// FROM INTEGER IMPLEMENTATIONS
+//
+// These are simple enough - since integers are inherently dyadic (as long as they fit into
+// `f64`s - see below), they can just be cast to `f64`s and sent directly into the `Double`
+// constructor.
+//
+// The exceptions are `i64` and `u64`, which don't fit into `f64`s. They get their own
+// separate (non-macro) functions that split them into two 32-bit parts which are then
+// renormalized into a proper `Double`.
+
 macro_rules! from_int_impl {
     ($(
         $(#[$m:meta])*
@@ -48,59 +58,6 @@ macro_rules! from_int_impl {
             #[inline]
             fn from(a: $t) -> Double {
                 Double(a.into(), 0.0)
-            }
-        }
-    )*);
-}
-
-// The Rust conversion from f32 to f64 is a bit-for-bit translation. It does not attempt to
-// account for floating point rounding error, so the parsed f64 is different from the
-// "equivalent" parsed f32. So rather than having a helper function that takes an f64, we
-// put the entire function into this macro so that `a.to_string().parse().unwrap()` calls
-// the f32 parser if an f32 is being converted.
-//
-// is_dyadic is still fine to convert for, because a dyadic f32 will convert accurately
-// into an f64 (and still return true) while a non-dyadic f32 may not convert accurately,
-// but it'll still be non-dyadic after the conversion.
-macro_rules! from_float_impl {
-    ($(
-        $(#[$m:meta])*
-        $t:ty
-    )*) => ($(
-        $(#[$m])*
-        impl From<$t> for Double {
-            fn from(a: $t) -> Double {
-                if a == 0.0 {
-                    if a.is_sign_negative() {
-                        Double::NEG_ZERO
-                    } else {
-                        Double::ZERO
-                    }
-                } else if a.is_nan() {
-                    Double::NAN
-                } else if a.is_infinite() {
-                    if a.is_sign_negative() {
-                        Double::NEG_INFINITY
-                    } else {
-                        Double::INFINITY
-                    }
-                } else if u::is_dyadic(a as f64) {
-                    Double(a.into(), 0.0)
-                } else {
-                    // Yes, this converts an f32/f64 to a string and then parses it. After a
-                    // lot of study, doing it decimal-digit-by-decimal-digit seems to be the
-                    // only way to do this accurately, because doing it as a whole f64
-                    // causes floating-point error to cancel itself out. And parsing from a
-                    // string is the most reasonable way to do it digit-by-digit.
-                    //
-                    // I'm concerned about the effect on the speed of math functions that
-                    // use it, like `log` and `exp` and `powf`, but the answer seems to be
-                    // to optimize the parsing.
-                    //
-                    // `unwrap` is safe because `n.to_string` will never return a string
-                    // that can't be parsed into a Double.
-                    a.to_string().parse().unwrap()
-                }
             }
         }
     )*);
@@ -187,6 +144,93 @@ from_int_impl! {
     u32
 }
 
+// Separate implementations for the 64-bit integers because they require splitting to fit
+// into 53-bit mantissas, so their code is different.
+
+impl From<u64> for Double {
+    /// Generates a `Double` from a `u64`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = 18_446_744_073_709_551_615u64;
+    /// let a = Double::from(x);
+    /// assert!(a.to_string() == "18446744073709551615");
+    /// # }
+    /// ```
+    fn from(a: u64) -> Double {
+        from_u64(a)
+    }
+}
+
+impl From<i64> for Double {
+    /// Generates a `Double` from an `i64`.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate qd;
+    /// # use qd::Double;
+    /// # fn main() {
+    /// let x = -9_223_372_036_854_775_808i64;
+    /// let a = Double::from(x);
+    /// assert!(a.to_string() == "-9223372036854775808");
+    /// # }
+    /// ```
+    fn from(a: i64) -> Double {
+        from_i64(a)
+    }
+}
+
+// FROM FLOAT IMPLEMENTATIONS
+//
+// The Rust conversion from f32 to f64 is a bit-for-bit translation. It does not attempt to
+// account for floating point rounding error, so the parsed f64 is different from the
+// "equivalent" parsed f32. So rather than having a helper function that takes an f64, we
+// put the entire function into this macro so that `a.to_string().parse().unwrap()` calls
+// the f32 parser if an f32 is being converted.
+//
+// is_dyadic is still fine to convert for, because a dyadic f32 will convert accurately
+// into an f64 (and still return true) while a non-dyadic f32 may not convert accurately,
+// but it'll still be non-dyadic after the conversion.
+macro_rules! from_float_impl {
+    ($(
+        $(#[$m:meta])*
+        $t:ty
+    )*) => ($(
+        $(#[$m])*
+        impl From<$t> for Double {
+            fn from(a: $t) -> Double {
+                if a == 0.0 {
+                    if a.is_sign_negative() {
+                        Double::NEG_ZERO
+                    } else {
+                        Double::ZERO
+                    }
+                } else if a.is_nan() {
+                    Double::NAN
+                } else if a.is_infinite() {
+                    if a.is_sign_negative() {
+                        Double::NEG_INFINITY
+                    } else {
+                        Double::INFINITY
+                    }
+                } else if u::is_dyadic(a as f64) {
+                    Double(a.into(), 0.0)
+                } else {
+                    // Parsing digit-by-digit from a string is the only way to do this
+                    // accurately.
+                    //
+                    // `unwrap` is safe because `a.to_string` will never return a string
+                    // that can't be parsed into a Double.
+                    a.to_string().parse().unwrap()
+                }
+            }
+        }
+    )*);
+}
+
 from_float_impl! {
     /// Generates a `Double` from an `f32`.
     ///
@@ -248,39 +292,30 @@ from_float_impl! {
     f64
 }
 
-/// Generates a `Double` from a `u64`.
-///
-/// # Examples
-/// ```
-/// # #[macro_use] extern crate qd;
-/// # use qd::Double;
-/// # fn main() {
-/// let x = 18_446_744_073_709_551_615u64;
-/// let a = Double::from(x);
-/// assert!(a.to_string() == "18446744073709551615");
-/// # }
-/// ```
-impl From<u64> for Double {
-    fn from(a: u64) -> Double {
-        from_u64(a)
-    }
-}
-
-/// Generates a `Double` from an `i64`.
-///
-/// # Examples
-/// ```
-/// # #[macro_use] extern crate qd;
-/// # use qd::Double;
-/// # fn main() {
-/// let x = -9_223_372_036_854_775_808i64;
-/// let a = Double::from(x);
-/// assert!(a.to_string() == "-9223372036854775808");
-/// # }
-/// ```
-impl From<i64> for Double {
-    fn from(a: i64) -> Double {
-        from_i64(a)
+impl From<(f64, f64)> for Double {
+    /// Generates a `Double` from a 2-tuple of `f64`s.
+    ///
+    /// This conversion acts like [`new`] does: it assumes that if you're creating a
+    /// `Double` out of a pair of numbers, you already know what you want those numbers to
+    /// be. Therefore it neither renormalizes or accounts for rounding error.
+    ///
+    /// No other `From` implementations are provided for tuples. There is no way to provide
+    /// a pre-normalized pair of integers, and since tuple conversion doesn't adjust for
+    /// rounding error, it's better to make the user explicity cast `f32`s first in the
+    /// manner of their choosing.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::Double;
+    /// // These are the components used to define Double::PI
+    /// let d = Double::from((3.141592653589793e0, 1.2246467991473532e-16));
+    /// assert!(d == Double::PI);
+    /// ```
+    ///
+    /// [`new`]: #method.new
+    #[inline]
+    fn from((a, b): (f64, f64)) -> Double {
+        Double(a, b)
     }
 }
 
@@ -343,6 +378,28 @@ impl From<Double> for f64 {
     #[inline]
     fn from(a: Double) -> f64 {
         a.0
+    }
+}
+
+impl From<Double> for (f64, f64) {
+    /// Converts a `Double` into a tuple of `f64`s.
+    ///
+    /// The components of the double become the components of the returned tuple. Note that,
+    /// while the value of the first component is simply the `f64` cast of the `Double`
+    /// itself, the second component encodes the next digits of the `Double` *plus* the
+    /// rounding error in the first component. For that reason, it's not likely to be very
+    /// useful outside of a `Double` context.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::Double;
+    /// let (a, b) = <(f64, f64)>::from(Double::PI);
+    /// assert!(a == 3.141592653589793e0);
+    /// assert!(b == 1.2246467991473532e-16); // *not* the next 16 digits of π
+    /// ```
+    #[inline]
+    fn from(a: Double) -> (f64, f64) {
+        (a.0, a.1)
     }
 }
 

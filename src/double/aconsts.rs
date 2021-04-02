@@ -117,24 +117,24 @@ impl Double {
     /// 1/√2
     pub const FRAC_1_SQRT_2: Double = Double(7.071067811865476e-1, -4.833646656726457e-17);
 
-    /// Euler's number (e)
+    /// Euler's number (*e*)
     pub const E: Double = Double(2.718281828459045e0, 1.4456468917292497e-16);
 
-    /// log₂ 10
+    /// log<sub>2</sub> 10
     pub const LOG2_10: Double = Double(3.321928094887362e0, 1.6616175169735918e-16);
 
-    /// log₂ e
+    /// log<sub>2</sub> *e*
     pub const LOG2_E: Double = Double(1.4426950408889634e0, 2.035527374093102e-17);
 
-    /// log 2
+    /// log<sub>10</sub> 2
     pub const LOG10_2: Double = Double(3.010299956639812e-1, -2.8037281277851654e-18);
 
-    /// log e
+    /// log<sub>10</sub> *e*
     pub const LOG10_E: Double = Double(4.342944819032518e-1, 1.0983196502167654e-17);
 
-    /// ln 2
+    /// log<sub>*e*</sub> 2
     pub const LN_2: Double = Double(6.931471805599453e-1, 2.319046813846301e-17);
 
-    /// ln 10
+    /// log<sub>*e*</sub> 10
     pub const LN_10: Double = Double(2.302585092994046e0, -2.1707562233822496e-16);
 }
