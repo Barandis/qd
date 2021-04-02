@@ -194,36 +194,3 @@ macro_rules! assert_close {
         assert_precision!($expected, $actual, 60);
     };
 }
-
-macro_rules! assert_exact {
-    ($expected:expr, $actual:expr) => {
-        let expected = Quad::from($expected);
-        let actual = Quad::from($actual);
-        let message = format!(
-            concat!(
-                "\n",
-                "Expected: {0}\n",
-                "Actual:   {1}\n",
-                "\n",
-                "Components:\n",
-                "  Expected: {2:<22e} {3:<22e} {4:<22e} {5:e}\n",
-                "  Actual:   {6:<22e} {7:<22e} {8:<22e} {9:e}\n",
-            ),
-            expected,
-            actual,
-            expected[0],
-            expected[1],
-            expected[2],
-            expected[3],
-            actual[0],
-            actual[1],
-            actual[2],
-            actual[3],
-        );
-        if expected.is_nan() {
-            assert!(actual.is_nan(), message);
-        } else {
-            assert!(expected == actual, message);
-        }
-    };
-}
