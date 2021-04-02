@@ -351,7 +351,11 @@ impl Quad {
 
     #[inline]
     fn pre_nroot(&self, n: i32) -> Option<Quad> {
-        if self.is_zero() {
+        if n == 0 {
+            Some(Quad::NAN)
+        } else if n == 1 {
+            Some(*self)
+        } else if self.is_zero() {
             if n % 2 == 0 || self.is_sign_positive() {
                 if n > 0 {
                     Some(Quad::ZERO)
@@ -363,18 +367,22 @@ impl Quad {
             } else {
                 Some(Quad::NEG_INFINITY)
             }
-        } else if self.is_sign_negative() && n % 2 == 0 {
-            Some(Quad::NAN)
-        } else if n <= 0 {
-            Some(Quad::NAN)
         } else if self.is_infinite() {
             if self.is_sign_positive() {
-                Some(Quad::INFINITY)
-            } else {
+                if n > 0 {
+                    Some(Quad::INFINITY)
+                } else {
+                    Some(Quad::ZERO)
+                }
+            } else if n % 2 == 0 {
+                Some(Quad::NAN)
+            } else if n > 0 {
                 Some(Quad::NEG_INFINITY)
+            } else {
+                Some(Quad::NEG_ZERO)
             }
-        } else if n == 1 {
-            Some(*self)
+        } else if self.is_sign_negative() && n % 2 == 0 {
+            Some(Quad::NAN)
         } else if n == 2 {
             Some(self.sqrt()) // use the more specialized method in sqrt
         } else {
@@ -445,318 +453,602 @@ impl Quad {
 mod tests {
     use super::*;
 
-    #[test]
-    fn ldexp() {
-        assert_exact!(qd!(48), qd!(3).ldexp(4));
-        assert_close!(qd!(0.078_125), qd!(5).ldexp(-6));
-        assert_close!(
-            qd!("4.216574282663130924562182077780080660863911808152513230508318081e8"),
-            Quad::PI.ldexp(27)
-        );
-        assert_close!(
-            qd!("0.00002073884451644169033325414635736589430051610636672942790959905722"),
-            Quad::E.ldexp(-17)
-        );
-    }
+    // ldexp_tests
+    test_all_near!(
+        ldexp_pi:
+            qd!("12.566370614359172953850573533118011536788677597500423283899778369228"),
+            Quad::PI.ldexp(2);
+        ldexp_e:
+            qd!("86.985018510689447531529199083285199928231906998398706398942964087165"),
+            Quad::E.ldexp(5);
+        ldexp_neg_pi:
+            qd!("-1.5707963267948966192313216916397514420985846996875529104874722961534"),
+            (-Quad::PI).ldexp(-1);
+        ldexp_neg_e:
+            qd!("-44536.329477472997136142949930642022363254736383180137676258797612629"),
+            (-Quad::E).ldexp(14);
+        ldexp_2_pi:
+            qd!("0.00000074901405658478575669828495580661365609101519569757123493550886924431"),
+            Quad::TAU.ldexp(-23);
+        ldexp_pi_2:
+            qd!("205887.41614566068967588779676660550101874569375744693508341396880142"),
+            Quad::FRAC_PI_2.ldexp(17);
+        ldexp_sqrt_2:
+            qd!("759250124.99401242311284713250657708668634739527437245582300678806679"),
+            Quad::SQRT_2.ldexp(29);
+        ldexp_1_sqrt_2:
+            qd!("2.828427124746190097603377448419396157139343750753896146353359475983"),
+            Quad::FRAC_1_SQRT_2.ldexp(2);
+        ldexp_150:
+            qd!("18.75"),
+            qd!(150).ldexp(-3);
+        ldexp_neg_140:
+            qd!("-2240"),
+            qd!(-140).ldexp(4);
+    );
+    test_all_exact!(
+        ldexp_zero:
+            Quad::ZERO,
+            Quad::ZERO.ldexp(2);
+        ldexp_neg_zero:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.ldexp(2);
+        ldexp_zero_exp:
+            Quad::ONE,
+            Quad::ONE.ldexp(0);
 
-    #[test]
-    fn ldexp_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.ldexp(2));
-        assert_exact!(Quad::NEG_ZERO, Quad::NEG_ZERO.ldexp(2));
-        assert_exact!(Quad::ONE, Quad::ONE.ldexp(0));
-    }
+        ldexp_inf:
+            Quad::INFINITY,
+            Quad::INFINITY.ldexp(4);
+        ldexp_inf_neg_exp:
+            Quad::INFINITY,
+            Quad::INFINITY.ldexp(-4);
+        ldexp_inf_zero_exp:
+            Quad::INFINITY,
+            Quad::INFINITY.ldexp(0);
+        ldexp_neg_inf:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY.ldexp(3);
+        ldexp_neg_inf_neg_exp:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY.ldexp(-3);
+        ldexp_neg_inf_zero_exp:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY.ldexp(0);
 
-    #[test]
-    fn ldexp_inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.ldexp(4));
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.ldexp(-4));
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.ldexp(0));
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.ldexp(3));
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.ldexp(-3));
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.ldexp(0));
-    }
+        ldexp_nan:
+            Quad::NAN,
+            Quad::NAN.ldexp(5);
+    );
 
-    #[test]
-    fn ldexp_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.ldexp(5));
-    }
+    // sqr tests
+    test_all_near!(
+        sqr_pi:
+            qd!("9.8696044010893586188344909998761511353136994072407906264133493762187"),
+            Quad::PI.sqr();
+        sqr_e:
+            qd!("7.3890560989306502272304274605750078131803155705518473240871278225229"),
+            Quad::E.sqr();
+        sqr_neg_pi:
+            qd!("9.8696044010893586188344909998761511353136994072407906264133493762187"),
+            (-Quad::PI).sqr();
+        sqr_neg_e:
+            qd!("7.3890560989306502272304274605750078131803155705518473240871278225229"),
+            (-Quad::E).sqr();
+        sqr_2_pi:
+            qd!("39.478417604357434475337963999504604541254797628963162505653397504875"),
+            Quad::TAU.sqr();
+        sqr_pi_2:
+            qd!("2.4674011002723396547086227499690377838284248518101976566033373440547"),
+            Quad::FRAC_PI_2.sqr();
+        sqr_sqrt_2:
+            qd!("2.0"),
+            Quad::SQRT_2.sqr();
+        sqr_1_sqrt_2:
+            qd!("0.5"),
+            Quad::FRAC_1_SQRT_2.sqr();
+        sqr_150:
+            qd!("22500.0"),
+            qd!(150).sqr();
+        sqr_neg_140:
+            qd!("19600.0"),
+            qd!(-140).sqr();
+    );
+    test_all_exact!(
+        sqr_zero:
+            Quad::ZERO,
+            Quad::ZERO.sqr();
+        sqr_neg_zero:
+            Quad::ZERO,
+            Quad::NEG_ZERO.sqr();
 
-    #[test]
-    fn sqr() {
-        assert_exact!(qd!(121), qd!(-11).sqr());
-        assert_close!(
-            qd!("9.869604401089358618834490999876151135313699407240790626413349376"),
-            Quad::PI.sqr()
-        );
-    }
+        sqr_inf:
+            Quad::INFINITY,
+            Quad::INFINITY.sqr();
+        sqr_neg_inf:
+            Quad::INFINITY,
+            Quad::NEG_INFINITY.sqr();
 
-    #[test]
-    fn sqr_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.sqr());
-        assert_exact!(Quad::ZERO, Quad::NEG_ZERO.sqr());
-    }
+        sqr_nan:
+            Quad::NAN,
+            Quad::NAN.sqr();
+    );
 
-    #[test]
-    fn sqr_inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.sqr());
-        assert_exact!(Quad::INFINITY, Quad::NEG_INFINITY.sqr());
-    }
+    // sqrt tests
+    test_all_near!(
+        sqrt_pi:
+            qd!("1.7724538509055160272981674833411451827975494561223871282138077898522"),
+            Quad::PI.sqrt();
+        sqrt_e:
+            qd!("1.6487212707001281468486507878141635716537761007101480115750793116401"),
+            Quad::E.sqrt();
+        sqrt_2_pi:
+            qd!("2.506628274631000502415765284811045253006986740609938316629923576343"),
+            Quad::TAU.sqrt();
+        sqrt_pi_2:
+            qd!("1.2533141373155002512078826424055226265034933703049691583149617881715"),
+            Quad::FRAC_PI_2.sqrt();
+        sqrt_sqrt_2:
+            qd!("1.1892071150027210667174999705604759152929720924638174130190022247198"),
+            Quad::SQRT_2.sqrt();
+        sqrt_1_sqrt_2:
+            qd!("0.84089641525371454303112547623321489504003426235678451081322608597515"),
+            Quad::FRAC_1_SQRT_2.sqrt();
+        sqrt_150:
+            qd!("12.247448713915890490986420373529456959829737403283350642163462836256"),
+            qd!(150).sqrt();
+    );
+    test_all_exact!(
+        sqrt_neg_pi:
+            Quad::NAN,
+            (-Quad::PI).sqrt();
+        sqrt_neg_e:
+            Quad::NAN,
+            (-Quad::E).sqrt();
+        sqrt_zero:
+            Quad::ZERO,
+            Quad::ZERO.sqrt();
+        sqrt_neg_zero:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.sqrt();
+        sqrt_inf:
+            Quad::INFINITY,
+            Quad::INFINITY.sqrt();
+        sqrt_neg_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY.sqrt();
+        sqrt_nan:
+            Quad::NAN,
+            Quad::NAN.sqrt();
+    );
 
-    #[test]
-    fn sqr_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.sqr());
-    }
+    // nroot tests
+    test_all_near!(
+        nroot_pi_one:
+            Quad::PI,
+            Quad::PI.nroot(1);
+        nroot_pi_even:
+            qd!("1.7724538509055160272981674833411451827975494561223871282138077898522"),
+            Quad::PI.nroot(2);
+        nroot_pi_odd:
+            qd!("1.4645918875615232630201425272637903917385968556279371743572559371381"),
+            Quad::PI.nroot(3);
+        nroot_e_even:
+            qd!("1.2840254166877414840734205680624364583362808652814630892175072968728"),
+            Quad::E.nroot(4);
+        nroot_e_odd:
+            qd!("1.2214027581601698339210719946396741703075809415205036412734250985987"),
+            Quad::E.nroot(5);
+        nroot_neg_pi_odd:
+            qd!("-1.177664030023197396684700855837046410967631450033500087569918027235"),
+            (-Quad::PI).nroot(7);
+        nroot_neg_e_odd:
+            qd!("-1.1175190687418636486220597164816527772611027132027551083452265292597"),
+            (-Quad::E).nroot(9);
+        nroot_2_pi_even:
+            qd!("1.201760670204157077572973120010031930912333043448441348680050608147"),
+            Quad::TAU.nroot(10);
+        nroot_2_pi_odd:
+            qd!("1.181848494244013415633422793808887363527673194263035551523363315672"),
+            Quad::TAU.nroot(11);
+        nroot_pi_2_even:
+            qd!("0.79788456080286535587989211986876373695171726232986931533185165934132"),
+            Quad::FRAC_PI_2.nroot(-2);
+        nroot_pi_2_odd:
+            qd!("0.86025401382809962533698050905740949744348754456697746051876515772429"),
+            Quad::FRAC_PI_2.nroot(-3);
+        nroot_sqrt_2_even:
+            qd!("0.91700404320467123174354159479414442803865516643683974979166206935351"),
+            Quad::SQRT_2.nroot(-4);
+        nroot_sqrt_2_odd:
+            qd!("0.93303299153680741598134326614994216702722996435149403890049738548566"),
+            Quad::SQRT_2.nroot(-5);
+        nroot_1_sqrt_2_even:
+            qd!("1.0594630943592952645618252949463417007792043174941856285592084314585"),
+            Quad::FRAC_1_SQRT_2.nroot(-6);
+        nroot_1_sqrt_2_odd:
+            qd!("1.0507566386532194247355350853236871653483930556086861784037896755509"),
+            Quad::FRAC_1_SQRT_2.nroot(-7);
+        nroot_150_even:
+            qd!("0.53455031846392155806266225608310095730016744201038647195444926340838"),
+            qd!(150).nroot(-8);
+        nroot_150_odd:
+            qd!("0.57307581713722947566164111673679531838299720831267310026356742661948"),
+            qd!(150).nroot(-9);
+        nroot_neg_140_odd:
+            qd!("-0.63811279267447920124399988241494030594315682697915110323602465090342"),
+            qd!(-140).nroot(-11);
+    );
+    test_all_exact!(
+        nroot_neg_pi_even:
+            Quad::NAN,
+            (-Quad::PI).nroot(6);
+        nroot_neg_e_even:
+            Quad::NAN,
+            (-Quad::E).nroot(8);
+        nroot_neg_140_even:
+            Quad::NAN,
+            qd!(-140).nroot(-10);
 
-    #[test]
-    fn sqrt() {
-        assert_close!(
-            qd!("1.772453850905516027298167483341145182797549456122387128213807790"),
-            Quad::PI.sqrt()
-        );
-        assert_close!(
-            qd!("48.13522618623496195194491189007433987957200800774184036920112360"),
-            qd!(2317).sqrt()
-        );
-    }
+        nroot_zero_even:
+            Quad::ZERO,
+            Quad::ZERO.nroot(4);
+        nroot_neg_zero_even:
+            Quad::ZERO,
+            Quad::NEG_ZERO.nroot(4);
+        nroot_zero_odd:
+            Quad::ZERO,
+            Quad::ZERO.nroot(5);
+        nroot_neg_zero_odd:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.nroot(4);
+        nroot_zero_neg_even:
+            Quad::INFINITY,
+            Quad::ZERO.nroot(-2);
+        nroot_neg_zero_neg_even:
+            Quad::INFINITY,
+            Quad::NEG_ZERO.nroot(-2);
+        nroot_zero_neg_odd:
+            Quad::INFINITY,
+            Quad::ZERO.nroot(-3);
+        nroot_neg_zero_neg_odd:
+            Quad::NEG_INFINITY,
+            Quad::NEG_ZERO.nroot(-3);
+        nroot_zero_root:
+            Quad::NAN,
+            Quad::PI.nroot(0);
 
-    #[test]
-    fn sqrt_neg() {
-        assert_exact!(Quad::NAN, qd!(-3).sqrt());
-    }
+        nroot_inf_even:
+            Quad::INFINITY,
+            Quad::INFINITY.nroot(4);
+        nroot_neg_inf_even:
+            Quad::NAN,
+            Quad::NEG_INFINITY.nroot(4);
+        nroot_inf_odd:
+            Quad::INFINITY,
+            Quad::INFINITY.nroot(3);
+        nroot_neg_inf_odd:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY.nroot(3);
+        nroot_inf_neg_even:
+            Quad::ZERO,
+            Quad::INFINITY.nroot(-4);
+        nroot_neg_inf_neg_even:
+            Quad::NAN,
+            Quad::NEG_INFINITY.nroot(-4);
+        nroot_inf_neg_odd:
+            Quad::ZERO,
+            Quad::INFINITY.nroot(-3);
+        nroot_neg_inf_neg_odd:
+            Quad::NEG_ZERO,
+            Quad::NEG_INFINITY.nroot(-3);
 
-    #[test]
-    fn sqrt_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.sqrt());
-    }
+        nroot_nan:
+            Quad::NAN,
+            Quad::NAN.nroot(4);
+    );
 
-    #[test]
-    fn sqrt_infinity() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.sqrt());
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.sqrt());
-    }
+    // cbrt tests
+    test_all_near!(
+        cbrt_pi:
+            qd!("1.4645918875615232630201425272637903917385968556279371743572559371381"),
+            Quad::PI.cbrt();
+        cbrt_e:
+            qd!("1.3956124250860895286281253196025868375979065151994069826175167060318"),
+            Quad::E.cbrt();
+        cbrt_neg_pi:
+            qd!("-1.4645918875615232630201425272637903917385968556279371743572559371381"),
+            (-Quad::PI).cbrt();
+        cbrt_neg_e:
+            qd!("-1.3956124250860895286281253196025868375979065151994069826175167060318"),
+            (-Quad::E).cbrt();
+        cbrt_2_pi:
+            qd!("1.8452701486440284190968038795889880267800362662159516627255089733343"),
+            Quad::TAU.cbrt();
+        cbrt_pi_2:
+            qd!("1.1624473515096264755708998144778370668593380927618370343897577226871"),
+            Quad::FRAC_PI_2.cbrt();
+        cbrt_sqrt_2:
+            qd!("1.1224620483093729814335330496791795162324111106139867534404095458825"),
+            Quad::SQRT_2.cbrt();
+        cbrt_1_sqrt_2:
+            qd!("0.8908987181403393047402262055905125079872126158781604033837569922518"),
+            Quad::FRAC_1_SQRT_2.cbrt();
+        cbrt_150:
+            qd!("5.3132928459130553302387111108273152536671755781436662378582302628134"),
+            qd!(150).cbrt();
+        cbrt_neg_140:
+            qd!("-5.1924941018511040261944552486014440955378002781346967593066085688115"),
+            qd!(-140).cbrt();
+    );
+    test_all_exact!(
+        cbrt_zero:
+            Quad::ZERO,
+            Quad::ZERO.cbrt();
+        cbrt_neg_zero:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.cbrt();
+        cbrt_inf:
+            Quad::INFINITY,
+            Quad::INFINITY.cbrt();
+        cbrt_neg_inf:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY.cbrt();
+        cbrt_nan:
+            Quad::NAN,
+            Quad::NAN.cbrt();
+    );
 
-    #[test]
-    fn sqrt_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.sqrt());
-    }
+    // powi_tests
+    test_all_near!(
+        powi_pi:
+            qd!("9.8696044010893586188344909998761511353136994072407906264133493762187"),
+            Quad::PI.powi(2);
+        powi_e:
+            qd!("148.4131591025766034211155800405522796234876675938789890467528451108"),
+            Quad::E.powi(5);
+        powi_neg_pi:
+            qd!("-0.31830988618379067153776752674502872406891929148091289749533468811787"),
+            (-Quad::PI).powi(-1);
+        powi_neg_e:
+            qd!("1202604.2841647767777492367707678594494124865433761022403132906331962"),
+            (-Quad::E).powi(14);
+        powi_2_pi:
+            qd!("4.3839241128549052526314338930793281030215689867488119977629459317994e-19"),
+            Quad::TAU.powi(-23);
+        powi_pi_2:
+            qd!("2157.9327666208881618822522078236980140245618172124426850663668765245"),
+            Quad::FRAC_PI_2.powi(17);
+        powi_sqrt_2:
+            qd!("23170.475005920789279566868057451693319285504006175917230926720827039"),
+            Quad::SQRT_2.powi(29);
+        powi_1_sqrt_2:
+            qd!("0.5"),
+            Quad::FRAC_1_SQRT_2.powi(2);
+        powi_150:
+            qd!("0.0000002962962962962962962962962962962962962962962962962962962962962962964"),
+            qd!(150).powi(-3);
+        powi_neg_140:
+            qd!("384160000.0"),
+            qd!(-140).powi(4);
+    );
+    test_all_exact!(
+        powi_zero_odd:
+            Quad::ZERO,
+            Quad::ZERO.powi(3);
+        powi_neg_zero_odd:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.powi(3);
+        powi_zero_even:
+            Quad::ZERO,
+            Quad::ZERO.powi(4);
+        powi_neg_zero_even:
+            Quad::ZERO,
+            Quad::NEG_ZERO.powi(4);
+        powi_inf_neg_odd:
+            Quad::INFINITY,
+            Quad::ZERO.powi(-1);
+        powi_neg_inf_neg_odd:
+            Quad::NEG_INFINITY,
+            Quad::NEG_ZERO.powi(-1);
+        powi_inf_neg_even:
+            Quad::INFINITY,
+            Quad::ZERO.powi(-2);
+        powi_neg_inf_neg_even:
+            Quad::INFINITY,
+            Quad::NEG_ZERO.powi(-2);
 
-    #[test]
-    fn nroot() {
-        assert_close!(Quad::PI, Quad::PI.nroot(1));
-        assert_close!(
-            qd!("1.772453850905516027298167483341145182797549456122387128213807790"),
-            Quad::PI.nroot(2)
-        );
-        assert_close!(
-            qd!("1.284025416687741484073420568062436458336280865281463089217507297"),
-            Quad::E.nroot(4)
-        );
-    }
+        powi_zero_zero:
+            Quad::ONE,
+            Quad::ZERO.powi(0);
+        powi_one_zero:
+            Quad::ONE,
+            Quad::ONE.powi(0);
+        powi_2317_zero:
+            Quad::ONE,
+            qd!(2317).powi(0);
+        powi_inf_zero:
+            Quad::ONE,
+            Quad::INFINITY.powi(0);
+        powi_neg_inf_zero:
+            Quad::ONE,
+            Quad::NEG_INFINITY.powi(0);
+        powi_nan_zero:
+            Quad::ONE,
+            Quad::NAN.powi(0);
 
-    #[test]
-    fn nroot_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.nroot(4));
-        assert_exact!(Quad::ZERO, Quad::NEG_ZERO.nroot(4));
-        assert_exact!(Quad::ZERO, Quad::ZERO.nroot(5));
-        assert_exact!(Quad::NEG_ZERO, Quad::NEG_ZERO.nroot(4));
-        assert_exact!(Quad::INFINITY, Quad::ZERO.nroot(-2));
-        assert_exact!(Quad::INFINITY, Quad::NEG_ZERO.nroot(-2));
-        assert_exact!(Quad::INFINITY, Quad::ZERO.nroot(-3));
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_ZERO.nroot(-3));
-    }
+        powi_inf_even:
+            Quad::INFINITY,
+            Quad::INFINITY.powi(2);
+        powi_inf_odd:
+            Quad::INFINITY,
+            Quad::INFINITY.powi(3);
+        powi_neg_inf_even:
+            Quad::INFINITY,
+            Quad::NEG_INFINITY.powi(2);
+        powi_neg_inf_odd:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY.powi(3);
 
-    #[test]
-    fn nroot_inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.nroot(4));
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.nroot(4));
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.nroot(3));
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.nroot(3));
-    }
+        powi_nan:
+            Quad::NAN,
+            Quad::NAN.powi(2);
+    );
 
-    #[test]
-    fn nroot_nan() {
-        assert_exact!(Quad::NAN, qd!(2).nroot(-2));
-        assert_exact!(Quad::NAN, Quad::NAN.nroot(3));
-    }
+    // powf_tests
+    test_all_near!(
+        powf_pi:
+            qd!("93648.047476083020973716690184919345635998157275514694127052449392906"),
+            Quad::PI.powf(qd!(10.0));
+        powf_e:
+            qd!("7.3890560989306502272304274605750078131803155705518473240871278225229"),
+            Quad::E.powf(qd!(2.0));
+        powf_2_pi:
+            qd!("0.074336687544542155208242592466630548087787623610561811515214014892929"),
+            Quad::TAU.powf(-Quad::SQRT_2);
+        powf_pi_2:
+            qd!("0.86611010235488054964635563326801753095024536815755494441900408376814"),
+            Quad::FRAC_PI_2.powf(-Quad::FRAC_1_PI);
+        powf_sqrt_2:
+            qd!("1.2777037682648325212982228274557087924939442033176200268009327763854"),
+            Quad::SQRT_2.powf(Quad::FRAC_1_SQRT_2);
+        powf_1_sqrt_2:
+            qd!("1.2715371297141403818925670498911252946895411664169044422389164132313"),
+            Quad::FRAC_1_SQRT_2.powf(-Quad::LN_2);
+        powf_150:
+            qd!("0.0000097580874511463571772513415019480387518681397873542312835791633473171"),
+            qd!(150).powf(-Quad::LN_10);
+    );
+    test_all_exact!(
+        powf_zero:
+            Quad::ZERO,
+            Quad::ZERO.powf(qd!(3));
+        powf_neg_zero:
+            Quad::ZERO,
+            Quad::NEG_ZERO.powf(qd!(3));
+        powf_zero_inf:
+            Quad::ZERO,
+            Quad::ZERO.powf(Quad::INFINITY);
+        powf_neg_zero_inf:
+            Quad::ZERO,
+            Quad::NEG_ZERO.powf(Quad::INFINITY);
+        powf_zero_neg:
+            Quad::INFINITY,
+            Quad::ZERO.powf(qd!(-2));
+        powf_neg_zero_neg:
+            Quad::INFINITY,
+            Quad::NEG_ZERO.powf(qd!(-2));
+        powf_zero_neg_inf:
+            Quad::INFINITY,
+            Quad::ZERO.powf(Quad::NEG_INFINITY);
+        powf_neg_zero_neg_inf:
+            Quad::INFINITY,
+            Quad::NEG_ZERO.powf(Quad::NEG_INFINITY);
 
-    #[test]
-    fn nroot_neg() {
-        assert_close!(
-            qd!("-1.464591887561523263020142527263790391738596855627937174357255937"),
-            (-Quad::PI).nroot(3)
-        );
-        assert_exact!(Quad::NAN, (-Quad::PI).nroot(4));
-    }
+        powf_exp_zero:
+            Quad::ONE,
+            qd!(2).powf(Quad::ZERO);
+        powf_exp_neg_zero:
+            Quad::ONE,
+            qd!(2).powf(Quad::NEG_ZERO);
+        powf_zero_zero:
+            Quad::NAN,
+            Quad::ZERO.powf(Quad::ZERO);
+        powf_neg_zero_zero:
+            Quad::NAN,
+            Quad::NEG_ZERO.powf(Quad::ZERO);
+        powf_zero_neg_zero:
+            Quad::NAN,
+            Quad::ZERO.powf(Quad::NEG_ZERO);
+        powf_neg_zero_neg_zero:
+            Quad::NAN,
+            Quad::NEG_ZERO.powf(Quad::NEG_ZERO);
 
-    #[test]
-    fn cbrt() {
-        assert_close!(
-            qd!("1.464591887561523263020142527263790391738596855627937174357255937"),
-            Quad::PI.cbrt()
-        );
-        assert_close!(
-            qd!("-1.395612425086089528628125319602586837597906515199406982617516706"),
-            (-Quad::E).cbrt()
-        );
-    }
+        powf_inf_zero:
+            Quad::NAN,
+            Quad::INFINITY.powf(Quad::ZERO);
+        powf_inf_neg_zero:
+            Quad::NAN,
+            Quad::INFINITY.powf(Quad::NEG_ZERO);
+        powf_neg_inf_zero:
+            Quad::NAN,
+            Quad::NEG_INFINITY.powf(Quad::ZERO);
+        powf_neg_inf_neg_zero:
+            Quad::NAN,
+            Quad::NEG_INFINITY.powf(Quad::NEG_ZERO);
 
-    #[test]
-    fn cbrt_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.cbrt());
-        assert_exact!(Quad::NEG_ZERO, Quad::NEG_ZERO.cbrt());
-    }
+        powf_exp_inf:
+            Quad::INFINITY,
+            qd!(2).powf(Quad::INFINITY);
+        powf_exp_neg_inf:
+            Quad::ZERO,
+            qd!(2).powf(Quad::NEG_INFINITY);
+        powf_one_inf:
+            Quad::NAN,
+            qd!(1).powf(Quad::INFINITY);
+        powf_one_neg_inf:
+            Quad::NAN,
+            qd!(1).powf(Quad::NEG_INFINITY);
 
-    #[test]
-    fn cbrt_inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.cbrt());
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.cbrt());
-    }
+        powf_nan:
+            Quad::NAN,
+            Quad::NAN.powf(qd!(3));
+        powf_exp_nan:
+            Quad::NAN,
+            qd!(3).powf(Quad::NAN);
+        powf_neg:
+            Quad::NAN,
+            qd!(-1).powf(qd!(1));
+    );
 
-    #[test]
-    fn cbrt_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.cbrt());
-    }
-
-    #[test]
-    fn powi() {
-        assert_close!(
-            qd!("-6.209213230591551744478457134696462611222531992971170622970363425e-6"),
-            qd!(-11).powi(-5)
-        );
-        assert_close!(
-            qd!("97.40909103400243723644033268870511124972758567268542169146785939"),
-            Quad::PI.powi(4)
-        );
-    }
-
-    #[test]
-    fn powi_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.powi(3));
-        assert_exact!(Quad::NEG_ZERO, Quad::NEG_ZERO.powi(3));
-        assert_exact!(Quad::ZERO, Quad::ZERO.powi(4));
-        assert_exact!(Quad::ZERO, Quad::NEG_ZERO.powi(4));
-        assert_exact!(Quad::INFINITY, Quad::ZERO.powi(-1));
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_ZERO.powi(-1));
-        assert_exact!(Quad::INFINITY, Quad::ZERO.powi(-2));
-        assert_exact!(Quad::INFINITY, Quad::NEG_ZERO.powi(-2));
-    }
-
-    #[test]
-    fn powi_zero_exp() {
-        assert_exact!(Quad::ONE, Quad::ZERO.powi(0));
-        assert_exact!(Quad::ONE, Quad::ONE.powi(0));
-        assert_exact!(Quad::ONE, qd!(2317).powi(0));
-        assert_exact!(Quad::ONE, Quad::INFINITY.powi(0));
-        assert_exact!(Quad::ONE, Quad::NEG_INFINITY.powi(0));
-        assert_exact!(Quad::ONE, Quad::NAN.powi(0));
-    }
-
-    #[test]
-    fn powi_inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.powi(2));
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.powi(3));
-        assert_exact!(Quad::ZERO, Quad::INFINITY.powi(-2));
-        assert_exact!(Quad::INFINITY, Quad::NEG_INFINITY.powi(2));
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.powi(3));
-        assert_exact!(Quad::NEG_ZERO, Quad::NEG_INFINITY.powi(-3));
-    }
-
-    #[test]
-    fn powi_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.powi(2));
-    }
-
-    #[test]
-    fn powf() {
-        assert_close!(
-            qd!("24567.24805421478199532529771567617705237167216222778116359595012"),
-            qd!(11.1).powf(qd!(4.2))
-        );
-        assert_close!(
-            qd!("1.409759279075053716836003243441716711042960485535248677014414790"),
-            Quad::PI.powf(qd!(0.3))
-        );
-        assert_close!(
-            qd!("0.006810719380166276826846127381721218763394637801309025289387144601"),
-            qd!(0.2).powf(qd!(3.1))
-        );
-        assert_close!(
-            qd!("146.8273678860023757393079582114873627092153773446718337101982774"),
-            qd!(0.2).powf(qd!(-3.1))
-        );
-    }
-
-    #[test]
-    fn powf_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.powf(qd!(3)));
-        assert_exact!(Quad::ZERO, Quad::NEG_ZERO.powf(qd!(3)));
-        assert_exact!(Quad::ZERO, Quad::ZERO.powf(Quad::INFINITY));
-        assert_exact!(Quad::ZERO, Quad::NEG_ZERO.powf(Quad::INFINITY));
-        assert_exact!(Quad::INFINITY, Quad::ZERO.powf(qd!(-2)));
-        assert_exact!(Quad::INFINITY, Quad::NEG_ZERO.powf(qd!(-2)));
-        assert_exact!(Quad::INFINITY, Quad::ZERO.powf(Quad::NEG_INFINITY));
-        assert_exact!(Quad::INFINITY, Quad::NEG_ZERO.powf(Quad::NEG_INFINITY));
-    }
-
-    #[test]
-    fn powf_zero_exp() {
-        assert_exact!(Quad::ONE, qd!(2).powf(Quad::ZERO));
-        assert_exact!(Quad::ONE, qd!(2).powf(Quad::NEG_ZERO));
-        assert_exact!(Quad::NAN, Quad::ZERO.powf(Quad::ZERO));
-        assert_exact!(Quad::NAN, Quad::NEG_ZERO.powf(Quad::ZERO));
-        assert_exact!(Quad::NAN, Quad::ZERO.powf(Quad::NEG_ZERO));
-        assert_exact!(Quad::NAN, Quad::NEG_ZERO.powf(Quad::NEG_ZERO));
-    }
-
-    #[test]
-    fn powf_inf() {
-        assert_exact!(Quad::NAN, Quad::INFINITY.powf(Quad::ZERO));
-        assert_exact!(Quad::NAN, Quad::INFINITY.powf(Quad::NEG_ZERO));
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.powf(Quad::ZERO));
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.powf(Quad::NEG_ZERO));
-    }
-
-    #[test]
-    fn powf_inf_exp() {
-        assert_exact!(Quad::INFINITY, qd!(2).powf(Quad::INFINITY));
-        assert_exact!(Quad::ZERO, qd!(2).powf(Quad::NEG_INFINITY));
-        assert_exact!(Quad::NAN, qd!(1).powf(Quad::INFINITY));
-        assert_exact!(Quad::NAN, qd!(1).powf(Quad::NEG_INFINITY));
-    }
-
-    #[test]
-    fn powf_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.powf(qd!(3)));
-        assert_exact!(Quad::NAN, qd!(3).powf(Quad::NAN));
-        assert_exact!(Quad::NAN, qd!(-1).powf(qd!(1)));
-    }
-
-    #[test]
-    fn recip() {
-        assert_close!(
-            qd!("0.3183098861837906715377675267450287240689192914809128974953346881"),
-            Quad::PI.recip()
-        );
-        assert_close!(
-            qd!("0.3678794411714423215955237701614608674458111310317678345078368017"),
-            Quad::E.recip()
-        );
-    }
-
-    #[test]
-    fn recip_zero() {
-        assert_exact!(Quad::INFINITY, Quad::ZERO.recip());
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_ZERO.recip());
-    }
-
-    #[test]
-    fn recip_inf() {
-        assert_exact!(Quad::ZERO, Quad::INFINITY.recip());
-        assert_exact!(Quad::NEG_ZERO, Quad::NEG_INFINITY.recip());
-    }
-
-    #[test]
-    fn recip_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.recip());
-    }
+    // recip tests
+    test_all_near!(
+        recip_pi:
+            qd!("0.31830988618379067153776752674502872406891929148091289749533468811787"),
+            Quad::PI.recip();
+        recip_e:
+            qd!("0.36787944117144232159552377016146086744581113103176783450783680169744"),
+            Quad::E.recip();
+        recip_neg_pi:
+            qd!("-0.31830988618379067153776752674502872406891929148091289749533468811787"),
+            (-Quad::PI).recip();
+        recip_neg_e:
+            qd!("-0.36787944117144232159552377016146086744581113103176783450783680169744"),
+            (-Quad::E).recip();
+        recip_2_pi:
+            qd!("0.15915494309189533576888376337251436203445964574045644874766734405894"),
+            Quad::TAU.recip();
+        recip_pi_2:
+            qd!("0.63661977236758134307553505349005744813783858296182579499066937623574"),
+            Quad::FRAC_PI_2.recip();
+        recip_sqrt_2:
+            qd!("0.70710678118654752440084436210484903928483593768847403658833986899576"),
+            Quad::SQRT_2.recip();
+        recip_1_sqrt_2:
+            qd!("1.4142135623730950488016887242096980785696718753769480731766797379903"),
+            Quad::FRAC_1_SQRT_2.recip();
+        recip_150:
+            qd!("0.0066666666666666666666666666666666666666666666666666666666666666666673"),
+            qd!(150).recip();
+        recip_neg_140:
+            qd!("-0.0071428571428571428571428571428571428571428571428571428571428571428589"),
+            qd!(-140).recip();
+    );
+    test_all_exact!(
+        recip_zero:
+            Quad::INFINITY,
+            Quad::ZERO.recip();
+        recip_neg_zero:
+            Quad::NEG_INFINITY,
+            Quad::NEG_ZERO.recip();
+        recip_inf:
+            Quad::ZERO,
+            Quad::INFINITY.recip();
+        recip_neg_inf:
+            Quad::NEG_ZERO,
+            Quad::NEG_INFINITY.recip();
+        recip_nan:
+            Quad::NAN,
+            Quad::NAN.recip();
+    );
 }
