@@ -142,13 +142,10 @@ impl Index<usize> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// # fn main() {
     /// let d = Double::ONE;
     /// assert!(d[0] == 1.0);
     /// assert!(d[1] == 0.0);
-    /// # }
     /// ```
     fn index(&self, idx: usize) -> &f64 {
         match idx {

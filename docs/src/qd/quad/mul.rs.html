@@ -386,24 +386,6 @@
 <span id="383">383</span>
 <span id="384">384</span>
 <span id="385">385</span>
-<span id="386">386</span>
-<span id="387">387</span>
-<span id="388">388</span>
-<span id="389">389</span>
-<span id="390">390</span>
-<span id="391">391</span>
-<span id="392">392</span>
-<span id="393">393</span>
-<span id="394">394</span>
-<span id="395">395</span>
-<span id="396">396</span>
-<span id="397">397</span>
-<span id="398">398</span>
-<span id="399">399</span>
-<span id="400">400</span>
-<span id="401">401</span>
-<span id="402">402</span>
-<span id="403">403</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -422,7 +404,7 @@
     <span class="comment">//</span>
     <span class="comment">// It closely follows the process described on pp. 11-16 of &quot;Library for Double-Double</span>
     <span class="comment">// and  Quad-Double Arithmetic&quot; by Y. Hida, X.S. Li, and D.H. Bailey which can be found</span>
-    <span class="comment">// at http://web.mit.edu/tabbott/Public/quadQuad-debian/qd-2.3.4-old/docs/qd.pdf. You</span>
+    <span class="comment">// at http://web.mit.edu/tabbott/Public/quaddouble-debian/qd-2.3.4-old/docs/qd.pdf. You</span>
     <span class="comment">// should be able to see the way the source code works from the diagrams there.</span>
     <span class="comment">//</span>
     <span class="comment">// TERMS (a = self, b = other):</span>
@@ -450,15 +432,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let x = Quad::E * Quad::PI;</span>
     <span class="doccomment">/// let expected = qd!(&quot;8.539734222673567065463550869546574495034888535765114961879601130&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">suspicious_arithmetic_impl</span>)]</span>
     <span class="kw">fn</span> <span class="ident">mul</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
@@ -521,15 +500,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let x = &amp;Quad::E * &amp;Quad::PI;</span>
     <span class="doccomment">/// let expected = qd!(&quot;8.539734222673567065463550869546574495034888535765114961879601130&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mul</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
@@ -547,15 +523,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let x = Quad::E * &amp;Quad::PI;</span>
     <span class="doccomment">/// let expected = qd!(&quot;8.539734222673567065463550869546574495034888535765114961879601130&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mul</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
@@ -573,15 +546,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let x = &amp;Quad::E * Quad::PI;</span>
     <span class="doccomment">/// let expected = qd!(&quot;8.539734222673567065463550869546574495034888535765114961879601130&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mul</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
@@ -596,16 +566,13 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let mut x = Quad::E;</span>
     <span class="doccomment">/// x *= Quad::PI;</span>
     <span class="doccomment">/// let expected = qd!(&quot;8.539734222673567065463550869546574495034888535765114961879601130&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mul_assign</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Quad</span>) {
@@ -625,16 +592,13 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let mut x = Quad::E;</span>
     <span class="doccomment">/// x *= &amp;Quad::PI;</span>
     <span class="doccomment">/// let expected = qd!(&quot;8.539734222673567065463550869546574495034888535765114961879601130&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mul_assign</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Quad</span>) {

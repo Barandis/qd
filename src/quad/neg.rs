@@ -15,15 +15,12 @@ impl Neg for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = -Quad::PI;
     /// let expected = qd!("-3.141592653589793238462643383279502884197169399375105820974944592");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(x < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn neg(self) -> Quad {
@@ -40,15 +37,12 @@ impl Neg for &Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = -&Quad::PI;
     /// let expected = qd!("-3.141592653589793238462643383279502884197169399375105820974944592");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(x < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn neg(self) -> Quad {

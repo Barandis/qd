@@ -42,15 +42,12 @@ impl Div for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::E / Quad::PI;
     /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[allow(clippy::suspicious_arithmetic_impl)]
     fn div(self, other: Quad) -> Quad {
@@ -91,15 +88,12 @@ impl Div for Quad {
 ///
 /// # Examples
 /// ```
-/// # #[macro_use] extern crate qd;
-/// # use qd::Quad;
-/// # fn main() {
+/// # use qd::{qd, Quad};
 /// let x = &Quad::E / &Quad::PI;
 /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
 ///
 /// let diff = (x - expected).abs();
 /// assert!(diff < qd!(1e-60));
-/// # }
 /// ```
 impl Div for &Quad {
     type Output = Quad;
@@ -119,15 +113,12 @@ impl Div<&Quad> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::E / &Quad::PI;
     /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn div(self, other: &Quad) -> Quad {
@@ -145,15 +136,12 @@ impl Div<Quad> for &Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = &Quad::E / Quad::PI;
     /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn div(self, other: Quad) -> Quad {
@@ -168,16 +156,13 @@ impl DivAssign for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let mut x = Quad::E;
     /// x /= Quad::PI;
     /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn div_assign(&mut self, other: Quad) {
@@ -197,16 +182,13 @@ impl DivAssign<&Quad> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let mut x = Quad::E;
     /// x /= &Quad::PI;
     /// let expected = qd!("0.8652559794322650872177747896460896174287446239085155394543302889");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn div_assign(&mut self, other: &Quad) {

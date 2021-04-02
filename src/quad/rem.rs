@@ -16,9 +16,7 @@ impl Rem for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::PI % Quad::E;
     /// let xpected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
     ///
@@ -30,7 +28,6 @@ impl Rem for Quad {
     ///
     /// let diffy = (y - ypected).abs();
     /// assert!(diffy < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn rem(self, other: Quad) -> Quad {
@@ -49,9 +46,7 @@ impl Rem for &Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = &Quad::PI % &Quad::E;
     /// let xpected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
     ///
@@ -63,7 +58,6 @@ impl Rem for &Quad {
     ///
     /// let diffy = (y - ypected).abs();
     /// assert!(diffy < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn rem(self, other: &Quad) -> Quad {
@@ -81,9 +75,7 @@ impl Rem<&Quad> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::PI % &Quad::E;
     /// let xpected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
     ///
@@ -95,7 +87,6 @@ impl Rem<&Quad> for Quad {
     ///
     /// let diffy = (y - ypected).abs();
     /// assert!(diffy < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn rem(self, other: &Quad) -> Quad {
@@ -113,9 +104,7 @@ impl Rem<Quad> for &Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = &Quad::PI % Quad::E;
     /// let xpected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
     ///
@@ -127,7 +116,6 @@ impl Rem<Quad> for &Quad {
     ///
     /// let diffy = (y - ypected).abs();
     /// assert!(diffy < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn rem(self, other: Quad) -> Quad {
@@ -143,9 +131,7 @@ impl RemAssign for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let mut x = Quad::PI;
     /// x %= Quad::E;
     /// let xpected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
@@ -159,7 +145,6 @@ impl RemAssign for Quad {
     ///
     /// let diffy = (y - ypected).abs();
     /// assert!(diffy < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn rem_assign(&mut self, other: Quad) {
@@ -179,9 +164,7 @@ impl RemAssign<&Quad> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let mut x = Quad::PI;
     /// x %= &Quad::E;
     /// let xpected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
@@ -195,7 +178,6 @@ impl RemAssign<&Quad> for Quad {
     ///
     /// let diffy = (y - ypected).abs();
     /// assert!(diffy < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn rem_assign(&mut self, other: &Quad) {

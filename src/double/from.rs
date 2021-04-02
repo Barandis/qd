@@ -68,78 +68,60 @@ from_int_impl! {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// # fn main() {
     /// let x = -128i8;
     /// let a = Double::from(x);
     /// assert!(a.to_string() == "-128");
-    /// # }
     /// ```
     i8
     /// Generates a `Double` from a `u8`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// # fn main() {
     /// let x = 255u8;
     /// let a = Double::from(x);
     /// assert!(a.to_string() == "255");
-    /// # }
     /// ```
     u8
     /// Generates a `Double` from an `i16`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// # fn main() {
     /// let x = -32768i16;
     /// let a = Double::from(x);
     /// assert!(a.to_string() == "-32768");
-    /// # }
     /// ```
     i16
     /// Generates a `Double` from a `u8`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// # fn main() {
     /// let x = 65535u16;
     /// let a = Double::from(x);
     /// assert!(a.to_string() == "65535");
-    /// # }
     /// ```
     u16
     /// Generates a `Double` from an `i32`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// # fn main() {
     /// let x = -2_147_483_648i32;
     /// let a = Double::from(x);
     /// assert!(a.to_string() == "-2147483648");
-    /// # }
     /// ```
     i32
     /// Generates a `Double` from a `u32`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// # fn main() {
     /// let x = 4_294_967_295u32;
     /// let a = Double::from(x);
     /// assert!(a.to_string() == "4294967295");
-    /// # }
     /// ```
     u32
 }
@@ -152,13 +134,10 @@ impl From<u64> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// # fn main() {
     /// let x = 18_446_744_073_709_551_615u64;
     /// let a = Double::from(x);
     /// assert!(a.to_string() == "18446744073709551615");
-    /// # }
     /// ```
     fn from(a: u64) -> Double {
         from_u64(a)
@@ -170,13 +149,10 @@ impl From<i64> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// # fn main() {
     /// let x = -9_223_372_036_854_775_808i64;
     /// let a = Double::from(x);
     /// assert!(a.to_string() == "-9223372036854775808");
-    /// # }
     /// ```
     fn from(a: i64) -> Double {
         from_i64(a)
@@ -246,9 +222,7 @@ from_float_impl! {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// # fn main() {
     /// // Exactly representable in binary
     /// let x = 0.9921875f32;
     /// let a = Double::from(x);
@@ -258,7 +232,6 @@ from_float_impl! {
     /// let x = 0.9921876f32;
     /// let a = Double::from(x);
     /// assert!(a.to_string() == "0.9921876");
-    /// # }
     /// ```
     f32
     /// Generates a `Double` from an `f64`.
@@ -275,9 +248,7 @@ from_float_impl! {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// # fn main() {
     /// // Exactly representable in binary
     /// let x = 0.999969482421875f64;
     /// let a = Double::from(x);
@@ -287,7 +258,6 @@ from_float_impl! {
     /// let x = 0.999969482421876f64;
     /// let a = Double::from(x);
     /// assert!(a.to_string() == "0.999969482421876");
-    /// # }
     /// ```
     f64
 }
@@ -335,15 +305,12 @@ impl From<&str> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
     /// let x = Double::from("0.9999999303082806237436760862691");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN
@@ -366,15 +333,13 @@ impl From<Double> for f64 {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Double;
-    /// # fn main() {
     /// let a = Double::PI;
     /// let x = f64::from(a);
     ///
     /// let diff = (x - std::f64::consts::PI).abs();
     /// assert!(diff < 1e-15);
-    /// # }
+    /// ```
     #[inline]
     fn from(a: Double) -> f64 {
         a.0

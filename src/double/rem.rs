@@ -16,9 +16,7 @@ impl Rem for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::PI % Double::E;
     /// let xpected = dd!("0.4233108251307480031023559119268");
     ///
@@ -30,7 +28,6 @@ impl Rem for Double {
     ///
     /// let diffy = (y - ypected).abs();
     /// assert!(diffy < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn rem(self, other: Double) -> Double {
@@ -49,9 +46,7 @@ impl Rem for &Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = &Double::PI % &Double::E;
     /// let xpected = dd!("0.4233108251307480031023559119268");
     ///
@@ -63,7 +58,6 @@ impl Rem for &Double {
     ///
     /// let diffy = (y - ypected).abs();
     /// assert!(diffy < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn rem(self, other: &Double) -> Double {
@@ -82,9 +76,7 @@ impl Rem<&Double> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::PI % &Double::E;
     /// let xpected = dd!("0.4233108251307480031023559119268");
     ///
@@ -96,7 +88,6 @@ impl Rem<&Double> for Double {
     ///
     /// let diffy = (y - ypected).abs();
     /// assert!(diffy < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn rem(self, other: &Double) -> Double {
@@ -115,9 +106,7 @@ impl Rem<Double> for &Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = &Double::PI % Double::E;
     /// let xpected = dd!("0.4233108251307480031023559119268");
     ///
@@ -129,7 +118,6 @@ impl Rem<Double> for &Double {
     ///
     /// let diffy = (y - ypected).abs();
     /// assert!(diffy < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn rem(self, other: Double) -> Double {
@@ -146,9 +134,7 @@ impl RemAssign for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let mut x = Double::PI;
     /// x %= Double::E;
     /// let xpected = dd!("0.4233108251307480031023559119268");
@@ -162,7 +148,6 @@ impl RemAssign for Double {
     ///
     /// let diffy = (y - ypected).abs();
     /// assert!(diffy < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn rem_assign(&mut self, other: Double) {
@@ -180,9 +165,7 @@ impl RemAssign<&Double> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let mut x = Double::PI;
     /// x %= &Double::E;
     /// let xpected = dd!("0.4233108251307480031023559119268");
@@ -196,7 +179,6 @@ impl RemAssign<&Double> for Double {
     ///
     /// let diffy = (y - ypected).abs();
     /// assert!(diffy < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn rem_assign(&mut self, other: &Double) {

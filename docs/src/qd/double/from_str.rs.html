@@ -299,9 +299,6 @@
 <span id="296">296</span>
 <span id="297">297</span>
 <span id="298">298</span>
-<span id="299">299</span>
-<span id="300">300</span>
-<span id="301">301</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -329,11 +326,9 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// use std::str::FromStr;</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let x1 = Double::from_str(&quot;0.9999999303082806237436760862691&quot;).unwrap();</span>
@@ -348,7 +343,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff2 = (x2 - expected).abs();</span>
     <span class="doccomment">/// assert!(diff2 &lt; dd!(1e-30));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`ParseDoubleError`]: error/struct.ParseDoubleError.html</span>

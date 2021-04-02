@@ -23,14 +23,11 @@ impl PartialEq for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// assert!(Double::PI == Double::PI);
     /// assert!(Double::E != Double::PI);
     /// assert!(dd!(0.0) == dd!(-0.0));
     /// assert!(Double::NAN != Double::NAN);
-    /// # }
     /// ```
     #[inline]
     fn eq(&self, other: &Double) -> bool {
@@ -48,13 +45,10 @@ impl PartialOrd for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// assert!(Double::PI > Double::E);
     /// assert!(dd!(0.0) <= dd!(-0.0));
     /// assert!(!(Double::NAN >= Double::NAN));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN

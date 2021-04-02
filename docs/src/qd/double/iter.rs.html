@@ -172,18 +172,6 @@
 <span id="169">169</span>
 <span id="170">170</span>
 <span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -203,15 +191,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// use std::iter::Sum;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let expected = dd!(15);</span>
     <span class="doccomment">/// let actual: Double = vec![dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].into_iter().sum();</span>
     <span class="doccomment">/// assert!(expected == actual);</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">sum</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span>
     <span class="kw">where</span>
@@ -226,15 +211,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// use std::iter::Sum;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let expected = dd!(15);</span>
     <span class="doccomment">/// let actual: Double = vec![dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().sum();</span>
     <span class="doccomment">/// assert!(expected == actual);</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">sum</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span>
     <span class="kw">where</span>
@@ -249,15 +231,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// use std::iter::Product;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let expected = dd!(120);</span>
     <span class="doccomment">/// let actual: Double = vec![dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].into_iter().product();</span>
     <span class="doccomment">/// assert!(expected == actual);</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">product</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span>
     <span class="kw">where</span>
@@ -272,15 +251,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// use std::iter::Product;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let expected = dd!(120);</span>
     <span class="doccomment">/// let actual: Double = vec![dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().product();</span>
     <span class="doccomment">/// assert!(expected == actual);</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">product</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span>
     <span class="kw">where</span>

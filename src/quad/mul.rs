@@ -43,15 +43,12 @@ impl Mul for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::E * Quad::PI;
     /// let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[allow(clippy::suspicious_arithmetic_impl)]
     fn mul(self, other: Quad) -> Quad {
@@ -114,15 +111,12 @@ impl Mul for &Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = &Quad::E * &Quad::PI;
     /// let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn mul(self, other: &Quad) -> Quad {
@@ -140,15 +134,12 @@ impl Mul<&Quad> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::E * &Quad::PI;
     /// let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn mul(self, other: &Quad) -> Quad {
@@ -166,15 +157,12 @@ impl Mul<Quad> for &Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = &Quad::E * Quad::PI;
     /// let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn mul(self, other: Quad) -> Quad {
@@ -189,16 +177,13 @@ impl MulAssign for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let mut x = Quad::E;
     /// x *= Quad::PI;
     /// let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn mul_assign(&mut self, other: Quad) {
@@ -218,16 +203,13 @@ impl MulAssign<&Quad> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let mut x = Quad::E;
     /// x *= &Quad::PI;
     /// let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn mul_assign(&mut self, other: &Quad) {

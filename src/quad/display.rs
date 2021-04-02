@@ -206,9 +206,7 @@ impl Display for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// assert!(format!("{}", qd!(1.5)) == "1.5");
     ///
     /// assert!(format!("{}", Quad::PI) ==
@@ -257,7 +255,6 @@ impl Display for Quad {
     /// assert!(format!("{:0>10}", -value) == "000-123456");
     /// assert!(format!("{:010}", -value) == "-000123456");
     /// assert!(format!("{:+012e}", value) == "+001.23456e5");
-    /// # }
     /// ```
     ///
     /// [`std::fmt`]: https://doc.rust-lang.org/std/fmt/index.html

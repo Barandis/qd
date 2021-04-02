@@ -13,12 +13,9 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// assert!(dd!(3).abs() == dd!(3));
     /// assert!(dd!(-3).abs() == dd!(3));
-    /// # }
     /// ```
     #[inline]
     pub fn abs(self) -> Double {
@@ -33,9 +30,7 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let f = dd!(3.99);
     /// let g = dd!(3.0);
     /// let h = dd!(-3.99);
@@ -43,7 +38,6 @@ impl Double {
     /// assert!(f.floor() == dd!(3));
     /// assert!(g.floor() == dd!(3));
     /// assert!(h.floor() == dd!(-4));
-    /// # }
     /// ```
     #[inline]
     pub fn floor(self) -> Double {
@@ -61,9 +55,7 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let f = dd!(3.01);
     /// let g = dd!(4.0);
     /// let h = dd!(-3.01);
@@ -71,7 +63,6 @@ impl Double {
     /// assert!(f.ceil() == dd!(4));
     /// assert!(g.ceil() == dd!(4));
     /// assert!(h.ceil() == dd!(-3));
-    /// # }
     /// ```
     #[inline]
     pub fn ceil(self) -> Double {
@@ -90,9 +81,7 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let f = dd!(3.3);
     /// let g = dd!(3.5);
     /// let h = dd!(-3.3);
@@ -100,7 +89,6 @@ impl Double {
     /// assert!(f.round() == dd!(3));
     /// assert!(g.round() == dd!(4));
     /// assert!(h.round() == dd!(-3));
-    /// # }
     /// ```
     #[inline]
     pub fn round(self) -> Double {
@@ -121,15 +109,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let f = dd!(3.3);
     /// let g = dd!(-3.7);
     ///
     /// assert!(f.trunc() == dd!(3));
     /// assert!(g.trunc() == dd!(-3));
-    /// # }
     /// ```
     #[inline]
     pub fn trunc(self) -> Double {
@@ -144,9 +129,7 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let f = dd!(3.3);
     /// let g = dd!(-3.7);
     ///
@@ -155,7 +138,6 @@ impl Double {
     ///
     /// assert!(fdiff < dd!(1e-30));
     /// assert!(gdiff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     pub fn fract(self) -> Double {
@@ -170,13 +152,10 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// assert!(dd!(3.5).signum() == Double::ONE);
     /// assert!(Double::NEG_INFINITY.signum() == Double::NEG_ONE);
     /// assert!(Double::NAN.signum().is_nan());
-    /// # }
     /// ```
     ///
     /// [`INFINITY`]: #associatedconstant.INFINITY
@@ -206,9 +185,7 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// use std::num::FpCategory;
     ///
     /// let num = dd!(12.4);
@@ -216,7 +193,6 @@ impl Double {
     ///
     /// assert!(num.classify() == FpCategory::Normal);
     /// assert!(inf.classify() == FpCategory::Infinite);
-    /// # }
     /// ```
     ///
     /// [`FpCategory`]: https://doc.rust-lang.org/std/num/enum.FpCategory.html
@@ -229,9 +205,7 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let min = Double::MIN_POSITIVE;
     /// let max = Double::MAX;
     /// let lower = dd!(1e-308);
@@ -245,7 +219,6 @@ impl Double {
     /// assert!(!Double::INFINITY.is_normal());
     /// // Values between `0` and `MIN_POSITIVE` are subnormal.
     /// assert!(!lower.is_normal());
-    /// # }
     /// ```
     #[inline]
     pub fn is_normal(self) -> bool {
@@ -271,15 +244,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// assert!(Double::NEG_ZERO.is_sign_negative());
     /// assert!(Double::NEG_INFINITY.is_sign_negative());
     /// assert!(dd!(-7.0).is_sign_negative());
     /// assert!(!Double::ZERO.is_sign_negative());
     /// assert!(!dd!(7.0).is_sign_negative());
-    /// # }
     /// ```
     #[inline]
     pub fn is_sign_negative(self) -> bool {
@@ -291,15 +261,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// assert!(Double::ZERO.is_sign_positive());
     /// assert!(Double::INFINITY.is_sign_positive());
     /// assert!(dd!(7.0).is_sign_positive());
     /// assert!(!Double::NEG_ZERO.is_sign_positive());
     /// assert!(!dd!(-7.0).is_sign_positive());
-    /// # }
     /// ```
     #[inline]
     pub fn is_sign_positive(self) -> bool {
@@ -308,14 +275,14 @@ impl Double {
 
     /// Returns `true` if the `Double` is `NaN`.
     ///
+    /// This is the proper way to test for `NaN` because it cannot be done with an equality
+    /// test (since `NaN` is not equal to itself).
+    ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// assert!(Double::NAN.is_nan());
     /// assert!(!dd!(7.0).is_nan());
-    /// # }
     /// ```
     #[inline]
     pub fn is_nan(self) -> bool {
@@ -326,14 +293,11 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// assert!(Double::INFINITY.is_infinite());
     /// assert!(Double::NEG_INFINITY.is_infinite());
     /// assert!(!Double::NAN.is_infinite());
     /// assert!(!dd!(7.0).is_infinite());
-    /// # }
     /// ```
     #[inline]
     pub fn is_infinite(self) -> bool {
@@ -344,14 +308,11 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// assert!(!Double::INFINITY.is_finite());
     /// assert!(!Double::NEG_INFINITY.is_finite());
     /// assert!(!Double::NAN.is_finite());
     /// assert!(dd!(7.0).is_finite());
-    /// # }
     /// ```
     #[inline]
     pub fn is_finite(self) -> bool {
@@ -367,12 +328,9 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// assert!(!Double::PI.is_subnormal());
     /// assert!(dd!(1e-308).is_subnormal());
-    /// # }
     /// ```
     ///
     /// [`MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE

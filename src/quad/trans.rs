@@ -24,15 +24,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(2.3).exp();
     /// let expected = qd!("9.974182454814720739957615156908858001478701193684029563691421917");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-59));
-    /// # }
     /// ```
     ///
     /// [`INFINITY`]: #associatedconstant.INFINITY
@@ -142,15 +139,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(7).ln();
     /// let expected = qd!("1.945910149055313305105352743443179729637084729581861188459390150");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     ///
     /// [`exp`]: #method.exp
@@ -204,15 +198,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::E.log10();
     /// let expected = qd!("0.4342944819032518276511289189166050822943970058036665661144537832");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     ///
     /// [`INFINITY`]: #associatedconstant.INFINITY
@@ -230,15 +221,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(10).log2();
     /// let expected = qd!("3.321928094887362347870319429489390175864831393024580612054756396");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-59));
-    /// # }
     /// ```
     ///
     /// [`ln`]: #method.ln
@@ -259,15 +247,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(10).log(qd!(7.3));
     /// let expected = qd!("1.158315209978887965104764376269736420106652944692834002126233653");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-59));
-    /// # }
     /// ```
     ///
     /// [`ln`]: #method.ln

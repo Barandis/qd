@@ -13,9 +13,7 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::PI / qd!(4);
     /// let (sin_x, cos_x) = x.sin_cos();
     ///
@@ -24,7 +22,6 @@ impl Quad {
     ///
     /// assert!(diff_sin < qd!(1e-60));
     /// assert!(diff_cos < qd!(1e-60));
-    /// # }
     /// ```
     ///
     /// [`sin`]: #method.sin
@@ -67,15 +64,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(1).sin();
     /// let expected = qd!("0.8414709848078965066525023216302989996225630607983710656727517099884");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[allow(clippy::many_single_char_names)]
     pub fn sin(self) -> Quad {
@@ -132,15 +126,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(1).cos();
     /// let expected = qd!("0.5403023058681397174009366074429766037323104206179222276700972553787");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[allow(clippy::many_single_char_names)]
     pub fn cos(self) -> Quad {
@@ -188,15 +179,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(1).tan();
     /// let expected = qd!("1.557407724654902230506974807458360173087250772381520038383946606");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     pub fn tan(self) -> Quad {
         let (s, c) = self.sin_cos();
@@ -226,9 +214,7 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let pi = Quad::PI;
     ///
     /// // -π/4 radians (45 degrees clockwise)
@@ -246,7 +232,6 @@ impl Quad {
     ///
     /// assert!(diff1 < qd!(1e-60));
     /// assert!(diff2 < qd!(1e-60));
-    /// # }
     /// ```
     ///
     /// [`atan`]: #method.atan
@@ -305,15 +290,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = qd!(1).asin();
     /// let expected = Quad::PI / qd!(2);  // π/2
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN
@@ -330,15 +312,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = qd!(1).acos();
     /// let expected = qd!(0);
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN
@@ -354,15 +333,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = qd!(1).atan();
     /// let expected = Quad::PI / qd!(4);  // π/4
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     pub fn atan(self) -> Quad {
         self.atan2(Quad::ONE)

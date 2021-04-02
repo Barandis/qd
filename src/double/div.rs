@@ -28,15 +28,12 @@ impl Div for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::E / Double::PI;
     /// let expected = dd!("0.8652559794322650872177747896461");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     fn div(self, other: Double) -> Double {
         match self.pre_div(&other) {
@@ -66,15 +63,12 @@ impl Div for &Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = &Double::E / &Double::PI;
     /// let expected = dd!("0.8652559794322650872177747896461");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     fn div(self, other: &Double) -> Double {
         (*self).div(*other)
@@ -91,15 +85,12 @@ impl Div<&Double> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::E / &Double::PI;
     /// let expected = dd!("0.8652559794322650872177747896461");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn div(self, other: &Double) -> Double {
@@ -117,15 +108,12 @@ impl Div<Double> for &Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = &Double::E / Double::PI;
     /// let expected = dd!("0.8652559794322650872177747896461");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn div(self, other: Double) -> Double {
@@ -140,16 +128,13 @@ impl DivAssign for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let mut x = Double::E;
     /// x /= Double::PI;
     /// let expected = dd!("0.8652559794322650872177747896461");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn div_assign(&mut self, other: Double) {
@@ -167,16 +152,13 @@ impl DivAssign<&Double> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let mut x = Double::E;
     /// x /= &Double::PI;
     /// let expected = dd!("0.8652559794322650872177747896461");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn div_assign(&mut self, other: &Double) {

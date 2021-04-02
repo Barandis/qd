@@ -1147,31 +1147,6 @@
 <span id="1144">1144</span>
 <span id="1145">1145</span>
 <span id="1146">1146</span>
-<span id="1147">1147</span>
-<span id="1148">1148</span>
-<span id="1149">1149</span>
-<span id="1150">1150</span>
-<span id="1151">1151</span>
-<span id="1152">1152</span>
-<span id="1153">1153</span>
-<span id="1154">1154</span>
-<span id="1155">1155</span>
-<span id="1156">1156</span>
-<span id="1157">1157</span>
-<span id="1158">1158</span>
-<span id="1159">1159</span>
-<span id="1160">1160</span>
-<span id="1161">1161</span>
-<span id="1162">1162</span>
-<span id="1163">1163</span>
-<span id="1164">1164</span>
-<span id="1165">1165</span>
-<span id="1166">1166</span>
-<span id="1167">1167</span>
-<span id="1168">1168</span>
-<span id="1169">1169</span>
-<span id="1170">1170</span>
-<span id="1171">1171</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -1188,9 +1163,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let x = Quad::PI / qd!(4);</span>
     <span class="doccomment">/// let (sin_x, cos_x) = x.sin_cos();</span>
     <span class="doccomment">///</span>
@@ -1199,7 +1172,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// assert!(diff_sin &lt; qd!(1e-60));</span>
     <span class="doccomment">/// assert!(diff_cos &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`sin`]: #method.sin</span>
@@ -1242,15 +1214,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::qd;</span>
     <span class="doccomment">/// let x = qd!(1).sin();</span>
     <span class="doccomment">/// let expected = qd!(&quot;0.8414709848078965066525023216302989996225630607983710656727517099884&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">many_single_char_names</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sin</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
@@ -1307,15 +1276,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::qd;</span>
     <span class="doccomment">/// let x = qd!(1).cos();</span>
     <span class="doccomment">/// let expected = qd!(&quot;0.5403023058681397174009366074429766037323104206179222276700972553787&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">many_single_char_names</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cos</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
@@ -1363,15 +1329,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::qd;</span>
     <span class="doccomment">/// let x = qd!(1).tan();</span>
     <span class="doccomment">/// let expected = qd!(&quot;1.557407724654902230506974807458360173087250772381520038383946606&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tan</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
         <span class="kw">let</span> (<span class="ident">s</span>, <span class="ident">c</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">sin_cos</span>();
@@ -1401,9 +1364,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let pi = Quad::PI;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// // -π/4 radians (45 degrees clockwise)</span>
@@ -1421,7 +1382,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// assert!(diff1 &lt; qd!(1e-60));</span>
     <span class="doccomment">/// assert!(diff2 &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`atan`]: #method.atan</span>
@@ -1480,15 +1440,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let x = qd!(1).asin();</span>
     <span class="doccomment">/// let expected = Quad::PI / qd!(2);  // π/2</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`NAN`]: #associatedconstant.NAN</span>
@@ -1505,15 +1462,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let x = qd!(1).acos();</span>
     <span class="doccomment">/// let expected = qd!(0);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`NAN`]: #associatedconstant.NAN</span>
@@ -1529,15 +1483,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let x = qd!(1).atan();</span>
     <span class="doccomment">/// let expected = Quad::PI / qd!(4);  // π/4</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">atan</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
         <span class="self">self</span>.<span class="ident">atan2</span>(<span class="ident">Quad</span>::<span class="ident">ONE</span>)
@@ -1714,9 +1665,9 @@
     }
 }
 
-<span class="comment">// Computes both the sine and cosine of a using the Taylor series. This is a bit</span>
-<span class="comment">// quicker than calling the two functions above separately, since if you have</span>
-<span class="comment">// one of them you can calculate the other more efficiently.</span>
+<span class="comment">// Computes both the sine and cosine of a using the Taylor series. This is a bit quicker</span>
+<span class="comment">// than calling the two functions above separately, since if you have one of them you can</span>
+<span class="comment">// calculate the other more efficiently.</span>
 <span class="kw">fn</span> <span class="ident">sincos_taylor</span>(<span class="ident">a</span>: <span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">Quad</span>, <span class="ident">Quad</span>) {
     <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">is_zero</span>() {
         (<span class="ident">Quad</span>::<span class="ident">ZERO</span>, <span class="ident">Quad</span>::<span class="ident">ONE</span>)
@@ -1726,11 +1677,10 @@
     }
 }
 
-<span class="comment">// Helper function to reduce the input to a value whose sin/cos can be</span>
-<span class="comment">// calculated via Taylor series. It firsts reduces modulo 2π, then π/2, then</span>
-<span class="comment">// π/1024. Aside from returning the reduced value (`t`), it also returns the</span>
-<span class="comment">// group within the next higher modulo in which the value fell (`j` and `k`,</span>
-<span class="comment">// this is the quadrant for `j`).</span>
+<span class="comment">// Helper function to reduce the input to a value whose sin/cos can be calculated via Taylor</span>
+<span class="comment">// series. It firsts reduces modulo 2π, then π/2, then π/1024. Aside from returning the</span>
+<span class="comment">// reduced value (`t`), it also returns the group within the next higher modulo in which the</span>
+<span class="comment">// value fell (`j` and `k`, this is the quadrant for `j`).</span>
 <span class="attribute">#[<span class="ident">inline</span>]</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">many_single_char_names</span>)]</span>
 <span class="kw">fn</span> <span class="ident">reduce</span>(<span class="ident">a</span>: <span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">Quad</span>) {

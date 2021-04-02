@@ -18,14 +18,11 @@ impl PartialEq for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// assert!(Quad::PI == Quad::PI);
     /// assert!(Quad::E != Quad::PI);
     /// assert!(qd!(0.0) == qd!(-0.0));
     /// assert!(Quad::NAN != Quad::NAN);
-    /// # }
     /// ```
     #[inline]
     fn eq(&self, other: &Quad) -> bool {
@@ -42,13 +39,10 @@ impl PartialOrd for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// assert!(Quad::PI > Quad::E);
     /// assert!(qd!(0.0) <= qd!(-0.0));
     /// assert!(!(Quad::NAN >= Quad::NAN));
-    /// # }
     /// ```
     ///
     #[inline]

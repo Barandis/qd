@@ -18,12 +18,9 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(5);
     /// assert!(x.ldexp(3) == dd!(40)); // 5 * 2^3
-    /// # }
     /// ```
     ///
     /// [`powi`]: #method.powi
@@ -41,12 +38,9 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(3);
     /// assert!(x.sqr() == x * x); // The left side is faster though
-    /// # }
     /// ```
     #[inline]
     pub fn sqr(self) -> Double {
@@ -64,13 +58,10 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = dd!(2).sqrt();
     /// let diff = (x - Double::SQRT_2).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     pub fn sqrt(self) -> Double {
         match self.pre_sqrt() {
@@ -97,15 +88,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(2).nroot(4);
     /// let expected = dd!("1.1892071150027210667174999705605");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     pub fn nroot(self, n: i32) -> Double {
         match self.pre_nroot(n) {
@@ -141,15 +129,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(2).cbrt();
     /// let expected = dd!("1.2599210498948731647672106072782");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     pub fn cbrt(self) -> Double {
@@ -169,12 +154,9 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(3);
     /// assert!(x.powi(3) == dd!(27));
-    /// # }
     /// ```
     pub fn powi(self, n: i32) -> Double {
         match self.pre_powi(n) {
@@ -223,15 +205,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(3).powf(dd!(3.3));
     /// let expected = dd!("37.540507598529552193101865954634");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-28));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN
@@ -247,15 +226,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::PI.recip();
     /// let expected = dd!("0.31830988618379067153776752674503");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     pub fn recip(self) -> Double {

@@ -23,15 +23,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(2).exp();
     /// let expected = dd!("7.3890560989306502272304274605750057");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-29));
-    /// # }
     /// ```
     ///
     /// [`INFINITY`]: #associatedconstant.INFINITY
@@ -134,15 +131,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(7).ln();
     /// let expected = dd!("1.9459101490553133051053527434432");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-29));
-    /// # }
     /// ```
     ///
     /// [`exp`]: #method.exp
@@ -196,15 +190,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::E.log10();
     /// let expected = dd!("0.434294481903251827651128918916605");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     ///
     /// [`INFINITY`]: #associatedconstant.INFINITY
@@ -222,15 +213,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(10).log2();
     /// let expected = dd!("3.32192809488736234787031942948939");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-29));
-    /// # }
     /// ```
     ///
     /// [`ln`]: #method.ln
@@ -251,15 +239,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(10).log(dd!(7.0));
     /// let expected = dd!("1.18329466245493832681792856164686");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-29));
-    /// # }
     /// ```
     ///
     /// [`ln`]: #method.ln

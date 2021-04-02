@@ -307,24 +307,6 @@
 <span id="304">304</span>
 <span id="305">305</span>
 <span id="306">306</span>
-<span id="307">307</span>
-<span id="308">308</span>
-<span id="309">309</span>
-<span id="310">310</span>
-<span id="311">311</span>
-<span id="312">312</span>
-<span id="313">313</span>
-<span id="314">314</span>
-<span id="315">315</span>
-<span id="316">316</span>
-<span id="317">317</span>
-<span id="318">318</span>
-<span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
-<span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -344,9 +326,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let x = Quad::PI % Quad::E;</span>
     <span class="doccomment">/// let xpected = qd!(&quot;0.423310825130748003102355911926840386439922305675146246007976965&quot;);</span>
     <span class="doccomment">///</span>
@@ -358,7 +338,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diffy = (y - ypected).abs();</span>
     <span class="doccomment">/// assert!(diffy &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">rem</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
@@ -377,9 +356,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let x = &amp;Quad::PI % &amp;Quad::E;</span>
     <span class="doccomment">/// let xpected = qd!(&quot;0.423310825130748003102355911926840386439922305675146246007976965&quot;);</span>
     <span class="doccomment">///</span>
@@ -391,7 +368,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diffy = (y - ypected).abs();</span>
     <span class="doccomment">/// assert!(diffy &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">rem</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
@@ -409,9 +385,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let x = Quad::PI % &amp;Quad::E;</span>
     <span class="doccomment">/// let xpected = qd!(&quot;0.423310825130748003102355911926840386439922305675146246007976965&quot;);</span>
     <span class="doccomment">///</span>
@@ -423,7 +397,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diffy = (y - ypected).abs();</span>
     <span class="doccomment">/// assert!(diffy &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">rem</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
@@ -441,9 +414,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let x = &amp;Quad::PI % Quad::E;</span>
     <span class="doccomment">/// let xpected = qd!(&quot;0.423310825130748003102355911926840386439922305675146246007976965&quot;);</span>
     <span class="doccomment">///</span>
@@ -455,7 +426,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diffy = (y - ypected).abs();</span>
     <span class="doccomment">/// assert!(diffy &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">rem</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
@@ -471,9 +441,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let mut x = Quad::PI;</span>
     <span class="doccomment">/// x %= Quad::E;</span>
     <span class="doccomment">/// let xpected = qd!(&quot;0.423310825130748003102355911926840386439922305675146246007976965&quot;);</span>
@@ -487,7 +455,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diffy = (y - ypected).abs();</span>
     <span class="doccomment">/// assert!(diffy &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">rem_assign</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Quad</span>) {
@@ -507,9 +474,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let mut x = Quad::PI;</span>
     <span class="doccomment">/// x %= &amp;Quad::E;</span>
     <span class="doccomment">/// let xpected = qd!(&quot;0.423310825130748003102355911926840386439922305675146246007976965&quot;);</span>
@@ -523,7 +488,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diffy = (y - ypected).abs();</span>
     <span class="doccomment">/// assert!(diffy &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">rem_assign</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Quad</span>) {

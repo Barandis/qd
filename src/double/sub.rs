@@ -18,15 +18,12 @@ impl Sub for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::E - Double::PI;
     /// let expected = dd!("-0.4233108251307480031023559119268");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     fn sub(self, other: Double) -> Double {
         match self.pre_sub(&other) {
@@ -52,15 +49,13 @@ impl Sub for &Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = &Double::E - &Double::PI;
     /// let expected = dd!("-0.4233108251307480031023559119268");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
+    /// ```
     #[inline]
     fn sub(self, other: &Double) -> Double {
         (*self).sub(*other)
@@ -78,15 +73,12 @@ impl Sub<&Double> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::E - &Double::PI;
     /// let expected = dd!("-0.4233108251307480031023559119268");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn sub(self, other: &Double) -> Double {
@@ -105,15 +97,12 @@ impl Sub<Double> for &Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = &Double::E - Double::PI;
     /// let expected = dd!("-0.4233108251307480031023559119268");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn sub(self, other: Double) -> Double {
@@ -128,16 +117,13 @@ impl SubAssign for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let mut x = Double::E;
     /// x -= Double::PI;
     /// let expected = dd!("-0.4233108251307480031023559119268");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn sub_assign(&mut self, other: Double) {
@@ -155,16 +141,13 @@ impl SubAssign<&Double> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let mut x = Double::E;
     /// x -= &Double::PI;
     /// let expected = dd!("-0.4233108251307480031023559119268");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn sub_assign(&mut self, other: &Double) {

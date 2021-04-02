@@ -16,15 +16,12 @@ impl Sum for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// use std::iter::Sum;
     ///
     /// let expected = dd!(15);
     /// let actual: Double = vec![dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].into_iter().sum();
     /// assert!(expected == actual);
-    /// # }
     /// ```
     fn sum<I>(iter: I) -> Double
     where
@@ -39,15 +36,12 @@ impl<'a> Sum<&'a Double> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// use std::iter::Sum;
     ///
     /// let expected = dd!(15);
     /// let actual: Double = vec![dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().sum();
     /// assert!(expected == actual);
-    /// # }
     /// ```
     fn sum<I>(iter: I) -> Double
     where
@@ -62,15 +56,12 @@ impl Product for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// use std::iter::Product;
     ///
     /// let expected = dd!(120);
     /// let actual: Double = vec![dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].into_iter().product();
     /// assert!(expected == actual);
-    /// # }
     /// ```
     fn product<I>(iter: I) -> Double
     where
@@ -85,15 +76,12 @@ impl<'a> Product<&'a Double> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// use std::iter::Product;
     ///
     /// let expected = dd!(120);
     /// let actual: Double = vec![dd!(1), dd!(2), dd!(3), dd!(4), dd!(5)].iter().product();
     /// assert!(expected == actual);
-    /// # }
     /// ```
     fn product<I>(iter: I) -> Double
     where

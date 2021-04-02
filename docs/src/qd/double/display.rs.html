@@ -559,9 +559,6 @@
 <span id="556">556</span>
 <span id="557">557</span>
 <span id="558">558</span>
-<span id="559">559</span>
-<span id="560">560</span>
-<span id="561">561</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -771,9 +768,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// assert!(format!(&quot;{}&quot;, dd!(1.5)) == &quot;1.5&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// // The next digit in π is 0, which is why it&#39;s one digit shorter than e</span>
@@ -818,7 +813,6 @@
     <span class="doccomment">/// assert!(format!(&quot;{:0&gt;10}&quot;, -value) == &quot;000-123456&quot;);</span>
     <span class="doccomment">/// assert!(format!(&quot;{:010}&quot;, -value) == &quot;-000123456&quot;);</span>
     <span class="doccomment">/// assert!(format!(&quot;{:+012e}&quot;, value) == &quot;+001.23456e5&quot;);</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`std::fmt`]: https://doc.rust-lang.org/std/fmt/index.html</span>

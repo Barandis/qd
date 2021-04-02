@@ -24,11 +24,9 @@ impl FromStr for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
+    /// # use qd::{qd, Quad};
     /// use std::str::FromStr;
     ///
-    /// # fn main() {
     /// let expected = (qd!(3).powi(15) - qd!(1)) / qd!(3).powi(15);
     ///
     /// let x1 = Quad::from_str(
@@ -47,7 +45,6 @@ impl FromStr for Quad {
     ///
     /// let diff2 = (x2 - expected).abs();
     /// assert!(diff2 < qd!(1e-60));
-    /// # }
     /// ```
     ///
     /// [`ParseQuadError`]: error/struct.ParseQuadError.html

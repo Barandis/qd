@@ -424,6 +424,28 @@
 <span id="421">421</span>
 <span id="422">422</span>
 <span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -465,6 +487,16 @@
     }
 }
 
+<span class="comment">// FROM INTEGER IMPLEMENTATIONS</span>
+<span class="comment">//</span>
+<span class="comment">// These are simple enough - since integers are inherently dyadic (as long as they fit into</span>
+<span class="comment">// `f64`s - see below), they can just be cast to `f64`s and sent directly into the `Double`</span>
+<span class="comment">// constructor.</span>
+<span class="comment">//</span>
+<span class="comment">// The exceptions are `i64` and `u64`, which don&#39;t fit into `f64`s. They get their own</span>
+<span class="comment">// separate (non-macro) functions that split them into two 32-bit parts which are then</span>
+<span class="comment">// renormalized into a proper `Double`.</span>
+
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">from_int_impl</span> {
     ($(
         $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">m</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
@@ -480,6 +512,104 @@
     )<span class="kw-2">*</span>);
 }
 
+<span class="macro">from_int_impl</span><span class="macro">!</span> {
+    <span class="doccomment">/// Generates a `Double` from an `i8`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// let x = -128i8;</span>
+    <span class="doccomment">/// let a = Double::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;-128&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">i8</span>
+    <span class="doccomment">/// Generates a `Double` from a `u8`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// let x = 255u8;</span>
+    <span class="doccomment">/// let a = Double::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;255&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">u8</span>
+    <span class="doccomment">/// Generates a `Double` from an `i16`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// let x = -32768i16;</span>
+    <span class="doccomment">/// let a = Double::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;-32768&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">i16</span>
+    <span class="doccomment">/// Generates a `Double` from a `u8`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// let x = 65535u16;</span>
+    <span class="doccomment">/// let a = Double::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;65535&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">u16</span>
+    <span class="doccomment">/// Generates a `Double` from an `i32`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// let x = -2_147_483_648i32;</span>
+    <span class="doccomment">/// let a = Double::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;-2147483648&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">i32</span>
+    <span class="doccomment">/// Generates a `Double` from a `u32`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// let x = 4_294_967_295u32;</span>
+    <span class="doccomment">/// let a = Double::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;4294967295&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">u32</span>
+}
+
+<span class="comment">// Separate implementations for the 64-bit integers because they require splitting to fit</span>
+<span class="comment">// into 53-bit mantissas, so their code is different.</span>
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Double</span> {
+    <span class="doccomment">/// Generates a `Double` from a `u64`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// let x = 18_446_744_073_709_551_615u64;</span>
+    <span class="doccomment">/// let a = Double::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;18446744073709551615&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
+        <span class="ident">from_u64</span>(<span class="ident">a</span>)
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Double</span> {
+    <span class="doccomment">/// Generates a `Double` from an `i64`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// let x = -9_223_372_036_854_775_808i64;</span>
+    <span class="doccomment">/// let a = Double::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;-9223372036854775808&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
+        <span class="ident">from_i64</span>(<span class="ident">a</span>)
+    }
+}
+
+<span class="comment">// FROM FLOAT IMPLEMENTATIONS</span>
+<span class="comment">//</span>
 <span class="comment">// The Rust conversion from f32 to f64 is a bit-for-bit translation. It does not attempt to</span>
 <span class="comment">// account for floating point rounding error, so the parsed f64 is different from the</span>
 <span class="comment">// &quot;equivalent&quot; parsed f32. So rather than having a helper function that takes an f64, we</span>
@@ -514,104 +644,16 @@
                 } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">u</span>::<span class="ident">is_dyadic</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">f64</span>) {
                     <span class="ident">Double</span>(<span class="ident">a</span>.<span class="ident">into</span>(), <span class="number">0.0</span>)
                 } <span class="kw">else</span> {
-                    <span class="comment">// Yes, this converts an f32/f64 to a string and then parses it. After a</span>
-                    <span class="comment">// lot of study, doing it decimal-digit-by-decimal-digit seems to be the</span>
-                    <span class="comment">// only way to do this accurately, because doing it as a whole f64</span>
-                    <span class="comment">// causes floating-point error to cancel itself out. And parsing from a</span>
-                    <span class="comment">// string is the most reasonable way to do it digit-by-digit.</span>
+                    <span class="comment">// Parsing digit-by-digit from a string is the only way to do this</span>
+                    <span class="comment">// accurately.</span>
                     <span class="comment">//</span>
-                    <span class="comment">// I&#39;m concerned about the effect on the speed of math functions that</span>
-                    <span class="comment">// use it, like `log` and `exp` and `powf`, but the answer seems to be</span>
-                    <span class="comment">// to optimize the parsing.</span>
-                    <span class="comment">//</span>
-                    <span class="comment">// `unwrap` is safe because `n.to_string` will never return a string</span>
+                    <span class="comment">// `unwrap` is safe because `a.to_string` will never return a string</span>
                     <span class="comment">// that can&#39;t be parsed into a Double.</span>
                     <span class="ident">a</span>.<span class="ident">to_string</span>().<span class="ident">parse</span>().<span class="ident">unwrap</span>()
                 }
             }
         }
     )<span class="kw-2">*</span>);
-}
-
-<span class="macro">from_int_impl</span><span class="macro">!</span> {
-    <span class="doccomment">/// Generates a `Double` from an `i8`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = -128i8;</span>
-    <span class="doccomment">/// let a = Double::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;-128&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">i8</span>
-    <span class="doccomment">/// Generates a `Double` from a `u8`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = 255u8;</span>
-    <span class="doccomment">/// let a = Double::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;255&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">u8</span>
-    <span class="doccomment">/// Generates a `Double` from an `i16`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = -32768i16;</span>
-    <span class="doccomment">/// let a = Double::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;-32768&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">i16</span>
-    <span class="doccomment">/// Generates a `Double` from a `u8`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = 65535u16;</span>
-    <span class="doccomment">/// let a = Double::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;65535&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">u16</span>
-    <span class="doccomment">/// Generates a `Double` from an `i32`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = -2_147_483_648i32;</span>
-    <span class="doccomment">/// let a = Double::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;-2147483648&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">i32</span>
-    <span class="doccomment">/// Generates a `Double` from a `u32`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = 4_294_967_295u32;</span>
-    <span class="doccomment">/// let a = Double::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;4294967295&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">u32</span>
 }
 
 <span class="macro">from_float_impl</span><span class="macro">!</span> {
@@ -629,9 +671,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
     <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// // Exactly representable in binary</span>
     <span class="doccomment">/// let x = 0.9921875f32;</span>
     <span class="doccomment">/// let a = Double::from(x);</span>
@@ -641,7 +681,6 @@
     <span class="doccomment">/// let x = 0.9921876f32;</span>
     <span class="doccomment">/// let a = Double::from(x);</span>
     <span class="doccomment">/// assert!(a.to_string() == &quot;0.9921876&quot;);</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="ident">f32</span>
     <span class="doccomment">/// Generates a `Double` from an `f64`.</span>
@@ -658,9 +697,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
     <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// // Exactly representable in binary</span>
     <span class="doccomment">/// let x = 0.999969482421875f64;</span>
     <span class="doccomment">/// let a = Double::from(x);</span>
@@ -670,44 +707,34 @@
     <span class="doccomment">/// let x = 0.999969482421876f64;</span>
     <span class="doccomment">/// let a = Double::from(x);</span>
     <span class="doccomment">/// assert!(a.to_string() == &quot;0.999969482421876&quot;);</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="ident">f64</span>
 }
 
-<span class="doccomment">/// Generates a `Double` from a `u64`.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Examples</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-<span class="doccomment">/// # use qd::Double;</span>
-<span class="doccomment">/// # fn main() {</span>
-<span class="doccomment">/// let x = 18_446_744_073_709_551_615u64;</span>
-<span class="doccomment">/// let a = Double::from(x);</span>
-<span class="doccomment">/// assert!(a.to_string() == &quot;18446744073709551615&quot;);</span>
-<span class="doccomment">/// # }</span>
-<span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Double</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="ident">from_u64</span>(<span class="ident">a</span>)
-    }
-}
-
-<span class="doccomment">/// Generates a `Double` from an `i64`.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Examples</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-<span class="doccomment">/// # use qd::Double;</span>
-<span class="doccomment">/// # fn main() {</span>
-<span class="doccomment">/// let x = -9_223_372_036_854_775_808i64;</span>
-<span class="doccomment">/// let a = Double::from(x);</span>
-<span class="doccomment">/// assert!(a.to_string() == &quot;-9223372036854775808&quot;);</span>
-<span class="doccomment">/// # }</span>
-<span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Double</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="ident">from_i64</span>(<span class="ident">a</span>)
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">f64</span>, <span class="ident">f64</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Double</span> {
+    <span class="doccomment">/// Generates a `Double` from a 2-tuple of `f64`s.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This conversion acts like [`new`] does: it assumes that if you&#39;re creating a</span>
+    <span class="doccomment">/// `Double` out of a pair of numbers, you already know what you want those numbers to</span>
+    <span class="doccomment">/// be. Therefore it neither renormalizes or accounts for rounding error.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// No other `From` implementations are provided for tuples. There is no way to provide</span>
+    <span class="doccomment">/// a pre-normalized pair of integers, and since tuple conversion doesn&#39;t adjust for</span>
+    <span class="doccomment">/// rounding error, it&#39;s better to make the user explicity cast `f32`s first in the</span>
+    <span class="doccomment">/// manner of their choosing.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// // These are the components used to define Double::PI</span>
+    <span class="doccomment">/// let d = Double::from((3.141592653589793e0, 1.2246467991473532e-16));</span>
+    <span class="doccomment">/// assert!(d == Double::PI);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`new`]: #method.new</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">from</span>((<span class="ident">a</span>, <span class="ident">b</span>): (<span class="ident">f64</span>, <span class="ident">f64</span>)) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
+        <span class="ident">Double</span>(<span class="ident">a</span>, <span class="ident">b</span>)
     }
 }
 
@@ -727,15 +754,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// let expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);</span>
     <span class="doccomment">/// let x = Double::from(&quot;0.9999999303082806237436760862691&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; dd!(1e-30));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`NAN`]: #associatedconstant.NAN</span>
@@ -758,18 +782,38 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
     <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let a = Double::PI;</span>
     <span class="doccomment">/// let x = f64::from(a);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - std::f64::consts::PI).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; 1e-15);</span>
-    <span class="doccomment">/// # }</span>
+    <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
         <span class="ident">a</span>.<span class="number">0</span>
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span> <span class="kw">for</span> (<span class="ident">f64</span>, <span class="ident">f64</span>) {
+    <span class="doccomment">/// Converts a `Double` into a tuple of `f64`s.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The components of the double become the components of the returned tuple. Note that,</span>
+    <span class="doccomment">/// while the value of the first component is simply the `f64` cast of the `Double`</span>
+    <span class="doccomment">/// itself, the second component encodes the next digits of the `Double` *plus* the</span>
+    <span class="doccomment">/// rounding error in the first component. For that reason, it&#39;s not likely to be very</span>
+    <span class="doccomment">/// useful outside of a `Double` context.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Double;</span>
+    <span class="doccomment">/// let (a, b) = &lt;(f64, f64)&gt;::from(Double::PI);</span>
+    <span class="doccomment">/// assert!(a == 3.141592653589793e0);</span>
+    <span class="doccomment">/// assert!(b == 1.2246467991473532e-16); // *not* the next 16 digits of π</span>
+    <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">f64</span>, <span class="ident">f64</span>) {
+        (<span class="ident">a</span>.<span class="number">0</span>, <span class="ident">a</span>.<span class="number">1</span>)
     }
 }
 

@@ -24,9 +24,7 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let (sin_h, cos_h) = dd!(1).sinh_cosh();
     /// let esin = dd!("1.1752011936438014568823818505956");
     /// let ecos = dd!("1.5430806348152437784779056207571");
@@ -36,7 +34,6 @@ impl Double {
     ///
     /// assert!(diff1 < dd!(1e-30));
     /// assert!(diff2 < dd!(1e-30));
-    /// # }
     /// ```
     ///
     /// [`sinh`]: #method.sinh
@@ -68,15 +65,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(1).sinh();
     /// let expected = dd!("1.1752011936438014568823818505956");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     pub fn sinh(self) -> Double {
         match self.pre_sinh() {
@@ -115,15 +109,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(1).cosh();
     /// let expected = dd!("1.5430806348152437784779056207571");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     pub fn cosh(self) -> Double {
         match self.pre_cosh() {
@@ -141,15 +132,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(1).tanh();
     /// let expected = dd!("0.76159415595576488811945828260479");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     pub fn tanh(self) -> Double {
         match self.pre_tanh() {
@@ -173,15 +161,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(1.5).asinh();
     /// let expected = dd!("1.1947632172871093041119308285191");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     pub fn asinh(self) -> Double {
         match self.pre_asinh() {
@@ -197,15 +182,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(1.5).acosh();
     /// let expected = dd!("0.96242365011920689499551782684874");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN
@@ -223,15 +205,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(0.5).atanh();
     /// let expected = dd!("0.54930614433405484569762261846126");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN

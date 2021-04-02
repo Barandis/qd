@@ -206,9 +206,7 @@ impl Display for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// assert!(format!("{}", dd!(1.5)) == "1.5");
     ///
     /// // The next digit in π is 0, which is why it's one digit shorter than e
@@ -253,7 +251,6 @@ impl Display for Double {
     /// assert!(format!("{:0>10}", -value) == "000-123456");
     /// assert!(format!("{:010}", -value) == "-000123456");
     /// assert!(format!("{:+012e}", value) == "+001.23456e5");
-    /// # }
     /// ```
     ///
     /// [`std::fmt`]: https://doc.rust-lang.org/std/fmt/index.html

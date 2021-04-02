@@ -18,12 +18,9 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(3);
-    /// assert!(x.ldexp(3) == qd!(24)); // 3 * 2^3
-    /// # }
+    /// assert!(x.ldexp(5) == qd!(96)); // 3 * 2^5
     /// ```
     ///
     /// [`powi`]: #method.powi
@@ -46,12 +43,9 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(3);
     /// assert!(x.sqr() == x * x); // The left side is faster though
-    /// # }
     /// ```
     #[inline]
     pub fn sqr(self) -> Quad {
@@ -109,15 +103,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(2).sqrt();
     /// let expected = qd!("1.414213562373095048801688724209698078569671875376948073176679738");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     pub fn sqrt(self) -> Quad {
         match self.pre_sqrt() {
@@ -151,15 +142,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(2).nroot(4);
     /// let expected = qd!("1.189207115002721066717499970560475915292972092463817413019002225");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     pub fn nroot(self, n: i32) -> Quad {
         match self.pre_nroot(n) {
@@ -198,15 +186,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(2).cbrt();
     /// let expected = qd!("1.259921049894873164767210607278228350570251464701507980081975112");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     pub fn cbrt(self) -> Quad {
         self.nroot(3)
@@ -225,12 +210,9 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(3);
     /// assert!(x.powi(3) == qd!(27));
-    /// # }
     /// ```
     pub fn powi(self, n: i32) -> Quad {
         match self.pre_powi(n) {
@@ -279,15 +261,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(3).powf(qd!(3.3));
     /// let expected = qd!("37.54050759852955219310186595463382927684873090166843452920390518");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN
@@ -303,15 +282,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::PI.recip();
     /// let expected = qd!("0.3183098861837906715377675267450287240689192914809128974953346881");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     pub fn recip(self) -> Quad {

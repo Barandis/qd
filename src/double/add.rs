@@ -18,15 +18,12 @@ impl Add for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::E + Double::PI;
     /// let expected = dd!("5.859874482048838473822930854632");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     fn add(self, other: Double) -> Double {
         match self.pre_add(&other) {
@@ -51,15 +48,12 @@ impl Add for &Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = &Double::E + &Double::PI;
     /// let expected = dd!("5.859874482048838473822930854632");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn add(self, other: &Double) -> Double {
@@ -77,15 +71,12 @@ impl Add<&Double> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::E + &Double::PI;
     /// let expected = dd!("5.859874482048838473822930854632");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn add(self, other: &Double) -> Double {
@@ -103,15 +94,12 @@ impl Add<Double> for &Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = &Double::E + Double::PI;
     /// let expected = dd!("5.859874482048838473822930854632");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn add(self, other: Double) -> Double {
@@ -126,16 +114,13 @@ impl AddAssign for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let mut x = Double::E;
     /// x += Double::PI;
     /// let expected = dd!("5.859874482048838473822930854632");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn add_assign(&mut self, other: Double) {
@@ -153,16 +138,13 @@ impl AddAssign<&Double> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let mut x = Double::E;
     /// x += &Double::PI;
     /// let expected = dd!("5.859874482048838473822930854632");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn add_assign(&mut self, other: &Double) {

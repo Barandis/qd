@@ -531,6 +531,131 @@
 <span id="528">528</span>
 <span id="529">529</span>
 <span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -619,6 +744,16 @@
     }
 }
 
+<span class="comment">// FROM INTEGER IMPLEMENTATIONS</span>
+<span class="comment">//</span>
+<span class="comment">// These are simple enough - since integers are inherently dyadic (as long as they fit into</span>
+<span class="comment">// `f64`s - see below), they can just be cast to `f64`s and sent directly into the `Quad`</span>
+<span class="comment">// constructor.</span>
+<span class="comment">//</span>
+<span class="comment">// The exceptions are the 64- and 128-bit integers, which don&#39;t fit into `f64`s. They get</span>
+<span class="comment">// their own separate functions that split them into 32-bit parts which are then</span>
+<span class="comment">// renormalized into a proper `Quad`.</span>
+
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">from_int_impl</span> {
     ($(
         $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">m</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
@@ -632,6 +767,72 @@
         }
     )<span class="kw-2">*</span>);
 }
+
+<span class="macro">from_int_impl</span><span class="macro">!</span> {
+    <span class="doccomment">/// Generates a `Quad` from an `i8`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let x = i8::MIN;</span>
+    <span class="doccomment">/// let a = Quad::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;-128&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">i8</span>
+    <span class="doccomment">/// Generates a `Quad` from a `u8`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let x = u8::MAX;</span>
+    <span class="doccomment">/// let a = Quad::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;255&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">u8</span>
+    <span class="doccomment">/// Generates a `Quad` from an `i16`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let x = i16::MIN;</span>
+    <span class="doccomment">/// let a = Quad::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;-32768&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">i16</span>
+    <span class="doccomment">/// Generates a `Quad` from a `u8`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let x = u16::MAX;</span>
+    <span class="doccomment">/// let a = Quad::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;65535&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">u16</span>
+    <span class="doccomment">/// Generates a `Quad` from an `i32`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let x = i32::MIN;</span>
+    <span class="doccomment">/// let a = Quad::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;-2147483648&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">i32</span>
+    <span class="doccomment">/// Generates a `Quad` from a `u32`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let x = u32::MAX;</span>
+    <span class="doccomment">/// let a = Quad::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;4294967295&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">u32</span>
+}
+
+<span class="comment">// Separate implementations for the 64-bit and 128-bit integers because they require</span>
+<span class="comment">// splitting to fit into 53-bit mantissas, so their code is different.</span>
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">from_long_int_impl</span> {
     ($(
@@ -648,6 +849,51 @@
     )<span class="kw-2">*</span>);
 }
 
+<span class="macro">from_long_int_impl</span><span class="macro">!</span> {
+    <span class="doccomment">/// Generates a `Quad` from an `i64`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let x = i64::MIN;</span>
+    <span class="doccomment">/// let a = Quad::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;-9223372036854775808&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">i64</span> <span class="ident">from_i64</span>
+    <span class="doccomment">/// Generates a `Quad` from a `u64`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let x = u64::MAX;</span>
+    <span class="doccomment">/// let a = Quad::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;18446744073709551615&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">u64</span> <span class="ident">from_u64</span>
+    <span class="doccomment">/// Generates a `Quad` from an `i128`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let x = i128::MIN;</span>
+    <span class="doccomment">/// let a = Quad::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;-170141183460469231731687303715884105728&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">i128</span> <span class="ident">from_i128</span>
+    <span class="doccomment">/// Generates a `Quad` from a `u128`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let x = u128::MAX;</span>
+    <span class="doccomment">/// let a = Quad::from(x);</span>
+    <span class="doccomment">/// assert!(a.to_string() == &quot;340282366920938463463374607431768211455&quot;);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="ident">u128</span> <span class="ident">from_u128</span>
+}
+
+<span class="comment">// FROM FLOAT IMPLEMENTATIONS</span>
+<span class="comment">//</span>
 <span class="comment">// The Rust conversion from f32 to f64 is a bit-for-bit translation. It does not attempt to</span>
 <span class="comment">// account for floating point rounding error, so the parsed f64 is different from the</span>
 <span class="comment">// &quot;equivalent&quot; parsed f32. So rather than having a helper function that takes an f64, we</span>
@@ -682,159 +928,16 @@
                 } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">u</span>::<span class="ident">is_dyadic</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">f64</span>) {
                     <span class="ident">Quad</span>(<span class="ident">a</span>.<span class="ident">into</span>(), <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>)
                 } <span class="kw">else</span> {
-                    <span class="comment">// Yes, this converts an f32/f64 to a string and then parses it. After a</span>
-                    <span class="comment">// lot of study, doing it decimal-digit-by-decimal-digit seems to be the</span>
-                    <span class="comment">// only way to do this accurately, because doing it as a whole f64</span>
-                    <span class="comment">// causes floating-point error to cancel itself out. And parsing from a</span>
-                    <span class="comment">// string is the most reasonable way to do it digit-by-digit.</span>
+                    <span class="comment">// Parsing digit-by-digit from a string is the only way to do this</span>
+                    <span class="comment">// accurately.</span>
                     <span class="comment">//</span>
-                    <span class="comment">// I&#39;m concerned about the effect on the speed of math functions that</span>
-                    <span class="comment">// use it, like `log` and `exp` and `powf`, but the answer seems to be</span>
-                    <span class="comment">// to optimize the parsing.</span>
-                    <span class="comment">//</span>
-                    <span class="comment">// `unwrap` is safe because `n.to_string` will never return a string</span>
+                    <span class="comment">// `unwrap` is safe because `a.to_string` will never return a string</span>
                     <span class="comment">// that can&#39;t be parsed into a Quad.</span>
                     <span class="ident">a</span>.<span class="ident">to_string</span>().<span class="ident">parse</span>().<span class="ident">unwrap</span>()
                 }
             }
         }
     )<span class="kw-2">*</span>);
-}
-
-<span class="macro">from_int_impl</span><span class="macro">!</span> {
-    <span class="doccomment">/// Generates a `Quad` from an `i8`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = i8::MIN;</span>
-    <span class="doccomment">/// let a = Quad::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;-128&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">i8</span>
-    <span class="doccomment">/// Generates a `Quad` from a `u8`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = u8::MAX;</span>
-    <span class="doccomment">/// let a = Quad::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;255&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">u8</span>
-    <span class="doccomment">/// Generates a `Quad` from an `i16`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = i16::MIN;</span>
-    <span class="doccomment">/// let a = Quad::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;-32768&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">i16</span>
-    <span class="doccomment">/// Generates a `Quad` from a `u8`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = u16::MAX;</span>
-    <span class="doccomment">/// let a = Quad::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;65535&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">u16</span>
-    <span class="doccomment">/// Generates a `Quad` from an `i32`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = i32::MIN;</span>
-    <span class="doccomment">/// let a = Quad::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;-2147483648&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">i32</span>
-    <span class="doccomment">/// Generates a `Quad` from a `u32`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = u32::MAX;</span>
-    <span class="doccomment">/// let a = Quad::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;4294967295&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">u32</span>
-}
-
-<span class="macro">from_long_int_impl</span><span class="macro">!</span> {
-    <span class="doccomment">/// Generates a `Quad` from an `i64`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = i64::MIN;</span>
-    <span class="doccomment">/// let a = Quad::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;-9223372036854775808&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">i64</span> <span class="ident">from_i64</span>
-    <span class="doccomment">/// Generates a `Quad` from a `u64`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = u64::MAX;</span>
-    <span class="doccomment">/// let a = Quad::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;18446744073709551615&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">u64</span> <span class="ident">from_u64</span>
-    <span class="doccomment">/// Generates a `Quad` from an `i128`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = i128::MIN;</span>
-    <span class="doccomment">/// let a = Quad::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;-170141183460469231731687303715884105728&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">i128</span> <span class="ident">from_i128</span>
-    <span class="doccomment">/// Generates a `Quad` from a `u128`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
-    <span class="doccomment">/// let x = u128::MAX;</span>
-    <span class="doccomment">/// let a = Quad::from(x);</span>
-    <span class="doccomment">/// assert!(a.to_string() == &quot;340282366920938463463374607431768211455&quot;);</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">u128</span> <span class="ident">from_u128</span>
 }
 
 <span class="macro">from_float_impl</span><span class="macro">!</span> {
@@ -852,9 +955,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
     <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// // Exactly representable in binary</span>
     <span class="doccomment">/// let x = 0.9921875f32;</span>
     <span class="doccomment">/// let a = Quad::from(x);</span>
@@ -864,7 +965,6 @@
     <span class="doccomment">/// let x = 0.9921876f32;</span>
     <span class="doccomment">/// let a = Quad::from(x);</span>
     <span class="doccomment">/// assert!(a.to_string() == &quot;0.9921876&quot;);</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="ident">f32</span>
     <span class="doccomment">/// Generates a `Quad` from an `f64`.</span>
@@ -881,9 +981,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
     <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// // Exactly representable in binary</span>
     <span class="doccomment">/// let x = 0.999969482421875f64;</span>
     <span class="doccomment">/// let a = Quad::from(x);</span>
@@ -893,9 +991,100 @@
     <span class="doccomment">/// let x = 0.999969482421876f64;</span>
     <span class="doccomment">/// let a = Quad::from(x);</span>
     <span class="doccomment">/// assert!(a.to_string() == &quot;0.999969482421876&quot;);</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="ident">f64</span>
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">f64</span>, <span class="ident">f64</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Quad</span> {
+    <span class="doccomment">/// Generates a `Quad` from a 2-tuple of `f64`s.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This conversion acts like [`new`] does: it assumes that if you&#39;re creating a `Quad`</span>
+    <span class="doccomment">/// out of a pair of numbers, you already know what you want those numbers to be.</span>
+    <span class="doccomment">/// Therefore it neither renormalizes or accounts for rounding error.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The third and fourth components of the new `Quad` are set to 0.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// No `From` implementations are provided for 2-tuples of other types. There is no way</span>
+    <span class="doccomment">/// to provide a pre-normalized pair of integers, and since tuple conversion doesn&#39;t</span>
+    <span class="doccomment">/// adjust for rounding error, it&#39;s better to make the user explicity cast `f32`s first</span>
+    <span class="doccomment">/// in the manner of their choosing.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
+    <span class="doccomment">/// // These are the first two components used to define Quad::PI</span>
+    <span class="doccomment">/// let a = Quad::from((3.141592653589793e0, 1.2246467991473532e-16));</span>
+    <span class="doccomment">/// let diff = (a - Quad::PI).abs();</span>
+    <span class="doccomment">/// assert!(diff &lt; qd!(1e-30));</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`new`]: #method.new</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">from</span>((<span class="ident">a</span>, <span class="ident">b</span>): (<span class="ident">f64</span>, <span class="ident">f64</span>)) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
+        <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="number">0.0</span>, <span class="number">0.0</span>)
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Quad</span> {
+    <span class="doccomment">/// Generates a `Quad` from a 3-tuple of `f64`s.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This conversion acts like [`new`] does: it assumes that if you&#39;re creating a `Quad`</span>
+    <span class="doccomment">/// out of a pair of numbers, you already know what you want those numbers to be.</span>
+    <span class="doccomment">/// Therefore it neither renormalizes or accounts for rounding error.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The fourth component of the new `Quad` is set to 0.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// No `From` implementations are provided for 3-tuples of other types. There is no way</span>
+    <span class="doccomment">/// to provide a pre-normalized pair of integers, and since tuple conversion doesn&#39;t</span>
+    <span class="doccomment">/// adjust for rounding error, it&#39;s better to make the user explicity cast `f32`s first</span>
+    <span class="doccomment">/// in the manner of their choosing.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
+    <span class="doccomment">/// // These are the first three components used to define Quad::PI</span>
+    <span class="doccomment">/// let a = Quad::from((3.141592653589793e0, 1.2246467991473532e-16, -2.9947698097183397e-33));</span>
+    <span class="doccomment">/// let diff = (a - Quad::PI).abs();</span>
+    <span class="doccomment">/// assert!(diff &lt; qd!(1e-45));</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`new`]: #method.new</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">from</span>((<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>): (<span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>)) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
+        <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="number">0.0</span>)
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Quad</span> {
+    <span class="doccomment">/// Generates a `Quad` from a 4-tuple of `f64`s.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This conversion acts like [`new`] does: it assumes that if you&#39;re creating a `Quad`</span>
+    <span class="doccomment">/// out of a pair of numbers, you already know what you want those numbers to be.</span>
+    <span class="doccomment">/// Therefore it neither renormalizes or accounts for rounding error.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// No `From` implementations are provided for 4-tuples of other types. There is no way</span>
+    <span class="doccomment">/// to provide a pre-normalized pair of integers, and since tuple conversion doesn&#39;t</span>
+    <span class="doccomment">/// adjust for rounding error, it&#39;s better to make the user explicity cast `f32`s first</span>
+    <span class="doccomment">/// in the manner of their choosing.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// // These are the components used to define Quad::PI</span>
+    <span class="doccomment">/// let a = Quad::from((</span>
+    <span class="doccomment">///     3.141592653589793e0,</span>
+    <span class="doccomment">///     1.2246467991473532e-16,</span>
+    <span class="doccomment">///     -2.9947698097183397e-33,</span>
+    <span class="doccomment">///     1.1124542208633655e-49,</span>
+    <span class="doccomment">/// ));</span>
+    <span class="doccomment">/// assert!(a == Quad::PI);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`new`]: #method.new</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">from</span>((<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>): (<span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>)) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
+        <span class="ident">Quad</span>(<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>, <span class="ident">d</span>)
+    }
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Quad</span> {
@@ -907,16 +1096,13 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, qd, Quad};</span>
     <span class="doccomment">/// let expected = Quad::from(&quot;0.9999999303082806237436760862691&quot;);</span>
     <span class="doccomment">/// let a = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);</span>
     <span class="doccomment">/// let x = Quad::from(a);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
         <span class="ident">a</span>.<span class="ident">to_string</span>().<span class="ident">parse</span>().<span class="ident">unwrap</span>()
@@ -939,15 +1125,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// let expected = (qd!(3).powi(15) - qd!(1)) / qd!(3).powi(15);</span>
     <span class="doccomment">/// let x = Quad::from(&quot;0.9999999303082806237436760862691492808476631704421807180156648865&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`NAN`]: #associatedconstant.NAN</span>
@@ -970,18 +1153,85 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
     <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let a = Quad::PI;</span>
     <span class="doccomment">/// let x = f64::from(a);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - std::f64::consts::PI).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; 1e-15);</span>
-    <span class="doccomment">/// # }</span>
+    <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
         <span class="ident">a</span>.<span class="number">0</span>
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Quad</span><span class="op">&gt;</span> <span class="kw">for</span> (<span class="ident">f64</span>, <span class="ident">f64</span>) {
+    <span class="doccomment">/// Converts a `Quad` into a 2-tuple of `f64`s.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The first two components of the `Quad` become the components of the returned tuple.</span>
+    <span class="doccomment">/// Note that, while the value of the first component is simply the `f64` cast of the</span>
+    <span class="doccomment">/// `Quad` itself, the second component encodes the next digits of the `Quad` *plus*</span>
+    <span class="doccomment">/// the rounding error in the first component. For that reason, it&#39;s not likely to be</span>
+    <span class="doccomment">/// very useful outside of a `Quad` context.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let (a, b) = &lt;(f64, f64)&gt;::from(Quad::PI);</span>
+    <span class="doccomment">/// assert!(a == 3.141592653589793e0);</span>
+    <span class="doccomment">/// assert!(b == 1.2246467991473532e-16); // *not* the next 16 digits of π</span>
+    <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">f64</span>, <span class="ident">f64</span>) {
+        (<span class="ident">a</span>.<span class="number">0</span>, <span class="ident">a</span>.<span class="number">1</span>)
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Quad</span><span class="op">&gt;</span> <span class="kw">for</span> (<span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>) {
+    <span class="doccomment">/// Converts a `Quad` into a 3-tuple of `f64`s.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The first three components of the `Quad` become the components of the returned</span>
+    <span class="doccomment">/// tuple. Note that, while the value of the first component is simply the `f64` cast of</span>
+    <span class="doccomment">/// the `Quad` itself, the other components encode the next digits of the `Quad` *plus*</span>
+    <span class="doccomment">/// the rounding error in the prior components. For that reason, they&#39;re not likely to</span>
+    <span class="doccomment">/// be very useful outside of a `Quad` context.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let (a, b, c) = &lt;(f64, f64, f64)&gt;::from(Quad::PI);</span>
+    <span class="doccomment">/// assert!(a == 3.141592653589793e0);</span>
+    <span class="doccomment">/// assert!(b == 1.2246467991473532e-16);</span>
+    <span class="doccomment">/// assert!(c == -2.9947698097183397e-33);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>) {
+        (<span class="ident">a</span>.<span class="number">0</span>, <span class="ident">a</span>.<span class="number">1</span>, <span class="ident">a</span>.<span class="number">2</span>)
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Quad</span><span class="op">&gt;</span> <span class="kw">for</span> (<span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>) {
+    <span class="doccomment">/// Converts a `Quad` into a 4-tuple of `f64`s.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The components of the `Quad` become the components of the returned tuple. Note that,</span>
+    <span class="doccomment">/// while the value of the first component is simply the `f64` cast of the `Quad`</span>
+    <span class="doccomment">/// itself, the other components encode the next digits of the `Quad` *plus* the</span>
+    <span class="doccomment">/// rounding error in the prior components. For that reason, they&#39;re not likely to be</span>
+    <span class="doccomment">/// very useful outside of a `Quad` context.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::Quad;</span>
+    <span class="doccomment">/// let (a, b, c, d) = &lt;(f64, f64, f64, f64)&gt;::from(Quad::PI);</span>
+    <span class="doccomment">/// assert!(a == 3.141592653589793e0);</span>
+    <span class="doccomment">/// assert!(b == 1.2246467991473532e-16);</span>
+    <span class="doccomment">/// assert!(c == -2.9947698097183397e-33);</span>
+    <span class="doccomment">/// assert!(d == 1.1124542208633655e-49);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>, <span class="ident">f64</span>) {
+        (<span class="ident">a</span>.<span class="number">0</span>, <span class="ident">a</span>.<span class="number">1</span>, <span class="ident">a</span>.<span class="number">2</span>, <span class="ident">a</span>.<span class="number">3</span>)
     }
 }
 

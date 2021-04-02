@@ -576,9 +576,6 @@
 <span id="573">573</span>
 <span id="574">574</span>
 <span id="575">575</span>
-<span id="576">576</span>
-<span id="577">577</span>
-<span id="578">578</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -788,9 +785,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// assert!(format!(&quot;{}&quot;, qd!(1.5)) == &quot;1.5&quot;);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// assert!(format!(&quot;{}&quot;, Quad::PI) ==</span>
@@ -839,7 +834,6 @@
     <span class="doccomment">/// assert!(format!(&quot;{:0&gt;10}&quot;, -value) == &quot;000-123456&quot;);</span>
     <span class="doccomment">/// assert!(format!(&quot;{:010}&quot;, -value) == &quot;-000123456&quot;);</span>
     <span class="doccomment">/// assert!(format!(&quot;{:+012e}&quot;, value) == &quot;+001.23456e5&quot;);</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`std::fmt`]: https://doc.rust-lang.org/std/fmt/index.html</span>

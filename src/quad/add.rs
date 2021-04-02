@@ -29,15 +29,12 @@ impl Add for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::E + Quad::PI;
     /// let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[allow(clippy::suspicious_arithmetic_impl, clippy::many_single_char_names)]
     fn add(self, other: Quad) -> Quad {
@@ -116,15 +113,12 @@ impl Add for &Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = &Quad::E + &Quad::PI;
     /// let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn add(self, other: &Quad) -> Quad {
@@ -141,15 +135,12 @@ impl Add<&Quad> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::E + &Quad::PI;
     /// let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn add(self, other: &Quad) -> Quad {
@@ -167,15 +158,12 @@ impl Add<Quad> for &Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = &Quad::E + Quad::PI;
     /// let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn add(self, other: Quad) -> Quad {
@@ -190,16 +178,13 @@ impl AddAssign for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let mut x = Quad::E;
     /// x += Quad::PI;
     /// let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn add_assign(&mut self, other: Quad) {
@@ -219,16 +204,13 @@ impl AddAssign<&Quad> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let mut x = Quad::E;
     /// x += &Quad::PI;
     /// let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn add_assign(&mut self, other: &Quad) {

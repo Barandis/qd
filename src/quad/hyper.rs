@@ -19,9 +19,7 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let (sin_h, cos_h) = qd!(1).sinh_cosh();
     /// let esin = qd!("1.175201193643801456882381850595600815155717981334095870229565413");
     /// let ecos = qd!("1.543080634815243778477905620757061682601529112365863704737402215");
@@ -31,7 +29,6 @@ impl Quad {
     ///
     /// assert!(diff1 < qd!(1e-60));
     /// assert!(diff2 < qd!(1e-60));
-    /// # }
     /// ```
     ///
     /// [`sinh`]: #method.sinh
@@ -61,15 +58,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(1).sinh();
     /// let expected = qd!("1.175201193643801456882381850595600815155717981334095870229565413");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     pub fn sinh(self) -> Quad {
         match self.pre_sinh() {
@@ -108,15 +102,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(1).cosh();
     /// let expected = qd!("1.543080634815243778477905620757061682601529112365863704737402215");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     pub fn cosh(self) -> Quad {
         match self.pre_cosh() {
@@ -134,15 +125,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(1).tanh();
     /// let expected = qd!("0.7615941559557648881194582826047935904127685972579365515968105001");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     pub fn tanh(self) -> Quad {
         match self.pre_tanh() {
@@ -166,15 +154,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(1.5).asinh();
     /// let expected = qd!("1.194763217287109304111930828519090523536162075153005429270680299");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     pub fn asinh(self) -> Quad {
         match self.pre_asinh() {
@@ -190,15 +175,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(1.5).acosh();
     /// let expected = qd!("0.9624236501192068949955178268487368462703686687713210393220363377");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-30));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN
@@ -216,15 +198,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let x = qd!(0.5).atanh();
     /// let expected = qd!("0.5493061443340548456976226184612628523237452789113747258673471668");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN

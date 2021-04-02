@@ -24,11 +24,9 @@ impl FromStr for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
+    /// # use qd::{dd, Double};
     /// use std::str::FromStr;
     ///
-    /// # fn main() {
     /// let expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
     ///
     /// let x1 = Double::from_str("0.9999999303082806237436760862691").unwrap();
@@ -43,7 +41,6 @@ impl FromStr for Double {
     ///
     /// let diff2 = (x2 - expected).abs();
     /// assert!(diff2 < dd!(1e-30));
-    /// # }
     /// ```
     ///
     /// [`ParseDoubleError`]: error/struct.ParseDoubleError.html

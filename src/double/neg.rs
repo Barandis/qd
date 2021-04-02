@@ -15,15 +15,12 @@ impl Neg for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = -Double::PI;
     /// let expected = dd!("-3.1415926535897932384626433832795");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(x < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn neg(self) -> Double {
@@ -40,15 +37,12 @@ impl Neg for &Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = -&Double::PI;
     /// let expected = dd!("-3.1415926535897932384626433832795");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(x < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn neg(self) -> Double {

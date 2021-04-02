@@ -794,48 +794,6 @@
 <span id="791">791</span>
 <span id="792">792</span>
 <span id="793">793</span>
-<span id="794">794</span>
-<span id="795">795</span>
-<span id="796">796</span>
-<span id="797">797</span>
-<span id="798">798</span>
-<span id="799">799</span>
-<span id="800">800</span>
-<span id="801">801</span>
-<span id="802">802</span>
-<span id="803">803</span>
-<span id="804">804</span>
-<span id="805">805</span>
-<span id="806">806</span>
-<span id="807">807</span>
-<span id="808">808</span>
-<span id="809">809</span>
-<span id="810">810</span>
-<span id="811">811</span>
-<span id="812">812</span>
-<span id="813">813</span>
-<span id="814">814</span>
-<span id="815">815</span>
-<span id="816">816</span>
-<span id="817">817</span>
-<span id="818">818</span>
-<span id="819">819</span>
-<span id="820">820</span>
-<span id="821">821</span>
-<span id="822">822</span>
-<span id="823">823</span>
-<span id="824">824</span>
-<span id="825">825</span>
-<span id="826">826</span>
-<span id="827">827</span>
-<span id="828">828</span>
-<span id="829">829</span>
-<span id="830">830</span>
-<span id="831">831</span>
-<span id="832">832</span>
-<span id="833">833</span>
-<span id="834">834</span>
-<span id="835">835</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -852,12 +810,9 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::dd;</span>
     <span class="doccomment">/// assert!(dd!(3).abs() == dd!(3));</span>
     <span class="doccomment">/// assert!(dd!(-3).abs() == dd!(3));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">abs</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
@@ -872,9 +827,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::dd;</span>
     <span class="doccomment">/// let f = dd!(3.99);</span>
     <span class="doccomment">/// let g = dd!(3.0);</span>
     <span class="doccomment">/// let h = dd!(-3.99);</span>
@@ -882,7 +835,6 @@
     <span class="doccomment">/// assert!(f.floor() == dd!(3));</span>
     <span class="doccomment">/// assert!(g.floor() == dd!(3));</span>
     <span class="doccomment">/// assert!(h.floor() == dd!(-4));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">floor</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
@@ -900,9 +852,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::dd;</span>
     <span class="doccomment">/// let f = dd!(3.01);</span>
     <span class="doccomment">/// let g = dd!(4.0);</span>
     <span class="doccomment">/// let h = dd!(-3.01);</span>
@@ -910,7 +860,6 @@
     <span class="doccomment">/// assert!(f.ceil() == dd!(4));</span>
     <span class="doccomment">/// assert!(g.ceil() == dd!(4));</span>
     <span class="doccomment">/// assert!(h.ceil() == dd!(-3));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ceil</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
@@ -929,9 +878,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::dd;</span>
     <span class="doccomment">/// let f = dd!(3.3);</span>
     <span class="doccomment">/// let g = dd!(3.5);</span>
     <span class="doccomment">/// let h = dd!(-3.3);</span>
@@ -939,7 +886,6 @@
     <span class="doccomment">/// assert!(f.round() == dd!(3));</span>
     <span class="doccomment">/// assert!(g.round() == dd!(4));</span>
     <span class="doccomment">/// assert!(h.round() == dd!(-3));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">round</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
@@ -960,15 +906,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::dd;</span>
     <span class="doccomment">/// let f = dd!(3.3);</span>
     <span class="doccomment">/// let g = dd!(-3.7);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// assert!(f.trunc() == dd!(3));</span>
     <span class="doccomment">/// assert!(g.trunc() == dd!(-3));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">trunc</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
@@ -983,9 +926,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::dd;</span>
     <span class="doccomment">/// let f = dd!(3.3);</span>
     <span class="doccomment">/// let g = dd!(-3.7);</span>
     <span class="doccomment">///</span>
@@ -994,7 +935,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// assert!(fdiff &lt; dd!(1e-30));</span>
     <span class="doccomment">/// assert!(gdiff &lt; dd!(1e-30));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fract</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
@@ -1009,13 +949,10 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// assert!(dd!(3.5).signum() == Double::ONE);</span>
     <span class="doccomment">/// assert!(Double::NEG_INFINITY.signum() == Double::NEG_ONE);</span>
     <span class="doccomment">/// assert!(Double::NAN.signum().is_nan());</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`INFINITY`]: #associatedconstant.INFINITY</span>
@@ -1045,9 +982,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// use std::num::FpCategory;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let num = dd!(12.4);</span>
@@ -1055,7 +990,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// assert!(num.classify() == FpCategory::Normal);</span>
     <span class="doccomment">/// assert!(inf.classify() == FpCategory::Infinite);</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`FpCategory`]: https://doc.rust-lang.org/std/num/enum.FpCategory.html</span>
@@ -1068,9 +1002,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// let min = Double::MIN_POSITIVE;</span>
     <span class="doccomment">/// let max = Double::MAX;</span>
     <span class="doccomment">/// let lower = dd!(1e-308);</span>
@@ -1084,7 +1016,6 @@
     <span class="doccomment">/// assert!(!Double::INFINITY.is_normal());</span>
     <span class="doccomment">/// // Values between `0` and `MIN_POSITIVE` are subnormal.</span>
     <span class="doccomment">/// assert!(!lower.is_normal());</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_normal</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
@@ -1110,15 +1041,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// assert!(Double::NEG_ZERO.is_sign_negative());</span>
     <span class="doccomment">/// assert!(Double::NEG_INFINITY.is_sign_negative());</span>
     <span class="doccomment">/// assert!(dd!(-7.0).is_sign_negative());</span>
     <span class="doccomment">/// assert!(!Double::ZERO.is_sign_negative());</span>
     <span class="doccomment">/// assert!(!dd!(7.0).is_sign_negative());</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_sign_negative</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
@@ -1130,15 +1058,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// assert!(Double::ZERO.is_sign_positive());</span>
     <span class="doccomment">/// assert!(Double::INFINITY.is_sign_positive());</span>
     <span class="doccomment">/// assert!(dd!(7.0).is_sign_positive());</span>
     <span class="doccomment">/// assert!(!Double::NEG_ZERO.is_sign_positive());</span>
     <span class="doccomment">/// assert!(!dd!(-7.0).is_sign_positive());</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_sign_positive</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
@@ -1147,14 +1072,14 @@
 
     <span class="doccomment">/// Returns `true` if the `Double` is `NaN`.</span>
     <span class="doccomment">///</span>
+    <span class="doccomment">/// This is the proper way to test for `NaN` because it cannot be done with an equality</span>
+    <span class="doccomment">/// test (since `NaN` is not equal to itself).</span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// assert!(Double::NAN.is_nan());</span>
     <span class="doccomment">/// assert!(!dd!(7.0).is_nan());</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_nan</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
@@ -1165,14 +1090,11 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// assert!(Double::INFINITY.is_infinite());</span>
     <span class="doccomment">/// assert!(Double::NEG_INFINITY.is_infinite());</span>
     <span class="doccomment">/// assert!(!Double::NAN.is_infinite());</span>
     <span class="doccomment">/// assert!(!dd!(7.0).is_infinite());</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_infinite</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
@@ -1183,14 +1105,11 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// assert!(!Double::INFINITY.is_finite());</span>
     <span class="doccomment">/// assert!(!Double::NEG_INFINITY.is_finite());</span>
     <span class="doccomment">/// assert!(!Double::NAN.is_finite());</span>
     <span class="doccomment">/// assert!(dd!(7.0).is_finite());</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_finite</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
@@ -1206,12 +1125,9 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// assert!(!Double::PI.is_subnormal());</span>
     <span class="doccomment">/// assert!(dd!(1e-308).is_subnormal());</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE</span>

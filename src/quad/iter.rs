@@ -11,15 +11,12 @@ impl Sum for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// use std::iter::Sum;
     ///
     /// let expected = qd!(15);
     /// let actual: Quad = vec![qd!(1), qd!(2), qd!(3), qd!(4), qd!(5)].into_iter().sum();
     /// assert!(expected == actual);
-    /// # }
     /// ```
     fn sum<I>(iter: I) -> Quad
     where
@@ -34,15 +31,12 @@ impl<'a> Sum<&'a Quad> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// use std::iter::Sum;
     ///
     /// let expected = qd!(15);
     /// let actual: Quad = vec![qd!(1), qd!(2), qd!(3), qd!(4), qd!(5)].iter().sum();
     /// assert!(expected == actual);
-    /// # }
     /// ```
     fn sum<I>(iter: I) -> Quad
     where
@@ -57,15 +51,12 @@ impl Product for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// use std::iter::Product;
     ///
     /// let expected = qd!(120);
     /// let actual: Quad = vec![qd!(1), qd!(2), qd!(3), qd!(4), qd!(5)].into_iter().product();
     /// assert!(expected == actual);
-    /// # }
     /// ```
     fn product<I>(iter: I) -> Quad
     where
@@ -80,15 +71,12 @@ impl<'a> Product<&'a Quad> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// use std::iter::Product;
     ///
     /// let expected = qd!(120);
     /// let actual: Quad = vec![qd!(1), qd!(2), qd!(3), qd!(4), qd!(5)].iter().product();
     /// assert!(expected == actual);
-    /// # }
     /// ```
     fn product<I>(iter: I) -> Quad
     where

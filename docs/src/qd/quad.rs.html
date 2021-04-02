@@ -181,12 +181,6 @@
 <span id="178">178</span>
 <span id="179">179</span>
 <span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -205,16 +199,13 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
     <span class="doccomment">/// assert!(qd!(0) == Quad::ZERO);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let x = qd!(1) / qd!(2).sqrt();</span>
     <span class="doccomment">/// let expected = qd!(&quot;0.7071067811865475244008443621048490392848359376884740365883398690&quot;);</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">macro_export</span>]</span>
     <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">qd</span> {
@@ -330,15 +321,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
     <span class="doccomment">/// # use qd::Quad;</span>
-    <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let q = Quad::ONE;</span>
     <span class="doccomment">/// assert!(q[0] == 1.0);</span>
     <span class="doccomment">/// assert!(q[1] == 0.0);</span>
     <span class="doccomment">/// assert!(q[2] == 0.0);</span>
     <span class="doccomment">/// assert!(q[3] == 0.0);</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">f64</span> {
         <span class="kw">match</span> <span class="ident">idx</span> {

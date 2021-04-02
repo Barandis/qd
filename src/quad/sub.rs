@@ -15,15 +15,12 @@ impl Sub for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::E - Quad::PI;
     /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn sub(self, other: Quad) -> Quad {
@@ -41,15 +38,12 @@ impl Sub for &Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = &Quad::E - &Quad::PI;
     /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn sub(self, other: &Quad) -> Quad {
@@ -68,15 +62,12 @@ impl Sub<&Quad> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = Quad::E - &Quad::PI;
     /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn sub(self, other: &Quad) -> Quad {
@@ -95,15 +86,12 @@ impl Sub<Quad> for &Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let x = &Quad::E - Quad::PI;
     /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn sub(self, other: Quad) -> Quad {
@@ -118,16 +106,13 @@ impl SubAssign for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let mut x = Quad::E;
     /// x -= Quad::PI;
     /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn sub_assign(&mut self, other: Quad) {
@@ -147,16 +132,13 @@ impl SubAssign<&Quad> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let mut x = Quad::E;
     /// x -= &Quad::PI;
     /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     fn sub_assign(&mut self, other: &Quad) {

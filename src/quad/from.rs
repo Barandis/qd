@@ -114,78 +114,60 @@ from_int_impl! {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// let x = i8::MIN;
     /// let a = Quad::from(x);
     /// assert!(a.to_string() == "-128");
-    /// # }
     /// ```
     i8
     /// Generates a `Quad` from a `u8`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// let x = u8::MAX;
     /// let a = Quad::from(x);
     /// assert!(a.to_string() == "255");
-    /// # }
     /// ```
     u8
     /// Generates a `Quad` from an `i16`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// let x = i16::MIN;
     /// let a = Quad::from(x);
     /// assert!(a.to_string() == "-32768");
-    /// # }
     /// ```
     i16
     /// Generates a `Quad` from a `u8`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// let x = u16::MAX;
     /// let a = Quad::from(x);
     /// assert!(a.to_string() == "65535");
-    /// # }
     /// ```
     u16
     /// Generates a `Quad` from an `i32`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// let x = i32::MIN;
     /// let a = Quad::from(x);
     /// assert!(a.to_string() == "-2147483648");
-    /// # }
     /// ```
     i32
     /// Generates a `Quad` from a `u32`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// let x = u32::MAX;
     /// let a = Quad::from(x);
     /// assert!(a.to_string() == "4294967295");
-    /// # }
     /// ```
     u32
 }
@@ -213,52 +195,40 @@ from_long_int_impl! {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// let x = i64::MIN;
     /// let a = Quad::from(x);
     /// assert!(a.to_string() == "-9223372036854775808");
-    /// # }
     /// ```
     i64 from_i64
     /// Generates a `Quad` from a `u64`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// let x = u64::MAX;
     /// let a = Quad::from(x);
     /// assert!(a.to_string() == "18446744073709551615");
-    /// # }
     /// ```
     u64 from_u64
     /// Generates a `Quad` from an `i128`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// let x = i128::MIN;
     /// let a = Quad::from(x);
     /// assert!(a.to_string() == "-170141183460469231731687303715884105728");
-    /// # }
     /// ```
     i128 from_i128
     /// Generates a `Quad` from a `u128`.
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// let x = u128::MAX;
     /// let a = Quad::from(x);
     /// assert!(a.to_string() == "340282366920938463463374607431768211455");
-    /// # }
     /// ```
     u128 from_u128
 }
@@ -326,9 +296,7 @@ from_float_impl! {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// // Exactly representable in binary
     /// let x = 0.9921875f32;
     /// let a = Quad::from(x);
@@ -338,7 +306,6 @@ from_float_impl! {
     /// let x = 0.9921876f32;
     /// let a = Quad::from(x);
     /// assert!(a.to_string() == "0.9921876");
-    /// # }
     /// ```
     f32
     /// Generates a `Quad` from an `f64`.
@@ -355,9 +322,7 @@ from_float_impl! {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// // Exactly representable in binary
     /// let x = 0.999969482421875f64;
     /// let a = Quad::from(x);
@@ -367,7 +332,6 @@ from_float_impl! {
     /// let x = 0.999969482421876f64;
     /// let a = Quad::from(x);
     /// assert!(a.to_string() == "0.999969482421876");
-    /// # }
     /// ```
     f64
 }
@@ -418,7 +382,7 @@ impl From<(f64, f64, f64)> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # use qd::*;
+    /// # use qd::{qd, Quad};
     /// // These are the first three components used to define Quad::PI
     /// let a = Quad::from((3.141592653589793e0, 1.2246467991473532e-16, -2.9947698097183397e-33));
     /// let diff = (a - Quad::PI).abs();
@@ -473,16 +437,13 @@ impl From<Double> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{dd, qd, Quad};
     /// let expected = Quad::from("0.9999999303082806237436760862691");
     /// let a = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
     /// let x = Quad::from(a);
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     fn from(a: Double) -> Quad {
         a.to_string().parse().unwrap()
@@ -505,15 +466,12 @@ impl From<&str> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let expected = (qd!(3).powi(15) - qd!(1)) / qd!(3).powi(15);
     /// let x = Quad::from("0.9999999303082806237436760862691492808476631704421807180156648865");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN
@@ -536,15 +494,13 @@ impl From<Quad> for f64 {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// let a = Quad::PI;
     /// let x = f64::from(a);
     ///
     /// let diff = (x - std::f64::consts::PI).abs();
     /// assert!(diff < 1e-15);
-    /// # }
+    /// ```
     #[inline]
     fn from(a: Quad) -> f64 {
         a.0

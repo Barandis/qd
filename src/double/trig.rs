@@ -13,9 +13,7 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::PI / dd!(4);
     /// let (sin_x, cos_x) = x.sin_cos();
     ///
@@ -24,7 +22,6 @@ impl Double {
     ///
     /// assert!(diff_sin < dd!(1e-30));
     /// assert!(diff_cos < dd!(1e-30));
-    /// # }
     /// ```
     ///
     /// [`sin`]: #method.sin
@@ -67,15 +64,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = (Double::PI / dd!(2)).sin();
     /// let expected = dd!(1);
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[allow(clippy::many_single_char_names)]
     pub fn sin(self) -> Double {
@@ -132,15 +126,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = (Double::PI / dd!(2)).cos();
     /// let expected = dd!(0);
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[allow(clippy::many_single_char_names)]
     pub fn cos(self) -> Double {
@@ -188,15 +179,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = (Double::PI / dd!(4)).tan();
     /// let expected = dd!(1);
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     pub fn tan(self) -> Double {
         let (s, c) = self.sin_cos();
@@ -227,9 +215,7 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let pi = Double::PI;
     ///
     /// // -π/4 radians (45 degrees clockwise)
@@ -247,7 +233,6 @@ impl Double {
     ///
     /// assert!(diff1 < dd!(1e-30));
     /// assert!(diff2 < dd!(1e-30));
-    /// # }
     /// ```
     ///
     /// [`atan`]: #method.atan
@@ -297,15 +282,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = dd!(1).asin();
     /// let expected = Double::PI / dd!(2);  // π/2
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN
@@ -322,15 +304,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::dd;
     /// let x = dd!(1).acos();
     /// let expected = dd!(0);
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     ///
     /// [`NAN`]: #associatedconstant.NAN
@@ -346,15 +325,12 @@ impl Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = dd!(1).atan();
     /// let expected = Double::PI / dd!(4);  // π/4
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     pub fn atan(self) -> Double {
         self.atan2(Double::ONE)

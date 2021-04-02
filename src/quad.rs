@@ -15,16 +15,13 @@ mod macros {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// assert!(qd!(0) == Quad::ZERO);
     ///
     /// let x = qd!(1) / qd!(2).sqrt();
     /// let expected = qd!("0.7071067811865475244008443621048490392848359376884740365883398690");
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
-    /// # }
     /// ```
     #[macro_export]
     macro_rules! qd {
@@ -140,15 +137,12 @@ impl Index<usize> for Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
     /// # use qd::Quad;
-    /// # fn main() {
     /// let q = Quad::ONE;
     /// assert!(q[0] == 1.0);
     /// assert!(q[1] == 0.0);
     /// assert!(q[2] == 0.0);
     /// assert!(q[3] == 0.0);
-    /// # }
     /// ```
     fn index(&self, idx: usize) -> &f64 {
         match idx {

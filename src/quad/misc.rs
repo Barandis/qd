@@ -13,12 +13,9 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// assert!(qd!(3).abs() == qd!(3));
     /// assert!(qd!(-3).abs() == qd!(3));
-    /// # }
     /// ```
     #[inline]
     pub fn abs(self) -> Quad {
@@ -33,15 +30,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let f = qd!(3.99);
     /// let g = qd!(3.0);
     ///
     /// assert!(f.floor() == qd!(3));
     /// assert!(g.floor() == qd!(3));
-    /// # }
     /// ```
     #[inline]
     pub fn floor(self) -> Quad {
@@ -69,15 +63,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let f = qd!(3.01);
     /// let g = qd!(4.0);
     ///
     /// assert!(f.ceil() == qd!(4));
     /// assert!(g.ceil() == qd!(4));
-    /// # }
     /// ```
     #[inline]
     pub fn ceil(self) -> Quad {
@@ -106,15 +97,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let f = qd!(3.3);
     /// let g = qd!(-3.3);
     ///
     /// assert!(f.round() == qd!(3));
     /// assert!(g.round() == qd!(-3));
-    /// # }
     /// ```
     #[inline]
     pub fn round(self) -> Quad {
@@ -148,15 +136,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let f = qd!(3.3);
     /// let g = qd!(-3.7);
     ///
     /// assert!(f.trunc() == qd!(3));
     /// assert!(g.trunc() == qd!(-3));
-    /// # }
     /// ```
     #[inline]
     pub fn trunc(self) -> Quad {
@@ -171,9 +156,7 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::qd;
     /// let f = qd!(3.3);
     /// let g = qd!(-3.7);
     ///
@@ -182,7 +165,6 @@ impl Quad {
     ///
     /// assert!(fdiff < qd!(1e-60));
     /// assert!(gdiff < qd!(1e-60));
-    /// # }
     /// ```
     #[inline]
     pub fn fract(self) -> Quad {
@@ -197,13 +179,10 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// assert!(qd!(3.5).signum() == Quad::ONE);
     /// assert!(Quad::NEG_INFINITY.signum() == Quad::NEG_ONE);
     /// assert!(Quad::NAN.signum().is_nan());
-    /// # }
     /// ```
     ///
     /// [`INFINITY`]: #associatedconstant.INFINITY
@@ -233,9 +212,7 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// use std::num::FpCategory;
     ///
     /// let num = qd!(12.4);
@@ -243,7 +220,6 @@ impl Quad {
     ///
     /// assert!(num.classify() == FpCategory::Normal);
     /// assert!(inf.classify() == FpCategory::Infinite);
-    /// # }
     /// ```
     ///
     /// [`FpCategory`]: https://doc.rust-lang.org/std/num/enum.FpCategory.html
@@ -256,9 +232,7 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// let min = Quad::MIN_POSITIVE;
     /// let max = Quad::MAX;
     /// let lower = qd!(1e-308);
@@ -272,7 +246,6 @@ impl Quad {
     /// assert!(!Quad::INFINITY.is_normal());
     /// // Values between `0` and `MIN_POSITIVE` are subnormal.
     /// assert!(!lower.is_normal());
-    /// # }
     /// ```
     #[inline]
     pub fn is_normal(self) -> bool {
@@ -298,15 +271,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// assert!(Quad::NEG_ZERO.is_sign_negative());
     /// assert!(Quad::NEG_INFINITY.is_sign_negative());
     /// assert!(qd!(-7.0).is_sign_negative());
     /// assert!(!Quad::ZERO.is_sign_negative());
     /// assert!(!qd!(7.0).is_sign_negative());
-    /// # }
     /// ```
     #[inline]
     pub fn is_sign_negative(self) -> bool {
@@ -318,15 +288,12 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// assert!(Quad::ZERO.is_sign_positive());
     /// assert!(Quad::INFINITY.is_sign_positive());
     /// assert!(qd!(7.0).is_sign_positive());
     /// assert!(!Quad::NEG_ZERO.is_sign_positive());
     /// assert!(!qd!(-7.0).is_sign_positive());
-    /// # }
     /// ```
     #[inline]
     pub fn is_sign_positive(self) -> bool {
@@ -335,14 +302,14 @@ impl Quad {
 
     /// Returns `true` if the `Quad` is `NaN`.
     ///
+    /// This is the proper way to test for `NaN` because it cannot be done with an equality
+    /// test (since `NaN` is not equal to itself).
+    ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// assert!(Quad::NAN.is_nan());
     /// assert!(!qd!(7.0).is_nan());
-    /// # }
     /// ```
     #[inline]
     pub fn is_nan(self) -> bool {
@@ -353,14 +320,11 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// assert!(Quad::INFINITY.is_infinite());
     /// assert!(Quad::NEG_INFINITY.is_infinite());
     /// assert!(!Quad::NAN.is_infinite());
     /// assert!(!qd!(7.0).is_infinite());
-    /// # }
     /// ```
     #[inline]
     pub fn is_infinite(self) -> bool {
@@ -371,14 +335,11 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// assert!(!Quad::INFINITY.is_finite());
     /// assert!(!Quad::NEG_INFINITY.is_finite());
     /// assert!(!Quad::NAN.is_finite());
     /// assert!(qd!(7.0).is_finite());
-    /// # }
     /// ```
     #[inline]
     pub fn is_finite(self) -> bool {
@@ -394,12 +355,9 @@ impl Quad {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Quad;
-    /// # fn main() {
+    /// # use qd::{qd, Quad};
     /// assert!(!Quad::PI.is_subnormal());
     /// assert!(qd!(1e-308).is_subnormal());
-    /// # }
     /// ```
     ///
     /// [`MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE

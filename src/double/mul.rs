@@ -18,15 +18,12 @@ impl Mul for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::E * Double::PI;
     /// let expected = dd!("8.539734222673567065463550869547");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     fn mul(self, other: Double) -> Double {
         match self.pre_mul(&other) {
@@ -50,15 +47,12 @@ impl Mul for &Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = &Double::E * &Double::PI;
     /// let expected = dd!("8.539734222673567065463550869547");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn mul(self, other: &Double) -> Double {
@@ -76,15 +70,12 @@ impl Mul<&Double> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = Double::E * &Double::PI;
     /// let expected = dd!("8.539734222673567065463550869547");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn mul(self, other: &Double) -> Double {
@@ -102,15 +93,12 @@ impl Mul<Double> for &Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let x = &Double::E * Double::PI;
     /// let expected = dd!("8.539734222673567065463550869547");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn mul(self, other: Double) -> Double {
@@ -125,16 +113,13 @@ impl MulAssign for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let mut x = Double::E;
     /// x *= Double::PI;
     /// let expected = dd!("8.539734222673567065463550869547");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn mul_assign(&mut self, other: Double) {
@@ -152,16 +137,13 @@ impl MulAssign<&Double> for Double {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// let mut x = Double::E;
     /// x *= &Double::PI;
     /// let expected = dd!("8.539734222673567065463550869547");
     ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[inline]
     fn mul_assign(&mut self, other: &Double) {
