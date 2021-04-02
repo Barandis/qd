@@ -865,12 +865,6 @@ mod tests {
         tan_zero:
             Double::ZERO,
             Double::ZERO.tan();
-        tan_pi_4:
-            Double::ONE,
-            Double::FRAC_PI_4.tan();
-        tan_3_pi_4:
-            Double::NEG_ONE,
-            Double::FRAC_3_PI_4.tan();
         tan_pi:
             Double::ZERO,
             Double::PI.tan();
@@ -885,9 +879,6 @@ mod tests {
         tan_e:
             dd!("-0.4505495340698074957106341777012804"),
             Double::E.tan();
-        tan_5_pi_4:
-            dd!("1.0"),
-            Double::FRAC_5_PI_4.tan();
         tan_2e:
             dd!("-1.1306063769531499529943348786199917"),
             (Double::E + Double::E).tan();
@@ -903,9 +894,6 @@ mod tests {
         tan_neg_e:
             dd!("0.4505495340698074957106341777012804"),
             (-Double::E).tan();
-        tan_neg_5_pi_4:
-            dd!("-1.0"),
-            (-Double::FRAC_5_PI_4).tan();
         tan_neg_2e:
             dd!("1.1306063769531499529943348786199917"),
             (-Double::E - Double::E).tan();
@@ -914,6 +902,22 @@ mod tests {
             (-Double::TAU - Double::FRAC_PI_3).tan();
     );
     test_all_prec!(
+        tan_pi_4:
+            Double::ONE,
+            Double::FRAC_PI_4.tan(),
+            30;
+        tan_3_pi_4:
+            Double::NEG_ONE,
+            Double::FRAC_3_PI_4.tan(),
+            30;
+        tan_5_pi_4:
+            dd!("1.0"),
+            Double::FRAC_5_PI_4.tan(),
+            30;
+        tan_neg_5_pi_4:
+            dd!("-1.0"),
+            (-Double::FRAC_5_PI_4).tan(),
+            30;
         tan_150:
             dd!("-1.0223462354365875649863661852619368"),
             dd!(150).tan(),

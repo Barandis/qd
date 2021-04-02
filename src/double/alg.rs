@@ -757,12 +757,6 @@ mod tests {
         powi_neg_e:
             dd!("1202604.284164776777749236770767854"),
             (-Double::E).powi(14);
-        powi_2_pi:
-            dd!("4.3839241128549052526314338930793323e-19"),
-            Double::TAU.powi(-23);
-        powi_pi_2:
-            dd!("2157.9327666208881618822522078236982"),
-            Double::FRAC_PI_2.powi(17);
         powi_sqrt_2:
             dd!("23170.475005920789279566868057451928"),
             Double::SQRT_2.powi(29);
@@ -775,6 +769,16 @@ mod tests {
         powi_neg_140:
             dd!("384160000.0"),
             dd!(-140).powi(4);
+    );
+    test_all_prec!(
+        powi_2_pi:
+            dd!("4.3839241128549052526314338930793323e-19"),
+            Double::TAU.powi(-23),
+            30;
+        powi_pi_2:
+            dd!("2157.9327666208881618822522078236982"),
+            Double::FRAC_PI_2.powi(17),
+            30;
     );
     test_all_exact!(
         powi_zero_odd:
@@ -841,9 +845,6 @@ mod tests {
 
     // powf_tests
     test_all_near!(
-        powf_pi:
-            dd!("93648.047476083020973716690184919311"),
-            Double::PI.powf(dd!(10.0));
         powf_e:
             dd!("7.3890560989306502272304274605750057"),
             Double::E.powf(dd!(2.0));
@@ -859,9 +860,16 @@ mod tests {
         powf_1_sqrt_2:
             dd!("1.2715371297141403818925670498911262"),
             Double::FRAC_1_SQRT_2.powf(-Double::LN_2);
+    );
+    test_all_prec!(
+        powf_pi:
+            dd!("93648.047476083020973716690184919311"),
+            Double::PI.powf(dd!(10.0)),
+            30;
         powf_150:
             dd!("0.000009758087451146357177251341501948003"),
-            dd!(150).powf(-Double::LN_10);
+            dd!(150).powf(-Double::LN_10),
+            30;
     );
     test_all_exact!(
         powf_zero:
