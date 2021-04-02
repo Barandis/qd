@@ -246,6 +246,18 @@ mod tests {
         ref_ref:
             dd!("1.1557273497909217179100931833126961"),
             &Double::PI / &Double::E;
+        num_neg_num:
+            dd!("-1.1557273497909217179100931833126961"),
+            Double::PI / -Double::E;
+        num_neg_ref:
+            dd!("-1.1557273497909217179100931833126961"),
+            Double::PI / -&Double::E;
+        ref_neg_num:
+            dd!("-1.1557273497909217179100931833126961"),
+            &Double::PI / -Double::E;
+        ref_neg_ref:
+            dd!("-1.1557273497909217179100931833126961"),
+            &Double::PI / -&Double::E;
         num_id:
             Double::PI,
             Double::PI / Double::ONE;

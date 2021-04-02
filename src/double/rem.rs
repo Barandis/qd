@@ -10,7 +10,7 @@ impl Rem for Double {
     type Output = Double;
 
     /// Divides this `Double` by another, producing a new `Double` of the remainder as a
-    /// result.
+    /// result. This operation uses floored division.
     ///
     /// This implements the `%` operator between two `Double`s.
     ///
@@ -20,10 +20,16 @@ impl Rem for Double {
     /// # use qd::Double;
     /// # fn main() {
     /// let x = Double::PI % Double::E;
-    /// let expected = dd!("0.4233108251307480031023559119268");
+    /// let xpected = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < dd!(1e-30));
+    /// let diffx = (x - xpected).abs();
+    /// assert!(diffx < dd!(1e-30));
+    ///
+    /// let y = Double::PI % -Double::E;
+    /// let ypected = dd!("-2.2949710033282972322579315594258");
+    ///
+    /// let diffy = (y - ypected).abs();
+    /// assert!(diffy < dd!(1e-30));
     /// # }
     /// ```
     #[inline]
@@ -37,7 +43,7 @@ impl Rem for &Double {
     type Output = Double;
 
     /// Divides a reference to this `Double` by another, producing a new `Double` of the
-    /// remainder as a result.
+    /// remainder as a result. This operation uses floored division.
     ///
     /// This implements the `%` operator between two references to `Double`s.
     ///
@@ -47,10 +53,16 @@ impl Rem for &Double {
     /// # use qd::Double;
     /// # fn main() {
     /// let x = &Double::PI % &Double::E;
-    /// let expected = dd!("0.4233108251307480031023559119268");
+    /// let xpected = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < dd!(1e-30));
+    /// let diffx = (x - xpected).abs();
+    /// assert!(diffx < dd!(1e-30));
+    ///
+    /// let y = &Double::PI % -Double::E;
+    /// let ypected = dd!("-2.2949710033282972322579315594258");
+    ///
+    /// let diffy = (y - ypected).abs();
+    /// assert!(diffy < dd!(1e-30));
     /// # }
     /// ```
     #[inline]
@@ -64,7 +76,7 @@ impl Rem<&Double> for Double {
     type Output = Double;
 
     /// Divides this `Double` by a reference to another, producing a new `Double` of the
-    /// remainder as a result.
+    /// remainder as a result. This operation uses floored division.
     ///
     /// This implements the `%` operator between a `Double` and a reference to a `Double`.
     ///
@@ -74,10 +86,16 @@ impl Rem<&Double> for Double {
     /// # use qd::Double;
     /// # fn main() {
     /// let x = Double::PI % &Double::E;
-    /// let expected = dd!("0.4233108251307480031023559119268");
+    /// let xpected = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < dd!(1e-30));
+    /// let diffx = (x - xpected).abs();
+    /// assert!(diffx < dd!(1e-30));
+    ///
+    /// let y = Double::PI % -&Double::E;
+    /// let ypected = dd!("-2.2949710033282972322579315594258");
+    ///
+    /// let diffy = (y - ypected).abs();
+    /// assert!(diffy < dd!(1e-30));
     /// # }
     /// ```
     #[inline]
@@ -91,7 +109,7 @@ impl Rem<Double> for &Double {
     type Output = Double;
 
     /// Divides a reference to this `Double` by another `Double`, producing a new `Double`
-    /// of the remainder as a result.
+    /// of the remainder as a result. This operation uses floored division.
     ///
     /// This implements the `%` operator between a reference to a `Double`s and a `Double`.
     ///
@@ -101,10 +119,16 @@ impl Rem<Double> for &Double {
     /// # use qd::Double;
     /// # fn main() {
     /// let x = &Double::PI % Double::E;
-    /// let expected = dd!("0.4233108251307480031023559119268");
+    /// let xpected = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < dd!(1e-30));
+    /// let diffx = (x - xpected).abs();
+    /// assert!(diffx < dd!(1e-30));
+    ///
+    /// let y = &Double::PI % -&Double::E;
+    /// let ypected = dd!("-2.2949710033282972322579315594258");
+    ///
+    /// let diffy = (y - ypected).abs();
+    /// assert!(diffy < dd!(1e-30));
     /// # }
     /// ```
     #[inline]
@@ -115,7 +139,8 @@ impl Rem<Double> for &Double {
 }
 
 impl RemAssign for Double {
-    /// Divides this `Double` by another, modifying this one to equal the remainder.
+    /// Divides this `Double` by another, modifying this one to equal the remainder. This
+    /// operation uses floored division.
     ///
     /// This implements the `%=` operator between two `Double`s.
     ///
@@ -126,10 +151,17 @@ impl RemAssign for Double {
     /// # fn main() {
     /// let mut x = Double::PI;
     /// x %= Double::E;
-    /// let expected = dd!("0.4233108251307480031023559119268");
+    /// let xpected = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < dd!(1e-30));
+    /// let diffx = (x - xpected).abs();
+    /// assert!(diffx < dd!(1e-30));
+    ///
+    /// let mut y = Double::PI;
+    /// y %= -Double::E;
+    /// let ypected = dd!("-2.2949710033282972322579315594258");
+    ///
+    /// let diffy = (y - ypected).abs();
+    /// assert!(diffy < dd!(1e-30));
     /// # }
     /// ```
     #[inline]
@@ -142,7 +174,7 @@ impl RemAssign for Double {
 
 impl RemAssign<&Double> for Double {
     /// Divides this `Double` by a reference to another, modifying this one to equal the
-    /// remainder.
+    /// remainder. This operation uses floored division.
     ///
     /// This implements the `%=` operator between a `Double` and a reference to a `Double`.
     ///
@@ -153,10 +185,17 @@ impl RemAssign<&Double> for Double {
     /// # fn main() {
     /// let mut x = Double::PI;
     /// x %= &Double::E;
-    /// let expected = dd!("0.4233108251307480031023559119268");
+    /// let xpected = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < dd!(1e-30));
+    /// let diffx = (x - xpected).abs();
+    /// assert!(diffx < dd!(1e-30));
+    ///
+    /// let mut y = Double::PI;
+    /// y %= -&Double::E;
+    /// let ypected = dd!("-2.2949710033282972322579315594258");
+    ///
+    /// let diffy = (y - ypected).abs();
+    /// assert!(diffy < dd!(1e-30));
     /// # }
     /// ```
     #[inline]

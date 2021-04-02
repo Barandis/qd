@@ -10,7 +10,7 @@ impl Rem for Quad {
     type Output = Quad;
 
     /// Divides this `Quad` by another, producing a new `Quad` of the remainder as a
-    /// result.
+    /// result. This operation uses floored division.
     ///
     /// This implements the `%` operator between two `Quad`s.
     ///
@@ -20,15 +20,21 @@ impl Rem for Quad {
     /// # use qd::Quad;
     /// # fn main() {
     /// let x = Quad::PI % Quad::E;
-    /// let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+    /// let xpected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
     ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < qd!(1e-60));
+    /// let diffx = (x - xpected).abs();
+    /// assert!(diffx < qd!(1e-60));
+    ///
+    /// let y = Quad::PI % -Quad::E;
+    /// let ypected = qd!("-2.2949710033282972322579315594258221113173247880248133289589906631");
+    ///
+    /// let diffy = (y - ypected).abs();
+    /// assert!(diffy < qd!(1e-60));
     /// # }
     /// ```
     #[inline]
     fn rem(self, other: Quad) -> Quad {
-        let n = self.div(other).trunc();
+        let n = self.div(other).floor();
         self - other * n
     }
 }
@@ -37,7 +43,7 @@ impl Rem for &Quad {
     type Output = Quad;
 
     /// Divides a reference to this `Quad` by another, producing a new `Quad` of the
-    /// remainder as a result.
+    /// remainder as a result. This operation uses floored division.
     ///
     /// This implements the `%` operator between two references to `Quad`s.
     ///
@@ -47,10 +53,16 @@ impl Rem for &Quad {
     /// # use qd::Quad;
     /// # fn main() {
     /// let x = &Quad::PI % &Quad::E;
-    /// let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+    /// let xpected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
     ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < qd!(1e-60));
+    /// let diffx = (x - xpected).abs();
+    /// assert!(diffx < qd!(1e-60));
+    ///
+    /// let y = &Quad::PI % -Quad::E;
+    /// let ypected = qd!("-2.2949710033282972322579315594258221113173247880248133289589906631");
+    ///
+    /// let diffy = (y - ypected).abs();
+    /// assert!(diffy < qd!(1e-60));
     /// # }
     /// ```
     #[inline]
@@ -63,7 +75,7 @@ impl Rem<&Quad> for Quad {
     type Output = Quad;
 
     /// Divides this `Quad` by a reference to another, producing a new `Quad` of the
-    /// remainder as a result.
+    /// remainder as a result. This operation uses floored division.
     ///
     /// This implements the `%` operator between a `Quad` and a reference to a `Quad`.
     ///
@@ -73,10 +85,16 @@ impl Rem<&Quad> for Quad {
     /// # use qd::Quad;
     /// # fn main() {
     /// let x = Quad::PI % &Quad::E;
-    /// let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+    /// let xpected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
     ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < qd!(1e-60));
+    /// let diffx = (x - xpected).abs();
+    /// assert!(diffx < qd!(1e-60));
+    ///
+    /// let y = Quad::PI % -&Quad::E;
+    /// let ypected = qd!("-2.2949710033282972322579315594258221113173247880248133289589906631");
+    ///
+    /// let diffy = (y - ypected).abs();
+    /// assert!(diffy < qd!(1e-60));
     /// # }
     /// ```
     #[inline]
@@ -89,7 +107,7 @@ impl Rem<Quad> for &Quad {
     type Output = Quad;
 
     /// Divides a reference to this `Quad` by another `Quad`, producing a new `Quad` of the
-    /// remainder as a result.
+    /// remainder as a result. This operation uses floored division.
     ///
     /// This implements the `%` operator between a reference to a `Quad` and a `Quad`.
     ///
@@ -99,10 +117,16 @@ impl Rem<Quad> for &Quad {
     /// # use qd::Quad;
     /// # fn main() {
     /// let x = &Quad::PI % Quad::E;
-    /// let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+    /// let xpected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
     ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < qd!(1e-60));
+    /// let diffx = (x - xpected).abs();
+    /// assert!(diffx < qd!(1e-60));
+    ///
+    /// let y = &Quad::PI % -&Quad::E;
+    /// let ypected = qd!("-2.2949710033282972322579315594258221113173247880248133289589906631");
+    ///
+    /// let diffy = (y - ypected).abs();
+    /// assert!(diffy < qd!(1e-60));
     /// # }
     /// ```
     #[inline]
@@ -112,10 +136,11 @@ impl Rem<Quad> for &Quad {
 }
 
 impl RemAssign for Quad {
-    /// Divides this `Quad` by another, modifying this one to equal the remainder.
-    /// 
+    /// Divides this `Quad` by another, modifying this one to equal the remainder. This
+    /// operation uses floored division.
+    ///
     /// This implements the `%=` operator between two `Quad`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -123,10 +148,17 @@ impl RemAssign for Quad {
     /// # fn main() {
     /// let mut x = Quad::PI;
     /// x %= Quad::E;
-    /// let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+    /// let xpected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
     ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < qd!(1e-60));
+    /// let diffx = (x - xpected).abs();
+    /// assert!(diffx < qd!(1e-60));
+    ///
+    /// let mut y = Quad::PI;
+    /// y %= -Quad::E;
+    /// let ypected = qd!("-2.2949710033282972322579315594258221113173247880248133289589906631");
+    ///
+    /// let diffy = (y - ypected).abs();
+    /// assert!(diffy < qd!(1e-60));
     /// # }
     /// ```
     #[inline]
@@ -141,7 +173,7 @@ impl RemAssign for Quad {
 
 impl RemAssign<&Quad> for Quad {
     /// Divides this `Quad` by a reference to another, modifying this one to equal the
-    /// remainder.
+    /// remainder. This operation uses floored division.
     ///
     /// This implements the `%=` operator between a `Quad` and a reference to a `Quad`.
     ///
@@ -152,10 +184,17 @@ impl RemAssign<&Quad> for Quad {
     /// # fn main() {
     /// let mut x = Quad::PI;
     /// x %= &Quad::E;
-    /// let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
+    /// let xpected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
     ///
-    /// let diff = (x - expected).abs();
-    /// assert!(diff < qd!(1e-60));
+    /// let diffx = (x - xpected).abs();
+    /// assert!(diffx < qd!(1e-60));
+    ///
+    /// let mut y = Quad::PI;
+    /// y %= -&Quad::E;
+    /// let ypected = qd!("-2.2949710033282972322579315594258221113173247880248133289589906631");
+    ///
+    /// let diffy = (y - ypected).abs();
+    /// assert!(diffy < qd!(1e-60));
     /// # }
     /// ```
     #[inline]
@@ -172,76 +211,114 @@ impl RemAssign<&Quad> for Quad {
 mod tests {
     use super::*;
 
-    #[test]
-    fn num_num() {
-        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
-        assert_close!(expected, Quad::PI % Quad::E);
-    }
+    // rem tests
+    test_all_near!(
+        num_num:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            Quad::PI % Quad::E;
+        num_ref:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            Quad::PI % &Quad::E;
+        ref_num:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            &Quad::PI % Quad::E;
+        ref_ref:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            &Quad::PI % &Quad::E;
+        num_neg_num:
+            qd!("-2.2949710033282972322579315594258221113173247880248133289589906631409"),
+            Quad::PI % -Quad::E;
+        num_neg_ref:
+            qd!("-2.2949710033282972322579315594258221113173247880248133289589906631409"),
+            Quad::PI % -&Quad::E;
+        ref_neg_num:
+            qd!("-2.2949710033282972322579315594258221113173247880248133289589906631409"),
+            &Quad::PI % -Quad::E;
+        ref_neg_ref:
+            qd!("-2.2949710033282972322579315594258221113173247880248133289589906631409"),
+            &Quad::PI % -&Quad::E;
+        num_id:
+            qd!("0.14159265358979323846264338327950288419716939937510582097494459230689"),
+            Quad::PI % Quad::ONE;
+        id_num:
+            Quad::ONE,
+            Quad::ONE % Quad::PI;
+        three_nums:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            Quad::PI % Quad::E % Quad::LN_2;
+        lassoc:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            (Quad::PI % Quad::E) % Quad::LN_2;
+        rassoc:
+            qd!("0.36900393135001200079371489744679661189516886193408480449222455433266"),
+            Quad::PI % (Quad::LN_2 % Quad::E);
+    );
+    test_all_exact!(
+        nan_zero:
+            Quad::NAN,
+            Quad::NAN % Quad::ZERO;
+        zero_nan:
+            Quad::NAN,
+            Quad::ZERO % Quad::NAN;
+        inf_zero:
+            Quad::NAN,
+            Quad::INFINITY % Quad::ZERO;
+        zero_inf:
+            Quad::NAN,
+            Quad::ZERO % Quad::INFINITY;
+        neg_inf_zero:
+            Quad::NAN,
+            Quad::NEG_INFINITY % Quad::ZERO;
+        zero_neg_inf:
+            Quad::NAN,
+            Quad::ZERO % Quad::NEG_INFINITY;
 
-    #[test]
-    fn ref_ref() {
-        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
-        assert_close!(expected, &Quad::PI % &Quad::E);
-    }
+        inf_one:
+            Quad::NAN,
+            Quad::INFINITY % Quad::ONE;
+        one_inf:
+            Quad::NAN,
+            Quad::ONE % Quad::INFINITY;
+        neg_inf_one:
+            Quad::NAN,
+            Quad::NEG_INFINITY % Quad::ONE;
+        one_neg_inf:
+            Quad::NAN,
+            Quad::ONE % Quad::NEG_INFINITY;
+        inf_inf:
+            Quad::NAN,
+            Quad::INFINITY % Quad::INFINITY;
+        inf_neg_inf:
+            Quad::NAN,
+            Quad::INFINITY % Quad::NEG_INFINITY;
+        neg_inf_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY % Quad::INFINITY;
+        neg_inf_neg_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY % Quad::NEG_INFINITY;
 
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn num_ref() {
-        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
-        assert_close!(expected, Quad::PI % &Quad::E);
-    }
+        nan_nan:
+            Quad::NAN,
+            Quad::NAN % Quad::NAN;
+        nan_one:
+            Quad::NAN,
+            Quad::NAN % Quad::ONE;
+        one_nan:
+            Quad::NAN,
+            Quad::ONE % Quad::NAN;
+    );
 
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn ref_num() {
-        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
-        assert_close!(expected, &Quad::PI % Quad::E);
-    }
-
-    #[test]
-    fn assign_num() {
-        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
-
-        let mut a = Quad::PI;
-        a %= Quad::E;
-        assert_close!(expected, a);
-    }
-
-    #[test]
-    fn assign_ref() {
-        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
-
-        let mut b = Quad::PI;
-        b %= &Quad::E;
-        assert_close!(expected, b);
-    }
-
-    #[test]
-    fn zero() {
-        assert_exact!(Quad::NAN, Quad::NAN % Quad::ZERO);
-        assert_exact!(Quad::NAN, Quad::ZERO % Quad::NAN);
-        assert_exact!(Quad::NAN, Quad::INFINITY % Quad::ZERO);
-        assert_exact!(Quad::NAN, Quad::ZERO % Quad::INFINITY);
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY % Quad::ZERO);
-        assert_exact!(Quad::NAN, Quad::ZERO % Quad::NEG_INFINITY);
-    }
-
-    #[test]
-    fn inf() {
-        assert_exact!(Quad::NAN, Quad::INFINITY % Quad::ONE);
-        assert_exact!(Quad::NAN, Quad::ONE % Quad::INFINITY);
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY % Quad::ONE);
-        assert_exact!(Quad::NAN, Quad::ONE % Quad::NEG_INFINITY);
-        assert_exact!(Quad::NAN, Quad::INFINITY % Quad::INFINITY);
-        assert_exact!(Quad::NAN, Quad::INFINITY % Quad::NEG_INFINITY);
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY % Quad::INFINITY);
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY % Quad::NEG_INFINITY);
-    }
-
-    #[test]
-    fn nan() {
-        assert_exact!(Quad::NAN, Quad::NAN % Quad::NAN);
-        assert_exact!(Quad::NAN, Quad::NAN % Quad::ONE);
-        assert_exact!(Quad::NAN, Quad::ONE % Quad::NAN);
-    }
+    test_all!(
+        assign_num: {
+            let mut a = Quad::PI;
+            a %= Quad::E;
+            near!(qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"), a);
+        }
+        assign_ref: {
+            let mut b = Quad::PI;
+            b %= &Quad::E;
+            near!(qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"), b);
+        }
+    );
 }

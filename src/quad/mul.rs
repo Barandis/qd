@@ -285,75 +285,119 @@ impl Quad {
 mod tests {
     use super::*;
 
-    #[test]
-    fn num_num() {
-        let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
-        assert_close!(expected, Quad::PI * Quad::E);
-    }
+    // mul tests
+    test_all_near!(
+        num_num:
+            qd!("8.5397342226735670654635508695465744950348885357651149618796011301762"),
+            Quad::PI * Quad::E;
+        num_ref:
+            qd!("8.5397342226735670654635508695465744950348885357651149618796011301762"),
+            Quad::PI * &Quad::E;
+        ref_num:
+            qd!("8.5397342226735670654635508695465744950348885357651149618796011301762"),
+            &Quad::PI * Quad::E;
+        ref_ref:
+            qd!("8.5397342226735670654635508695465744950348885357651149618796011301762"),
+            &Quad::PI * &Quad::E;
+        num_neg_num:
+            qd!("-8.5397342226735670654635508695465744950348885357651149618796011301762"),
+            Quad::PI * -Quad::E;
+        num_neg_ref:
+            qd!("-8.5397342226735670654635508695465744950348885357651149618796011301762"),
+            Quad::PI * -&Quad::E;
+        ref_neg_num:
+            qd!("-8.5397342226735670654635508695465744950348885357651149618796011301762"),
+            &Quad::PI * -Quad::E;
+        ref_neg_ref:
+            qd!("-8.5397342226735670654635508695465744950348885357651149618796011301762"),
+            &Quad::PI * -&Quad::E;
+        num_id:
+            Quad::PI,
+            Quad::PI * Quad::ONE;
+        id_num:
+            Quad::PI,
+            Quad::ONE * Quad::PI;
+        num_small:
+            qd!("3.1415926535897932384626433832795028841971693993751058209749445923069e-60"),
+            Quad::PI * qd!("1e-60");
+        small_num:
+            qd!("3.1415926535897932384626433832795028841971693993751058209749445923069e-60"),
+            qd!("1e-60") * Quad::PI;
+        three_nums:
+            qd!("5.9192926991774591936228124210310520055594093367707051307052021348108"),
+            Quad::PI * Quad::E * Quad::LN_2;
+        lassoc:
+            qd!("5.9192926991774591936228124210310520055594093367707051307052021348108"),
+            (Quad::PI * Quad::E) * Quad::LN_2;
+        rassoc:
+            qd!("5.9192926991774591936228124210310520055594093367707051307052021348108"),
+            Quad::PI * (Quad::LN_2 * Quad::E);
+    );
+    test_all_exact!(
+        nan_zero:
+            Quad::NAN,
+            Quad::NAN * Quad::ZERO;
+        zero_nan:
+            Quad::NAN,
+            Quad::ZERO * Quad::NAN;
+        inf_zero:
+            Quad::NAN,
+            Quad::INFINITY * Quad::ZERO;
+        zero_inf:
+            Quad::NAN,
+            Quad::ZERO * Quad::INFINITY;
+        inf_neg_zero:
+            Quad::NAN,
+            Quad::NEG_INFINITY * Quad::ZERO;
+        zero_neg_inf:
+            Quad::NAN,
+            Quad::ZERO * Quad::NEG_INFINITY;
 
-    #[test]
-    fn ref_ref() {
-        let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
-        assert_close!(expected, &Quad::PI * &Quad::E);
-    }
+        inf_one:
+            Quad::INFINITY,
+            Quad::INFINITY * Quad::ONE;
+        one_inf:
+            Quad::INFINITY,
+            Quad::ONE * Quad::INFINITY;
+        neg_inf_one:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY * Quad::ONE;
+        one_neg_inf:
+            Quad::NEG_INFINITY,
+            Quad::ONE * Quad::NEG_INFINITY;
+        inf_inf:
+            Quad::INFINITY,
+            Quad::INFINITY * Quad::INFINITY;
+        inf_neg_inf:
+            Quad::NEG_INFINITY,
+            Quad::INFINITY * Quad::NEG_INFINITY;
+        neg_inf_inf:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY * Quad::INFINITY;
+        neg_inf_neg_inf:
+            Quad::INFINITY,
+            Quad::NEG_INFINITY * Quad::NEG_INFINITY;
 
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn num_ref() {
-        let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
-        assert_close!(expected, Quad::PI * &Quad::E);
-    }
+        nan_one:
+            Quad::NAN,
+            Quad::NAN * Quad::ONE;
+        one_nan:
+            Quad::NAN,
+            Quad::ONE * Quad::NAN;
+    );
 
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn ref_num() {
-        let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
-        assert_close!(expected, &Quad::PI * Quad::E);
-    }
-
-    #[test]
-    fn assign_num() {
-        let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
-
-        let mut a = Quad::PI;
-        a *= Quad::E;
-        assert_close!(expected, a);
-    }
-
-    #[test]
-    fn assign_ref() {
-        let expected = qd!("8.539734222673567065463550869546574495034888535765114961879601130");
-
-        let mut b = Quad::PI;
-        b *= &Quad::E;
-        assert_close!(expected, b);
-    }
-
-    #[test]
-    fn zero() {
-        assert_exact!(Quad::NAN, Quad::NAN * Quad::ZERO);
-        assert_exact!(Quad::NAN, Quad::ZERO * Quad::NAN);
-        assert_exact!(Quad::NAN, Quad::INFINITY * Quad::ZERO);
-        assert_exact!(Quad::NAN, Quad::ZERO * Quad::INFINITY);
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY * Quad::ZERO);
-        assert_exact!(Quad::NAN, Quad::ZERO * Quad::NEG_INFINITY);
-    }
-
-    #[test]
-    fn inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY * Quad::ONE);
-        assert_exact!(Quad::INFINITY, Quad::ONE * Quad::INFINITY);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY * Quad::ONE);
-        assert_exact!(Quad::NEG_INFINITY, Quad::ONE * Quad::NEG_INFINITY);
-        assert_exact!(Quad::INFINITY, Quad::INFINITY * Quad::INFINITY);
-        assert_exact!(Quad::NEG_INFINITY, Quad::INFINITY * Quad::NEG_INFINITY);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY * Quad::INFINITY);
-        assert_exact!(Quad::INFINITY, Quad::NEG_INFINITY * Quad::NEG_INFINITY);
-    }
-
-    #[test]
-    fn nan() {
-        assert_exact!(Quad::NAN, Quad::NAN * Quad::ONE);
-        assert_exact!(Quad::NAN, Quad::ONE * Quad::NAN);
-    }
+    // Assign tests. Assign code delegates to mul code, so there's no need to re-test all
+    // of the cases above.
+    test_all!(
+        assign_num: {
+            let mut a = Quad::PI;
+            a *= Quad::E;
+            near!(qd!("8.5397342226735670654635508695465744950348885357651149618796011301762"), a);
+        }
+        assign_ref: {
+            let mut b = Quad::PI;
+            b *= &Quad::E;
+            near!(qd!("8.5397342226735670654635508695465744950348885357651149618796011301762"), b);
+        }
+    );
 }

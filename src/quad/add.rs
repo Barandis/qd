@@ -288,71 +288,108 @@ impl Quad {
 mod tests {
     use super::*;
 
-    #[test]
-    fn num_num() {
-        let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
-        assert_close!(expected, Quad::PI + Quad::E);
-    }
+    // add tests
+    test_all_near!(
+        num_num:
+            qd!("5.8598744820488384738229308546321653819544164930750653959419122200308"),
+            Quad::PI + Quad::E;
+        num_ref:
+            qd!("5.8598744820488384738229308546321653819544164930750653959419122200308"),
+            Quad::PI + &Quad::E;
+        ref_num:
+            qd!("5.8598744820488384738229308546321653819544164930750653959419122200308"),
+            &Quad::PI + Quad::E;
+        ref_ref:
+            qd!("5.8598744820488384738229308546321653819544164930750653959419122200308"),
+            &Quad::PI + &Quad::E;
+        num_neg_num:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            Quad::PI + -Quad::E;
+        num_neg_ref:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            Quad::PI + -&Quad::E;
+        ref_neg_num:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            &Quad::PI + -Quad::E;
+        ref_neg_ref:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            &Quad::PI + -&Quad::E;
+        num_id:
+            Quad::PI,
+            Quad::PI + Quad::ZERO;
+        id_num:
+            Quad::PI,
+            Quad::ZERO + Quad::PI;
+        num_small:
+            qd!("3.1415926535897932384626433832795028841971693993751058209749455923065"),
+            Quad::PI + qd!("1e-60");
+        small_num:
+            qd!("3.1415926535897932384626433832795028841971693993751058209749455923065"),
+            qd!("1e-60") + Quad::PI;
+        three_nums:
+            qd!("6.5530216626087837832401629760903419500299166274353206500625922295256"),
+            Quad::PI + Quad::E + Quad::LN_2;
+        lassoc:
+            qd!("6.5530216626087837832401629760903419500299166274353206500625922295256"),
+            (Quad::PI + Quad::E) + Quad::LN_2;
+        rassoc:
+            qd!("6.5530216626087837832401629760903419500299166274353206500625922295256"),
+            Quad::PI + (Quad::LN_2 + Quad::E);
+    );
+    test_all_exact!(
+        inf_num:
+            Quad::INFINITY,
+            Quad::INFINITY + Quad::ONE;
+        num_inf:
+            Quad::INFINITY,
+            Quad::ONE + Quad::INFINITY;
+        neg_inf_num:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY + Quad::ONE;
+        num_neg_inf:
+            Quad::NEG_INFINITY,
+            Quad::ONE + Quad::NEG_INFINITY;
+        inf_inf:
+            Quad::INFINITY,
+            Quad::INFINITY + Quad::INFINITY;
+        neg_inf_neg_inf:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY + Quad::NEG_INFINITY;
+        inf_neg_inf:
+            Quad::NAN,
+            Quad::INFINITY + Quad::NEG_INFINITY;
+        neg_inf_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY + Quad::INFINITY;
+        inf_nan:
+            Quad::NAN,
+            Quad::INFINITY + Quad::NAN;
+        neg_inf_nan:
+            Quad::NAN,
+            Quad::NEG_INFINITY + Quad::NAN;
+        nan_num:
+            Quad::NAN,
+            Quad::NAN + Quad::ONE;
+        num_nan:
+            Quad::NAN,
+            Quad::ONE + Quad::NAN;
+        nan_nan:
+            Quad::NAN,
+            Quad::NAN + Quad::NAN;
+    );
 
-    #[test]
-    fn ref_ref() {
-        let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
-        assert_close!(expected, &Quad::PI + &Quad::E);
-    }
-
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn num_ref() {
-        let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
-        assert_close!(expected, Quad::PI + &Quad::E);
-    }
-
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn ref_num() {
-        let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
-        assert_close!(expected, &Quad::PI + Quad::E);
-    }
-
-    #[test]
-    fn assign_num() {
-        let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
-
-        let mut a = Quad::PI;
-        a += Quad::E;
-        assert_close!(expected, a);
-    }
-
-    #[test]
-    fn assign_ref() {
-        let expected = qd!("5.859874482048838473822930854632165381954416493075065395941912220");
-
-        let mut b = Quad::PI;
-        b += &Quad::E;
-        assert_close!(expected, b);
-    }
-
-    #[test]
-    fn inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY + Quad::ONE);
-        assert_exact!(Quad::INFINITY, Quad::ONE + Quad::INFINITY);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY + Quad::ONE);
-        assert_exact!(Quad::NEG_INFINITY, Quad::ONE + Quad::NEG_INFINITY);
-    }
-
-    #[test]
-    fn infinities() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY + Quad::INFINITY);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY + Quad::NEG_INFINITY);
-        assert_exact!(Quad::NAN, Quad::INFINITY + Quad::NEG_INFINITY);
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY + Quad::INFINITY);
-        assert_exact!(Quad::NAN, Quad::INFINITY + Quad::NAN);
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY + Quad::NAN);
-    }
-
-    #[test]
-    fn nan() {
-        assert_exact!(Quad::NAN, Quad::NAN + Quad::ONE);
-        assert_exact!(Quad::NAN, Quad::ONE + Quad::NAN);
-    }
+    // Assign tests. Assign code delegates to add code, so there's no need to re-test all
+    // of the cases above.
+    test_all!(
+        assign_num: {
+            let mut a = Quad::PI;
+            a += Quad::E;
+            near!(qd!("5.8598744820488384738229308546321653819544164930750653959419122200308"), a);
+        }
+        assign_ref: {
+            let mut b = Quad::PI;
+            b += &Quad::E;
+            near!(qd!("5.8598744820488384738229308546321653819544164930750653959419122200308"), b);
+        }
+    );
 }

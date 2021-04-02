@@ -10,9 +10,9 @@ impl Sub for Quad {
     type Output = Quad;
 
     /// Subtracts another `Quad` from this one, producing a new `Quad` as a result.
-    /// 
+    ///
     /// This implements the binary `-` operator between two `Quad`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -20,7 +20,7 @@ impl Sub for Quad {
     /// # fn main() {
     /// let x = Quad::E - Quad::PI;
     /// let expected = qd!("-0.4233108251307480031023559119268403864399223056751462460079769646");
-    /// 
+    ///
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
     /// # }
@@ -113,9 +113,9 @@ impl Sub<Quad> for &Quad {
 
 impl SubAssign for Quad {
     /// Subtracts another `Quad` from this one, modifying this one to equal the result.
-    /// 
+    ///
     /// This implements the `-=` operator between two `Quad`s.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # #[macro_use] extern crate qd;
@@ -172,68 +172,106 @@ impl SubAssign<&Quad> for Quad {
 mod tests {
     use super::*;
 
-    #[test]
-    fn num_num() {
-        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
-        assert_close!(expected, Quad::PI - Quad::E);
-    }
+    // sub tests
+    test_all_near!(
+        num_num:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            Quad::PI - Quad::E;
+        num_ref:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            Quad::PI - &Quad::E;
+        ref_num:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            &Quad::PI - Quad::E;
+        ref_ref:
+            qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"),
+            &Quad::PI - &Quad::E;
+        num_neg_num:
+            qd!("5.8598744820488384738229308546321653819544164930750653959419122200308"),
+            Quad::PI - -Quad::E;
+        num_neg_ref:
+            qd!("5.8598744820488384738229308546321653819544164930750653959419122200308"),
+            Quad::PI - -&Quad::E;
+        ref_neg_num:
+            qd!("5.8598744820488384738229308546321653819544164930750653959419122200308"),
+            &Quad::PI - -Quad::E;
+        ref_neg_ref:
+            qd!("5.8598744820488384738229308546321653819544164930750653959419122200308"),
+            &Quad::PI - -&Quad::E;
+        num_id:
+            Quad::PI,
+            Quad::PI - Quad::ZERO;
+        id_num:
+            -Quad::PI,
+            Quad::ZERO - Quad::PI;
+        num_small:
+            qd!("3.1415926535897932384626433832795028841971693993751058209749435923073"),
+            Quad::PI - qd!("1e-60");
+        small_num:
+            qd!("-3.1415926535897932384626433832795028841971693993751058209749435923073"),
+            qd!("1e-60") - Quad::PI;
+        three_nums:
+            qd!("-0.26983635542919730631487620953133618163557782868510900811270304491058"),
+            Quad::PI - Quad::E - Quad::LN_2;
+        lassoc:
+            qd!("-0.26983635542919730631487620953133618163557782868510900811270304491058"),
+            (Quad::PI - Quad::E) - Quad::LN_2;
+        rassoc:
+            qd!("5.1667273014888931644056987331739888138789163587148101418212322105361"),
+            Quad::PI - (Quad::LN_2 - Quad::E);
+    );
+    test_all_exact!(
+        inf_one:
+            Quad::INFINITY,
+            Quad::INFINITY - Quad::ONE;
+        one_inf:
+            Quad::NEG_INFINITY,
+            Quad::ONE - Quad::INFINITY;
+        neg_inf_one:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY - Quad::ONE;
+        one_neg_inf:
+            Quad::INFINITY,
+            Quad::ONE - Quad::NEG_INFINITY;
+        inf_neg_inf:
+            Quad::INFINITY,
+            Quad::INFINITY - Quad::NEG_INFINITY;
+        neg_inf_inf:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY - Quad::INFINITY;
 
-    #[test]
-    fn ref_ref() {
-        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
-        assert_close!(expected, &Quad::PI - &Quad::E);
-    }
+        nan_one:
+            Quad::NAN,
+            Quad::NAN - Quad::ONE;
+        one_nan:
+            Quad::NAN,
+            Quad::ONE - Quad::NAN;
+        nan_inf:
+            Quad::NAN,
+            Quad::NAN - Quad::INFINITY;
+        inf_nan:
+            Quad::NAN,
+            Quad::INFINITY - Quad::NAN;
+        inf_inf:
+            Quad::NAN,
+            Quad::INFINITY - Quad::INFINITY;
+        neg_inf_neg_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY - Quad::NEG_INFINITY;
+    );
 
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn num_ref() {
-        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
-        assert_close!(expected, Quad::PI - &Quad::E);
-    }
-
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn ref_num() {
-        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
-        assert_close!(expected, &Quad::PI - Quad::E);
-    }
-
-    #[test]
-    fn assign_num() {
-        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
-
-        let mut a = Quad::PI;
-        a -= Quad::E;
-        assert_close!(expected, a);
-    }
-
-    #[test]
-    fn assign_ref() {
-        let expected = qd!("0.423310825130748003102355911926840386439922305675146246007976965");
-
-        let mut b = Quad::PI;
-        b -= &Quad::E;
-        assert_close!(expected, b);
-    }
-
-    #[test]
-    fn inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY - Quad::ONE);
-        assert_exact!(Quad::NEG_INFINITY, Quad::ONE - Quad::INFINITY);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY - Quad::ONE);
-        assert_exact!(Quad::INFINITY, Quad::ONE - Quad::NEG_INFINITY);
-        assert_exact!(Quad::INFINITY, Quad::INFINITY - Quad::NEG_INFINITY);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY - Quad::INFINITY);
-    }
-
-    #[test]
-    #[allow(clippy::eq_op)]
-    fn nan() {
-        assert_exact!(Quad::NAN, Quad::NAN - Quad::ONE);
-        assert_exact!(Quad::NAN, Quad::ONE - Quad::NAN);
-        assert_exact!(Quad::NAN, Quad::NAN - Quad::INFINITY);
-        assert_exact!(Quad::NAN, Quad::INFINITY - Quad::NAN);
-        assert_exact!(Quad::NAN, Quad::INFINITY - Quad::INFINITY);
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY - Quad::NEG_INFINITY);
-    }
+    // Assign tests. Assign code delegates to sub code, so there's no need to re-test all
+    // of the cases above.
+    test_all!(
+        assign_num: {
+            let mut a = Quad::PI;
+            a -= Quad::E;
+            near!(qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"), a);
+        }
+        assign_ref: {
+            let mut b = Quad::PI;
+            b -= &Quad::E;
+            near!(qd!("0.42331082513074800310235591192684038643992230567514624600797696458298"), b);
+        }
+    );
 }

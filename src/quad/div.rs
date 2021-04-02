@@ -264,79 +264,128 @@ impl Quad {
 mod tests {
     use super::*;
 
-    #[test]
-    fn num_num() {
-        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
-        assert_close!(expected, Quad::PI / Quad::E);
-    }
+    // div tests
+    test_all_near!(
+        num_num:
+            qd!("1.1557273497909217179100931833126962991208510231644158204997065353273"),
+            Quad::PI / Quad::E;
+        num_ref:
+            qd!("1.1557273497909217179100931833126962991208510231644158204997065353273"),
+            Quad::PI / &Quad::E;
+        ref_num:
+            qd!("1.1557273497909217179100931833126962991208510231644158204997065353273"),
+            &Quad::PI / Quad::E;
+        ref_ref:
+            qd!("1.1557273497909217179100931833126962991208510231644158204997065353273"),
+            &Quad::PI / &Quad::E;
+        num_neg_num:
+            qd!("-1.1557273497909217179100931833126962991208510231644158204997065353273"),
+            Quad::PI / -Quad::E;
+        num_neg_ref:
+            qd!("-1.1557273497909217179100931833126962991208510231644158204997065353273"),
+            Quad::PI / -&Quad::E;
+        ref_neg_num:
+            qd!("-1.1557273497909217179100931833126962991208510231644158204997065353273"),
+            &Quad::PI / -Quad::E;
+        ref_neg_ref:
+            qd!("-1.1557273497909217179100931833126962991208510231644158204997065353273"),
+            &Quad::PI / -&Quad::E;
+        num_id:
+            Quad::PI,
+            Quad::PI / Quad::ONE;
+        id_num:
+            Quad::FRAC_1_PI,
+            Quad::ONE / Quad::PI;
+        num_small:
+            qd!("3141592653589793238462643383279502884197169399375105820974944.5923061"),
+            Quad::PI / qd!("1e-60");
+        small_num:
+            qd!("3.1830988618379067153776752674502872406891929148091289749533468811804e-61"),
+            qd!("1e-60") / Quad::PI;
+        three_nums:
+            qd!("1.6673621161631071223063639072253467866814381989438981528114006093878"),
+            Quad::PI / Quad::E / Quad::LN_2;
+        lassoc:
+            qd!("1.6673621161631071223063639072253467866814381989438981528114006093878"),
+            (Quad::PI / Quad::E) / Quad::LN_2;
+        rassoc:
+            qd!("12.320232213560921976987672083576725232192678340447553172224165846265"),
+            Quad::PI / (Quad::LN_2 / Quad::E);
+    );
+    test_all_exact!(
+        zero_inf:
+            Quad::ZERO,
+            Quad::ZERO / Quad::INFINITY;
+        zero_neg_inf:
+            Quad::NEG_ZERO,
+            Quad::ZERO / Quad::NEG_INFINITY;
+        inf_zero:
+            Quad::INFINITY,
+            Quad::INFINITY / Quad::ZERO;
+        neg_inf_zero:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY / Quad::ZERO;
+        nan_zero:
+            Quad::NAN,
+            Quad::NAN / Quad::ZERO;
+        zero_nan:
+            Quad::NAN,
+            Quad::ZERO / Quad::NAN;
+        zero_zero:
+            Quad::NAN,
+            Quad::ZERO / Quad::ZERO;
 
-    #[test]
-    fn ref_ref() {
-        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
-        assert_close!(expected, &Quad::PI / &Quad::E);
-    }
+        one_inf:
+            Quad::ZERO,
+            Quad::ONE / Quad::INFINITY;
+        one_neg_inf:
+            Quad::NEG_ZERO,
+            Quad::ONE / Quad::NEG_INFINITY;
+        inf_one:
+            Quad::INFINITY,
+            Quad::INFINITY / Quad::ONE;
+        neg_inf_one:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY / Quad::ONE;
+        inf_inf:
+            Quad::NAN,
+            Quad::INFINITY / Quad::INFINITY;
+        inf_neg_inf:
+            Quad::NAN,
+            Quad::INFINITY / Quad::NEG_INFINITY;
+        neg_inf_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY / Quad::INFINITY;
+        neg_inf_neg_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY / Quad::NEG_INFINITY;
+        one_zero:
+            Quad::INFINITY,
+            Quad::ONE / Quad::ZERO;
+        neg_one_zero:
+            Quad::NEG_INFINITY,
+            Quad::NEG_ONE / Quad::ZERO;
 
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn num_ref() {
-        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
-        assert_close!(expected, Quad::PI / &Quad::E);
-    }
+        nan_one:
+            Quad::NAN,
+            Quad::NAN / Quad::ONE;
+        one_nan:
+            Quad::NAN,
+            Quad::ONE / Quad::NAN;
+    );
 
-    #[test]
-    #[allow(clippy::op_ref)]
-    fn ref_num() {
-        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
-        assert_close!(expected, &Quad::PI / Quad::E);
-    }
-
-    #[test]
-    fn assign_num() {
-        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
-
-        let mut a = Quad::PI;
-        a /= Quad::E;
-        assert_close!(expected, a);
-    }
-
-    #[test]
-    fn assign_ref() {
-        let expected = qd!("1.155727349790921717910093183312696299120851023164415820499706535");
-
-        let mut b = Quad::PI;
-        b /= &Quad::E;
-        assert_close!(expected, b);
-    }
-
-    #[test]
-    fn zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO / Quad::INFINITY);
-        assert_exact!(Quad::NEG_ZERO, Quad::ZERO / Quad::NEG_INFINITY);
-        assert_exact!(Quad::INFINITY, Quad::INFINITY / Quad::ZERO);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY / Quad::ZERO);
-        assert_exact!(Quad::NAN, Quad::NAN / Quad::ZERO);
-        assert_exact!(Quad::NAN, Quad::ZERO / Quad::NAN);
-        assert_exact!(Quad::NAN, Quad::ZERO / Quad::ZERO);
-    }
-
-    #[test]
-    #[allow(clippy::eq_op)]
-    fn inf() {
-        assert_exact!(Quad::ZERO, Quad::ONE / Quad::INFINITY);
-        assert_exact!(Quad::NEG_ZERO, Quad::ONE / Quad::NEG_INFINITY);
-        assert_exact!(Quad::INFINITY, Quad::INFINITY / Quad::ONE);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY / Quad::ONE);
-        assert_exact!(Quad::NAN, Quad::INFINITY / Quad::INFINITY);
-        assert_exact!(Quad::NAN, Quad::INFINITY / Quad::NEG_INFINITY);
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY / Quad::INFINITY);
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY / Quad::NEG_INFINITY);
-        assert_exact!(Quad::INFINITY, Quad::ONE / Quad::ZERO);
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_ONE / Quad::ZERO);
-    }
-
-    #[test]
-    fn nan() {
-        assert_exact!(Quad::NAN, Quad::NAN / Quad::ONE);
-        assert_exact!(Quad::NAN, Quad::ONE / Quad::NAN);
-    }
+    // Assign tests. Assign code delegates to div code, so there's no need to re-test all
+    // of the cases above.
+    test_all!(
+        assign_num: {
+            let mut a = Quad::PI;
+            a /= Quad::E;
+            near!(qd!("1.1557273497909217179100931833126962991208510231644158204997065353273"), a);
+        }
+        assign_ref: {
+            let mut b = Quad::PI;
+            b /= &Quad::E;
+            near!(qd!("1.1557273497909217179100931833126962991208510231644158204997065353273"), b);
+        }
+    );
 }
