@@ -15,7 +15,7 @@ impl Mul for Quad {
     //
     // It closely follows the process described on pp. 11-16 of "Library for Double-Double
     // and  Quad-Double Arithmetic" by Y. Hida, X.S. Li, and D.H. Bailey which can be found
-    // at http://web.mit.edu/tabbott/Public/quadQuad-debian/qd-2.3.4-old/docs/qd.pdf. You
+    // at http://web.mit.edu/tabbott/Public/quaddouble-debian/qd-2.3.4-old/docs/qd.pdf. You
     // should be able to see the way the source code works from the diagrams there.
     //
     // TERMS (a = self, b = other):
