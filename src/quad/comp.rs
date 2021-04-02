@@ -70,89 +70,69 @@ impl PartialOrd for Quad {
 mod tests {
     use super::*;
 
-    #[test]
-    #[allow(clippy::eq_op)]
-    fn equal() {
-        assert!(Quad::PI == Quad::PI);
-    }
+    // eq tests
+    test_all_assert!(
+        eq_pi_pi:
+            Quad::PI == Quad::PI;
+        eq_pi_e:
+            Quad::PI != Quad::E;
+        eq_zero_neg_zero:
+            Quad::ZERO == Quad::NEG_ZERO;
+        eq_inf_inf:
+            Quad::INFINITY == Quad::INFINITY;
+        eq_neg_inf_neg_inf:
+            Quad::NEG_INFINITY == Quad::NEG_INFINITY;
+        eq_inf_neg_inf:
+            Quad::INFINITY != Quad::NEG_INFINITY;
+        eq_nan_nan:
+            Quad::NAN != Quad::NAN;
+    );
 
-    #[test]
-    fn not_equal() {
-        assert!(Quad::PI != Quad::E);
-    }
-
-    #[test]
-    fn equal_zero() {
-        assert!(Quad::ZERO == Quad::NEG_ZERO);
-    }
-
-    #[test]
-    #[allow(clippy::eq_op)]
-    fn equal_inf() {
-        assert!(Quad::INFINITY == Quad::INFINITY);
-        assert!(Quad::NEG_INFINITY == Quad::NEG_INFINITY);
-        assert!(Quad::INFINITY != Quad::NEG_INFINITY);
-    }
-
-    #[test]
-    #[allow(clippy::eq_op)]
-    fn equal_nan() {
-        assert!(Quad::NAN != Quad::NAN);
-    }
-
-    #[test]
-    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
-    fn gt() {
-        assert!(Quad::PI > Quad::E);
-        assert!(!(Quad::PI > Quad::PI));
-        assert!(!(Quad::E > Quad::PI));
-    }
-
-    #[test]
-    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
-    fn gte() {
-        assert!(Quad::PI >= Quad::E);
-        assert!(Quad::PI >= Quad::PI);
-        assert!(!(Quad::E >= Quad::PI));
-    }
-
-    #[test]
-    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
-    fn lt() {
-        assert!(Quad::E < Quad::PI);
-        assert!(!(Quad::E < Quad::E));
-        assert!(!(Quad::PI < Quad::E));
-    }
-
-    #[test]
-    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
-    fn lte() {
-        assert!(Quad::E <= Quad::PI);
-        assert!(Quad::E <= Quad::E);
-        assert!(!(Quad::PI <= Quad::E));
-    }
-
-    #[test]
-    fn ord_zero() {
-        assert!(Quad::ZERO <= Quad::NEG_ZERO);
-        assert!(Quad::ZERO >= Quad::NEG_ZERO);
-    }
-
-    #[test]
-    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
-    fn ord_inf() {
-        assert!(Quad::NEG_INFINITY < Quad::INFINITY);
-        assert!(Quad::NEG_INFINITY <= Quad::NEG_INFINITY);
-        assert!(Quad::NEG_INFINITY >= Quad::NEG_INFINITY);
-        assert!(!(Quad::NEG_INFINITY > Quad::NEG_INFINITY));
-    }
-
-    #[test]
-    #[allow(clippy::eq_op, clippy::neg_cmp_op_on_partial_ord)]
-    fn ord_nan() {
-        assert!(!(Quad::NAN < Quad::NAN));
-        assert!(!(Quad::NAN <= Quad::NAN));
-        assert!(!(Quad::NAN > Quad::NAN));
-        assert!(!(Quad::NAN >= Quad::NAN));
-    }
+    // ord tests
+    test_all_assert!(
+        gt_pi_e:
+            Quad::PI > Quad::E;
+        gt_pi_pi:
+            !(Quad::PI > Quad::PI);
+        gt_e_pi:
+            !(Quad::E > Quad::PI);
+        gte_pi_e:
+            Quad::PI >= Quad::E;
+        gte_pi_pi:
+            Quad::PI >= Quad::PI;
+        gte_e_pi:
+            !(Quad::E >= Quad::PI);
+        lt_pi_e:
+            !(Quad::PI < Quad::E);
+        lt_pi_pi:
+            !(Quad::PI < Quad::PI);
+        lt_e_pi:
+            Quad::E < Quad::PI;
+        lte_pi_e:
+            !(Quad::PI <= Quad::E);
+        lte_pi_pi:
+            Quad::PI <= Quad::PI;
+        lte_e_pi:
+            Quad::E <= Quad::PI;
+        lte_zero_neg_zero:
+            Quad::ZERO <= Quad::NEG_ZERO;
+        gte_zero_neg_zero:
+            Quad::ZERO >= Quad::NEG_ZERO;
+        lt_neg_inf_inf:
+            Quad::NEG_INFINITY < Quad::INFINITY;
+        lte_neg_inf_inf:
+            Quad::NEG_INFINITY <= Quad::NEG_INFINITY;
+        gte_neg_inf_neg_inf:
+            Quad::NEG_INFINITY >= Quad::NEG_INFINITY;
+        gt_neg_inf_neg_inf:
+            !(Quad::NEG_INFINITY > Quad::NEG_INFINITY);
+        lt_nan_nan:
+            !(Quad::NAN < Quad::NAN);
+        lte_nan_nan:
+            !(Quad::NAN <= Quad::NAN);
+        gt_nan_nan:
+            !(Quad::NAN > Quad::NAN);
+        gte_nan_nan:
+            !(Quad::NAN >= Quad::NAN);
+    );
 }
