@@ -328,215 +328,450 @@ impl Quad {
 mod tests {
     use super::*;
 
-    #[test]
-    fn sinh_cosh() {
-        let (sinh_pi, cosh_pi) = Quad::PI.sinh_cosh();
-        assert_close!(
-            qd!("11.54873935725774837797733431538840968449518906639478945523216336"),
-            sinh_pi
-        );
-        assert_close!(
-            qd!("11.59195327552152062775175205256013769577091717620542253821288305"),
-            cosh_pi
-        );
+    // sinh tests
+    test_all_near!(
+        sinh_pi:
+            qd!("11.548739357257748377977334315388409684495189066394789455232163361053"),
+            Quad::PI.sinh();
+        sinh_e:
+            qd!("7.5441371028169758263418200425165327402949857443016716663691364321724"),
+            Quad::E.sinh();
+        sinh_neg_pi:
+            qd!("-11.548739357257748377977334315388409684495189066394789455232163361053"),
+            (-Quad::PI).sinh();
+        sinh_neg_e:
+            qd!("-7.5441371028169758263418200425165327402949857443016716663691364321724"),
+            (-Quad::E).sinh();
+        sinh_2_pi:
+            qd!("267.74489404101651425711744968805617722370618739914622009500293674898"),
+            Quad::TAU.sinh();
+        sinh_pi_2:
+            qd!("2.3012989023072948734630400234344271781781465165163826659728398030928"),
+            Quad::FRAC_PI_2.sinh();
+        sinh_sqrt_2:
+            qd!("1.9350668221743566531843597473201792189703699102294526772575489689003"),
+            Quad::SQRT_2.sinh();
+        sinh_1_sqrt_2:
+            qd!("0.76752314512611633163108436606558684996924366470309367117838183498206"),
+            Quad::FRAC_1_SQRT_2.sinh();
+        sinh_small:
+            qd!("0.000010000000000166666666667500000000001984126984129739858906528078403084"),
+            qd!("0.00001").sinh();
+        sinh_neg_small:
+            qd!("-0.0000000010000000000000000001666666666666666666750000000000000000001984126988"),
+            qd!("-0.000000001").sinh();
+        sinh_150:
+            qd!("69685479033318984865917096857072873873684503070109219116878222417.813"),
+            qd!(150).sinh();
+        sinh_neg_140:
+            qd!("-3163715853577792682171512256175572576556222994111693720356524.5634327"),
+            qd!(-140).sinh();
+    );
+    test_all_exact!(
+        sinh_zero:
+            Quad::ZERO,
+            Quad::ZERO.sinh();
+        sinh_neg_zero:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.sinh();
+        sinh_inf:
+            Quad::INFINITY,
+            Quad::INFINITY.sinh();
+        sinh_neg_inf:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY.sinh();
+        sinh_nan:
+            Quad::NAN,
+            Quad::NAN.sinh();
+    );
 
-        let (sinh_e, cosh_e) = Quad::E.sinh_cosh();
-        assert_close!(
-            qd!("7.544137102816975826341820042516532740294985744301671666369136432"),
-            sinh_e
-        );
-        assert_close!(
-            qd!("7.610125138662288363418610230113379165233562792554468102771609974"),
-            cosh_e
-        );
-    }
+    // cosh tests
+    test_all_near!(
+        cosh_pi:
+            qd!("11.591953275521520627751752052560137695770917176205422538212883048449"),
+            Quad::PI.cosh();
+        cosh_e:
+            qd!("7.6101251386622883634186102301133791652335627925544681027716099737405"),
+            Quad::E.cosh();
+        cosh_neg_pi:
+            qd!("11.591953275521520627751752052560137695770917176205422538212883048449"),
+            (-Quad::PI).cosh();
+        cosh_neg_e:
+            qd!("7.6101251386622883634186102301133791652335627925544681027716099737405"),
+            (-Quad::E).cosh();
+        cosh_2_pi:
+            qd!("267.74676148374822224593187990099100425409961020414869541220231828758"),
+            Quad::TAU.cosh();
+        cosh_pi_2:
+            qd!("2.5091784786580567820099956432694059482120243581481522740479756861487"),
+            Quad::FRAC_PI_2.cosh();
+        cosh_sqrt_2:
+            qd!("2.1781835566085708639892220678201252834312940329216569328108157409496"),
+            Quad::SQRT_2.cosh();
+        cosh_1_sqrt_2:
+            qd!("1.2605918365213561194770417466807643252050814278395198494393941371403"),
+            Quad::FRAC_1_SQRT_2.cosh();
+        cosh_small:
+            qd!("1.0000000000500000000004166666666680555555555580357142857170414462076"),
+            qd!("0.00001").cosh();
+        cosh_neg_small:
+            qd!("1.0000000000000000005000000000000000000416666666666666666680555555557"),
+            qd!("-0.000000001").cosh();
+        cosh_150:
+            qd!("69685479033318984865917096857072873873684503070109219116878222417.813"),
+            qd!(150).cosh();
+        cosh_neg_140:
+            qd!("3163715853577792682171512256175572576556222994111693720356524.5634327"),
+            qd!(-140).cosh();
+    );
+    test_all_exact!(
+        cosh_zero:
+            Quad::ONE,
+            Quad::ZERO.cosh();
+        cosh_neg_zero:
+            Quad::ONE,
+            Quad::NEG_ZERO.cosh();
+        cosh_inf:
+            Quad::INFINITY,
+            Quad::INFINITY.cosh();
+        cosh_neg_inf:
+            Quad::INFINITY,
+            Quad::NEG_INFINITY.cosh();
+        cosh_nan:
+            Quad::NAN,
+            Quad::NAN.cosh();
+    );
 
-    #[test]
-    fn sinh_cosh_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.sinh_cosh().0);
-        assert_exact!(Quad::ONE, Quad::ZERO.sinh_cosh().1);
-    }
+    // sinh_cosh tests
+    test_all_near!(
+        sinh_cosh_pi_sinh:
+            Quad::PI.sinh(),
+            Quad::PI.sinh_cosh().0;
+        sinh_cosh_pi_cosh:
+            Quad::PI.cosh(),
+            Quad::PI.sinh_cosh().1;
+        sinh_cosh_e_sinh:
+            Quad::E.sinh(),
+            Quad::E.sinh_cosh().0;
+        sinh_cosh_e_cosh:
+            Quad::E.cosh(),
+            Quad::E.sinh_cosh().1;
+        sinh_cosh_neg_pi_sinh:
+            (-Quad::PI).sinh(),
+            (-Quad::PI).sinh_cosh().0;
+        sinh_cosh_neg_pi_cosh:
+            (-Quad::PI).cosh(),
+            (-Quad::PI).sinh_cosh().1;
+        sinh_cosh_neg_e_sinh:
+            (-Quad::E).sinh(),
+            (-Quad::E).sinh_cosh().0;
+        sinh_cosh_neg_e_cosh:
+            (-Quad::E).cosh(),
+            (-Quad::E).sinh_cosh().1;
+        sinh_cosh_2_pi_sinh:
+            Quad::TAU.sinh(),
+            Quad::TAU.sinh_cosh().0;
+        sinh_cosh_2_pi_cosh:
+            Quad::TAU.cosh(),
+            Quad::TAU.sinh_cosh().1;
+        sinh_cosh_pi_2_sinh:
+            Quad::FRAC_PI_2.sinh(),
+            Quad::FRAC_PI_2.sinh_cosh().0;
+        sinh_cosh_pi_2_cosh:
+            Quad::FRAC_PI_2.cosh(),
+            Quad::FRAC_PI_2.sinh_cosh().1;
+        sinh_cosh_sqrt_2_sinh:
+            Quad::SQRT_2.sinh(),
+            Quad::SQRT_2.sinh_cosh().0;
+        sinh_cosh_sqrt_2_cosh:
+            Quad::SQRT_2.cosh(),
+            Quad::SQRT_2.sinh_cosh().1;
+        sinh_cosh_1_sqrt_2_sinh:
+            Quad::FRAC_1_SQRT_2.sinh(),
+            Quad::FRAC_1_SQRT_2.sinh_cosh().0;
+        sinh_cosh_1_sqrt_2_cosh:
+            Quad::FRAC_1_SQRT_2.cosh(),
+            Quad::FRAC_1_SQRT_2.sinh_cosh().1;
+        sinh_cosh_small_sinh:
+            qd!("0.00001").sinh(),
+            qd!("0.00001").sinh_cosh().0;
+        sinh_cosh_small_cosh:
+            qd!("0.00001").cosh(),
+            qd!("0.00001").sinh_cosh().1;
+        sinh_cosh_neg_small_sinh:
+            qd!("-0.0001").sinh(),
+            qd!("-0.0001").sinh_cosh().0;
+        sinh_cosh_neg_small_cosh:
+            qd!("-0.0001").cosh(),
+            qd!("-0.0001").sinh_cosh().1;
+        sinh_cosh_150_sinh:
+            qd!(150).sinh(),
+            qd!(150).sinh_cosh().0;
+        sinh_cosh_150_cosh:
+            qd!(150).cosh(),
+            qd!(150).sinh_cosh().1;
+        sinh_cosh_neg_140_sinh:
+            qd!(-140).sinh(),
+            qd!(-140).sinh_cosh().0;
+        sinh_cosh_neg_140_cosh:
+            qd!(-140).cosh(),
+            qd!(-140).sinh_cosh().1;
+    );
+    test_all_exact!(
+        sinh_cosh_zero_sinh:
+            Quad::ZERO,
+            Quad::ZERO.sinh_cosh().0;
+        sinh_cosh_zero_cosh:
+            Quad::ONE,
+            Quad::ZERO.sinh_cosh().1;
+        sinh_cosh_neg_zero_sinh:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.sinh_cosh().0;
+        sinh_cosh_neg_zero_cosh:
+            Quad::ONE,
+            Quad::NEG_ZERO.sinh_cosh().1;
+        sinh_cosh_inf_sinh:
+            Quad::INFINITY,
+            Quad::INFINITY.sinh_cosh().0;
+        sinh_cosh_inf_cosh:
+            Quad::INFINITY,
+            Quad::INFINITY.sinh_cosh().1;
+        sinh_cosh_neg_inf_sinh:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY.sinh_cosh().0;
+        sinh_cosh_neg_inf_cosh:
+            Quad::INFINITY,
+            Quad::NEG_INFINITY.sinh_cosh().1;
+        sinh_cosh_nan_sinh:
+            Quad::NAN,
+            Quad::NAN.sinh_cosh().0;
+        sinh_cosh_nan_cosh:
+            Quad::NAN,
+            Quad::NAN.sinh_cosh().1;
+    );
 
-    #[test]
-    fn sinh_cosh_inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.sinh_cosh().0);
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.sinh_cosh().1);
+    // tanh tests
+    test_all_near!(
+        tanh_pi:
+            qd!("0.99627207622074994426469058001253671189689919080458761436261241597871"),
+            Quad::PI.tanh();
+        tanh_e:
+            qd!("0.99132891580059983779555761569968438292165869798746371676782928137622"),
+            Quad::E.tanh();
+        tanh_neg_pi:
+            qd!("-0.99627207622074994426469058001253671189689919080458761436261241597871"),
+            (-Quad::PI).tanh();
+        tanh_neg_e:
+            qd!("-0.99132891580059983779555761569968438292165869798746371676782928137622"),
+            (-Quad::E).tanh();
+        tanh_2_pi:
+            qd!("0.99999302533961061060510721183234574642771937737571084122455870005561"),
+            Quad::TAU.tanh();
+        tanh_pi_2:
+            qd!("0.91715233566727434637309292144261877536792714860108894534357412429172"),
+            Quad::FRAC_PI_2.tanh();
+        tanh_sqrt_2:
+            qd!("0.88838556158566054495300030572803164902037084848543082042923068315516"),
+            Quad::SQRT_2.tanh();
+        tanh_1_sqrt_2:
+            qd!("0.60885936501391381038594521400112420518839331118402587304740123080607"),
+            Quad::FRAC_1_SQRT_2.tanh();
+        tanh_150:
+            qd!("1.0"),
+            qd!(150).tanh();
+        tanh_neg_140:
+            qd!("-1.0"),
+            qd!(-140).tanh();
+        tanh_small:
+            qd!("0.0000099999999996666666666799999999994603174603393298059955863395863755057"),
+            qd!("0.00001").tanh();
+        tanh_neg_small:
+            qd!("-0.00000000099999999999999999966666666666666666679999999999999999994603174603225"),
+            qd!("-0.000000001").tanh();
+    );
+    test_all_exact!(
+        tanh_zero:
+            Quad::ZERO,
+            Quad::ZERO.tanh();
+        tanh_neg_zero:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.tanh();
+        tanh_inf:
+            Quad::ONE,
+            Quad::INFINITY.tanh();
+        tanh_neg_inf:
+            Quad::NEG_ONE,
+            Quad::NEG_INFINITY.tanh();
+        tanh_nan:
+            Quad::NAN,
+            Quad::NAN.tanh();
+    );
 
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.sinh_cosh().0);
-        assert_exact!(Quad::INFINITY, Quad::NEG_INFINITY.sinh_cosh().1);
-    }
+    // asinh tests
+    test_all_near!(
+        asinh_pi:
+            qd!("1.8622957433108482198883613251826205749026741849615547656128795144236"),
+            Quad::PI.asinh();
+        asinh_e:
+            qd!("1.7253825588523150939450979704048887562745572746729386688142115567082"),
+            Quad::E.asinh();
+        asinh_neg_pi:
+            qd!("-1.8622957433108482198883613251826205749026741849615547656128795144236"),
+            (-Quad::PI).asinh();
+        asinh_neg_e:
+            qd!("-1.7253825588523150939450979704048887562745572746729386688142115567082"),
+            (-Quad::E).asinh();
+        asinh_2_pi:
+            qd!("2.5372975013733611766775071037696746055657169972025193313951566067849"),
+            Quad::TAU.asinh();
+        asinh_pi_2:
+            qd!("1.2334031175112170570731083915452972603561395906198085461437004891214"),
+            Quad::FRAC_PI_2.asinh();
+        asinh_sqrt_2:
+            qd!("1.1462158347805888439003936556740077158109341200078551238025082224159"),
+            Quad::SQRT_2.asinh();
+        asinh_1_sqrt_2:
+            qd!("0.65847894846240835431252317365398422201349098573375823988423612846054"),
+            Quad::FRAC_1_SQRT_2.asinh();
+        asinh_150:
+            qd!("5.7037935855821315576975027994004472827976444064946619017092033475062"),
+            qd!(150).asinh();
+        asinh_neg_140:
+            qd!("-5.6348023580272583991488640099283811389909652342696970652712772047229"),
+            qd!(-140).asinh();
+        asinh_neg_small:
+            qd!("-0.000099999999833333334083333328869047649429563268341902889677582744003099"),
+            qd!("-0.0001").asinh();
+    );
+    test_all_prec!(
+        asinh_small:
+            qd!("0.0000099999999998333333333408333333328869047619351438492041119904402889648"),
+            qd!("0.00001").asinh(),
+            59;
+    );
+    test_all_exact!(
+        asinh_zero:
+            Quad::ZERO,
+            Quad::ZERO.asinh();
+        asinh_neg_zero:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.asinh();
+        asinh_inf:
+            Quad::INFINITY,
+            Quad::INFINITY.asinh();
+        asinh_neg_inf:
+            Quad::NEG_INFINITY,
+            Quad::NEG_INFINITY.asinh();
+        asinh_nan:
+            Quad::NAN,
+            Quad::NAN.asinh();
+    );
 
-    #[test]
-    fn sinh_cosh_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.sinh_cosh().0);
-        assert_exact!(Quad::NAN, Quad::NAN.sinh_cosh().1);
-    }
+    // acosh tests
+    test_all_near!(
+        acosh_pi:
+            qd!("1.811526272460853107021852049305420510220702081057922474861595622974"),
+            Quad::PI.acosh();
+        acosh_e:
+            qd!("1.657454454153077272593828742280534739158392762033676825848582208938"),
+            Quad::E.acosh();
+        acosh_2_pi:
+            qd!("2.5246306599334672302074913165530273494000887001227803690255451707555"),
+            Quad::TAU.acosh();
+        acosh_pi_2:
+            qd!("1.0232274785475505793174956779493038523014056664148620968024210937357"),
+            Quad::FRAC_PI_2.acosh();
+        acosh_sqrt_2:
+            qd!("0.88137358701954302523260932497979230902816032826163541075329560865267"),
+            Quad::SQRT_2.acosh();
+        acosh_150:
+            qd!("5.7037713633599001905278554895391354012923502543623403061858508464653"),
+            qd!(150).acosh();
+    );
+    test_all_prec!(
+        acosh_small:
+            qd!("0.004472132228228002123128446633028159909034212521519637331062210854491"),
+            qd!("1.00001").acosh(),
+            59;
+    );
+    test_all_exact!(
+        acosh_neg_pi:
+            Quad::NAN,
+            (-Quad::PI).acosh();
+        acosh_neg_e:
+            Quad::NAN,
+            (-Quad::E).acosh();
+        acosh_1_sqrt_2:
+            Quad::NAN,
+            Quad::FRAC_1_SQRT_2.acosh();
+        acosh_zero:
+            Quad::NAN,
+            Quad::ZERO.acosh();
+        acosh_neg_zero:
+            Quad::NAN,
+            Quad::NEG_ZERO.acosh();
+        acosh_one:
+            Quad::ZERO,
+            Quad::ONE.acosh();
+        acosh_inf:
+            Quad::INFINITY,
+            Quad::INFINITY.acosh();
+        acosh_neg_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY.acosh();
+        acosh_nan:
+            Quad::NAN,
+            Quad::NAN.acosh();
+    );
 
-    #[test]
-    fn sinh() {
-        assert_close!(
-            qd!("11.54873935725774837797733431538840968449518906639478945523216336"),
-            Quad::PI.sinh()
-        );
-        assert_close!(
-            qd!("7.544137102816975826341820042516532740294985744301671666369136432"),
-            Quad::E.sinh()
-        );
-    }
-
-    #[test]
-    fn sinh_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.sinh());
-    }
-
-    #[test]
-    fn sinh_inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.sinh());
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.sinh());
-    }
-
-    #[test]
-    fn sinh_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.sinh());
-    }
-
-    #[test]
-    fn cosh() {
-        assert_close!(
-            qd!("11.59195327552152062775175205256013769577091717620542253821288305"),
-            Quad::PI.cosh()
-        );
-        assert_close!(
-            qd!("7.610125138662288363418610230113379165233562792554468102771609974"),
-            Quad::E.cosh()
-        );
-    }
-
-    #[test]
-    fn cosh_one() {
-        assert_exact!(Quad::ONE, Quad::ZERO.cosh());
-    }
-
-    #[test]
-    fn cosh_inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.cosh());
-        assert_exact!(Quad::INFINITY, Quad::NEG_INFINITY.cosh());
-    }
-
-    #[test]
-    fn cosh_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.cosh());
-    }
-
-    #[test]
-    fn tanh() {
-        assert_close!(
-            qd!("0.9962720762207499442646905800125367118968991908045876143626124160"),
-            Quad::PI.tanh()
-        );
-        assert_close!(
-            qd!("0.9913289158005998377955576156996843829216586979874637167678292814"),
-            Quad::E.tanh()
-        );
-    }
-
-    #[test]
-    fn tanh_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.tanh());
-    }
-
-    #[test]
-    fn tanh_inf() {
-        assert_exact!(Quad::ONE, Quad::INFINITY.tanh());
-        assert_exact!(Quad::NEG_ONE, Quad::NEG_INFINITY.tanh());
-    }
-
-    #[test]
-    fn tanh_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.tanh());
-    }
-
-    #[test]
-    fn asinh() {
-        assert_close!(
-            qd!("1.862295743310848219888361325182620574902674184961554765612879514"),
-            Quad::PI.asinh()
-        );
-        assert_close!(
-            qd!("1.725382558852315093945097970404888756274557274672938668814211557"),
-            Quad::E.asinh()
-        );
-    }
-
-    #[test]
-    fn asinh_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.asinh());
-    }
-
-    #[test]
-    fn asinh_inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.asinh());
-        assert_exact!(Quad::NEG_INFINITY, Quad::NEG_INFINITY.asinh());
-    }
-
-    #[test]
-    fn asinh_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.asinh());
-    }
-
-    #[test]
-    fn acosh() {
-        assert_close!(
-            qd!("1.811526272460853107021852049305420510220702081057922474861595623"),
-            Quad::PI.acosh()
-        );
-        assert_close!(
-            qd!("1.657454454153077272593828742280534739158392762033676825848582209"),
-            Quad::E.acosh()
-        );
-    }
-
-    #[test]
-    fn acosh_zero() {
-        assert_exact!(Quad::NAN, Quad::ZERO.acosh());
-    }
-
-    #[test]
-    fn acosh_inf() {
-        assert_exact!(Quad::INFINITY, Quad::INFINITY.acosh());
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.acosh());
-    }
-
-    #[test]
-    fn acosh_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.acosh());
-    }
-
-    #[test]
-    fn atanh() {
-        assert_close!(
-            qd!("0.3297653149566991076178634175552186042701373911406924144029083548"),
-            Quad::PI.recip().atanh()
-        );
-        assert_close!(
-            qd!("0.3859684164526523625353195700175926718961289961812712597770308403"),
-            Quad::E.recip().atanh()
-        );
-    }
-
-    #[test]
-    fn atanh_zero() {
-        assert_exact!(Quad::ZERO, Quad::ZERO.atanh());
-    }
-
-    #[test]
-    fn atanh_inf() {
-        assert_exact!(Quad::NAN, Quad::INFINITY.atanh());
-        assert_exact!(Quad::NAN, Quad::NEG_INFINITY.atanh());
-    }
-
-    #[test]
-    fn atanh_nan() {
-        assert_exact!(Quad::NAN, Quad::NAN.atanh());
-    }
+    // atanh tests
+    test_all_near!(
+        atanh_pi_6:
+            qd!("0.58128501169472315834806278002976913214059711391275847374959739163012"),
+            Quad::FRAC_PI_6.atanh();
+        atanh_pi_8:
+            qd!("0.41498725684198892721883143584943153659779852210475972513293607997076"),
+            Quad::FRAC_PI_8.atanh();
+        atanh_1_sqrt_2:
+            qd!("0.88137358701954302523260932497979230902816032826163541075329560865386"),
+            Quad::FRAC_1_SQRT_2.atanh();
+        atanh_99:
+            qd!("2.6466524123622461977050606459342686009455526402847362494532304939648"),
+            qd!("0.99").atanh();
+        atanh_neg_pi_6:
+            qd!("-0.58128501169472315834806278002976913214059711391275847374959739163012"),
+            (-Quad::FRAC_PI_6).atanh();
+        atanh_neg_pi_8:
+            qd!("-0.41498725684198892721883143584943153659779852210475972513293607997076"),
+            (-Quad::FRAC_PI_8).atanh();
+        atanh_neg_1_sqrt_2:
+            qd!("-0.88137358701954302523260932497979230902816032826163541075329560865386"),
+            (-Quad::FRAC_1_SQRT_2).atanh();
+        atanh_neg_99:
+            qd!("-2.6466524123622461977050606459342686009455526402847362494532304939648"),
+            qd!("-0.99").atanh();
+    );
+    test_all_exact!(
+        atanh_pi:
+            Quad::NAN,
+            Quad::PI.atanh();
+        atanh_neg_pi:
+            Quad::NAN,
+            (-Quad::PI).atanh();
+        atanh_zero:
+            Quad::ZERO,
+            Quad::ZERO.atanh();
+        atanh_neg_zero:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.atanh();
+        atanh_inf:
+            Quad::NAN,
+            Quad::INFINITY.atanh();
+        atanh_neg_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY.atanh();
+        atanh_nan:
+            Quad::NAN,
+            Quad::NAN.atanh();
+    );
 }
