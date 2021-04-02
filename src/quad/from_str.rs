@@ -339,10 +339,10 @@ mod tests {
         let s = parse("0.999999999999999999891579782751449556599254719913005828857421875");
         let t = qd!(2).powi(63);
         let x = (t - qd!(1)) / t;
-        assert_close!(x, s);
+        near!(x, s);
 
         let three_expected = (qd!(3).powi(15) - qd!(1)) / qd!(3).powi(15);
-        assert_precision!(
+        prec!(
             three_expected,
             parse("0.999999930308280623743676086269149280847663170442180718015664887"),
             60
