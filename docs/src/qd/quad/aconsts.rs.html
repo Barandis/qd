@@ -247,6 +247,30 @@
 <span id="244">244</span>
 <span id="245">245</span>
 <span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -272,7 +296,7 @@
     <span class="doccomment">/// This is the difference between `1.0` and the next largest representable number.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [Machine epsilon]: https://en.wikipedia.org/wiki/Machine_epsilon</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EPSILON</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="number">1.2154326714572542e-63</span>, <span class="number">4.2261844194902035e-129</span>, <span class="number">0e0</span>, <span class="number">0e0</span>); 
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EPSILON</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="number">1.2154326714572542e-63</span>, <span class="number">4.2261844194902035e-129</span>, <span class="number">0e0</span>, <span class="number">0e0</span>);
 
     <span class="doccomment">/// Smallest finite `Quad` value.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MIN</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
@@ -334,8 +358,8 @@
         <span class="number">1.1124542208633655e-49</span>,
     );
 
-    <span class="doccomment">/// 2π</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MUL_2_PI</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
+    <span class="doccomment">/// The full circle constant (τ), or 2π</span>
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TAU</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">6.283185307179586e0</span>,
         <span class="number">2.4492935982947064e-16</span>,
         <span class="op">-</span><span class="number">5.989539619436679e-33</span>,
@@ -355,7 +379,7 @@
         <span class="number">1.0471975511965979e0</span>,
         <span class="op">-</span><span class="number">1.072081766451091e-16</span>,
         <span class="op">-</span><span class="number">9.982566032394464e-34</span>,
-        <span class="op">-</span><span class="number">7.6956153601821505e-50</span>,
+        <span class="op">-</span><span class="number">7.69561536018215e-50</span>,
     );
 
     <span class="doccomment">/// π/4</span>
@@ -363,7 +387,7 @@
         <span class="number">7.853981633974483e-1</span>,
         <span class="number">3.061616997868383e-17</span>,
         <span class="op">-</span><span class="number">7.486924524295849e-34</span>,
-        <span class="number">2.781135552158414e-50</span>,
+        <span class="number">2.781135552158413e-50</span>,
     );
 
     <span class="doccomment">/// π/6</span>
@@ -371,7 +395,7 @@
         <span class="number">5.235987755982989e-1</span>,
         <span class="op">-</span><span class="number">5.360408832255455e-17</span>,
         <span class="op">-</span><span class="number">4.991283016197232e-34</span>,
-        <span class="op">-</span><span class="number">3.8478076800910743e-50</span>,
+        <span class="op">-</span><span class="number">3.847807680091076e-50</span>,
     );
 
     <span class="doccomment">/// π/8</span>
@@ -379,7 +403,7 @@
         <span class="number">3.9269908169872414e-1</span>,
         <span class="number">1.5308084989341915e-17</span>,
         <span class="op">-</span><span class="number">3.7434622621479246e-34</span>,
-        <span class="number">1.3905677760792078e-50</span>,
+        <span class="number">1.3905677760792066e-50</span>,
     );
 
     <span class="doccomment">/// π/16</span>
@@ -387,7 +411,15 @@
         <span class="number">1.9634954084936207e-1</span>,
         <span class="number">7.654042494670958e-18</span>,
         <span class="op">-</span><span class="number">1.8717311310739623e-34</span>,
-        <span class="number">6.952838880396035e-51</span>,
+        <span class="number">6.952838880396033e-51</span>,
+    );
+
+    <span class="doccomment">/// 3π/2</span>
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_3_PI_2</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
+        <span class="number">4.71238898038469e0</span>,
+        <span class="number">1.8369701987210297e-16</span>,
+        <span class="number">7.8337969295008e-33</span>,
+        <span class="op">-</span><span class="number">5.173596326540972e-49</span>,
     );
 
     <span class="doccomment">/// 3π/4</span>
@@ -395,7 +427,23 @@
         <span class="number">2.356194490192345e0</span>,
         <span class="number">9.184850993605148e-17</span>,
         <span class="number">3.9168984647504e-33</span>,
-        <span class="op">-</span><span class="number">2.5867981632704864e-49</span>,
+        <span class="op">-</span><span class="number">2.586798163270486e-49</span>,
+    );
+
+    <span class="doccomment">/// 5π/4</span>
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_5_PI_4</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
+        <span class="number">3.9269908169872414e0</span>,
+        <span class="number">1.5308084989341916e-16</span>,
+        <span class="op">-</span><span class="number">9.90643808418708e-33</span>,
+        <span class="number">4.811706604997218e-49</span>,
+    );
+
+    <span class="doccomment">/// 7π/4</span>
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_7_PI_4</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
+        <span class="number">5.497787143782138e0</span>,
+        <span class="number">2.143131898507868e-16</span>,
+        <span class="number">9.221286550320605e-34</span>,
+        <span class="number">2.3622547205188384e-50</span>,
     );
 
     <span class="doccomment">/// 1/π</span>
@@ -403,7 +451,7 @@
         <span class="number">3.183098861837907e-1</span>,
         <span class="op">-</span><span class="number">1.9678676675182486e-17</span>,
         <span class="op">-</span><span class="number">1.0721436282893004e-33</span>,
-        <span class="number">8.053563926594113e-50</span>,
+        <span class="number">8.053563926594112e-50</span>,
     );
 
     <span class="doccomment">/// 2/π</span>
@@ -419,7 +467,7 @@
         <span class="number">1.1283791670955126e0</span>,
         <span class="number">1.533545961316588e-17</span>,
         <span class="op">-</span><span class="number">4.765684596693686e-34</span>,
-        <span class="op">-</span><span class="number">2.0077946616552625e-50</span>,
+        <span class="op">-</span><span class="number">2.0077946616552623e-50</span>,
     );
 
     <span class="doccomment">/// √2</span>
@@ -427,7 +475,7 @@
         <span class="number">1.4142135623730951e0</span>,
         <span class="op">-</span><span class="number">9.667293313452913e-17</span>,
         <span class="number">4.1386753086994136e-33</span>,
-        <span class="number">4.935546991468353e-50</span>,
+        <span class="number">4.935546991468354e-50</span>,
     );
 
     <span class="doccomment">/// 1/√2</span>
@@ -435,7 +483,7 @@
         <span class="number">7.071067811865476e-1</span>,
         <span class="op">-</span><span class="number">4.833646656726457e-17</span>,
         <span class="number">2.0693376543497068e-33</span>,
-        <span class="number">2.4677734957341783e-50</span>,
+        <span class="number">2.467773495734177e-50</span>,
     );
 
     <span class="doccomment">/// Euler&#39;s number (e)</span>
@@ -447,7 +495,7 @@
     );
 
     <span class="doccomment">/// log₂ 10</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LOG210</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LOG2_10</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">3.321928094887362e0</span>,
         <span class="number">1.661617516973592e-16</span>,
         <span class="number">1.2215512178458181e-32</span>,
@@ -459,15 +507,15 @@
         <span class="number">1.4426950408889634e0</span>,
         <span class="number">2.0355273740931033e-17</span>,
         <span class="op">-</span><span class="number">1.0614659956117258e-33</span>,
-        <span class="op">-</span><span class="number">1.38367167801814e-50</span>,
+        <span class="op">-</span><span class="number">1.3836716780181397e-50</span>,
     );
 
     <span class="doccomment">/// log 2</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LOG102</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LOG10_2</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">3.010299956639812e-1</span>,
         <span class="op">-</span><span class="number">2.8037281277851704e-18</span>,
         <span class="number">5.471948402314639e-35</span>,
-        <span class="number">5.1051389831070984e-51</span>,
+        <span class="number">5.105138983107093e-51</span>,
     );
 
     <span class="doccomment">/// log e</span>
@@ -475,7 +523,7 @@
         <span class="number">4.342944819032518e-1</span>,
         <span class="number">1.098319650216765e-17</span>,
         <span class="number">3.717181233110959e-34</span>,
-        <span class="number">7.734484346504308e-51</span>,
+        <span class="number">7.73448434650429e-51</span>,
     );
 
     <span class="doccomment">/// ln 2</span>
@@ -483,7 +531,7 @@
         <span class="number">6.931471805599453e-1</span>,
         <span class="number">2.3190468138462996e-17</span>,
         <span class="number">5.707708438416212e-34</span>,
-        <span class="op">-</span><span class="number">3.5824322106018105e-50</span>,
+        <span class="op">-</span><span class="number">3.582432210601812e-50</span>,
     );
 
     <span class="doccomment">/// ln 10</span>
@@ -491,7 +539,7 @@
         <span class="number">2.302585092994046e0</span>,
         <span class="op">-</span><span class="number">2.1707562233822494e-16</span>,
         <span class="op">-</span><span class="number">9.984262454465777e-33</span>,
-        <span class="op">-</span><span class="number">4.0233574544502056e-49</span>,
+        <span class="op">-</span><span class="number">4.023357454450206e-49</span>,
     );
 }
 </pre></div>

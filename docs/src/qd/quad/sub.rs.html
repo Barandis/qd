@@ -240,6 +240,44 @@
 <span id="237">237</span>
 <span id="238">238</span>
 <span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -253,9 +291,9 @@
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Quad</span>;
 
     <span class="doccomment">/// Subtracts another `Quad` from this one, producing a new `Quad` as a result.</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the binary `-` operator between two `Quad`s.</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
@@ -263,7 +301,7 @@
     <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let x = Quad::E - Quad::PI;</span>
     <span class="doccomment">/// let expected = qd!(&quot;-0.4233108251307480031023559119268403864399223056751462460079769646&quot;);</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
     <span class="doccomment">/// # }</span>
@@ -356,9 +394,9 @@
 
 <span class="kw">impl</span> <span class="ident">SubAssign</span> <span class="kw">for</span> <span class="ident">Quad</span> {
     <span class="doccomment">/// Subtracts another `Quad` from this one, modifying this one to equal the result.</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the `-=` operator between two `Quad`s.</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
@@ -415,70 +453,108 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">num_num</span>() {
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;0.423310825130748003102355911926840386439922305675146246007976965&quot;</span>);
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">E</span>);
-    }
+    <span class="comment">// sub tests</span>
+    <span class="macro">test_all_near</span><span class="macro">!</span>(
+        <span class="ident">num_num</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684038643992230567514624600797696458298&quot;</span>),
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">E</span>;
+        <span class="ident">num_ref</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684038643992230567514624600797696458298&quot;</span>),
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">E</span>;
+        <span class="ident">ref_num</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684038643992230567514624600797696458298&quot;</span>),
+            <span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">E</span>;
+        <span class="ident">ref_ref</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684038643992230567514624600797696458298&quot;</span>),
+            <span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">E</span>;
+        <span class="ident">num_neg_num</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;5.8598744820488384738229308546321653819544164930750653959419122200308&quot;</span>),
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="op">-</span><span class="ident">Quad</span>::<span class="ident">E</span>;
+        <span class="ident">num_neg_ref</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;5.8598744820488384738229308546321653819544164930750653959419122200308&quot;</span>),
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="op">-</span><span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">E</span>;
+        <span class="ident">ref_neg_num</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;5.8598744820488384738229308546321653819544164930750653959419122200308&quot;</span>),
+            <span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="op">-</span><span class="ident">Quad</span>::<span class="ident">E</span>;
+        <span class="ident">ref_neg_ref</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;5.8598744820488384738229308546321653819544164930750653959419122200308&quot;</span>),
+            <span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="op">-</span><span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">E</span>;
+        <span class="ident">num_id</span>:
+            <span class="ident">Quad</span>::<span class="ident">PI</span>,
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">ZERO</span>;
+        <span class="ident">id_num</span>:
+            <span class="op">-</span><span class="ident">Quad</span>::<span class="ident">PI</span>,
+            <span class="ident">Quad</span>::<span class="ident">ZERO</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">PI</span>;
+        <span class="ident">num_small</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;3.1415926535897932384626433832795028841971693993751058209749435923073&quot;</span>),
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;1e-60&quot;</span>);
+        <span class="ident">small_num</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;-3.1415926535897932384626433832795028841971693993751058209749435923073&quot;</span>),
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;1e-60&quot;</span>) <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">PI</span>;
+        <span class="ident">three_nums</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;-0.26983635542919730631487620953133618163557782868510900811270304491058&quot;</span>),
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">E</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span>;
+        <span class="ident">lassoc</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;-0.26983635542919730631487620953133618163557782868510900811270304491058&quot;</span>),
+            (<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">E</span>) <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span>;
+        <span class="ident">rassoc</span>:
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;5.1667273014888931644056987331739888138789163587148101418212322105361&quot;</span>),
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> (<span class="ident">Quad</span>::<span class="ident">LN_2</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">E</span>);
+    );
+    <span class="macro">test_all_exact</span><span class="macro">!</span>(
+        <span class="ident">inf_one</span>:
+            <span class="ident">Quad</span>::<span class="ident">INFINITY</span>,
+            <span class="ident">Quad</span>::<span class="ident">INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>;
+        <span class="ident">one_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>,
+            <span class="ident">Quad</span>::<span class="ident">ONE</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">neg_inf_one</span>:
+            <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>,
+            <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>;
+        <span class="ident">one_neg_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">INFINITY</span>,
+            <span class="ident">Quad</span>::<span class="ident">ONE</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>;
+        <span class="ident">inf_neg_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">INFINITY</span>,
+            <span class="ident">Quad</span>::<span class="ident">INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>;
+        <span class="ident">neg_inf_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>,
+            <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">INFINITY</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">ref_ref</span>() {
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;0.423310825130748003102355911926840386439922305675146246007976965&quot;</span>);
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">E</span>);
-    }
+        <span class="ident">nan_one</span>:
+            <span class="ident">Quad</span>::<span class="ident">NAN</span>,
+            <span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>;
+        <span class="ident">one_nan</span>:
+            <span class="ident">Quad</span>::<span class="ident">NAN</span>,
+            <span class="ident">Quad</span>::<span class="ident">ONE</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>;
+        <span class="ident">nan_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">NAN</span>,
+            <span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">inf_nan</span>:
+            <span class="ident">Quad</span>::<span class="ident">NAN</span>,
+            <span class="ident">Quad</span>::<span class="ident">INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>;
+        <span class="ident">inf_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">NAN</span>,
+            <span class="ident">Quad</span>::<span class="ident">INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">neg_inf_neg_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">NAN</span>,
+            <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>;
+    );
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">op_ref</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">num_ref</span>() {
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;0.423310825130748003102355911926840386439922305675146246007976965&quot;</span>);
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">E</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">op_ref</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">ref_num</span>() {
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;0.423310825130748003102355911926840386439922305675146246007976965&quot;</span>);
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">E</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">assign_num</span>() {
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;0.423310825130748003102355911926840386439922305675146246007976965&quot;</span>);
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>;
-        <span class="ident">a</span> <span class="op">-</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">E</span>;
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="ident">a</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">assign_ref</span>() {
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;0.423310825130748003102355911926840386439922305675146246007976965&quot;</span>);
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>;
-        <span class="ident">b</span> <span class="op">-</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">E</span>;
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="ident">b</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">inf</span>() {
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">INFINITY</span>, <span class="ident">Quad</span>::<span class="ident">INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>, <span class="ident">Quad</span>::<span class="ident">ONE</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>, <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">INFINITY</span>, <span class="ident">Quad</span>::<span class="ident">ONE</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">INFINITY</span>, <span class="ident">Quad</span>::<span class="ident">INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>, <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">INFINITY</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">eq_op</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">nan</span>() {
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span>, <span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span>, <span class="ident">Quad</span>::<span class="ident">ONE</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span>, <span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span>, <span class="ident">Quad</span>::<span class="ident">INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span>, <span class="ident">Quad</span>::<span class="ident">INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span>, <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>);
-    }
+    <span class="comment">// Assign tests. Assign code delegates to sub code, so there&#39;s no need to re-test all</span>
+    <span class="comment">// of the cases above.</span>
+    <span class="macro">test_all</span><span class="macro">!</span>(
+        <span class="ident">assign_num</span>: {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>;
+            <span class="ident">a</span> <span class="op">-</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">E</span>;
+            <span class="macro">near</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684038643992230567514624600797696458298&quot;</span>), <span class="ident">a</span>);
+        }
+        <span class="ident">assign_ref</span>: {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>;
+            <span class="ident">b</span> <span class="op">-</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">Quad</span>::<span class="ident">E</span>;
+            <span class="macro">near</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684038643992230567514624600797696458298&quot;</span>), <span class="ident">b</span>);
+        }
+    );
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "qd";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

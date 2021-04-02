@@ -139,26 +139,6 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
-<span id="139">139</span>
-<span id="140">140</span>
-<span id="141">141</span>
-<span id="142">142</span>
-<span id="143">143</span>
-<span id="144">144</span>
-<span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
-<span id="148">148</span>
-<span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
-<span id="152">152</span>
-<span id="153">153</span>
-<span id="154">154</span>
-<span id="155">155</span>
-<span id="156">156</span>
-<span id="157">157</span>
-<span id="158">158</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -232,91 +212,71 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">eq_op</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">equal</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>);
-    }
+    <span class="comment">// eq tests</span>
+    <span class="macro">test_all_assert</span><span class="macro">!</span>(
+        <span class="ident">eq_pi_pi</span>:
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>;
+        <span class="ident">eq_pi_e</span>:
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">!</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">E</span>;
+        <span class="ident">eq_zero_neg_zero</span>:
+            <span class="ident">Quad</span>::<span class="ident">ZERO</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_ZERO</span>;
+        <span class="ident">eq_inf_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">INFINITY</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">eq_neg_inf_neg_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>;
+        <span class="ident">eq_inf_neg_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">INFINITY</span> <span class="op">!</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>;
+        <span class="ident">eq_nan_nan</span>:
+            <span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">!</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>;
+    );
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">not_equal</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">!</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">E</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">equal_zero</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">ZERO</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_ZERO</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">eq_op</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">equal_inf</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">INFINITY</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">INFINITY</span> <span class="op">!</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">eq_op</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">equal_nan</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">!</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">eq_op</span>, <span class="ident">clippy</span>::<span class="ident">neg_cmp_op_on_partial_ord</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">gt</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&gt;</span> <span class="ident">Quad</span>::<span class="ident">E</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&gt;</span> <span class="ident">Quad</span>::<span class="ident">PI</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">E</span> <span class="op">&gt;</span> <span class="ident">Quad</span>::<span class="ident">PI</span>));
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">eq_op</span>, <span class="ident">clippy</span>::<span class="ident">neg_cmp_op_on_partial_ord</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">gte</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">E</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">E</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>));
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">eq_op</span>, <span class="ident">clippy</span>::<span class="ident">neg_cmp_op_on_partial_ord</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">lt</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">E</span> <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">PI</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">E</span> <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">E</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">E</span>));
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">eq_op</span>, <span class="ident">clippy</span>::<span class="ident">neg_cmp_op_on_partial_ord</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">lte</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">E</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">E</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">E</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">E</span>));
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">ord_zero</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">ZERO</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_ZERO</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">ZERO</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_ZERO</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">eq_op</span>, <span class="ident">clippy</span>::<span class="ident">neg_cmp_op_on_partial_ord</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">ord_inf</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">&gt;</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>));
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">eq_op</span>, <span class="ident">clippy</span>::<span class="ident">neg_cmp_op_on_partial_ord</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">ord_nan</span>() {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">&gt;</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>));
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>));
-    }
+    <span class="comment">// ord tests</span>
+    <span class="macro">test_all_assert</span><span class="macro">!</span>(
+        <span class="ident">gt_pi_e</span>:
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&gt;</span> <span class="ident">Quad</span>::<span class="ident">E</span>;
+        <span class="ident">gt_pi_pi</span>:
+            <span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&gt;</span> <span class="ident">Quad</span>::<span class="ident">PI</span>);
+        <span class="ident">gt_e_pi</span>:
+            <span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">E</span> <span class="op">&gt;</span> <span class="ident">Quad</span>::<span class="ident">PI</span>);
+        <span class="ident">gte_pi_e</span>:
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">E</span>;
+        <span class="ident">gte_pi_pi</span>:
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>;
+        <span class="ident">gte_e_pi</span>:
+            <span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">E</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>);
+        <span class="ident">lt_pi_e</span>:
+            <span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">E</span>);
+        <span class="ident">lt_pi_pi</span>:
+            <span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">PI</span>);
+        <span class="ident">lt_e_pi</span>:
+            <span class="ident">Quad</span>::<span class="ident">E</span> <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">PI</span>;
+        <span class="ident">lte_pi_e</span>:
+            <span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">E</span>);
+        <span class="ident">lte_pi_pi</span>:
+            <span class="ident">Quad</span>::<span class="ident">PI</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>;
+        <span class="ident">lte_e_pi</span>:
+            <span class="ident">Quad</span>::<span class="ident">E</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">PI</span>;
+        <span class="ident">lte_zero_neg_zero</span>:
+            <span class="ident">Quad</span>::<span class="ident">ZERO</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_ZERO</span>;
+        <span class="ident">gte_zero_neg_zero</span>:
+            <span class="ident">Quad</span>::<span class="ident">ZERO</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_ZERO</span>;
+        <span class="ident">lt_neg_inf_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">lte_neg_inf_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>;
+        <span class="ident">gte_neg_inf_neg_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>;
+        <span class="ident">gt_neg_inf_neg_inf</span>:
+            <span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span> <span class="op">&gt;</span> <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>);
+        <span class="ident">lt_nan_nan</span>:
+            <span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">&lt;</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>);
+        <span class="ident">lte_nan_nan</span>:
+            <span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>);
+        <span class="ident">gt_nan_nan</span>:
+            <span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">&gt;</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>);
+        <span class="ident">gte_nan_nan</span>:
+            <span class="op">!</span>(<span class="ident">Quad</span>::<span class="ident">NAN</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">NAN</span>);
+    );
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "qd";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

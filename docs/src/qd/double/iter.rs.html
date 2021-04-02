@@ -184,21 +184,6 @@
 <span id="181">181</span>
 <span id="182">182</span>
 <span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -309,94 +294,79 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">sum</span>() {
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> [<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">4</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">5</span>)].<span class="ident">iter</span>().<span class="ident">sum</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">15</span>), <span class="ident">actual</span>);
+    <span class="comment">// sum tests</span>
+    <span class="macro">test_all_near</span><span class="macro">!</span>(
+        <span class="ident">sum_nums_pi_234</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;3.403392041388942675001196998552795&quot;</span>),
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_3</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_4</span>]
+                .<span class="ident">into_iter</span>()
+                .<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">sum_refs_pi_234</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;3.403392041388942675001196998552795&quot;</span>),
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_3</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_4</span>]
+                .<span class="ident">iter</span>()
+                .<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+    );
+    <span class="macro">test_all_exact</span><span class="macro">!</span>(
+        <span class="ident">sum_nums_15</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="number">15</span>),
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">4</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">5</span>)].<span class="ident">into_iter</span>().<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">sum_refs_15</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="number">15</span>),
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">4</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">5</span>)].<span class="ident">iter</span>().<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">sum_empty</span>:
+            <span class="ident">Double</span>::<span class="ident">ZERO</span>,
+            <span class="macro">vec</span><span class="macro">!</span>[].<span class="ident">iter</span>().<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">sum_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">INFINITY</span>,
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="ident">Double</span>::<span class="ident">INFINITY</span>, <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>)].<span class="ident">iter</span>().<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">sum_neg_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>,
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>, <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>)].<span class="ident">iter</span>().<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">sum_both_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Double</span>::<span class="ident">INFINITY</span>, <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>].<span class="ident">iter</span>().<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">sum_nan</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>), <span class="ident">Double</span>::<span class="ident">NAN</span>].<span class="ident">iter</span>().<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+    );
 
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_3</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_4</span>]
-            .<span class="ident">into_iter</span>()
-            .<span class="ident">sum</span>();
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;3.4033920413889426750011969985528&quot;</span>), <span class="ident">actual</span>);
-
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> [<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">4</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">5</span>)].<span class="ident">iter</span>().<span class="ident">sum</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">15</span>), <span class="ident">actual</span>);
-
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_3</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_4</span>]
-            .<span class="ident">iter</span>()
-            .<span class="ident">sum</span>();
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;3.4033920413889426750011969985528&quot;</span>), <span class="ident">actual</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">sum_empty</span>() {
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[].<span class="ident">iter</span>().<span class="ident">sum</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">ZERO</span>, <span class="ident">actual</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">sum_inf</span>() {
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="ident">Double</span>::<span class="ident">INFINITY</span>, <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>)].<span class="ident">iter</span>().<span class="ident">sum</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">INFINITY</span>, <span class="ident">actual</span>);
-
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>, <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>)].<span class="ident">iter</span>().<span class="ident">sum</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>, <span class="ident">actual</span>);
-
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Double</span>::<span class="ident">INFINITY</span>, <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>].<span class="ident">iter</span>().<span class="ident">sum</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">actual</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">sum_nan</span>() {
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>), <span class="ident">Double</span>::<span class="ident">NAN</span>].<span class="ident">iter</span>().<span class="ident">sum</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">actual</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">product</span>() {
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> [<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">4</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">5</span>)].<span class="ident">iter</span>().<span class="ident">product</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">120</span>), <span class="ident">actual</span>);
-
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_3</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_4</span>]
-            .<span class="ident">into_iter</span>()
-            .<span class="ident">product</span>();
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;1.2919281950124925073115131277959&quot;</span>), <span class="ident">actual</span>);
-
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> [<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">4</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">5</span>)].<span class="ident">iter</span>().<span class="ident">product</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">120</span>), <span class="ident">actual</span>);
-
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_3</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_4</span>]
-            .<span class="ident">iter</span>()
-            .<span class="ident">product</span>();
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;1.2919281950124925073115131277959&quot;</span>), <span class="ident">actual</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">product_empty</span>() {
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[].<span class="ident">iter</span>().<span class="ident">product</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">ONE</span>, <span class="ident">actual</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">product_inf</span>() {
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="ident">Double</span>::<span class="ident">INFINITY</span>, <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>)].<span class="ident">iter</span>().<span class="ident">product</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">INFINITY</span>, <span class="ident">actual</span>);
-
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>, <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>)].<span class="ident">iter</span>().<span class="ident">product</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>, <span class="ident">actual</span>);
-
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Double</span>::<span class="ident">INFINITY</span>, <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>]
-            .<span class="ident">iter</span>()
-            .<span class="ident">product</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>, <span class="ident">actual</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">product_nan</span>() {
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>), <span class="ident">Double</span>::<span class="ident">NAN</span>].<span class="ident">iter</span>().<span class="ident">product</span>();
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">actual</span>);
-    }
+    <span class="comment">// product tests</span>
+    <span class="macro">test_all_near</span><span class="macro">!</span>(
+        <span class="ident">product_nums_pi_234</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;1.2919281950124925073115131277958906&quot;</span>),
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_3</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_4</span>]
+                .<span class="ident">into_iter</span>()
+                .<span class="ident">product</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">product_refs_pi_234</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;1.2919281950124925073115131277958906&quot;</span>),
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Double</span>::<span class="ident">FRAC_PI_2</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_3</span>, <span class="ident">Double</span>::<span class="ident">FRAC_PI_4</span>]
+                .<span class="ident">iter</span>()
+                .<span class="ident">product</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+    );
+    <span class="macro">test_all_exact</span><span class="macro">!</span>(
+        <span class="ident">product_nums_15</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="number">120</span>),
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">4</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">5</span>)].<span class="ident">into_iter</span>().<span class="ident">product</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">product_refs_15</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="number">120</span>),
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">4</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">5</span>)].<span class="ident">iter</span>().<span class="ident">product</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">product_empty</span>:
+            <span class="ident">Double</span>::<span class="ident">ONE</span>,
+            <span class="macro">vec</span><span class="macro">!</span>[].<span class="ident">iter</span>().<span class="ident">product</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">product_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">INFINITY</span>,
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="ident">Double</span>::<span class="ident">INFINITY</span>, <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>)].<span class="ident">iter</span>().<span class="ident">product</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">product_neg_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>,
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>, <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>)].<span class="ident">iter</span>().<span class="ident">product</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">product_both_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>,
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Double</span>::<span class="ident">INFINITY</span>, <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>].<span class="ident">iter</span>().<span class="ident">product</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+        <span class="ident">product_nan</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>), <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>), <span class="ident">Double</span>::<span class="ident">NAN</span>].<span class="ident">iter</span>().<span class="ident">product</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>();
+    );
 }
-
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "qd";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

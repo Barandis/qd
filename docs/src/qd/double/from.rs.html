@@ -390,6 +390,40 @@
 <span id="387">387</span>
 <span id="388">388</span>
 <span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -679,7 +713,7 @@
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Double</span> {
     <span class="doccomment">/// Parses a string to create a `Double`.</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// The parser works pretty similarly to parsers for `f32` and `f64`. It will fail if</span>
     <span class="doccomment">/// characters are present that are not digits, decimal points, signs, or exponent</span>
     <span class="doccomment">/// markers. It will also fail if there are multiples of these or if they&#39;re in the</span>
@@ -690,7 +724,7 @@
     <span class="doccomment">/// *also* produces [`NAN`]. For this reason it&#39;s suggested to use [`from_str`] (or its</span>
     <span class="doccomment">/// associated `parse` function) instead of this function if there is any chance that</span>
     <span class="doccomment">/// the parsed string will be legitimately [`NAN`].</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
@@ -698,12 +732,12 @@
     <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);</span>
     <span class="doccomment">/// let x = Double::from(&quot;0.9999999303082806237436760862691&quot;);</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; dd!(1e-30));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// [`NAN`]: #associatedconstant.NAN</span>
     <span class="doccomment">/// [`from_str`]: #method.from_str</span>
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
@@ -721,7 +755,7 @@
     <span class="doccomment">/// has the capability of losing range (for example, no other type could be used to</span>
     <span class="doccomment">/// represent `dd!(1e308)`). Casts can be made from the `f64` provided by this function</span>
     <span class="doccomment">/// to other numeric types as needed.</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
@@ -729,7 +763,7 @@
     <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let a = Double::PI;</span>
     <span class="doccomment">/// let x = f64::from(a);</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// let diff = (x - std::f64::consts::PI).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; 1e-15);</span>
     <span class="doccomment">/// # }</span>
@@ -743,42 +777,76 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">from_f32</span>() {
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1.0f32</span>), <span class="ident">Double</span>(<span class="number">1.0</span>, <span class="number">0.0</span>));
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1.203125f32</span>), <span class="ident">Double</span>(<span class="number">1.203125</span>, <span class="number">0.0</span>));
+    <span class="comment">// f32 tests</span>
+    <span class="macro">test_all_exact</span><span class="macro">!</span>(
+        <span class="ident">f32_int</span>:
+            <span class="ident">Double</span>(<span class="number">1.0</span>, <span class="number">0.0</span>),
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="number">1.0f32</span>);
+        <span class="ident">f32_float</span>:
+            <span class="ident">Double</span>(<span class="number">1.203125</span>, <span class="number">0.0</span>),
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="number">1.203125f32</span>);
+        <span class="ident">f32_zero</span>:
+            <span class="ident">Double</span>::<span class="ident">ZERO</span>,
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="number">0f32</span>);
+        <span class="ident">f32_neg_zero</span>:
+            <span class="ident">Double</span>::<span class="ident">NEG_ZERO</span>,
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="op">-</span><span class="number">0.0f32</span>);
+        <span class="ident">f32_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">INFINITY</span>,
+            <span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">f32_neg_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>,
+            <span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">NEG_INFINITY</span>;
+        <span class="ident">f32_nan</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">NAN</span>;
+    );
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">f32_nonrep</span>: {
         <span class="macro">assert_ne</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1.1f32</span>).<span class="number">1</span>, <span class="number">0.0</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">0f32</span>), <span class="ident">Double</span>::<span class="ident">ZERO</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="op">-</span><span class="number">0.0f32</span>), <span class="ident">Double</span>::<span class="ident">NEG_ZERO</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">INFINITY</span>), <span class="ident">Double</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">NEG_INFINITY</span>), <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">NAN</span>), <span class="ident">Double</span>::<span class="ident">NAN</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">from_f64</span>() {
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1.0</span>), <span class="ident">Double</span>(<span class="number">1.0</span>, <span class="number">0.0</span>));
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1.203125</span>), <span class="ident">Double</span>(<span class="number">1.203125</span>, <span class="number">0.0</span>));
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1.0005645751953125</span>), <span class="ident">Double</span>(<span class="number">1.0005645751953125</span>, <span class="number">0.0</span>));
+    <span class="comment">// f64 tests</span>
+    <span class="macro">test_all_exact</span><span class="macro">!</span>(
+        <span class="ident">f64_int</span>:
+            <span class="ident">Double</span>(<span class="number">1.0</span>, <span class="number">0.0</span>),
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="number">1.0</span>);
+        <span class="ident">f64_float</span>:
+            <span class="ident">Double</span>(<span class="number">1.203125</span>, <span class="number">0.0</span>),
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="number">1.203125</span>);
+        <span class="ident">f64_double</span>:
+            <span class="ident">Double</span>(<span class="number">1.0005645751953125</span>, <span class="number">0.0</span>),
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="number">1.0005645751953125</span>);
+        <span class="ident">f64_zero</span>:
+            <span class="ident">Double</span>::<span class="ident">ZERO</span>,
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="number">0.0</span>);
+        <span class="ident">f64_neg_zero</span>:
+            <span class="ident">Double</span>::<span class="ident">NEG_ZERO</span>,
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="op">-</span><span class="number">0.0</span>);
+        <span class="ident">f64_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">INFINITY</span>,
+            <span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">f64_neg_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>,
+            <span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">NEG_INFINITY</span>;
+        <span class="ident">f64_nan</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">NAN</span>;
+    );
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">f64_nonrep</span>: {
         <span class="macro">assert_ne</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">1.1</span>).<span class="number">1</span>, <span class="number">0.0</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="number">0</span>), <span class="ident">Double</span>::<span class="ident">ZERO</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="op">-</span><span class="number">0.0</span>), <span class="ident">Double</span>::<span class="ident">NEG_ZERO</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">INFINITY</span>), <span class="ident">Double</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">NEG_INFINITY</span>), <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">NAN</span>), <span class="ident">Double</span>::<span class="ident">NAN</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">from_int</span>() {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i8</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">i8</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">u8</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">u8</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i16</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">i16</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">u16</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">u16</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i32</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">i32</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">u32</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">u32</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i64</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">i64</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">u64</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">u64</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>());
-    }
+    <span class="comment">// integer tests</span>
+    <span class="macro">test_all_eq</span><span class="macro">!</span>(
+        <span class="ident">i8_min</span>: <span class="ident">i8</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">i8</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>();
+        <span class="ident">u8_max</span>: <span class="ident">u8</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">u8</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>();
+        <span class="ident">i16_min</span>: <span class="ident">i16</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">i16</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>();
+        <span class="ident">u16_max</span>: <span class="ident">u16</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">u16</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>();
+        <span class="ident">i32_min</span>: <span class="ident">i32</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">i32</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>();
+        <span class="ident">u32_max</span>: <span class="ident">u32</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">u32</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>();
+        <span class="ident">i64_min</span>: <span class="ident">i64</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">i64</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>();
+        <span class="ident">u64_max</span>: <span class="ident">u64</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">u64</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>();
+    );
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "qd";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

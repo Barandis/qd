@@ -500,6 +500,37 @@
 <span id="497">497</span>
 <span id="498">498</span>
 <span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -934,7 +965,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// No other conversions from `Quad` to numeric types are provided, as every other one</span>
     <span class="doccomment">/// has the capability of losing range (for example, no other type could be used to</span>
-    <span class="doccomment">/// represent `dd!(1e308)`). Casts can be made from the `f64` provided by this function</span>
+    <span class="doccomment">/// represent `qd!(1e308)`). Casts can be made from the `f64` provided by this function</span>
     <span class="doccomment">/// to other numeric types as needed.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
@@ -958,47 +989,78 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">from_f32</span>() {
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="number">1.0f32</span>), <span class="ident">Quad</span>(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>));
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="number">1.203125f32</span>), <span class="ident">Quad</span>(<span class="number">1.203125</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>));
+    <span class="comment">// f32 tests</span>
+    <span class="macro">test_all_exact</span><span class="macro">!</span>(
+        <span class="ident">f32_int</span>:
+            <span class="ident">Quad</span>(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="number">1.0f32</span>);
+        <span class="ident">f32_float</span>:
+            <span class="ident">Quad</span>(<span class="number">1.203125</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="number">1.203125f32</span>);
+        <span class="ident">f32_zero</span>:
+            <span class="ident">Quad</span>::<span class="ident">ZERO</span>,
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="number">0f32</span>);
+        <span class="ident">f32_neg_zero</span>:
+            <span class="ident">Quad</span>::<span class="ident">NEG_ZERO</span>,
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="op">-</span><span class="number">0.0f32</span>);
+        <span class="ident">f32_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">INFINITY</span>,
+            <span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">f32_neg_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>,
+            <span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">NEG_INFINITY</span>;
+        <span class="ident">f32_nan</span>:
+            <span class="ident">Quad</span>::<span class="ident">NAN</span>,
+            <span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">NAN</span>;
+    );
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">f32_nonrep</span>: {
         <span class="macro">assert_ne</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="number">1.1f32</span>).<span class="number">1</span>, <span class="number">0.0</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="number">0f32</span>), <span class="ident">Quad</span>::<span class="ident">ZERO</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="op">-</span><span class="number">0.0f32</span>), <span class="ident">Quad</span>::<span class="ident">NEG_ZERO</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">INFINITY</span>), <span class="ident">Quad</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">NEG_INFINITY</span>), <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">NAN</span>), <span class="ident">Quad</span>::<span class="ident">NAN</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">from_f64</span>() {
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="number">1.0</span>), <span class="ident">Quad</span>(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>));
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="number">1.203125</span>), <span class="ident">Quad</span>(<span class="number">1.203125</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>));
-        <span class="macro">assert_exact</span><span class="macro">!</span>(
-            <span class="macro">qd</span><span class="macro">!</span>(<span class="number">1.0005645751953125</span>),
-            <span class="ident">Quad</span>(<span class="number">1.0005645751953125</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>)
-        );
+    <span class="comment">// f64 tests</span>
+    <span class="macro">test_all_exact</span><span class="macro">!</span>(
+        <span class="ident">f64_int</span>:
+            <span class="ident">Quad</span>(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="number">1.0</span>);
+        <span class="ident">f64_float</span>:
+            <span class="ident">Quad</span>(<span class="number">1.203125</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="number">1.203125</span>);
+        <span class="ident">f64_double</span>:
+            <span class="ident">Quad</span>(<span class="number">1.0005645751953125</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="number">1.0005645751953125</span>);
+        <span class="ident">f64_zero</span>:
+            <span class="ident">Quad</span>::<span class="ident">ZERO</span>,
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="number">0.0</span>);
+        <span class="ident">f64_neg_zero</span>:
+            <span class="ident">Quad</span>::<span class="ident">NEG_ZERO</span>,
+            <span class="macro">qd</span><span class="macro">!</span>(<span class="op">-</span><span class="number">0.0</span>);
+        <span class="ident">f64_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">INFINITY</span>,
+            <span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">f64_neg_inf</span>:
+            <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>,
+            <span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">NEG_INFINITY</span>;
+        <span class="ident">f64_nan</span>:
+            <span class="ident">Quad</span>::<span class="ident">NAN</span>,
+            <span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">NAN</span>;
+    );
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">f64_nonrep</span>: {
         <span class="macro">assert_ne</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="number">1.1</span>).<span class="number">1</span>, <span class="number">0.0</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="number">0</span>), <span class="ident">Quad</span>::<span class="ident">ZERO</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="op">-</span><span class="number">0.0</span>), <span class="ident">Quad</span>::<span class="ident">NEG_ZERO</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">INFINITY</span>), <span class="ident">Quad</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">NEG_INFINITY</span>), <span class="ident">Quad</span>::<span class="ident">NEG_INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="macro">qd</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">NAN</span>), <span class="ident">Quad</span>::<span class="ident">NAN</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">from_int</span>() {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i8</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">i8</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">u8</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">u8</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i16</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">i16</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">u16</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">u16</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i32</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">i32</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">u32</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">u32</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i64</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">i64</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">u64</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">u64</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i128</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">i128</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">u128</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">u128</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>());
-    }
+    <span class="comment">// integer tests</span>
+    <span class="macro">test_all_eq</span><span class="macro">!</span>(
+        <span class="ident">i8_min</span>: <span class="ident">i8</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">i8</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>();
+        <span class="ident">u8_max</span>: <span class="ident">u8</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">u8</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>();
+        <span class="ident">i16_min</span>: <span class="ident">i16</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">i16</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>();
+        <span class="ident">u16_max</span>: <span class="ident">u16</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">u16</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>();
+        <span class="ident">i32_min</span>: <span class="ident">i32</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">i32</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>();
+        <span class="ident">u32_max</span>: <span class="ident">u32</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">u32</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>();
+        <span class="ident">i64_min</span>: <span class="ident">i64</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">i64</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>();
+        <span class="ident">u64_max</span>: <span class="ident">u64</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">u64</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>();
+        <span class="ident">i128_min</span>: <span class="ident">i128</span>::<span class="ident">MIN</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">i128</span>::<span class="ident">MIN</span>).<span class="ident">to_string</span>();
+        <span class="ident">u128_max</span>: <span class="ident">u128</span>::<span class="ident">MAX</span>.<span class="ident">to_string</span>(), <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">u128</span>::<span class="ident">MAX</span>).<span class="ident">to_string</span>();
+    );
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "qd";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

@@ -291,6 +291,17 @@
 <span id="288">288</span>
 <span id="289">289</span>
 <span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -456,7 +467,7 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">assert_single</span> {
+    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">single</span> {
         (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> {
             <span class="macro">assert</span><span class="macro">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>[<span class="number">0</span>] <span class="op">-</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span> <span class="op">&lt;</span> <span class="number">1e-30</span>, <span class="string">&quot;component 0 not equal&quot;</span>);
             <span class="macro">assert</span><span class="macro">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>[<span class="number">1</span>] <span class="op">&lt;</span> <span class="number">1e-30</span>, <span class="string">&quot;component 1 not equal&quot;</span>);
@@ -471,36 +482,55 @@
         <span class="ident">s</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">Double</span><span class="op">&gt;</span>().<span class="ident">unwrap_err</span>().<span class="ident">kind</span>
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">empty</span>() {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">parse_err</span>(<span class="string">&quot;&quot;</span>), <span class="ident">ErrorKind</span>::<span class="ident">Empty</span>);
-    }
+    <span class="comment">// error tests</span>
+    <span class="macro">test_all_eq</span><span class="macro">!</span>(
+        <span class="ident">empty</span>:
+            <span class="ident">ErrorKind</span>::<span class="ident">Empty</span>,
+            <span class="ident">parse_err</span>(<span class="string">&quot;&quot;</span>);
+        <span class="ident">double_sign</span>:
+            <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span>,
+            <span class="ident">parse_err</span>(<span class="string">&quot;++2317&quot;</span>);
+        <span class="ident">double_point</span>:
+            <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span>,
+            <span class="ident">parse_err</span>(<span class="string">&quot;2.31.7&quot;</span>);
+        <span class="ident">mid_sign</span>:
+            <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span>,
+            <span class="ident">parse_err</span>(<span class="string">&quot;2-317&quot;</span>);
+        <span class="ident">end_letter</span>:
+            <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span>,
+            <span class="ident">parse_err</span>(<span class="string">&quot;2.317err&quot;</span>);
+        <span class="ident">mid_letter</span>:
+            <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span>,
+            <span class="ident">parse_err</span>(<span class="string">&quot;2.3j7&quot;</span>);
+    );
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">invalid</span>() {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">parse_err</span>(<span class="string">&quot;++2317&quot;</span>), <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">parse_err</span>(<span class="string">&quot;2.31.7&quot;</span>), <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">parse_err</span>(<span class="string">&quot;2-317&quot;</span>), <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">parse_err</span>(<span class="string">&quot;2.317err&quot;</span>), <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">parse_err</span>(<span class="string">&quot;2.3j7&quot;</span>), <span class="ident">ErrorKind</span>::<span class="ident">Invalid</span>);
-    }
+    <span class="comment">// zero tests</span>
+    <span class="macro">test_all_exact</span><span class="macro">!</span>(
+        <span class="ident">zero_int</span>:
+            <span class="ident">Double</span>::<span class="ident">ZERO</span>,
+            <span class="ident">parse</span>(<span class="string">&quot;0&quot;</span>);
+        <span class="ident">zero_float</span>:
+            <span class="ident">Double</span>::<span class="ident">ZERO</span>,
+            <span class="ident">parse</span>(<span class="string">&quot;0.0&quot;</span>);
+        <span class="ident">zero_plus_int</span>:
+            <span class="ident">Double</span>::<span class="ident">ZERO</span>,
+            <span class="ident">parse</span>(<span class="string">&quot;+0&quot;</span>);
+        <span class="ident">zero_plus_float</span>:
+            <span class="ident">Double</span>::<span class="ident">ZERO</span>,
+            <span class="ident">parse</span>(<span class="string">&quot;+0.0&quot;</span>);
+        <span class="ident">zero_minus_int</span>:
+            <span class="ident">Double</span>::<span class="ident">NEG_ZERO</span>,
+            <span class="ident">parse</span>(<span class="string">&quot;-0&quot;</span>);
+        <span class="ident">zero_minus_float</span>:
+            <span class="ident">Double</span>::<span class="ident">NEG_ZERO</span>,
+            <span class="ident">parse</span>(<span class="string">&quot;-0.0&quot;</span>);
+    );
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">zero</span>() {
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">ZERO</span>, <span class="ident">parse</span>(<span class="string">&quot;0&quot;</span>));
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">ZERO</span>, <span class="ident">parse</span>(<span class="string">&quot;0.0&quot;</span>));
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">ZERO</span>, <span class="ident">parse</span>(<span class="string">&quot;+0&quot;</span>));
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">ZERO</span>, <span class="ident">parse</span>(<span class="string">&quot;+0.0&quot;</span>));
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NEG_ZERO</span>, <span class="ident">parse</span>(<span class="string">&quot;-0&quot;</span>));
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NEG_ZERO</span>, <span class="ident">parse</span>(<span class="string">&quot;-0.0&quot;</span>));
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">single_int</span>() {
-        <span class="macro">assert_single</span><span class="macro">!</span>(<span class="number">1.0</span>, <span class="ident">parse</span>(<span class="string">&quot;1&quot;</span>));
-        <span class="macro">assert_single</span><span class="macro">!</span>(<span class="number">2317.0</span>, <span class="ident">parse</span>(<span class="string">&quot;2317&quot;</span>));
-        <span class="macro">assert_single</span><span class="macro">!</span>(<span class="number">16_777_216.0</span>, <span class="ident">parse</span>(<span class="string">&quot;16_777_216&quot;</span>));
-    }
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">single_int</span>: {
+        <span class="macro">single</span><span class="macro">!</span>(<span class="number">1.0</span>, <span class="ident">parse</span>(<span class="string">&quot;1&quot;</span>));
+        <span class="macro">single</span><span class="macro">!</span>(<span class="number">2317.0</span>, <span class="ident">parse</span>(<span class="string">&quot;2317&quot;</span>));
+        <span class="macro">single</span><span class="macro">!</span>(<span class="number">16_777_216.0</span>, <span class="ident">parse</span>(<span class="string">&quot;16_777_216&quot;</span>));
+    });
 
     <span class="comment">// With any number big enough to use more than one component, the half-ulp normalization</span>
     <span class="comment">// requirement and the possibility of having differing floating-point precisions between</span>
@@ -521,16 +551,15 @@
     <span class="comment">// directly through math between double-precision values. The components of each should</span>
     <span class="comment">// be the same if the parsing is being done correctly.</span>
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">double_int</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">double_int</span>: {
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">parse</span>(<span class="string">&quot;12345678901234561234567890123456&quot;</span>);
         <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">1_234_567_890_123_456.0</span>);
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">a</span>);
         <span class="ident">n</span> <span class="kw-2">*</span><span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">10</span>).<span class="ident">powi</span>(<span class="number">16</span>);
         <span class="ident">n</span> <span class="op">+</span><span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="ident">a</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">n</span>, <span class="ident">s</span>);
-    }
+        <span class="macro">exact</span><span class="macro">!</span>(<span class="ident">n</span>, <span class="ident">s</span>);
+    });
 
     <span class="comment">// The parsed values in the first asserts in each test below are of the form (2ⁿ - 1) /</span>
     <span class="comment">// 2ⁿ. Since this is the same as the sum of the series 1/2⁰ + 1/2¹ + 1/2² + ... 1/2ⁿ,</span>
@@ -545,42 +574,35 @@
     <span class="comment">// precision offered by the type (most of them are accurate to about 68 digits when only</span>
     <span class="comment">// 63-64 is offered). Therefore `assert_close` is used rather than `assert_exact`.</span>
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">single_float</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">single_float</span>: {
         <span class="comment">// n = 15</span>
-        <span class="macro">assert_single</span><span class="macro">!</span>(<span class="number">0.999_084_472_656_25</span>, <span class="ident">parse</span>(<span class="string">&quot;0.99908447265625&quot;</span>));
+        <span class="macro">single</span><span class="macro">!</span>(<span class="number">0.999_084_472_656_25</span>, <span class="ident">parse</span>(<span class="string">&quot;0.99908447265625&quot;</span>));
         <span class="kw">let</span> <span class="ident">three_expected</span> <span class="op">=</span> (<span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>).<span class="ident">powi</span>(<span class="number">15</span>) <span class="op">-</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>)) <span class="op">/</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>).<span class="ident">powi</span>(<span class="number">15</span>);
-        <span class="macro">assert_precision</span><span class="macro">!</span>(<span class="ident">three_expected</span>, <span class="ident">parse</span>(<span class="string">&quot;0.9999999303082806&quot;</span>), <span class="number">15</span>);
-    }
+        <span class="macro">prec</span><span class="macro">!</span>(<span class="ident">three_expected</span>, <span class="ident">parse</span>(<span class="string">&quot;0.9999999303082806&quot;</span>), <span class="number">15</span>);
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">double_float</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">double_float</span>: {
         <span class="comment">// n = 31</span>
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">parse</span>(<span class="string">&quot;0.9999999995343387126922607421875&quot;</span>);
         <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>).<span class="ident">powi</span>(<span class="number">31</span>);
         <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> (<span class="ident">t</span> <span class="op">-</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>)) <span class="op">/</span> <span class="ident">t</span>;
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="ident">s</span>);
+        <span class="macro">near</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="ident">s</span>);
 
         <span class="kw">let</span> <span class="ident">three_expected</span> <span class="op">=</span> (<span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>).<span class="ident">powi</span>(<span class="number">15</span>) <span class="op">-</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>)) <span class="op">/</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">3</span>).<span class="ident">powi</span>(<span class="number">15</span>);
-        <span class="macro">assert_precision</span><span class="macro">!</span>(
-            <span class="ident">three_expected</span>,
-            <span class="ident">parse</span>(<span class="string">&quot;0.9999999303082806237436760862691&quot;</span>),
-            <span class="number">30</span>
-        );
-    }
+        <span class="macro">near</span><span class="macro">!</span>(<span class="ident">three_expected</span>, <span class="ident">parse</span>(<span class="string">&quot;0.9999999303082806237436760862691&quot;</span>));
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">exponent</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">exp</span>: {
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">parse</span>(<span class="string">&quot;0.9999999995343387126922607421875e100&quot;</span>);
         <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>).<span class="ident">powi</span>(<span class="number">31</span>);
         <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> ((<span class="ident">t</span> <span class="op">-</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>)) <span class="op">/</span> <span class="ident">t</span>) <span class="op">*</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">10</span>).<span class="ident">powi</span>(<span class="number">100</span>);
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="ident">s</span>);
+        <span class="macro">near</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="ident">s</span>);
 
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">parse</span>(<span class="string">&quot;0.9999999995343387126922607421875e-100&quot;</span>);
         <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">2</span>).<span class="ident">powi</span>(<span class="number">31</span>);
         <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> ((<span class="ident">t</span> <span class="op">-</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">1</span>)) <span class="op">/</span> <span class="ident">t</span>) <span class="op">*</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="number">10</span>).<span class="ident">powi</span>(<span class="op">-</span><span class="number">100</span>);
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="ident">s</span>);
-    }
+        <span class="macro">near</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="ident">s</span>);
+    });
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "qd";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

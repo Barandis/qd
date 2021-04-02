@@ -247,6 +247,83 @@
 <span id="244">244</span>
 <span id="245">245</span>
 <span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -260,7 +337,7 @@
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Double</span>;
 
     <span class="doccomment">/// Divides this `Double` by another, producing a new `Double` of the remainder as a</span>
-    <span class="doccomment">/// result.</span>
+    <span class="doccomment">/// result. This operation uses floored division.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the `%` operator between two `Double`s.</span>
     <span class="doccomment">///</span>
@@ -270,15 +347,21 @@
     <span class="doccomment">/// # use qd::Double;</span>
     <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let x = Double::PI % Double::E;</span>
-    <span class="doccomment">/// let expected = dd!(&quot;0.4233108251307480031023559119268&quot;);</span>
+    <span class="doccomment">/// let xpected = dd!(&quot;0.4233108251307480031023559119268&quot;);</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// let diff = (x - expected).abs();</span>
-    <span class="doccomment">/// assert!(diff &lt; dd!(1e-30));</span>
+    <span class="doccomment">/// let diffx = (x - xpected).abs();</span>
+    <span class="doccomment">/// assert!(diffx &lt; dd!(1e-30));</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let y = Double::PI % -Double::E;</span>
+    <span class="doccomment">/// let ypected = dd!(&quot;-2.2949710033282972322579315594258&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let diffy = (y - ypected).abs();</span>
+    <span class="doccomment">/// assert!(diffy &lt; dd!(1e-30));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">rem</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">div</span>(<span class="ident">other</span>).<span class="ident">trunc</span>();
+        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">div</span>(<span class="ident">other</span>).<span class="ident">floor</span>();
         <span class="self">self</span> <span class="op">-</span> <span class="ident">other</span> <span class="op">*</span> <span class="ident">n</span>
     }
 }
@@ -287,7 +370,7 @@
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Double</span>;
 
     <span class="doccomment">/// Divides a reference to this `Double` by another, producing a new `Double` of the</span>
-    <span class="doccomment">/// remainder as a result.</span>
+    <span class="doccomment">/// remainder as a result. This operation uses floored division.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the `%` operator between two references to `Double`s.</span>
     <span class="doccomment">///</span>
@@ -297,15 +380,21 @@
     <span class="doccomment">/// # use qd::Double;</span>
     <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let x = &amp;Double::PI % &amp;Double::E;</span>
-    <span class="doccomment">/// let expected = dd!(&quot;0.4233108251307480031023559119268&quot;);</span>
+    <span class="doccomment">/// let xpected = dd!(&quot;0.4233108251307480031023559119268&quot;);</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// let diff = (x - expected).abs();</span>
-    <span class="doccomment">/// assert!(diff &lt; dd!(1e-30));</span>
+    <span class="doccomment">/// let diffx = (x - xpected).abs();</span>
+    <span class="doccomment">/// assert!(diffx &lt; dd!(1e-30));</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let y = &amp;Double::PI % -Double::E;</span>
+    <span class="doccomment">/// let ypected = dd!(&quot;-2.2949710033282972322579315594258&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let diffy = (y - ypected).abs();</span>
+    <span class="doccomment">/// assert!(diffy &lt; dd!(1e-30));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">rem</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">div</span>(<span class="kw-2">*</span><span class="ident">other</span>).<span class="ident">trunc</span>();
+        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">div</span>(<span class="kw-2">*</span><span class="ident">other</span>).<span class="ident">floor</span>();
         <span class="kw-2">*</span><span class="self">self</span> <span class="op">-</span> <span class="kw-2">*</span><span class="ident">other</span> <span class="op">*</span> <span class="ident">n</span>
     }
 }
@@ -314,7 +403,7 @@
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Double</span>;
 
     <span class="doccomment">/// Divides this `Double` by a reference to another, producing a new `Double` of the</span>
-    <span class="doccomment">/// remainder as a result.</span>
+    <span class="doccomment">/// remainder as a result. This operation uses floored division.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the `%` operator between a `Double` and a reference to a `Double`.</span>
     <span class="doccomment">///</span>
@@ -324,15 +413,21 @@
     <span class="doccomment">/// # use qd::Double;</span>
     <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let x = Double::PI % &amp;Double::E;</span>
-    <span class="doccomment">/// let expected = dd!(&quot;0.4233108251307480031023559119268&quot;);</span>
+    <span class="doccomment">/// let xpected = dd!(&quot;0.4233108251307480031023559119268&quot;);</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// let diff = (x - expected).abs();</span>
-    <span class="doccomment">/// assert!(diff &lt; dd!(1e-30));</span>
+    <span class="doccomment">/// let diffx = (x - xpected).abs();</span>
+    <span class="doccomment">/// assert!(diffx &lt; dd!(1e-30));</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let y = Double::PI % -&amp;Double::E;</span>
+    <span class="doccomment">/// let ypected = dd!(&quot;-2.2949710033282972322579315594258&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let diffy = (y - ypected).abs();</span>
+    <span class="doccomment">/// assert!(diffy &lt; dd!(1e-30));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">rem</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">div</span>(<span class="kw-2">*</span><span class="ident">other</span>).<span class="ident">trunc</span>();
+        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">div</span>(<span class="kw-2">*</span><span class="ident">other</span>).<span class="ident">floor</span>();
         <span class="self">self</span> <span class="op">-</span> <span class="kw-2">*</span><span class="ident">other</span> <span class="op">*</span> <span class="ident">n</span>
     }
 }
@@ -341,7 +436,7 @@
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Double</span>;
 
     <span class="doccomment">/// Divides a reference to this `Double` by another `Double`, producing a new `Double`</span>
-    <span class="doccomment">/// of the remainder as a result.</span>
+    <span class="doccomment">/// of the remainder as a result. This operation uses floored division.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the `%` operator between a reference to a `Double`s and a `Double`.</span>
     <span class="doccomment">///</span>
@@ -351,24 +446,31 @@
     <span class="doccomment">/// # use qd::Double;</span>
     <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let x = &amp;Double::PI % Double::E;</span>
-    <span class="doccomment">/// let expected = dd!(&quot;0.4233108251307480031023559119268&quot;);</span>
+    <span class="doccomment">/// let xpected = dd!(&quot;0.4233108251307480031023559119268&quot;);</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// let diff = (x - expected).abs();</span>
-    <span class="doccomment">/// assert!(diff &lt; dd!(1e-30));</span>
+    <span class="doccomment">/// let diffx = (x - xpected).abs();</span>
+    <span class="doccomment">/// assert!(diffx &lt; dd!(1e-30));</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let y = &amp;Double::PI % -&amp;Double::E;</span>
+    <span class="doccomment">/// let ypected = dd!(&quot;-2.2949710033282972322579315594258&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let diffy = (y - ypected).abs();</span>
+    <span class="doccomment">/// assert!(diffy &lt; dd!(1e-30));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">rem</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
-        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">div</span>(<span class="ident">other</span>).<span class="ident">trunc</span>();
+        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">div</span>(<span class="ident">other</span>).<span class="ident">floor</span>();
         <span class="kw-2">*</span><span class="self">self</span> <span class="op">-</span> <span class="ident">other</span> <span class="op">*</span> <span class="ident">n</span>
     }
 }
 
 <span class="kw">impl</span> <span class="ident">RemAssign</span> <span class="kw">for</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Divides this `Double` by another, modifying this one to equal the remainder.</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">/// Divides this `Double` by another, modifying this one to equal the remainder. This</span>
+    <span class="doccomment">/// operation uses floored division.</span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the `%=` operator between two `Double`s.</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
@@ -376,10 +478,17 @@
     <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let mut x = Double::PI;</span>
     <span class="doccomment">/// x %= Double::E;</span>
-    <span class="doccomment">/// let expected = dd!(&quot;0.4233108251307480031023559119268&quot;);</span>
+    <span class="doccomment">/// let xpected = dd!(&quot;0.4233108251307480031023559119268&quot;);</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// let diff = (x - expected).abs();</span>
-    <span class="doccomment">/// assert!(diff &lt; dd!(1e-30));</span>
+    <span class="doccomment">/// let diffx = (x - xpected).abs();</span>
+    <span class="doccomment">/// assert!(diffx &lt; dd!(1e-30));</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let mut y = Double::PI;</span>
+    <span class="doccomment">/// y %= -Double::E;</span>
+    <span class="doccomment">/// let ypected = dd!(&quot;-2.2949710033282972322579315594258&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let diffy = (y - ypected).abs();</span>
+    <span class="doccomment">/// assert!(diffy &lt; dd!(1e-30));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
@@ -392,7 +501,7 @@
 
 <span class="kw">impl</span> <span class="ident">RemAssign</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Double</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Double</span> {
     <span class="doccomment">/// Divides this `Double` by a reference to another, modifying this one to equal the</span>
-    <span class="doccomment">/// remainder.</span>
+    <span class="doccomment">/// remainder. This operation uses floored division.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the `%=` operator between a `Double` and a reference to a `Double`.</span>
     <span class="doccomment">///</span>
@@ -403,10 +512,17 @@
     <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let mut x = Double::PI;</span>
     <span class="doccomment">/// x %= &amp;Double::E;</span>
-    <span class="doccomment">/// let expected = dd!(&quot;0.4233108251307480031023559119268&quot;);</span>
+    <span class="doccomment">/// let xpected = dd!(&quot;0.4233108251307480031023559119268&quot;);</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// let diff = (x - expected).abs();</span>
-    <span class="doccomment">/// assert!(diff &lt; dd!(1e-30));</span>
+    <span class="doccomment">/// let diffx = (x - xpected).abs();</span>
+    <span class="doccomment">/// assert!(diffx &lt; dd!(1e-30));</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let mut y = Double::PI;</span>
+    <span class="doccomment">/// y %= -&amp;Double::E;</span>
+    <span class="doccomment">/// let ypected = dd!(&quot;-2.2949710033282972322579315594258&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let diffy = (y - ypected).abs();</span>
+    <span class="doccomment">/// assert!(diffy &lt; dd!(1e-30));</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
@@ -421,78 +537,116 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">op_ref</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">num_num</span>() {
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684&quot;</span>);
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">E</span>);
-    }
+    <span class="comment">// rem tests</span>
+    <span class="macro">test_all_near</span><span class="macro">!</span>(
+        <span class="ident">num_num</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684125&quot;</span>),
+            <span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">E</span>;
+        <span class="ident">num_ref</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684125&quot;</span>),
+            <span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">E</span>;
+        <span class="ident">ref_num</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684125&quot;</span>),
+            <span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">E</span>;
+        <span class="ident">ref_ref</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684125&quot;</span>),
+            <span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">E</span>;
+        <span class="ident">num_neg_num</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;-2.2949710033282972322579315594258203&quot;</span>),
+            <span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="op">-</span><span class="ident">Double</span>::<span class="ident">E</span>;
+        <span class="ident">num_neg_ref</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;-2.2949710033282972322579315594258203&quot;</span>),
+            <span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="op">-</span><span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">E</span>;
+        <span class="ident">ref_neg_num</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;-2.2949710033282972322579315594258203&quot;</span>),
+            <span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="op">-</span><span class="ident">Double</span>::<span class="ident">E</span>;
+        <span class="ident">ref_neg_ref</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;-2.2949710033282972322579315594258203&quot;</span>),
+            <span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="op">-</span><span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">E</span>;
+        <span class="ident">num_id</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.1415926535897932384626433832795028&quot;</span>),
+            <span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ONE</span>;
+        <span class="ident">id_num</span>:
+            <span class="ident">Double</span>::<span class="ident">ONE</span>,
+            <span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">PI</span>;
+        <span class="ident">three_nums</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684125&quot;</span>),
+            <span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">E</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">LN_2</span>;
+        <span class="ident">lassoc</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684125&quot;</span>),
+            (<span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">E</span>) <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">LN_2</span>;
+        <span class="ident">rassoc</span>:
+            <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.36900393135001200079371489744679573&quot;</span>),
+            <span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> (<span class="ident">Double</span>::<span class="ident">LN_2</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">E</span>);
+    );
+    <span class="macro">test_all_exact</span><span class="macro">!</span>(
+        <span class="ident">nan_zero</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">NAN</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ZERO</span>;
+        <span class="ident">zero_nan</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">ZERO</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NAN</span>;
+        <span class="ident">inf_zero</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ZERO</span>;
+        <span class="ident">zero_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">ZERO</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">neg_inf_zero</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ZERO</span>;
+        <span class="ident">zero_neg_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">ZERO</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">op_ref</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">ref_ref</span>() {
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684&quot;</span>);
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">E</span>);
-    }
+        <span class="ident">inf_one</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ONE</span>;
+        <span class="ident">one_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">neg_inf_one</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ONE</span>;
+        <span class="ident">one_neg_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>;
+        <span class="ident">inf_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">inf_neg_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>;
+        <span class="ident">neg_inf_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">INFINITY</span>;
+        <span class="ident">neg_inf_neg_inf</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">op_ref</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">num_ref</span>() {
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684&quot;</span>);
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">E</span>);
-    }
+        <span class="ident">nan_nan</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">NAN</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NAN</span>;
+        <span class="ident">nan_one</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">NAN</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ONE</span>;
+        <span class="ident">one_nan</span>:
+            <span class="ident">Double</span>::<span class="ident">NAN</span>,
+            <span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NAN</span>;
+    );
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">op_ref</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">ref_num</span>() {
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684&quot;</span>);
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">PI</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">E</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">assign_num</span>() {
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684&quot;</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">PI</span>;
-        <span class="ident">a</span> <span class="op">%</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">E</span>;
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="ident">a</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">assign_ref</span>() {
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684&quot;</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">PI</span>;
-        <span class="ident">b</span> <span class="op">%</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">E</span>;
-        <span class="macro">assert_close</span><span class="macro">!</span>(<span class="ident">expected</span>, <span class="ident">b</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">zero</span>() {
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">NAN</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ZERO</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">ZERO</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NAN</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ZERO</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">ZERO</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ZERO</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">ZERO</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">inf</span>() {
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ONE</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ONE</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">INFINITY</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">nan</span>() {
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">NAN</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NAN</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">NAN</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">ONE</span>);
-        <span class="macro">assert_exact</span><span class="macro">!</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>, <span class="ident">Double</span>::<span class="ident">ONE</span> <span class="op">%</span> <span class="ident">Double</span>::<span class="ident">NAN</span>);
-    }
+    <span class="macro">test_all</span><span class="macro">!</span>(
+        <span class="ident">assign_num</span>: {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">PI</span>;
+            <span class="ident">a</span> <span class="op">%</span><span class="op">=</span> <span class="ident">Double</span>::<span class="ident">E</span>;
+            <span class="macro">near</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684125&quot;</span>), <span class="ident">a</span>);
+        }
+        <span class="ident">assign_ref</span>: {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">PI</span>;
+            <span class="ident">b</span> <span class="op">%</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">Double</span>::<span class="ident">E</span>;
+            <span class="macro">near</span><span class="macro">!</span>(<span class="macro">dd</span><span class="macro">!</span>(<span class="string">&quot;0.42331082513074800310235591192684125&quot;</span>), <span class="ident">b</span>);
+        }
+    );
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "qd";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

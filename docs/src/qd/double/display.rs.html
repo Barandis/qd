@@ -562,29 +562,6 @@
 <span id="559">559</span>
 <span id="560">560</span>
 <span id="561">561</span>
-<span id="562">562</span>
-<span id="563">563</span>
-<span id="564">564</span>
-<span id="565">565</span>
-<span id="566">566</span>
-<span id="567">567</span>
-<span id="568">568</span>
-<span id="569">569</span>
-<span id="570">570</span>
-<span id="571">571</span>
-<span id="572">572</span>
-<span id="573">573</span>
-<span id="574">574</span>
-<span id="575">575</span>
-<span id="576">576</span>
-<span id="577">577</span>
-<span id="578">578</span>
-<span id="579">579</span>
-<span id="580">580</span>
-<span id="581">581</span>
-<span id="582">582</span>
-<span id="583">583</span>
-<span id="584">584</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -911,8 +888,7 @@
         <span class="ident">actual</span>[<span class="number">0</span>..<span class="ident">len</span>] <span class="op">=</span><span class="op">=</span> <span class="ident">expected</span>[<span class="number">0</span>..<span class="ident">len</span>]
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_integer</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">int</span>: {
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">23</span>)), <span class="string">&quot;23&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">17</span>)), <span class="string">&quot;-17&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(
@@ -921,17 +897,15 @@
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">0</span>)), <span class="string">&quot;0&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">0.0</span>)), <span class="string">&quot;-0&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_special</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">special</span>: {
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>), <span class="string">&quot;NaN&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">INFINITY</span>), <span class="string">&quot;inf&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>), <span class="string">&quot;-inf&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_float</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">float</span>: {
         <span class="comment">// Floating point error will keep these from being displayed exactly when no</span>
         <span class="comment">// precision is defined, because the default precision will extend into the deep</span>
         <span class="comment">// bits of these numbers. So we&#39;re checking to see if they&#39;re close.</span>
@@ -942,18 +916,16 @@
         ));
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_str</span>(<span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">2.317</span>)).<span class="ident">as_str</span>(), <span class="string">&quot;2.317&quot;</span>));
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_str</span>(<span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">0.00042</span>)).<span class="ident">as_str</span>(), <span class="string">&quot;0.00042&quot;</span>));
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_integer_exp</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">int_exp</span>: {
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">1729e0</span>)), <span class="string">&quot;1729&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">16_777_216e+1</span>)), <span class="string">&quot;167772160&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">231_700_000E-5</span>)), <span class="string">&quot;2317&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">42e3</span>)), <span class="string">&quot;-42000&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_float_exp</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">float_exp</span>: {
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_str</span>(<span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">17.29e0</span>)).<span class="ident">as_str</span>(), <span class="string">&quot;17.29&quot;</span>));
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_str</span>(
             <span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">1.677_721_6e-1</span>)).<span class="ident">as_str</span>(),
@@ -961,7 +933,7 @@
         ));
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_str</span>(<span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">2.317e2</span>)).<span class="ident">as_str</span>(), <span class="string">&quot;231.7&quot;</span>));
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_str</span>(<span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">4.2e-4</span>)).<span class="ident">as_str</span>(), <span class="string">&quot;-0.00042&quot;</span>));
-    }
+    });
 
     <span class="comment">// This is a test for an issue that I have seen mentioned nowhere except in the source</span>
     <span class="comment">// code of the MIT library source code. It claims that for numbers of the form 10^x - 1,</span>
@@ -970,8 +942,7 @@
     <span class="comment">// I have not seen evidence of this, and it&#39;s one otherwise-unmentioned block of code in</span>
     <span class="comment">// software that was written more than a decade ago. The &quot;fix&quot; has been taken out of the</span>
     <span class="comment">// code but I&#39;m leaving in the test just in case.</span>
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_offset_10_x_minus_1</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">offset_10_x_minus_1</span>: {
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">10</span>).<span class="ident">powi</span>(<span class="number">29</span>) <span class="op">-</span> <span class="ident">Double</span>::<span class="ident">ONE</span>),
             <span class="string">&quot;99999999999999999999999999999&quot;</span>
@@ -980,7 +951,7 @@
             <span class="ident">plain</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">10</span>).<span class="ident">powi</span>(<span class="number">30</span>) <span class="op">-</span> <span class="ident">Double</span>::<span class="ident">ONE</span>),
             <span class="string">&quot;999999999999999999999999999999&quot;</span>
         );
-    }
+    });
 
     <span class="kw">fn</span> <span class="ident">exp</span>(<span class="ident">value</span>: <span class="ident">Double</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:e}&quot;</span>, <span class="ident">value</span>)
@@ -994,8 +965,7 @@
         <span class="ident">ac_parts</span>[<span class="number">0</span>][<span class="number">0</span>..<span class="ident">len</span>] <span class="op">=</span><span class="op">=</span> <span class="ident">ex_parts</span>[<span class="number">0</span>][<span class="number">0</span>..<span class="ident">len</span>] <span class="op">&amp;&amp;</span> <span class="ident">ac_parts</span>[<span class="number">1</span>] <span class="op">=</span><span class="op">=</span> <span class="ident">ex_parts</span>[<span class="number">1</span>]
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_exp_integer</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">exp_int</span>: {
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:e}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">23</span>)), <span class="string">&quot;2.3e1&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:e}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">17</span>)), <span class="string">&quot;-1.7e1&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(
@@ -1003,17 +973,15 @@
             <span class="ident">PI_TIMES_10_20_EXP</span>
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:e}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">0</span>)), <span class="string">&quot;0e0&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_exp_special</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">exp_special</span>: {
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">NAN</span>), <span class="string">&quot;NaN&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">INFINITY</span>), <span class="string">&quot;inf&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">NEG_INFINITY</span>), <span class="string">&quot;-inf&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_exp_float</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">exp_float</span>: {
         <span class="comment">// Floating point error will keep these from being displayed exactly when no</span>
         <span class="comment">// precision is defined, because the default precision will extend into the deep</span>
         <span class="comment">// bits of these numbers. So we&#39;re checking to see if they&#39;re close.</span>
@@ -1024,18 +992,16 @@
         ));
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_exp</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">2.317</span>)).<span class="ident">as_str</span>(), <span class="string">&quot;2.317e0&quot;</span>));
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_exp</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">0.00042</span>)).<span class="ident">as_str</span>(), <span class="string">&quot;-4.2e-4&quot;</span>));
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_exp_integer_exp</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">exp_int_exp</span>: {
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">1729e0</span>)), <span class="string">&quot;1.729e3&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">16_777_216e+1</span>)), <span class="string">&quot;1.6777216e8&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">231_700_000E-5</span>)), <span class="string">&quot;2.317e3&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">42e3</span>)), <span class="string">&quot;-4.2e4&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_exp_float_exp</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">exp_float_exp</span>: {
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_exp</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">17.29e0</span>)).<span class="ident">as_str</span>(), <span class="string">&quot;1.729e1&quot;</span>));
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_exp</span>(
             <span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">1.677_721_6e-1</span>)).<span class="ident">as_str</span>(),
@@ -1043,19 +1009,17 @@
         ));
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_exp</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">2.317e2</span>)).<span class="ident">as_str</span>(), <span class="string">&quot;2.317e2&quot;</span>));
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">close_exp</span>(<span class="ident">exp</span>(<span class="ident">Double</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">4.2e-4</span>)).<span class="ident">as_str</span>(), <span class="string">&quot;-4.2e-4&quot;</span>));
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_precision_integer</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">prec_int</span>: {
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.3}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">23</span>)), <span class="string">&quot;23.000&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.0}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">17</span>)), <span class="string">&quot;-17&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">0</span>)), <span class="string">&quot;0&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.0}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">0</span>)), <span class="string">&quot;0&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.10}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">0</span>)), <span class="string">&quot;0.0000000000&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_precision_float</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">prec_float</span>: {
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.0}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">17.29</span>)), <span class="string">&quot;17&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.6}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">0.016_777_216</span>)), <span class="string">&quot;0.016777&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.5}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">0.016_777_216</span>)), <span class="string">&quot;0.01678&quot;</span>);
@@ -1069,57 +1033,51 @@
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.4}&quot;</span>, <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">0.000_001_677_721_6</span>)),
             <span class="string">&quot;0.0000&quot;</span>
         );
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_precision_exp</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">prec_exp</span>: {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">0.016_777_216</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.3e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;1.678e-2&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.4e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;1.6777e-2&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.10e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;1.6777216000e-2&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.0e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;2e-2&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_precision_alt</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">prec_alt</span>: {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">0.016_777_216</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.*e}&quot;</span>, <span class="number">3</span>, <span class="ident">value</span>), <span class="string">&quot;1.678e-2&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{0:.1$e}&quot;</span>, <span class="ident">value</span>, <span class="number">4</span>), <span class="string">&quot;1.6777e-2&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.prec$e}&quot;</span>, <span class="ident">value</span>, <span class="ident">prec</span> <span class="op">=</span> <span class="number">10</span>), <span class="string">&quot;1.6777216000e-2&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_width_default_align</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">width_default</span>: {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">123_456</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:3}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:6}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:10}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;    123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:10}&quot;</span>, <span class="op">-</span><span class="ident">value</span>), <span class="string">&quot;   -123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:10e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot; 1.23456e5&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_width_right_align</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">width_right</span>: {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">123_456</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:&gt;3}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:&gt;6}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:&gt;10}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;    123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:&gt;10}&quot;</span>, <span class="op">-</span><span class="ident">value</span>), <span class="string">&quot;   -123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:&gt;10e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot; 1.23456e5&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_width_left_align</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">width_left</span>: {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">123_456</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:&lt;3}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:&lt;6}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:&lt;10}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;123456    &quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:&lt;10}&quot;</span>, <span class="op">-</span><span class="ident">value</span>), <span class="string">&quot;-123456   &quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:&lt;10e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;1.23456e5 &quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_width_center_align</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">width_center</span>: {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">123_456</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:^3}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:^6}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;123456&quot;</span>);
@@ -1127,10 +1085,9 @@
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:^10}&quot;</span>, <span class="op">-</span><span class="ident">value</span>), <span class="string">&quot; -123456  &quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:^11}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;  123456   &quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:^11e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot; 1.23456e5 &quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_width_fill</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">fill</span>: {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">123_456</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:*^3}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:*^10}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;**123456**&quot;</span>);
@@ -1138,20 +1095,18 @@
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:*&lt;10}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;123456****&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:*&gt;10}&quot;</span>, <span class="op">-</span><span class="ident">value</span>), <span class="string">&quot;***-123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:*&gt;10e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;*1.23456e5&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_width_sign_aware_zero_fill</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">sign_aware_zero_fill</span>: {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">123_456</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:03}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:010}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;0000123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:010}&quot;</span>, <span class="op">-</span><span class="ident">value</span>), <span class="string">&quot;-000123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:0&gt;10}&quot;</span>, <span class="op">-</span><span class="ident">value</span>), <span class="string">&quot;000-123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:012e}&quot;</span>, <span class="op">-</span><span class="ident">value</span>), <span class="string">&quot;-001.23456e5&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_misc_plus_sign</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">plus_sign</span>: {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from</span>(<span class="number">123_456</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:+}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;+123456&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:+e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;+1.23456e5&quot;</span>);
@@ -1159,16 +1114,15 @@
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:*^+12e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;*+1.23456e5*&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:0&gt;+12e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;00+1.23456e5&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:+012e}&quot;</span>, <span class="ident">value</span>), <span class="string">&quot;+001.23456e5&quot;</span>);
-    }
+    });
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">format_misc_big_number</span>() {
+    <span class="macro">test</span><span class="macro">!</span>(<span class="ident">big_number</span>: {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Double</span>::<span class="ident">from_str</span>(<span class="string">&quot;123456789012345678901234567890&quot;</span>).<span class="ident">unwrap</span>();
         <span class="comment">// Not checking the value here because we don&#39;t even do 60 digits of precision, just</span>
         <span class="comment">// checking that formatting will actually print out 60 digits (and the decimal</span>
         <span class="comment">// point)</span>
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.30}&quot;</span>, <span class="ident">value</span>).<span class="ident">len</span>(), <span class="number">61</span>);
-    }
+    });
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "qd";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
