@@ -162,7 +162,7 @@ fn pre_from_str(s: &str) -> Option<Result<Double, ParseDoubleError>> {
 mod tests {
     use super::*;
 
-    macro_rules! assert_single {
+    macro_rules! single {
         ($e:expr, $a:expr) => {
             assert!($a[0] - $e < 1e-30, "component 0 not equal");
             assert!($a[1] < 1e-30, "component 1 not equal");
@@ -222,9 +222,9 @@ mod tests {
     );
 
     test!(single_int: {
-        assert_single!(1.0, parse("1"));
-        assert_single!(2317.0, parse("2317"));
-        assert_single!(16_777_216.0, parse("16_777_216"));
+        single!(1.0, parse("1"));
+        single!(2317.0, parse("2317"));
+        single!(16_777_216.0, parse("16_777_216"));
     });
 
     // With any number big enough to use more than one component, the half-ulp normalization
@@ -271,7 +271,7 @@ mod tests {
 
     test!(single_float: {
         // n = 15
-        assert_single!(0.999_084_472_656_25, parse("0.99908447265625"));
+        single!(0.999_084_472_656_25, parse("0.99908447265625"));
         let three_expected = (dd!(3).powi(15) - dd!(1)) / dd!(3).powi(15);
         prec!(three_expected, parse("0.9999999303082806"), 15);
     });

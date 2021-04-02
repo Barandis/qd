@@ -189,22 +189,10 @@ macro_rules! assert_precision {
     };
 }
 
-macro_rules! assert_precision_all {
-    ($($expected:expr, $actual:expr, $digits:expr);* $(;)?) => {
-        $(assert_precision!($expected, $actual, $digits);)*
-    }
-}
-
 macro_rules! assert_close {
     ($expected:expr, $actual:expr $(,)*) => {
         assert_precision!($expected, $actual, 60);
     };
-}
-
-macro_rules! assert_all_close {
-    ($($expected:expr, $actual:expr);* $(;)?) => {
-        $(assert_close!($expected, $actual);)*
-    }
 }
 
 macro_rules! assert_exact {
@@ -238,10 +226,4 @@ macro_rules! assert_exact {
             assert!(expected == actual, message);
         }
     };
-}
-
-macro_rules! assert_all_exact {
-    ($($expected:expr, $actual:expr);* $(;)?) => {
-        $(assert_exact!($expected, $actual);)*
-    }
 }

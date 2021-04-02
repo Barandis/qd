@@ -339,8 +339,7 @@ mod tests {
         actual[0..len] == expected[0..len]
     }
 
-    #[test]
-    fn format_integer() {
+    test!(int: {
         assert_eq!(format!("{}", Quad::from(23)), "23");
         assert_eq!(format!("{}", Quad::from(-17)), "-17");
         assert_eq!(
@@ -349,17 +348,15 @@ mod tests {
         );
         assert_eq!(format!("{}", Quad::from(0)), "0");
         assert_eq!(format!("{}", Quad::from(-0.0)), "-0");
-    }
+    });
 
-    #[test]
-    fn format_special() {
+    test!(special: {
         assert_eq!(plain(Quad::NAN), "NaN");
         assert_eq!(plain(Quad::INFINITY), "inf");
         assert_eq!(plain(Quad::NEG_INFINITY), "-inf");
-    }
+    });
 
-    #[test]
-    fn format_float() {
+    test!(float: {
         // Floating point error will keep these from being displayed exactly when no
         // precision is defined, because the default precision will extend into the deep
         // bits of these numbers. So we're checking to see if they're close.
@@ -370,18 +367,16 @@ mod tests {
         ));
         assert!(close_str(plain(Quad::from(2.317)).as_str(), "2.317"));
         assert!(close_str(plain(Quad::from(0.00042)).as_str(), "0.00042"));
-    }
+    });
 
-    #[test]
-    fn format_integer_exp() {
+    test!(int_exp: {
         assert_eq!(plain(Quad::from(1729e0)), "1729");
         assert_eq!(plain(Quad::from(16_777_216e+1)), "167772160");
         assert_eq!(plain(Quad::from(231_700_000E-5)), "2317");
         assert_eq!(plain(Quad::from(-42e3)), "-42000");
-    }
+    });
 
-    #[test]
-    fn format_float_exp() {
+    test!(float_exp: {
         assert!(close_str(plain(Quad::from(17.29e0)).as_str(), "17.29"));
         assert!(close_str(
             plain(Quad::from(1.677_721_6e-1)).as_str(),
@@ -389,7 +384,7 @@ mod tests {
         ));
         assert!(close_str(plain(Quad::from(2.317e2)).as_str(), "231.7"));
         assert!(close_str(plain(Quad::from(-4.2e-4)).as_str(), "-0.00042"));
-    }
+    });
 
     // This is a test for an issue that I have seen mentioned nowhere except in the source
     // code of the MIT library source code. It claims that for numbers of the form 10^x - 1,
@@ -398,8 +393,7 @@ mod tests {
     // I have not seen evidence of this, and it's one otherwise-unmentioned block of code in
     // software that was written more than a decade ago. The "fix" has been taken out of the
     // code but I'm leaving in the test just in case.
-    #[test]
-    fn format_offset_10_x_minus_1() {
+    test!(offset_10_x_minus_1: {
         assert_eq!(
             plain(Quad::from(10).powi(29) - Quad::ONE),
             "99999999999999999999999999999"
@@ -408,7 +402,7 @@ mod tests {
             plain(Quad::from(10).powi(30) - Quad::ONE),
             "999999999999999999999999999999"
         );
-    }
+    });
 
     fn exp(value: Quad) -> String {
         format!("{:e}", value)
@@ -422,8 +416,7 @@ mod tests {
         ac_parts[0][0..len] == ex_parts[0][0..len] && ac_parts[1] == ex_parts[1]
     }
 
-    #[test]
-    fn format_exp_integer() {
+    test!(exp_int: {
         assert_eq!(format!("{:e}", Quad::from(23)), "2.3e1");
         assert_eq!(format!("{:e}", Quad::from(-17)), "-1.7e1");
         assert_eq!(
@@ -431,17 +424,15 @@ mod tests {
             PI_TIMES_10_20_EXP
         );
         assert_eq!(format!("{:e}", Quad::from(0)), "0e0");
-    }
+    });
 
-    #[test]
-    fn format_exp_special() {
+    test!(exp_special: {
         assert_eq!(exp(Quad::NAN), "NaN");
         assert_eq!(exp(Quad::INFINITY), "inf");
         assert_eq!(exp(Quad::NEG_INFINITY), "-inf");
-    }
+    });
 
-    #[test]
-    fn format_exp_float() {
+    test!(exp_float: {
         // Floating point error will keep these from being displayed exactly when no
         // precision is defined, because the default precision will extend into the deep
         // bits of these numbers. So we're checking to see if they're close.
@@ -452,18 +443,16 @@ mod tests {
         ));
         assert!(close_exp(exp(Quad::from(2.317)).as_str(), "2.317e0"));
         assert!(close_exp(exp(Quad::from(-0.00042)).as_str(), "-4.2e-4"));
-    }
+    });
 
-    #[test]
-    fn format_exp_integer_exp() {
+    test!(exp_int_exp: {
         assert_eq!(exp(Quad::from(1729e0)), "1.729e3");
         assert_eq!(exp(Quad::from(16_777_216e+1)), "1.6777216e8");
         assert_eq!(exp(Quad::from(231_700_000E-5)), "2.317e3");
         assert_eq!(exp(Quad::from(-42e3)), "-4.2e4");
-    }
+    });
 
-    #[test]
-    fn format_exp_float_exp() {
+    test!(exp_float_exp: {
         assert!(close_exp(exp(Quad::from(17.29e0)).as_str(), "1.729e1"));
         assert!(close_exp(
             exp(Quad::from(1.677_721_6e-1)).as_str(),
@@ -471,19 +460,17 @@ mod tests {
         ));
         assert!(close_exp(exp(Quad::from(2.317e2)).as_str(), "2.317e2"));
         assert!(close_exp(exp(Quad::from(-4.2e-4)).as_str(), "-4.2e-4"));
-    }
+    });
 
-    #[test]
-    fn format_precision_integer() {
+    test!(prec_int: {
         assert_eq!(format!("{:.3}", Quad::from(23)), "23.000");
         assert_eq!(format!("{:.0}", Quad::from(-17)), "-17");
         assert_eq!(format!("{}", Quad::from(0)), "0");
         assert_eq!(format!("{:.0}", Quad::from(0)), "0");
         assert_eq!(format!("{:.10}", Quad::from(0)), "0.0000000000");
-    }
+    });
 
-    #[test]
-    fn format_precision_float() {
+    test!(prec_float: {
         assert_eq!(format!("{:.0}", Quad::from(17.29)), "17");
         assert_eq!(format!("{:.6}", Quad::from(0.016_777_216)), "0.016777");
         assert_eq!(format!("{:.5}", Quad::from(0.016_777_216)), "0.01678");
@@ -493,58 +480,55 @@ mod tests {
         );
         assert_eq!(format!("{:.0}", Quad::from(0.016_777_216)), "0");
         assert_eq!(format!("{:.0}", Quad::from(-0.016_777_216)), "-0");
-        assert_eq!(format!("{:.4}", Quad::from(0.000_001_677_721_6)), "0.0000");
-    }
+        assert_eq!(
+            format!("{:.4}", Quad::from(0.000_001_677_721_6)),
+            "0.0000"
+        );
+    });
 
-    #[test]
-    fn format_precision_exp() {
+    test!(prec_exp: {
         let value = Quad::from(0.016_777_216);
         assert_eq!(format!("{:.3e}", value), "1.678e-2");
         assert_eq!(format!("{:.4e}", value), "1.6777e-2");
         assert_eq!(format!("{:.10e}", value), "1.6777216000e-2");
         assert_eq!(format!("{:.0e}", value), "2e-2");
-    }
+    });
 
-    #[test]
-    fn format_precision_alt() {
+    test!(prec_alt: {
         let value = Quad::from(0.016_777_216);
         assert_eq!(format!("{:.*e}", 3, value), "1.678e-2");
         assert_eq!(format!("{0:.1$e}", value, 4), "1.6777e-2");
         assert_eq!(format!("{:.prec$e}", value, prec = 10), "1.6777216000e-2");
-    }
+    });
 
-    #[test]
-    fn format_width_default_align() {
+    test!(width_default: {
         let value = Quad::from(123_456);
         assert_eq!(format!("{:3}", value), "123456");
         assert_eq!(format!("{:6}", value), "123456");
         assert_eq!(format!("{:10}", value), "    123456");
         assert_eq!(format!("{:10}", -value), "   -123456");
         assert_eq!(format!("{:10e}", value), " 1.23456e5");
-    }
+    });
 
-    #[test]
-    fn format_width_right_align() {
+    test!(width_right: {
         let value = Quad::from(123_456);
         assert_eq!(format!("{:>3}", value), "123456");
         assert_eq!(format!("{:>6}", value), "123456");
         assert_eq!(format!("{:>10}", value), "    123456");
         assert_eq!(format!("{:>10}", -value), "   -123456");
         assert_eq!(format!("{:>10e}", value), " 1.23456e5");
-    }
+    });
 
-    #[test]
-    fn format_width_left_align() {
+    test!(width_left: {
         let value = Quad::from(123_456);
         assert_eq!(format!("{:<3}", value), "123456");
         assert_eq!(format!("{:<6}", value), "123456");
         assert_eq!(format!("{:<10}", value), "123456    ");
         assert_eq!(format!("{:<10}", -value), "-123456   ");
         assert_eq!(format!("{:<10e}", value), "1.23456e5 ");
-    }
+    });
 
-    #[test]
-    fn format_width_center_align() {
+    test!(width_center: {
         let value = Quad::from(123_456);
         assert_eq!(format!("{:^3}", value), "123456");
         assert_eq!(format!("{:^6}", value), "123456");
@@ -552,10 +536,9 @@ mod tests {
         assert_eq!(format!("{:^10}", -value), " -123456  ");
         assert_eq!(format!("{:^11}", value), "  123456   ");
         assert_eq!(format!("{:^11e}", value), " 1.23456e5 ");
-    }
+    });
 
-    #[test]
-    fn format_width_fill() {
+    test!(fill: {
         let value = Quad::from(123_456);
         assert_eq!(format!("{:*^3}", value), "123456");
         assert_eq!(format!("{:*^10}", value), "**123456**");
@@ -563,20 +546,18 @@ mod tests {
         assert_eq!(format!("{:*<10}", value), "123456****");
         assert_eq!(format!("{:*>10}", -value), "***-123456");
         assert_eq!(format!("{:*>10e}", value), "*1.23456e5");
-    }
+    });
 
-    #[test]
-    fn format_width_sign_aware_zero_fill() {
+    test!(sign_aware_zero_fill: {
         let value = Quad::from(123_456);
         assert_eq!(format!("{:03}", value), "123456");
         assert_eq!(format!("{:010}", value), "0000123456");
         assert_eq!(format!("{:010}", -value), "-000123456");
         assert_eq!(format!("{:0>10}", -value), "000-123456");
         assert_eq!(format!("{:012e}", -value), "-001.23456e5");
-    }
+    });
 
-    #[test]
-    fn format_misc_plus_sign() {
+    test!(plus_sign: {
         let value = Quad::from(123_456);
         assert_eq!(format!("{:+}", value), "+123456");
         assert_eq!(format!("{:+e}", value), "+1.23456e5");
@@ -584,15 +565,14 @@ mod tests {
         assert_eq!(format!("{:*^+12e}", value), "*+1.23456e5*");
         assert_eq!(format!("{:0>+12e}", value), "00+1.23456e5");
         assert_eq!(format!("{:+012e}", value), "+001.23456e5");
-    }
+    });
 
-    #[test]
-    fn format_misc_big_number() {
+    test!(big_number: {
         let value =
             Quad::from_str("123456789012345678901234567890123456789012345678901234567890").unwrap();
-        // Not checking the value here because we don't even do 120 digits of precision,
-        // just checking that formatting will actually print out 120 digits (and the decimal
+        // Not checking the value here because we don't even do 60 digits of precision, just
+        // checking that formatting will actually print out 60 digits (and the decimal
         // point)
         assert_eq!(format!("{:.60}", value).len(), 121);
-    }
+    });
 }
