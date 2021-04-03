@@ -159,9 +159,8 @@ impl Index<usize> for Quad {
 }
 
 #[cfg(test)]
-#[macro_use]
 mod tests {
-    use super::Quad;
+    use super::*;
 
     test!(new: {
         let a = Quad::new(0.0, 10.0, -3.0, 5.0);

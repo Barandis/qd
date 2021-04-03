@@ -173,10 +173,6 @@
 <span id="170">170</span>
 <span id="171">171</span>
 <span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -197,16 +193,13 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// # #[macro_use] extern crate qd;</span>
-    <span class="doccomment">/// # use qd::Double;</span>
-    <span class="doccomment">/// # fn main() {</span>
+    <span class="doccomment">/// # use qd::{dd, Double};</span>
     <span class="doccomment">/// assert!(dd!(0) == Double::ZERO);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let x = dd!(1) / dd!(2).sqrt();</span>
     <span class="doccomment">/// let expected = dd!(&quot;0.70710678118654752440084436210485&quot;);</span>
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; dd!(1e-30));</span>
-    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">macro_export</span>]</span>
     <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">dd</span> {
@@ -339,7 +332,6 @@
     }
 }
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 

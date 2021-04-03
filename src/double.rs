@@ -17,16 +17,13 @@ mod macros {
     ///
     /// # Examples
     /// ```
-    /// # #[macro_use] extern crate qd;
-    /// # use qd::Double;
-    /// # fn main() {
+    /// # use qd::{dd, Double};
     /// assert!(dd!(0) == Double::ZERO);
     ///
     /// let x = dd!(1) / dd!(2).sqrt();
     /// let expected = dd!("0.70710678118654752440084436210485");
     /// let diff = (x - expected).abs();
     /// assert!(diff < dd!(1e-30));
-    /// # }
     /// ```
     #[macro_export]
     macro_rules! dd {
@@ -159,7 +156,6 @@ impl Index<usize> for Double {
     }
 }
 #[cfg(test)]
-#[macro_use]
 mod tests {
     use super::*;
 
