@@ -120,7 +120,7 @@ fn format_fixed(value: &Double, f: &mut Formatter) -> Result {
         } else if value.is_zero() {
             d::push_zero(&mut result, f);
         } else {
-            let width = precision as i32 + value.0.abs().log10().floor() as i32 + 1;
+            let width = precision as i32 + value.0.abs().log10().ceil() as i32;
             // Higher than the max-length number + max precision so that users can do their
             // format!("{:.30}", Double::from_str("999999999999999999999999999999")) in
             // peace
@@ -548,11 +548,19 @@ mod tests {
         assert_eq!(format!("{:+012e}", value), "+001.23456e5");
     });
 
-    test!(big_number: {
+    test!(long_number: {
         let value = Double::from_str("123456789012345678901234567890").unwrap();
         // Not checking the value here because we don't even do 60 digits of precision, just
         // checking that formatting will actually print out 60 digits (and the decimal
         // point)
         assert_eq!(format!("{:.30}", value).len(), 61);
+    });
+
+    test!(big_number: {
+        let value = dd!("1.234567890123456789e308");
+        let mut expected = String::from("1234567890123456789");
+        expected.push_str("0".repeat(290).as_str());
+
+        assert_eq!(value.to_string(), expected);
     });
 }
