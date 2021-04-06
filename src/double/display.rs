@@ -8,6 +8,7 @@ use std::fmt::{Debug, Display, Formatter, LowerExp, Result, UpperExp};
 use std::{char, fmt::Alignment};
 
 const TEN: Double = Double(10.0, 0.0);
+const MAX_REAL_PRECISION: usize = 31;
 
 impl Debug for Double {
     fn fmt(&self, f: &mut Formatter) -> Result {
@@ -172,6 +173,24 @@ fn push_digits_exp(chars: &mut Vec<char>, value: &Double, f: &mut Formatter) {
     chars.append(&mut place_decimal(digits, 0));
 }
 
+// Rounds the digits in a vector to a certain index and then truncates the vector at that
+// index.
+fn round_and_trunc(digits: &mut Vec<u8>, len: usize) {
+    if digits[len] >= 5 {
+        // Round up if the digit after the last desired digit is 5 or higher
+        let mut i: usize = 1;
+        digits[len - 1] += 1;
+        // Round up until there are no more 9's, if it's 9's all the way, leave
+        // the first element as a 10, which we'll handle later
+        while digits[len - i] == 10 && len != i {
+            digits[len - i] = 0;
+            i += 1;
+            digits[len - i] += 1;
+        }
+    }
+    digits.truncate(len);
+}
+
 // Extracts the decimal digits of `value` into an array of unsigned integers.
 //
 // This function assumes that `value` is positive. Zero and non-finite values are handled
@@ -188,7 +207,7 @@ fn extract_digits(value: &Double, exp: i32) -> Vec<u8> {
     let mut value = value / divisor;
     let mut digits = vec![];
 
-    for _ in 0..32 {
+    for _ in 0..(MAX_REAL_PRECISION + 1) {
         let digit = value.trunc();
 
         value -= digit;
@@ -203,7 +222,13 @@ fn extract_digits(value: &Double, exp: i32) -> Vec<u8> {
     //
     // The 324 is the 323 digits plus the one needed because the first digit of the number
     // is at position exp + 1 in a negative exponent number.
-    digits.truncate((324 + exp) as usize);
+    //
+    // If this isn't an issue, we still truncate by one because we produced an extra digit
+    // for rounding.
+    round_and_trunc(
+        &mut digits,
+        (324 + exp).min(MAX_REAL_PRECISION as i32) as usize,
+    );
 
     digits
 }
@@ -236,7 +261,7 @@ fn adjust_zeros(digits: &mut Vec<u8>, exp: i32) {
     if exp < 0 {
         digits.splice(..0, vec![0; absexp]);
     } else {
-        let zero_length = 0.max(absexp as isize - 31) as usize;
+        let zero_length = 0.max(absexp as isize - MAX_REAL_PRECISION as isize + 1) as usize;
         if zero_length > 0 {
             digits.append(&mut vec![0; zero_length]);
         }
@@ -265,19 +290,7 @@ fn adjust_prec(digits: &mut Vec<u8>, exp: i32, prec: Option<usize>) {
         } else if desired < digits.len() {
             // The only other option is desired == digits.len(), as zeros would have
             // already been appended if desired > digits.len()
-            if digits[desired] >= 5 {
-                // Round up if the digit after the last desired digit is 5 or higher
-                let mut i: usize = 1;
-                digits[desired - 1] += 1;
-                // Round up until there are no more 9's, if it's 9's all the way, leave
-                // the first element as a 10, which we'll handle later
-                while digits[desired - i] == 10 && desired != i {
-                    digits[desired - i] = 0;
-                    i += 1;
-                    digits[desired - i] += 1;
-                }
-            }
-            digits.truncate(desired);
+            round_and_trunc(digits, desired);
         }
     }
 }
@@ -433,42 +446,42 @@ mod tests {
     // Basic fixed number tests
     test_all_eq!(
         pi:
-            "3.1415926535897932384626433832795",
+            "3.14159265358979323846264338328",
             format!("{}", Double::PI);
         neg_pi:
-            "-3.1415926535897932384626433832795",
+            "-3.14159265358979323846264338328",
             format!("{}", -Double::PI);
         plus_pi:
-            "+3.1415926535897932384626433832795",
+            "+3.14159265358979323846264338328",
             format!("{:+}", Double::PI);
         plus_neg_pi:
-            "-3.1415926535897932384626433832795",
+            "-3.14159265358979323846264338328",
             format!("{:+}", -Double::PI);
 
         ln2:
-            "0.69314718055994530941723212145819",
+            "0.6931471805599453094172321214582",
             format!("{}", Double::LN_2);
         neg_ln2:
-            "-0.69314718055994530941723212145819",
+            "-0.6931471805599453094172321214582",
             format!("{}", -Double::LN_2);
         plus_ln2:
-            "+0.69314718055994530941723212145819",
+            "+0.6931471805599453094172321214582",
             format!("{:+}", Double::LN_2);
         plus_neg_ln2:
-            "-0.69314718055994530941723212145819",
+            "-0.6931471805599453094172321214582",
             format!("{:+}", -Double::LN_2);
 
         ln2_100:
-            "0.0069314718055994530941723212145819",
+            "0.006931471805599453094172321214582",
             format!("{}", Double::LN_2 / dd!(100));
         neg_ln2_100:
-            "-0.0069314718055994530941723212145819",
+            "-0.006931471805599453094172321214582",
             format!("{}", -Double::LN_2 / dd!(100));
         plus_ln2_100:
-            "+0.0069314718055994530941723212145819",
+            "+0.006931471805599453094172321214582",
             format!("{:+}", Double::LN_2 / dd!(100));
         plus_neg_ln2_100:
-            "-0.0069314718055994530941723212145819",
+            "-0.006931471805599453094172321214582",
             format!("{:+}", -Double::LN_2 / dd!(100));
 
         large:
@@ -482,13 +495,13 @@ mod tests {
             format!("{:+}", dd!("1.234567890123456789e308"));
 
         small:
-            format!("0.{}1234567890123456", "0".repeat(307)),
+            format!("0.{}1234567890123457", "0".repeat(307)),
             format!("{}", dd!("1.234567890123456789e-308"));
         neg_small:
-            format!("-0.{}1234567890123456", "0".repeat(307)),
+            format!("-0.{}1234567890123457", "0".repeat(307)),
             format!("{}", dd!("-1.234567890123456789e-308"));
         plus_small:
-            format!("+0.{}1234567890123456", "0".repeat(307)),
+            format!("+0.{}1234567890123457", "0".repeat(307)),
             format!("{:+}", dd!("1.234567890123456789e-308"));
     );
 
@@ -517,19 +530,19 @@ mod tests {
             "3.14159265358979323846",
             format!("{:.20}", Double::PI);
         pi_prec_40:
-            "3.1415926535897932384626433832795000000000",
+            "3.1415926535897932384626433832800000000000",
             format!("{:.40}", Double::PI);
         pi_prec_0:
             "3",
             format!("{:.0}", Double::PI);
         neg_pi_prec_40:
-            "-3.1415926535897932384626433832795000000000",
+            "-3.1415926535897932384626433832800000000000",
             format!("{:.40}", -Double::PI);
         neg_pi_prec_0:
             "-3",
             format!("{:.0}", -Double::PI);
         plus_pi_prec_40:
-            "+3.1415926535897932384626433832795000000000",
+            "+3.1415926535897932384626433832800000000000",
             format!("{:+.40}", Double::PI);
         plus_pi_prec_0:
             "+3",
@@ -546,19 +559,19 @@ mod tests {
             "0.69314718055994530942",
             format!("{:.20}", Double::LN_2);
         ln2_prec_40:
-            "0.6931471805599453094172321214581900000000",
+            "0.6931471805599453094172321214582000000000",
             format!("{:.40}", Double::LN_2);
         ln2_prec_0:
             "1",
             format!("{:.0}", Double::LN_2);
         neg_ln2_prec_40:
-            "-0.6931471805599453094172321214581900000000",
+            "-0.6931471805599453094172321214582000000000",
             format!("{:.40}", -Double::LN_2);
         neg_ln2_prec_0:
             "-1",
             format!("{:.0}", -Double::LN_2);
         plus_ln2_prec_40:
-            "+0.6931471805599453094172321214581900000000",
+            "+0.6931471805599453094172321214582000000000",
             format!("{:+.40}", Double::LN_2);
         plus_ln2_prec_0:
             "+1",
@@ -574,19 +587,19 @@ mod tests {
             "0.00693147180559945309",
             format!("{:.20}", Double::LN_2 / dd!(100));
         ln2_100_prec_40:
-            "0.0069314718055994530941723212145819000000",
+            "0.0069314718055994530941723212145820000000",
             format!("{:.40}", Double::LN_2 / dd!(100));
         ln2_100_prec_0:
             "0",
             format!("{:.0}", Double::LN_2 / dd!(100));
         neg_ln2_100_prec_40:
-            "-0.0069314718055994530941723212145819000000",
+            "-0.0069314718055994530941723212145820000000",
             format!("{:.40}", -Double::LN_2 / dd!(100));
         neg_ln2_100_prec_0:
             "-0",
             format!("{:.0}", -Double::LN_2 / dd!(100));
         plus_ln2_100_prec_40:
-            "+0.0069314718055994530941723212145819000000",
+            "+0.0069314718055994530941723212145820000000",
             format!("{:+.40}", Double::LN_2 / dd!(100));
         plus_ln2_100_prec_0:
             "+0",
@@ -639,7 +652,7 @@ mod tests {
             "        +1",
             format!("{:+10}", Double::ONE);
         pi_width:
-            "3.1415926535897932384626433832795",
+            "3.14159265358979323846264338328",
             format!("{:10}", Double::PI);
         pi_width_prec:
             "   3.14159",
@@ -673,7 +686,7 @@ mod tests {
             "        +1",
             format!("{:>+10}", Double::ONE);
         pi_right:
-            "3.1415926535897932384626433832795",
+            "3.14159265358979323846264338328",
             format!("{:>10}", Double::PI);
         pi_right_prec:
             "   3.14159",
@@ -707,7 +720,7 @@ mod tests {
             "+1        ",
             format!("{:<+10}", Double::ONE);
         pi_left:
-            "3.1415926535897932384626433832795",
+            "3.14159265358979323846264338328",
             format!("{:<10}", Double::PI);
         pi_left_prec:
             "3.14159   ",
@@ -741,7 +754,7 @@ mod tests {
             "    +1    ",
             format!("{:^+10}", Double::ONE);
         pi_center:
-            "3.1415926535897932384626433832795",
+            "3.14159265358979323846264338328",
             format!("{:^10}", Double::PI);
         pi_center_prec:
             " 3.14159  ",
@@ -775,7 +788,7 @@ mod tests {
             "+1________",
             format!("{:_<+10}", Double::ONE);
         pi_fill:
-            "3.1415926535897932384626433832795",
+            "3.14159265358979323846264338328",
             format!("{:_^10}", Double::PI);
         pi_fill_prec:
             "___3.14159",
@@ -809,7 +822,7 @@ mod tests {
             "+000000001",
             format!("{:+010}", Double::ONE);
         pi_zero_pad:
-            "3.1415926535897932384626433832795",
+            "3.14159265358979323846264338328",
             format!("{:010}", Double::PI);
         pi_width_zero_pad_prec:
             "0003.14159",
@@ -899,42 +912,42 @@ mod tests {
     // Basic exp tests
     test_all_eq!(
         pi_lexp:
-            "3.1415926535897932384626433832795e0",
+            "3.14159265358979323846264338328e0",
             format!("{:e}", Double::PI);
         neg_pi_lexp:
-            "-3.1415926535897932384626433832795e0",
+            "-3.14159265358979323846264338328e0",
             format!("{:e}", -Double::PI);
         plus_pi_lexp:
-            "+3.1415926535897932384626433832795e0",
+            "+3.14159265358979323846264338328e0",
             format!("{:+e}", Double::PI);
         plus_neg_pi_lexp:
-            "-3.1415926535897932384626433832795e0",
+            "-3.14159265358979323846264338328e0",
             format!("{:+e}", -Double::PI);
 
         ln2_lexp:
-            "6.9314718055994530941723212145819e-1",
+            "6.931471805599453094172321214582e-1",
             format!("{:e}", Double::LN_2);
         neg_ln2_lexp:
-            "-6.9314718055994530941723212145819e-1",
+            "-6.931471805599453094172321214582e-1",
             format!("{:e}", -Double::LN_2);
         plus_ln2_lexp:
-            "+6.9314718055994530941723212145819e-1",
+            "+6.931471805599453094172321214582e-1",
             format!("{:+e}", Double::LN_2);
         plus_neg_ln2_lexp:
-            "-6.9314718055994530941723212145819e-1",
+            "-6.931471805599453094172321214582e-1",
             format!("{:+e}", -Double::LN_2);
 
         ln2_100_lexp:
-            "6.9314718055994530941723212145819e-3",
+            "6.931471805599453094172321214582e-3",
             format!("{:e}", Double::LN_2 / dd!(100));
         neg_ln2_100_lexp:
-            "-6.9314718055994530941723212145819e-3",
+            "-6.931471805599453094172321214582e-3",
             format!("{:e}", -Double::LN_2 / dd!(100));
         plus_ln2_100_lexp:
-            "+6.9314718055994530941723212145819e-3",
+            "+6.931471805599453094172321214582e-3",
             format!("{:+e}", Double::LN_2 / dd!(100));
         plus_neg_ln2_100_lexp:
-            "-6.9314718055994530941723212145819e-3",
+            "-6.931471805599453094172321214582e-3",
             format!("{:+e}", -Double::LN_2 / dd!(100));
 
         large_lexp:
@@ -948,55 +961,55 @@ mod tests {
             format!("{:+e}", dd!("1.234567890123456789e308"));
 
         small_lexp:
-            "1.234567890123456e-308",
+            "1.234567890123457e-308",
             format!("{:e}", dd!("1.234567890123456789e-308"));
         neg_small_lexp:
-            "-1.234567890123456e-308",
+            "-1.234567890123457e-308",
             format!("{:e}", dd!("-1.234567890123456789e-308"));
         plus_small_lexp:
-            "+1.234567890123456e-308",
+            "+1.234567890123457e-308",
             format!("{:+e}", dd!("1.234567890123456789e-308"));
     );
 
     // Basic EXP tests
     test_all_eq!(
         pi_uexp:
-            "3.1415926535897932384626433832795E0",
+            "3.14159265358979323846264338328E0",
             format!("{:E}", Double::PI);
         neg_pi_uexp:
-            "-3.1415926535897932384626433832795E0",
+            "-3.14159265358979323846264338328E0",
             format!("{:E}", -Double::PI);
         plus_pi_uexp:
-            "+3.1415926535897932384626433832795E0",
+            "+3.14159265358979323846264338328E0",
             format!("{:+E}", Double::PI);
         plus_neg_pi_uexp:
-            "-3.1415926535897932384626433832795E0",
+            "-3.14159265358979323846264338328E0",
             format!("{:+E}", -Double::PI);
 
         ln2_uexp:
-            "6.9314718055994530941723212145819E-1",
+            "6.931471805599453094172321214582E-1",
             format!("{:E}", Double::LN_2);
         neg_ln2_uexp:
-            "-6.9314718055994530941723212145819E-1",
+            "-6.931471805599453094172321214582E-1",
             format!("{:E}", -Double::LN_2);
         plus_ln2_uexp:
-            "+6.9314718055994530941723212145819E-1",
+            "+6.931471805599453094172321214582E-1",
             format!("{:+E}", Double::LN_2);
         plus_neg_ln2_uexp:
-            "-6.9314718055994530941723212145819E-1",
+            "-6.931471805599453094172321214582E-1",
             format!("{:+E}", -Double::LN_2);
 
         ln2_100_uexp:
-            "6.9314718055994530941723212145819E-3",
+            "6.931471805599453094172321214582E-3",
             format!("{:E}", Double::LN_2 / dd!(100));
         neg_ln2_100_uexp:
-            "-6.9314718055994530941723212145819E-3",
+            "-6.931471805599453094172321214582E-3",
             format!("{:E}", -Double::LN_2 / dd!(100));
         plus_ln2_100_uexp:
-            "+6.9314718055994530941723212145819E-3",
+            "+6.931471805599453094172321214582E-3",
             format!("{:+E}", Double::LN_2 / dd!(100));
         plus_neg_ln2_100_uexp:
-            "-6.9314718055994530941723212145819E-3",
+            "-6.931471805599453094172321214582E-3",
             format!("{:+E}", -Double::LN_2 / dd!(100));
 
         large_uexp:
@@ -1010,13 +1023,13 @@ mod tests {
             format!("{:+E}", dd!("1.234567890123456789e308"));
 
         small_uexp:
-            "1.234567890123456E-308",
+            "1.234567890123457E-308",
             format!("{:E}", dd!("1.234567890123456789e-308"));
         neg_small_uexp:
-            "-1.234567890123456E-308",
+            "-1.234567890123457E-308",
             format!("{:E}", dd!("-1.234567890123456789e-308"));
         plus_small_uexp:
-            "+1.234567890123456E-308",
+            "+1.234567890123457E-308",
             format!("{:+E}", dd!("1.234567890123456789e-308"));
     );
 
@@ -1051,19 +1064,19 @@ mod tests {
             "3.14159265358979323846e0",
             format!("{:.20e}", Double::PI);
         pi_prec_40_exp:
-            "3.1415926535897932384626433832795000000000e0",
+            "3.1415926535897932384626433832800000000000e0",
             format!("{:.40e}", Double::PI);
         pi_prec_0_exp:
             "3e0",
             format!("{:.0e}", Double::PI);
         neg_pi_prec_40_exp:
-            "-3.1415926535897932384626433832795000000000e0",
+            "-3.1415926535897932384626433832800000000000e0",
             format!("{:.40e}", -Double::PI);
         neg_pi_prec_0_exp:
             "-3e0",
             format!("{:.0e}", -Double::PI);
         plus_pi_prec_40_exp:
-            "+3.1415926535897932384626433832795000000000e0",
+            "+3.1415926535897932384626433832800000000000e0",
             format!("{:+.40e}", Double::PI);
         plus_pi_prec_0_exp:
             "+3e0",
@@ -1080,19 +1093,19 @@ mod tests {
             "6.93147180559945309417e-1",
             format!("{:.20e}", Double::LN_2);
         ln2_prec_40_exp:
-            "6.9314718055994530941723212145819000000000e-1",
+            "6.9314718055994530941723212145820000000000e-1",
             format!("{:.40e}", Double::LN_2);
         ln2_prec_0_exp:
             "7e-1",
             format!("{:.0e}", Double::LN_2);
         neg_ln2_prec_40_exp:
-            "-6.9314718055994530941723212145819000000000e-1",
+            "-6.9314718055994530941723212145820000000000e-1",
             format!("{:.40e}", -Double::LN_2);
         neg_ln2_prec_0_exp:
             "-7e-1",
             format!("{:.0e}", -Double::LN_2);
         plus_ln2_prec_40_exp:
-            "+6.9314718055994530941723212145819000000000e-1",
+            "+6.9314718055994530941723212145820000000000e-1",
             format!("{:+.40e}", Double::LN_2);
         plus_ln2_prec_0_exp:
             "+7e-1",
@@ -1108,19 +1121,19 @@ mod tests {
             "6.93147180559945309417e-3",
             format!("{:.20e}", Double::LN_2 / dd!(100));
         ln2_100_prec_40_exp:
-            "6.9314718055994530941723212145819000000000e-3",
+            "6.9314718055994530941723212145820000000000e-3",
             format!("{:.40e}", Double::LN_2 / dd!(100));
         ln2_100_prec_0_exp:
             "7e-3",
             format!("{:.0e}", Double::LN_2 / dd!(100));
         neg_ln2_100_prec_40_exp:
-            "-6.9314718055994530941723212145819000000000e-3",
+            "-6.9314718055994530941723212145820000000000e-3",
             format!("{:.40e}", -Double::LN_2 / dd!(100));
         neg_ln2_100_prec_0_exp:
             "-7e-3",
             format!("{:.0e}", -Double::LN_2 / dd!(100));
         plus_ln2_100_prec_40_exp:
-            "+6.9314718055994530941723212145819000000000e-3",
+            "+6.9314718055994530941723212145820000000000e-3",
             format!("{:+.40e}", Double::LN_2 / dd!(100));
         plus_ln2_100_prec_0_exp:
             "+7e-3",
@@ -1170,7 +1183,7 @@ mod tests {
             "      +1e0",
             format!("{:+10e}", Double::ONE);
         pi_width_exp:
-            "3.1415926535897932384626433832795e0",
+            "3.14159265358979323846264338328e0",
             format!("{:10e}", Double::PI);
         pi_width_prec_exp:
             " 3.14159e0",
@@ -1204,7 +1217,7 @@ mod tests {
             "      +1e0",
             format!("{:>+10e}", Double::ONE);
         pi_right_exp:
-            "3.1415926535897932384626433832795e0",
+            "3.14159265358979323846264338328e0",
             format!("{:>10e}", Double::PI);
         pi_right_prec_exp:
             " 3.14159e0",
@@ -1238,7 +1251,7 @@ mod tests {
             "+1e0      ",
             format!("{:<+10e}", Double::ONE);
         pi_left_exp:
-            "3.1415926535897932384626433832795e0",
+            "3.14159265358979323846264338328e0",
             format!("{:<10e}", Double::PI);
         pi_left_prec_exp:
             "3.14159e0 ",
@@ -1272,7 +1285,7 @@ mod tests {
             "   +1e0   ",
             format!("{:^+10e}", Double::ONE);
         pi_center_exp:
-            "3.1415926535897932384626433832795e0",
+            "3.14159265358979323846264338328e0",
             format!("{:^10e}", Double::PI);
         pi_center_prec_exp:
             "3.14159e0 ",
@@ -1306,7 +1319,7 @@ mod tests {
             "+1e0______",
             format!("{:_<+10e}", Double::ONE);
         pi_fill_exp:
-            "3.1415926535897932384626433832795e0",
+            "3.14159265358979323846264338328e0",
             format!("{:_^10e}", Double::PI);
         pi_fill_prec_exp:
             "_3.14159e0",
@@ -1340,7 +1353,7 @@ mod tests {
             "+0000001e0",
             format!("{:+010e}", Double::ONE);
         pi_zero_pad_exp:
-            "3.1415926535897932384626433832795e0",
+            "3.14159265358979323846264338328e0",
             format!("{:010e}", Double::PI);
         pi_width_zero_pad_prec_exp:
             "03.14159e0",
