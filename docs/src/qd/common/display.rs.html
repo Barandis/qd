@@ -206,365 +206,199 @@
 <span id="203">203</span>
 <span id="204">204</span>
 <span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
-<span id="243">243</span>
-<span id="244">244</span>
-<span id="245">245</span>
-<span id="246">246</span>
-<span id="247">247</span>
-<span id="248">248</span>
-<span id="249">249</span>
-<span id="250">250</span>
-<span id="251">251</span>
-<span id="252">252</span>
-<span id="253">253</span>
-<span id="254">254</span>
-<span id="255">255</span>
-<span id="256">256</span>
-<span id="257">257</span>
-<span id="258">258</span>
-<span id="259">259</span>
-<span id="260">260</span>
-<span id="261">261</span>
-<span id="262">262</span>
-<span id="263">263</span>
-<span id="264">264</span>
-<span id="265">265</span>
-<span id="266">266</span>
-<span id="267">267</span>
-<span id="268">268</span>
-<span id="269">269</span>
-<span id="270">270</span>
-<span id="271">271</span>
-<span id="272">272</span>
-<span id="273">273</span>
-<span id="274">274</span>
-<span id="275">275</span>
-<span id="276">276</span>
-<span id="277">277</span>
-<span id="278">278</span>
-<span id="279">279</span>
-<span id="280">280</span>
-<span id="281">281</span>
-<span id="282">282</span>
-<span id="283">283</span>
-<span id="284">284</span>
-<span id="285">285</span>
-<span id="286">286</span>
-<span id="287">287</span>
-<span id="288">288</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
+<span class="comment">// Copyright (c) 2021 Thomas J. Otterson</span>
 <span class="comment">//</span>
 <span class="comment">// This software is released under the MIT License.</span>
 <span class="comment">// https://opensource.org/licenses/MIT</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">char</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Formatter</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">char</span>, <span class="ident">fmt</span>::<span class="ident">Alignment</span>};
 
-<span class="comment">// Adjusts the range of integers in the supplied vector from [9, -9] to [0, 9]. (This</span>
-<span class="comment">// function will handle &#39;digits&#39; up to 19, but I don&#39;t believe in this application that</span>
-<span class="comment">// they&#39;re ever over 9.)</span>
-<span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">correct_range</span>(<span class="ident">digits</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>) {
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">1</span>..<span class="ident">digits</span>.<span class="ident">len</span>()).<span class="ident">rev</span>() {
-        <span class="kw">if</span> <span class="ident">digits</span>[<span class="ident">i</span>] <span class="op">&lt;</span> <span class="number">0</span> {
-            <span class="ident">digits</span>[<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
-            <span class="ident">digits</span>[<span class="ident">i</span>] <span class="op">+</span><span class="op">=</span> <span class="number">10</span>;
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">digits</span>[<span class="ident">i</span>] <span class="op">&gt;</span> <span class="number">9</span> {
-            <span class="ident">digits</span>[<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-            <span class="ident">digits</span>[<span class="ident">i</span>] <span class="op">-</span><span class="op">=</span> <span class="number">10</span>;
-        }
-    }
-}
-
-<span class="comment">// Rounds the second-to-last digit of an i32 vector based on the value of the last digit.</span>
-<span class="comment">// This rounding is standard round-to-even in the case of a final digit of 5. Any necessary</span>
-<span class="comment">// carrying is propagated as far as it needs to, adjusting the exponent if the carry goes</span>
-<span class="comment">// all the way to the first digit.</span>
-<span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">round_vec</span>(<span class="ident">digits</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="ident">exp</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">i32</span>) {
-    <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">digits</span>.<span class="ident">len</span>();
-    <span class="kw">if</span> <span class="ident">digits</span>[<span class="ident">len</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">&gt;</span> <span class="number">5</span> <span class="op">|</span><span class="op">|</span> <span class="ident">digits</span>[<span class="ident">len</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">=</span><span class="op">=</span> <span class="number">5</span> <span class="op">&amp;&amp;</span> <span class="ident">digits</span>[<span class="ident">len</span> <span class="op">-</span> <span class="number">2</span>] <span class="op">%</span> <span class="number">2</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
-        <span class="ident">digits</span>[<span class="ident">len</span> <span class="op">-</span> <span class="number">2</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">len</span> <span class="op">-</span> <span class="number">2</span>;
-        <span class="kw">while</span> <span class="ident">i</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">digits</span>[<span class="ident">i</span>] <span class="op">&gt;</span> <span class="number">9</span> {
-            <span class="ident">digits</span>[<span class="ident">i</span>] <span class="op">-</span><span class="op">=</span> <span class="number">10</span>;
-            <span class="ident">digits</span>[<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-            <span class="ident">i</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
-        }
-    }
-
-    <span class="comment">// If the first digit requires carry, insert one more digit to turn 9 into 10 and adjust</span>
-    <span class="comment">// the exponent</span>
-    <span class="kw">if</span> <span class="ident">digits</span>[<span class="number">0</span>] <span class="op">&gt;</span> <span class="number">9</span> {
-        <span class="kw-2">*</span><span class="ident">exp</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-        <span class="ident">digits</span>[<span class="number">0</span>] <span class="op">=</span> <span class="number">0</span>;
-        <span class="ident">digits</span>.<span class="ident">insert</span>(<span class="number">0</span>, <span class="number">1</span>);
-    }
-}
-
-<span class="comment">// Converts an integer into a character representation of that integer. This assumes that</span>
-<span class="comment">// `digit` is between 0 and 9 inclusive. If it&#39;s not, there&#39;s a bug somewhere, so we WANT to</span>
-<span class="comment">// panic; hence the unchecked `unwrap`.</span>
-<span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">char_from_digit</span>(<span class="ident">digit</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">char</span> {
-    <span class="ident">char</span>::<span class="ident">from_digit</span>(<span class="ident">digit</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="number">10</span>).<span class="ident">unwrap</span>()
-}
-
-<span class="comment">// Appends &quot;NaN&quot; to the supplied vector.</span>
-<span class="attribute">#[<span class="ident">inline</span>]</span>
+<span class="comment">// Add a &quot;not-a-number&quot; representation to the input vector.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push_nan</span>(<span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>) {
     <span class="ident">chars</span>.<span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="string">&quot;NaN&quot;</span>.<span class="ident">chars</span>().<span class="ident">collect</span>());
 }
 
-<span class="comment">// Appends &quot;inf&quot; to the supplied vector.</span>
-<span class="attribute">#[<span class="ident">inline</span>]</span>
+<span class="comment">// Add an &quot;infinity&quot; representation to the input vector.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push_inf</span>(<span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>) {
     <span class="ident">chars</span>.<span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="string">&quot;inf&quot;</span>.<span class="ident">chars</span>().<span class="ident">collect</span>());
 }
 
-<span class="comment">// Pushes the number zero to the supplied vector. If the formatter has a precision set, then</span>
-<span class="comment">// it will add that many zeros behind the decimal; if none is set, it&#39;ll just push &quot;0.0&quot;.</span>
-<span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push_zero</span>(<span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>, <span class="ident">formatter</span>: <span class="kw-2">&amp;</span><span class="ident">fmt</span>::<span class="ident">Formatter</span>) {
-    <span class="kw">match</span> <span class="ident">formatter</span>.<span class="ident">precision</span>() {
-        <span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="kw">if</span> <span class="ident">p</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;0&#39;</span>);
+<span class="comment">// Add zero to the input vector. The number of characters in the zero is determined by the</span>
+<span class="comment">// supplied formatter.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push_zero</span>(<span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="ident">Formatter</span>) {
+    <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;0&#39;</span>);
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="op">=</span> <span class="ident">f</span>.<span class="ident">precision</span>() {
+        <span class="kw">if</span> <span class="ident">p</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;.&#39;</span>);
             <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">p</span> {
                 <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;0&#39;</span>);
             }
         }
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;0&#39;</span>);
-        }
     }
 }
 
-<span class="comment">// Rounds a vector of digits based on the precision. This is -almost- identical to</span>
-<span class="comment">// `round_vec` above except that it rounds to precision (not to one past precision). It is</span>
-<span class="comment">// necessary because fixed- point numbers are calculated (and rounded) at greater than their</span>
-<span class="comment">// needed precision for accuracy. Hence they need to be rounded to the correct number of</span>
-<span class="comment">// digits after they return.</span>
-<span class="comment">//</span>
-<span class="comment">// `offset` + `precision` is presumed to be positive. If not, `push_fixed_digits` won&#39;t call</span>
-<span class="comment">// this function.</span>
-<span class="comment">//</span>
-<span class="comment">// TODO: This can be made more efficient. Exponentials are rounded in `round_vec`; fixed are</span>
-<span class="comment">// rounded there unnecessarily and then here as well.</span>
-<span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">round_fixed_digits</span>(
-    <span class="ident">digits</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
-    <span class="ident">offset</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">i32</span>,
-    <span class="ident">precision</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">def_precision</span>: <span class="ident">usize</span>,
-) {
-    <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">precision</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">offset</span> <span class="op">+</span> <span class="ident">p</span> <span class="kw">as</span> <span class="ident">i32</span>,
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">offset</span>.<span class="ident">min</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="number">0</span>) <span class="op">+</span> <span class="ident">def_precision</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="comment">// no more than 31 digits</span>
-    } <span class="kw">as</span> <span class="ident">usize</span>;
-
-    <span class="kw">if</span> <span class="ident">digits</span>[<span class="ident">d</span>] <span class="op">&gt;</span> <span class="number">5</span> <span class="op">|</span><span class="op">|</span> <span class="ident">digits</span>[<span class="ident">d</span>] <span class="op">=</span><span class="op">=</span> <span class="number">5</span> <span class="op">&amp;&amp;</span> <span class="ident">digits</span>[<span class="ident">d</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">%</span> <span class="number">2</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
-        <span class="ident">digits</span>[<span class="ident">d</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">d</span> <span class="op">-</span> <span class="number">1</span>;
-        <span class="kw">while</span> <span class="ident">i</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">digits</span>[<span class="ident">i</span>] <span class="op">&gt;</span> <span class="number">9</span> {
-            <span class="ident">digits</span>[<span class="ident">i</span>] <span class="op">-</span><span class="op">=</span> <span class="number">10</span>;
-            <span class="ident">digits</span>[<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-            <span class="ident">i</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
-        }
-    }
-
-    <span class="comment">// If the first digit requires carry, insert one more digit to turn 9 into 10 and adjust</span>
-    <span class="comment">// the offset</span>
-    <span class="kw">if</span> <span class="ident">digits</span>[<span class="number">0</span>] <span class="op">&gt;</span> <span class="number">9</span> {
-        <span class="ident">digits</span>[<span class="number">0</span>] <span class="op">=</span> <span class="number">0</span>;
-        <span class="ident">digits</span>.<span class="ident">insert</span>(<span class="number">0</span>, <span class="number">1</span>);
-        <span class="kw-2">*</span><span class="ident">offset</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-    }
-}
-
-<span class="comment">// Converts all of the digits, up to the number indicated by `precision`, into characters</span>
-<span class="comment">// and pushes them onto the supplied character vector. `offset` determines where the decimal</span>
-<span class="comment">// point is placed. This is used to create a fixed-point output format.</span>
-<span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push_fixed_digits</span>(
-    <span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>,
-    <span class="ident">digits</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
-    <span class="ident">exp</span>: <span class="ident">i32</span>,
-    <span class="ident">precision</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">def_precision</span>: <span class="ident">usize</span>,
-) {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">exp</span> <span class="op">+</span> <span class="number">1</span>;
-    <span class="kw">let</span> <span class="ident">pr_value</span> <span class="op">=</span> <span class="ident">precision</span>.<span class="ident">unwrap_or</span>(<span class="ident">def_precision</span>);
-
-    <span class="kw">if</span> <span class="ident">pr_value</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="ident">offset</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">0</span> {
-        <span class="comment">// Offset is greater than precision, give zero at given precision</span>
-        <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;0&#39;</span>);
-        <span class="kw">if</span> <span class="ident">pr_value</span> <span class="op">&gt;</span> <span class="number">0</span> {
-            <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;.&#39;</span>);
-            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">pr_value</span> {
-                <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;0&#39;</span>);
-            }
-        }
-    } <span class="kw">else</span> {
-        <span class="ident">round_fixed_digits</span>(<span class="ident">digits</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">offset</span>, <span class="ident">precision</span>, <span class="ident">def_precision</span>);
-
-        <span class="kw">if</span> <span class="ident">offset</span> <span class="op">&gt;</span> <span class="number">0</span> {
-            <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">offset</span> <span class="kw">as</span> <span class="ident">usize</span>;
-            <span class="kw">for</span> <span class="ident">digit</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">digits</span>[..<span class="ident">offset</span>] {
-                <span class="ident">chars</span>.<span class="ident">push</span>(<span class="ident">char_from_digit</span>(<span class="kw-2">*</span><span class="ident">digit</span>));
-            }
-            <span class="kw">match</span> <span class="ident">precision</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">if</span> <span class="ident">p</span> <span class="op">&gt;</span> <span class="number">0</span> {
-                        <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;.&#39;</span>);
-                        <span class="kw">for</span> <span class="ident">digit</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">digits</span>[<span class="ident">offset</span>..<span class="ident">offset</span> <span class="op">+</span> <span class="ident">p</span>] {
-                            <span class="ident">chars</span>.<span class="ident">push</span>(<span class="ident">char_from_digit</span>(<span class="kw-2">*</span><span class="ident">digit</span>));
-                        }
-                    }
-                }
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">if</span> <span class="ident">offset</span> <span class="op">&lt;</span> <span class="ident">def_precision</span> {
-                        <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;.&#39;</span>);
-                        <span class="comment">// limit to 31 characters, whatever that precision is</span>
-                        <span class="kw">for</span> <span class="ident">digit</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">digits</span>[<span class="ident">offset</span>..<span class="ident">def_precision</span>] {
-                            <span class="ident">chars</span>.<span class="ident">push</span>(<span class="ident">char_from_digit</span>(<span class="kw-2">*</span><span class="ident">digit</span>));
-                        }
-                    }
-                }
-            }
-        } <span class="kw">else</span> {
-            <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;0&#39;</span>);
-            <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;.&#39;</span>);
-            <span class="kw">if</span> <span class="ident">offset</span> <span class="op">&lt;</span> <span class="number">0</span> {
-                <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="op">-</span><span class="ident">offset</span> {
-                    <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;0&#39;</span>);
-                }
-            }
-            <span class="kw">let</span> <span class="ident">max</span> <span class="op">=</span> (<span class="ident">offset</span> <span class="op">+</span> <span class="ident">pr_value</span> <span class="kw">as</span> <span class="ident">i32</span>) <span class="kw">as</span> <span class="ident">usize</span>;
-            <span class="kw">for</span> <span class="ident">digit</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">digits</span>[..<span class="ident">max</span>] {
-                <span class="ident">chars</span>.<span class="ident">push</span>(<span class="ident">char_from_digit</span>(<span class="kw-2">*</span><span class="ident">digit</span>));
-            }
-        }
-    }
-}
-
-<span class="comment">// Converts all of the digits, up to the number indicated by `precision`, into characters</span>
-<span class="comment">// and pushes them onto the supplied character vector. If there is a decimal point (i.e, if</span>
-<span class="comment">// `precision` is not 0), it will always be after the first digit. This is used to create an</span>
-<span class="comment">// exponential output format.</span>
-<span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push_exp_digits</span>(
-    <span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>,
-    <span class="ident">digits</span>: <span class="kw-2">&amp;</span>[<span class="ident">i32</span>],
-    <span class="ident">precision</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">def_precision</span>: <span class="ident">usize</span>,
-) {
-    <span class="kw">let</span> <span class="ident">precision</span> <span class="op">=</span> <span class="ident">precision</span>.<span class="ident">unwrap_or</span>(<span class="ident">def_precision</span>);
-    <span class="ident">chars</span>.<span class="ident">push</span>(<span class="ident">char_from_digit</span>(<span class="ident">digits</span>[<span class="number">0</span>]));
-    <span class="kw">if</span> <span class="ident">precision</span> <span class="op">&gt;</span> <span class="number">0</span> {
-        <span class="ident">chars</span>.<span class="ident">push</span>(<span class="string">&#39;.&#39;</span>);
-    }
-    <span class="kw">for</span> <span class="ident">digit</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">digits</span>[<span class="number">1</span>..<span class="op">=</span><span class="ident">precision</span>] {
-        <span class="ident">chars</span>.<span class="ident">push</span>(<span class="ident">char_from_digit</span>(<span class="kw-2">*</span><span class="ident">digit</span>));
-    }
-}
-
-<span class="comment">// Drops trailing zeros after the decimal point (and the decimal point as well, if</span>
-<span class="comment">// necessary). This happens only if no precision was supplied to the formatter. In that case</span>
-<span class="comment">// the number is given as many decimal places as it needs minus the trailing zeros.</span>
-<span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">drop_trailing_zeros</span>(<span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>, <span class="ident">formatter</span>: <span class="kw-2">&amp;</span><span class="ident">fmt</span>::<span class="ident">Formatter</span>) {
-    <span class="kw">if</span> <span class="ident">formatter</span>.<span class="ident">precision</span>().<span class="ident">is_none</span>() <span class="op">&amp;&amp;</span> <span class="ident">chars</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="string">&#39;.&#39;</span>) {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">index</span>) <span class="op">=</span> <span class="ident">chars</span>.<span class="ident">clone</span>().<span class="ident">into_iter</span>().<span class="ident">rposition</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span> <span class="op">!</span><span class="op">=</span> <span class="string">&#39;0&#39;</span>) {
-            <span class="comment">// Drop the decimal point itself if everything after it is a zero</span>
-            <span class="kw">let</span> <span class="ident">new_length</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">chars</span>[<span class="ident">index</span>] {
-                <span class="string">&#39;.&#39;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">index</span>,
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">index</span> <span class="op">+</span> <span class="number">1</span>,
-            };
-            <span class="ident">chars</span>.<span class="ident">truncate</span>(<span class="ident">new_length</span>);
-        }
-    }
-}
-
-<span class="comment">// Pushes the exponent to the supplied character vector. It includes a leading marker</span>
-<span class="comment">// character, which should be either &#39;e&#39; or &#39;E&#39;.</span>
-<span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push_exponent</span>(<span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>, <span class="ident">marker</span>: <span class="ident">char</span>, <span class="ident">exp</span>: <span class="ident">i32</span>) {
+<span class="comment">// Add an exponent to the input vector.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push_exp</span>(<span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>, <span class="ident">marker</span>: <span class="ident">char</span>, <span class="ident">exp</span>: <span class="ident">i32</span>) {
     <span class="ident">chars</span>.<span class="ident">push</span>(<span class="ident">marker</span>);
     <span class="ident">chars</span>.<span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">exp</span>.<span class="ident">to_string</span>().<span class="ident">chars</span>().<span class="ident">collect</span>());
 }
 
-<span class="comment">// Adjusts the character vector for width, precision, alignment, and fill characters. The</span>
-<span class="comment">// vector is expanded as needed to accomodate the width.</span>
-<span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">align_and_fill</span>(<span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>, <span class="ident">formatter</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>, <span class="ident">sign</span>: <span class="ident">bool</span>) {
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">width</span>) <span class="op">=</span> <span class="ident">formatter</span>.<span class="ident">width</span>() {
+<span class="comment">// Rounds the digits in a vector to a certain index and then truncates the vector at that</span>
+<span class="comment">// index.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">round_and_trunc</span>(<span class="ident">digits</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">len</span>: <span class="ident">usize</span>) {
+    <span class="kw">if</span> <span class="ident">digits</span>[<span class="ident">len</span>] <span class="op">&gt;</span><span class="op">=</span> <span class="number">5</span> {
+        <span class="comment">// Round up if the digit after the last desired digit is 5 or higher</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1</span>;
+        <span class="ident">digits</span>[<span class="ident">len</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+        <span class="comment">// Round up until there are no more 9&#39;s, if it&#39;s 9&#39;s all the way, leave</span>
+        <span class="comment">// the first element as a 10, which we&#39;ll handle later</span>
+        <span class="kw">while</span> <span class="ident">digits</span>[<span class="ident">len</span> <span class="op">-</span> <span class="ident">i</span>] <span class="op">=</span><span class="op">=</span> <span class="number">10</span> <span class="op">&amp;&amp;</span> <span class="ident">len</span> <span class="op">!</span><span class="op">=</span> <span class="ident">i</span> {
+            <span class="ident">digits</span>[<span class="ident">len</span> <span class="op">-</span> <span class="ident">i</span>] <span class="op">=</span> <span class="number">0</span>;
+            <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+            <span class="ident">digits</span>[<span class="ident">len</span> <span class="op">-</span> <span class="ident">i</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+        }
+    }
+    <span class="ident">digits</span>.<span class="ident">truncate</span>(<span class="ident">len</span>);
+}
+
+<span class="comment">// Adds or removes zeros to the vector depending on the exponent. If the exponent is</span>
+<span class="comment">// positive, this will only add zeros to the end if zeros need to be added in order for the</span>
+<span class="comment">// number to reach the decimal point position. If the exponent is negative, zeros will be</span>
+<span class="comment">// added to the beginning of the vector.</span>
+<span class="comment">//</span>
+<span class="comment">// The exponent parameter is used *only* for determining the number of zeros that need to be</span>
+<span class="comment">// added or removed. If this is being used for a number that is to be in exponential form,</span>
+<span class="comment">// use 0 for the exponent.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">adjust_zeros</span>(<span class="ident">digits</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">exp</span>: <span class="ident">i32</span>) {
+    <span class="kw">let</span> <span class="ident">absexp</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">usize</span>;
+    <span class="kw">let</span> <span class="ident">accuracy</span> <span class="op">=</span> <span class="ident">digits</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">isize</span>;
+    <span class="comment">// First we want to drop trailing zeros that make the width of the vector higher than</span>
+    <span class="comment">// the exponent + 1 (i.e., trailing zeros that would be to the right of the decimal</span>
+    <span class="comment">// point, after we put in a decimal point). These will be re-added later if the</span>
+    <span class="comment">// specified precision requires it.</span>
+    <span class="kw">if</span> <span class="ident">digits</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span> <span class="op">&gt;</span> <span class="ident">exp</span> <span class="op">+</span> <span class="number">1</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_len</span> <span class="op">=</span> <span class="ident">digits</span>.<span class="ident">len</span>();
+        <span class="kw">while</span> <span class="ident">digits</span>[<span class="ident">new_len</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">new_len</span> <span class="op">&gt;</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="ident">new_len</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">&gt;</span> <span class="ident">exp</span> <span class="op">+</span> <span class="number">1</span> {
+            <span class="ident">new_len</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
+        }
+        <span class="ident">digits</span>.<span class="ident">truncate</span>(<span class="ident">new_len</span>);
+    }
+
+    <span class="comment">// Add zeros to the left (if exp is negative) or the right (if non-negative) to make</span>
+    <span class="comment">// the whole number reach the decimal point if it doesn&#39;t already.</span>
+    <span class="kw">if</span> <span class="ident">exp</span> <span class="op">&lt;</span> <span class="number">0</span> {
+        <span class="ident">digits</span>.<span class="ident">splice</span>(..<span class="number">0</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">absexp</span>]);
+    } <span class="kw">else</span> {
+        <span class="kw">let</span> <span class="ident">zero_length</span> <span class="op">=</span> <span class="number">0</span>.<span class="ident">max</span>(<span class="ident">absexp</span> <span class="kw">as</span> <span class="ident">isize</span> <span class="op">-</span> <span class="ident">accuracy</span> <span class="op">+</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">usize</span>;
+        <span class="kw">if</span> <span class="ident">zero_length</span> <span class="op">&gt;</span> <span class="number">0</span> {
+            <span class="ident">digits</span>.<span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">zero_length</span>]);
+        }
+    }
+}
+
+<span class="comment">// Adds zeros or removes digits from the vector to correspond to the supplied precision. If</span>
+<span class="comment">// the vector is not long enough to reach that precision, zeros will be added to the end; if</span>
+<span class="comment">// it&#39;s too long, the vector will be truncated. In this case, the last removed digit will be</span>
+<span class="comment">// used to round the rest of the digits.</span>
+<span class="comment">//</span>
+<span class="comment">// In the case of a number consisting of all 9&#39;s that must be truncated, the first element</span>
+<span class="comment">// will become a 10 while the rest will be 0&#39;s. This will happen only with numbers with</span>
+<span class="comment">// positive exponents, as the ones with negative exponents already had the pre-decimal-point</span>
+<span class="comment">// zero added which will halt rounding cascades on those numbers. This makes it easy to tell</span>
+<span class="comment">// later when an exponent needs to be adjusted to place the decimal point correctly. This is</span>
+<span class="comment">// also the only time when any vector element will be something other than a single-digit</span>
+<span class="comment">// integer.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">adjust_prec</span>(<span class="ident">digits</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">exp</span>: <span class="ident">i32</span>, <span class="ident">prec</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) {
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="op">=</span> <span class="ident">prec</span> {
+        <span class="comment">// If exp &lt; 0, we add 1 for the zero before the decimal point</span>
+        <span class="kw">let</span> <span class="ident">desired</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">exp</span> <span class="op">&lt;</span> <span class="number">0</span> { <span class="ident">p</span> <span class="op">+</span> <span class="number">1</span> } <span class="kw">else</span> { <span class="ident">exp</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="ident">p</span> <span class="op">+</span> <span class="number">1</span> };
+
+        <span class="kw">if</span> <span class="ident">desired</span> <span class="op">&gt;</span> <span class="ident">digits</span>.<span class="ident">len</span>() {
+            <span class="ident">digits</span>.<span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">desired</span> <span class="op">-</span> <span class="ident">digits</span>.<span class="ident">len</span>()]);
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">desired</span> <span class="op">&lt;</span> <span class="ident">digits</span>.<span class="ident">len</span>() {
+            <span class="comment">// The only other option is desired == digits.len(), as zeros would have</span>
+            <span class="comment">// already been appended if desired &gt; digits.len()</span>
+            <span class="ident">round_and_trunc</span>(<span class="ident">digits</span>, <span class="ident">desired</span>);
+        }
+    }
+}
+
+<span class="comment">// Positions a decimal point at the correct location dependiong on the exponent. Since the</span>
+<span class="comment">// decimal point is not a `u8` like the digits are, this function returns a character vector</span>
+<span class="comment">// rather than manipulating the input vector in place.</span>
+<span class="comment">//</span>
+<span class="comment">// The function also handles the `10` &quot;digit&quot; that can be in the first position for a</span>
+<span class="comment">// positive-exponent number that cascade rounded all the way to the first digit.</span>
+<span class="comment">//</span>
+<span class="comment">// A decimal point will *not* be placed if the length of the vector indicates that the last</span>
+<span class="comment">// digit is right at the decimal point location. This means we&#39;ll end up with &quot;10&quot; rather</span>
+<span class="comment">// than &quot;10.&quot;, for instance.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">place_decimal</span>(<span class="ident">digits</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">exp</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">digits</span>[<span class="number">0</span>] <span class="op">=</span><span class="op">=</span> <span class="number">10</span> { <span class="number">1</span> } <span class="kw">else</span> { <span class="number">0</span> };
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">digits</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="ident">offset</span> <span class="op">+</span> <span class="number">1</span>);
+
+    <span class="kw">for</span> <span class="ident">d</span> <span class="kw">in</span> <span class="ident">digits</span> {
+        <span class="kw">if</span> <span class="ident">d</span> <span class="op">=</span><span class="op">=</span> <span class="number">10</span> {
+            <span class="comment">// The only &quot;digit&quot; that might be 10 is the first one, if cascading rounding</span>
+            <span class="comment">// reached all the way to the beginning of the number. When this happens we have</span>
+            <span class="comment">// to push both characters.</span>
+            <span class="ident">result</span>.<span class="ident">push</span>(<span class="string">&#39;1&#39;</span>);
+            <span class="ident">result</span>.<span class="ident">push</span>(<span class="string">&#39;0&#39;</span>);
+        } <span class="kw">else</span> {
+            <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">char</span>::<span class="ident">from_digit</span>(<span class="ident">d</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="number">10</span>).<span class="ident">unwrap</span>());
+        }
+    }
+
+    <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="number">0</span>.<span class="ident">max</span>(<span class="ident">exp</span>) <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="ident">offset</span> <span class="op">+</span> <span class="number">1</span>;
+    <span class="comment">// Don&#39;t add a decimal point if the number doesn&#39;t have any digits after the decimal</span>
+    <span class="comment">// point</span>
+    <span class="kw">if</span> <span class="ident">position</span> <span class="op">&lt;</span> <span class="ident">result</span>.<span class="ident">len</span>() {
+        <span class="ident">result</span>.<span class="ident">insert</span>(<span class="ident">position</span>, <span class="string">&#39;.&#39;</span>);
+    }
+
+    <span class="ident">result</span>
+}
+
+<span class="comment">// Adjust the width of the number based on alignment, width, and fill settings. This</span>
+<span class="comment">// function also handles the sign-aware zero fill.</span>
+<span class="comment">//</span>
+<span class="comment">// This function does nothing if either no width is specified or if the specified width is</span>
+<span class="comment">// not greater than the current vector length. A width setting can increase the number of</span>
+<span class="comment">// characters in the vector, but it cannot decrease it. As a consequence, align and fill are</span>
+<span class="comment">// ignored if there isn&#39;t a width specified that is higher than the vector length.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">align_and_fill</span>(<span class="ident">chars</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>, <span class="ident">signed</span>: <span class="ident">bool</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>) {
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">width</span>) <span class="op">=</span> <span class="ident">f</span>.<span class="ident">width</span>() {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">chars</span>.<span class="ident">len</span>();
         <span class="kw">if</span> <span class="ident">len</span> <span class="op">&lt;</span> <span class="ident">width</span> {
-            <span class="kw">let</span> <span class="ident">delta</span> <span class="op">=</span> <span class="ident">width</span> <span class="op">-</span> <span class="ident">chars</span>.<span class="ident">len</span>();
-            <span class="kw">let</span> <span class="ident">fill</span> <span class="op">=</span> <span class="ident">formatter</span>.<span class="ident">fill</span>();
-            <span class="kw">match</span> <span class="ident">formatter</span>.<span class="ident">align</span>() {
-                <span class="prelude-val">Some</span>(<span class="ident">fmt</span>::<span class="ident">Alignment</span>::<span class="ident">Left</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="ident">delta</span> <span class="op">=</span> <span class="ident">width</span> <span class="op">-</span> <span class="ident">len</span>;
+            <span class="kw">let</span> <span class="ident">fill</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fill</span>();
+
+            <span class="kw">match</span> <span class="ident">f</span>.<span class="ident">align</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">Alignment</span>::<span class="ident">Left</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">delta</span> {
                         <span class="ident">chars</span>.<span class="ident">push</span>(<span class="ident">fill</span>);
                     }
                 }
-                <span class="prelude-val">Some</span>(<span class="ident">fmt</span>::<span class="ident">Alignment</span>::<span class="ident">Right</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">Alignment</span>::<span class="ident">Right</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">delta</span> {
                         <span class="ident">chars</span>.<span class="ident">insert</span>(<span class="number">0</span>, <span class="ident">fill</span>);
                     }
                 }
-                <span class="prelude-val">Some</span>(<span class="ident">fmt</span>::<span class="ident">Alignment</span>::<span class="ident">Center</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">let</span> <span class="ident">left_delta</span> <span class="op">=</span> <span class="ident">delta</span> <span class="op">/</span> <span class="number">2</span>;
-                    <span class="kw">let</span> <span class="ident">right_delta</span> <span class="op">=</span> <span class="ident">delta</span> <span class="op">-</span> <span class="ident">left_delta</span>;
-                    <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">left_delta</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">Alignment</span>::<span class="ident">Center</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">let</span> <span class="ident">left</span> <span class="op">=</span> <span class="ident">delta</span> <span class="op">/</span> <span class="number">2</span>;
+                    <span class="kw">let</span> <span class="ident">right</span> <span class="op">=</span> <span class="ident">delta</span> <span class="op">-</span> <span class="ident">left</span>;
+                    <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">left</span> {
                         <span class="ident">chars</span>.<span class="ident">insert</span>(<span class="number">0</span>, <span class="ident">fill</span>);
                     }
-                    <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">right_delta</span> {
+                    <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">right</span> {
                         <span class="ident">chars</span>.<span class="ident">push</span>(<span class="ident">fill</span>);
                     }
                 }
                 <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">if</span> <span class="ident">formatter</span>.<span class="ident">sign_aware_zero_pad</span>() {
-                        <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">sign</span> { <span class="number">1</span> } <span class="kw">else</span> { <span class="number">0</span> };
+                    <span class="kw">if</span> <span class="ident">f</span>.<span class="ident">sign_aware_zero_pad</span>() {
+                        <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">signed</span> { <span class="number">1</span> } <span class="kw">else</span> { <span class="number">0</span> };
                         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">delta</span> {
                             <span class="ident">chars</span>.<span class="ident">insert</span>(<span class="ident">index</span>, <span class="string">&#39;0&#39;</span>);
                         }

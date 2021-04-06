@@ -9,7 +9,7 @@ use std::char;
 use std::fmt::{Debug, Display, Formatter, LowerExp, Result, UpperExp};
 
 const TEN: Double = Double(10.0, 0.0);
-const MAX_REAL_PRECISION: usize = 31;
+const MAX_ACCURACY: usize = 31;
 
 impl Display for Double {
     /// Formats a `Double` for display.
@@ -237,13 +237,13 @@ fn extract_digits(value: &Double, exp: i32) -> Vec<u8> {
     let mut value = value / divisor;
     let mut digits = vec![];
 
-    for _ in 0..(MAX_REAL_PRECISION + 1) {
-        let digit = value.trunc();
+    for _ in 0..(MAX_ACCURACY + 1) {
+        let digit = value.0.trunc();
 
-        value -= digit;
+        value -= Double(digit, 0.0);
         value *= TEN;
 
-        digits.push(digit.0 as u8);
+        digits.push(digit as u8);
     }
 
     // We will not record digits after the 323rd (308 for the largest negative exponent,
@@ -255,10 +255,7 @@ fn extract_digits(value: &Double, exp: i32) -> Vec<u8> {
     //
     // If this isn't an issue, we still truncate by one because we produced an extra digit
     // for rounding.
-    d::round_and_trunc(
-        &mut digits,
-        (324 + exp).min(MAX_REAL_PRECISION as i32) as usize,
-    );
+    d::round_and_trunc(&mut digits, (324 + exp).min(MAX_ACCURACY as i32) as usize);
 
     digits
 }
