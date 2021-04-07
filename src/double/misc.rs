@@ -198,7 +198,14 @@ impl Double {
     /// [`FpCategory`]: https://doc.rust-lang.org/std/num/enum.FpCategory.html
     /// [`MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE
     pub fn classify(self) -> FpCategory {
-        self.0.classify()
+        if self.0.classify() == FpCategory::Subnormal || self.1.classify() == FpCategory::Subnormal
+        {
+            // The other categories can be determined from only the first component, but a
+            // number is subnormal if *either* component is subnormal.
+            FpCategory::Subnormal
+        } else {
+            self.0.classify()
+        }
     }
 
     /// Returns `true` if the `Double` is neither zero, infinite, subnormal, or `NaN`.
