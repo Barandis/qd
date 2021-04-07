@@ -6,7 +6,7 @@
 use crate::quad::common as c;
 use crate::quad::Quad;
 
-const INV_K: Quad = Quad(1.52587890625e-05, 0.0, 0.0, 0.0); //   1/65536, used for exp
+const FRAC_1_65536: f64 = 1.52587890625e-05; //   1/65536, used for exp
 
 impl Quad {
     /// Computes the exponential function, *e*<sup>x</sup>, where *x* is this `Quad`.
@@ -40,86 +40,106 @@ impl Quad {
             None => {
                 // Strategy:
                 //
-                // We first reduce the range of the argument to a convenient size to perform
-                // the calculation efficiently. This reduction takes advantage of the
-                // following identity.
+                // We use the Taylor series, which for e^x is defined as
                 //
-                //      exp(kx) = exp(x)^k
+                //      e^x = 1 + x + x^2/2! + x^3/3! + x^4/4! ...
                 //
-                // We in fact go a little further because it makes the reduction easier.
+                // This works well for the exponential function, as the factorials in the
+                // denominator mean the series converges relatively quickly.
                 //
-                //      exp(kx + m * ln(2)) = 2^m * exp(x)^k
+                // But it converges much *more* quickly for small numbers. We can use this,
+                // along with mathematical identities, to make the number we use to do the
+                // calculation much smaller.
                 //
-                // where m and k are arbitary integers. By choosing m appropriately we can
-                // make |kx| <= ln(2) / 2 = 0.347. Then exp(x) is evaluated using a Taylor
-                // series, which for exp(x) is pleasantly easy:
+                //     (1) e^(a + b) = e^a · e^b
                 //
-                //      exp(x) = 1 + x + x^2/2! + x^3/3! + x^4/4! ...
+                // We can then choose a and b just so in order to make e^a very easy to
+                // calculate and to make b small.
                 //
-                // Reducing x substantially speeds up the convergence, so we have to use
-                // fewer terms to reach the required precision.
+                // In fact, it so happens that if we choose a = k ln 2 and b = r, then we
+                // have the following identities, based on (1) above.
                 //
-                // Once we have executed the Taylor series to produce an intermediate
-                // answer, we expand it to compensate for the earlier reduction.
+                //     (2) e^x = e^(k ln 2 + r) = e^(k ln 2) · e^r = 2^k · e^r
+                //
+                // This is one reason we made that particular choice of k ln 2; because
+                // raising e to that power results in 2^k, which is really easy to compute,
+                // especially when k is in integer. The other reason is that if we figure
+                // out the integer k that gets k ln 2 as close as possible to x, then |r| <=
+                // (ln 2) / 2, which qualifies as a "small number" (it's < 0.347).
+                //
+                // We can find k by ignoring r for the moment and solving x = k ln 2 for
+                // kbeing an integer by rounding:
+                //
+                //     (3) k = round(x / ln 2) = floor((x / ln 2) + 1/2)
+                //
+                // Then we can solve x = k ln 2 + r for r, using this now-known value for k.
+                //
+                //     (4) r = x - k ln 2
+                //
+                // We can now use the Taylor series to compute the much smaller (and faster)
+                // e^r, and after we have that answer, multiply it by 2^k (from (2) above)
+                // for the final answer.
 
-                // k = 65536 is chosen; INV_K is defined above as that reciprocal
-                let threshold = c::mul_pwr2(Quad::EPSILON, INV_K.0);
-                // m doesn't need to be *that* accurate, so we calculate it with f64
-                // arithmetic instead of the more expensive Quad arithmetic
-                let m = (self.0 / Quad::LN_2.0 + 0.5).floor();
+                // The implementation of equation (3). Since k is going to be an integer
+                // anyway and doesn't therefore require Quad precision, we use regular f64
+                // arithmetic.
+                let k = (self.0 / Quad::LN_2.0 + 0.5).floor();
 
-                // solving for x in exp(kx + m * ln(2)). INV_K is a power of 2 so we could
-                // use mul_exp2, but on larger numbers that causes a loss of precision when
-                // used with negative powers of two because bits are being shifted to the
-                // right without accounting for the ones that are lost off the right.
-                let x = (self - Quad::LN_2 * Quad(m, 0.0, 0.0, 0.0)) * INV_K;
+                // The implementation of equation (4). We actually go further here by
+                // halving the answer 16 more times (FRAC_1_65536 is (1/2)^16), using the
+                // identity
+                //
+                //     (5) exp(2x) = exp(x)^2
+                //
+                // We'll expand this later.
+                let r = c::mul_pwr2(self - Quad::LN_2 * Quad(k, 0.0, 0.0, 0.0), FRAC_1_65536);
 
                 // This is the "x + x^2/2! + x^3/3!" part of the Taylor series.
-                let mut p = x.sqr();
-                let mut r = x + c::mul_pwr2(p, 0.5);
-                p *= x;
+                let mut p = r.sqr();
+                let mut s = r + c::mul_pwr2(p, 0.5);
+                p *= r;
                 let mut t = p * c::INV_FACTS[0];
                 let mut i = 0;
 
                 // This is the rest of the Taylor series. We perform it as many times as
                 // we need to reach our desired precision.
                 loop {
-                    r += t;
-                    p *= x;
+                    s += t;
+                    p *= r;
                     i += 1;
                     t = p * c::INV_FACTS[i];
-                    if i >= 9 || t.abs() <= threshold {
+                    if i >= 9 || t.abs() <= Quad::EPSILON {
                         break;
                     }
                 }
+                s += t;
 
-                // Add the Taylor series parts together, then expand by the same number of
-                // times that we reduced earlier.
-                r += t;
-
-                // mul_pwr2 can be used here because multiplication doesn't lose precision
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
-                r = c::mul_pwr2(r, 2.0) + r.sqr();
+                // This is the expansion based on equation (5). We do it 16 times because
+                // halving was done 16 times (same as multiplying by (1/2)^16).
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
 
                 // Finally, add the "1 +" part of the Taylor series.
-                r += Quad::ONE;
+                s += Quad::ONE;
 
-                // Final step of expansion, this is the "* 2^m" part
-                r.ldexp(m as i32)
+                // Multiply by 2^k. This is the implementation of the expansion in equation
+                // (2). The ldexp function is defined as multiplying the number (s in this
+                // case) by 2 raised to the power of its argument (k in this case).
+                s.ldexp(k as i32)
             }
         }
     }

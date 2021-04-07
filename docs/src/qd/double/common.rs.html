@@ -51,6 +51,19 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -68,8 +81,8 @@
 
 <span class="doccomment">/// Table of the reciprocals of factorials. This starts with 1/3!, as the inverse factorials</span>
 <span class="doccomment">/// before that are trivial (1/1! is 1 and 1/2! is 1/2). These are used in Taylor series</span>
-<span class="doccomment">/// calculations for exp, sin, and cos. </span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INV_FACTS</span>: [<span class="ident">Double</span>; <span class="number">15</span>] <span class="op">=</span> [
+<span class="doccomment">/// calculations for exp, sin, and cos.</span>
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INV_FACTS</span>: [<span class="ident">Double</span>; <span class="number">28</span>] <span class="op">=</span> [
     <span class="ident">Double</span>(<span class="number">1.6666666666666666e-1</span>, <span class="number">9.25185853854297e-18</span>),
     <span class="ident">Double</span>(<span class="number">4.1666666666666664e-2</span>, <span class="number">2.3129646346357427e-18</span>),
     <span class="ident">Double</span>(<span class="number">8.333333333333333e-3</span>, <span class="number">1.1564823173178714e-19</span>),
@@ -85,6 +98,19 @@
     <span class="ident">Double</span>(<span class="number">7.647163731819816e-13</span>, <span class="number">7.03872877733453e-30</span>),
     <span class="ident">Double</span>(<span class="number">4.779477332387385e-14</span>, <span class="number">4.399205485834081e-31</span>),
     <span class="ident">Double</span>(<span class="number">2.8114572543455206e-15</span>, <span class="number">1.6508842730861433e-31</span>),
+    <span class="ident">Double</span>(<span class="number">1.5619206968586225e-16</span>, <span class="number">1.1910679660273754e-32</span>),
+    <span class="ident">Double</span>(<span class="number">8.22063524662433e-18</span>, <span class="number">2.2141894119604265e-34</span>),
+    <span class="ident">Double</span>(<span class="number">4.110317623312165e-19</span>, <span class="number">1.4412973378659527e-36</span>),
+    <span class="ident">Double</span>(<span class="number">1.9572941063391263e-20</span>, <span class="op">-</span><span class="number">1.3643503830087908e-36</span>),
+    <span class="ident">Double</span>(<span class="number">8.896791392450574e-22</span>, <span class="op">-</span><span class="number">7.911402614872376e-38</span>),
+    <span class="ident">Double</span>(<span class="number">3.868170170630684e-23</span>, <span class="op">-</span><span class="number">8.843177655482339e-40</span>),
+    <span class="ident">Double</span>(<span class="number">1.6117375710961184e-24</span>, <span class="op">-</span><span class="number">3.6846573564509766e-41</span>),
+    <span class="ident">Double</span>(<span class="number">6.446950284384474e-26</span>, <span class="op">-</span><span class="number">1.9330404233703468e-42</span>),
+    <span class="ident">Double</span>(<span class="number">2.4795962632247976e-27</span>, <span class="op">-</span><span class="number">1.2953730964765229e-43</span>),
+    <span class="ident">Double</span>(<span class="number">9.183689863795546e-29</span>, <span class="number">1.430315039678732e-45</span>),
+    <span class="ident">Double</span>(<span class="number">3.279889237069838e-30</span>, <span class="number">1.5117542744029879e-46</span>),
+    <span class="ident">Double</span>(<span class="number">1.1309962886447716e-31</span>, <span class="number">1.0498015412959505e-47</span>),
+    <span class="ident">Double</span>(<span class="number">3.7699876288159054e-33</span>, <span class="number">2.5870347832750324e-49</span>),
 ];
 
 <span class="doccomment">/// Table of sines of kπ/16, where k is in [1, 4].</span>

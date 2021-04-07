@@ -821,6 +821,16 @@
 <span id="818">818</span>
 <span id="819">819</span>
 <span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -1049,7 +1059,17 @@
     <span class="doccomment">/// [`FpCategory`]: https://doc.rust-lang.org/std/num/enum.FpCategory.html</span>
     <span class="doccomment">/// [`MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">classify</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FpCategory</span> {
-        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">classify</span>()
+        <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">classify</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">FpCategory</span>::<span class="ident">Subnormal</span>
+            <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="number">1</span>.<span class="ident">classify</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">FpCategory</span>::<span class="ident">Subnormal</span>
+            <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="number">2</span>.<span class="ident">classify</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">FpCategory</span>::<span class="ident">Subnormal</span>
+            <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="number">3</span>.<span class="ident">classify</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">FpCategory</span>::<span class="ident">Subnormal</span>
+        {
+            <span class="comment">// The other categories can be determined from only the first component, but a</span>
+            <span class="comment">// number is subnormal if *any* component is subnormal.</span>
+            <span class="ident">FpCategory</span>::<span class="ident">Subnormal</span>
+        } <span class="kw">else</span> {
+            <span class="self">self</span>.<span class="number">0</span>.<span class="ident">classify</span>()
+        }
     }
 
     <span class="doccomment">/// Returns `true` if the `Quad` is neither zero, infinite, subnormal, or `NaN`.</span>

@@ -794,6 +794,13 @@
 <span id="791">791</span>
 <span id="792">792</span>
 <span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -995,7 +1002,14 @@
     <span class="doccomment">/// [`FpCategory`]: https://doc.rust-lang.org/std/num/enum.FpCategory.html</span>
     <span class="doccomment">/// [`MIN_POSITIVE`]: #associatedconstant.MIN_POSITIVE</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">classify</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FpCategory</span> {
-        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">classify</span>()
+        <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">classify</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">FpCategory</span>::<span class="ident">Subnormal</span> <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="number">1</span>.<span class="ident">classify</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">FpCategory</span>::<span class="ident">Subnormal</span>
+        {
+            <span class="comment">// The other categories can be determined from only the first component, but a</span>
+            <span class="comment">// number is subnormal if *either* component is subnormal.</span>
+            <span class="ident">FpCategory</span>::<span class="ident">Subnormal</span>
+        } <span class="kw">else</span> {
+            <span class="self">self</span>.<span class="number">0</span>.<span class="ident">classify</span>()
+        }
     }
 
     <span class="doccomment">/// Returns `true` if the `Double` is neither zero, infinite, subnormal, or `NaN`.</span>

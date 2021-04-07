@@ -26,3 +26,10 @@ default = []
 no_fma = []
 
 [dependencies]
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "my_benchmark"
+harness = false

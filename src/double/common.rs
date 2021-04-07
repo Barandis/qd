@@ -14,8 +14,8 @@ pub fn mul_pwr2(a: Double, b: f64) -> Double {
 
 /// Table of the reciprocals of factorials. This starts with 1/3!, as the inverse factorials
 /// before that are trivial (1/1! is 1 and 1/2! is 1/2). These are used in Taylor series
-/// calculations for exp, sin, and cos. 
-pub const INV_FACTS: [Double; 15] = [
+/// calculations for exp, sin, and cos.
+pub const INV_FACTS: [Double; 28] = [
     Double(1.6666666666666666e-1, 9.25185853854297e-18),
     Double(4.1666666666666664e-2, 2.3129646346357427e-18),
     Double(8.333333333333333e-3, 1.1564823173178714e-19),
@@ -31,6 +31,19 @@ pub const INV_FACTS: [Double; 15] = [
     Double(7.647163731819816e-13, 7.03872877733453e-30),
     Double(4.779477332387385e-14, 4.399205485834081e-31),
     Double(2.8114572543455206e-15, 1.6508842730861433e-31),
+    Double(1.5619206968586225e-16, 1.1910679660273754e-32),
+    Double(8.22063524662433e-18, 2.2141894119604265e-34),
+    Double(4.110317623312165e-19, 1.4412973378659527e-36),
+    Double(1.9572941063391263e-20, -1.3643503830087908e-36),
+    Double(8.896791392450574e-22, -7.911402614872376e-38),
+    Double(3.868170170630684e-23, -8.843177655482339e-40),
+    Double(1.6117375710961184e-24, -3.6846573564509766e-41),
+    Double(6.446950284384474e-26, -1.9330404233703468e-42),
+    Double(2.4795962632247976e-27, -1.2953730964765229e-43),
+    Double(9.183689863795546e-29, 1.430315039678732e-45),
+    Double(3.279889237069838e-30, 1.5117542744029879e-46),
+    Double(1.1309962886447716e-31, 1.0498015412959505e-47),
+    Double(3.7699876288159054e-33, 2.5870347832750324e-49),
 ];
 
 /// Table of sines of kπ/16, where k is in [1, 4].

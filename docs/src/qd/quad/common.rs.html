@@ -3187,6 +3187,100 @@
 <span id="3184">3184</span>
 <span id="3185">3185</span>
 <span id="3186">3186</span>
+<span id="3187">3187</span>
+<span id="3188">3188</span>
+<span id="3189">3189</span>
+<span id="3190">3190</span>
+<span id="3191">3191</span>
+<span id="3192">3192</span>
+<span id="3193">3193</span>
+<span id="3194">3194</span>
+<span id="3195">3195</span>
+<span id="3196">3196</span>
+<span id="3197">3197</span>
+<span id="3198">3198</span>
+<span id="3199">3199</span>
+<span id="3200">3200</span>
+<span id="3201">3201</span>
+<span id="3202">3202</span>
+<span id="3203">3203</span>
+<span id="3204">3204</span>
+<span id="3205">3205</span>
+<span id="3206">3206</span>
+<span id="3207">3207</span>
+<span id="3208">3208</span>
+<span id="3209">3209</span>
+<span id="3210">3210</span>
+<span id="3211">3211</span>
+<span id="3212">3212</span>
+<span id="3213">3213</span>
+<span id="3214">3214</span>
+<span id="3215">3215</span>
+<span id="3216">3216</span>
+<span id="3217">3217</span>
+<span id="3218">3218</span>
+<span id="3219">3219</span>
+<span id="3220">3220</span>
+<span id="3221">3221</span>
+<span id="3222">3222</span>
+<span id="3223">3223</span>
+<span id="3224">3224</span>
+<span id="3225">3225</span>
+<span id="3226">3226</span>
+<span id="3227">3227</span>
+<span id="3228">3228</span>
+<span id="3229">3229</span>
+<span id="3230">3230</span>
+<span id="3231">3231</span>
+<span id="3232">3232</span>
+<span id="3233">3233</span>
+<span id="3234">3234</span>
+<span id="3235">3235</span>
+<span id="3236">3236</span>
+<span id="3237">3237</span>
+<span id="3238">3238</span>
+<span id="3239">3239</span>
+<span id="3240">3240</span>
+<span id="3241">3241</span>
+<span id="3242">3242</span>
+<span id="3243">3243</span>
+<span id="3244">3244</span>
+<span id="3245">3245</span>
+<span id="3246">3246</span>
+<span id="3247">3247</span>
+<span id="3248">3248</span>
+<span id="3249">3249</span>
+<span id="3250">3250</span>
+<span id="3251">3251</span>
+<span id="3252">3252</span>
+<span id="3253">3253</span>
+<span id="3254">3254</span>
+<span id="3255">3255</span>
+<span id="3256">3256</span>
+<span id="3257">3257</span>
+<span id="3258">3258</span>
+<span id="3259">3259</span>
+<span id="3260">3260</span>
+<span id="3261">3261</span>
+<span id="3262">3262</span>
+<span id="3263">3263</span>
+<span id="3264">3264</span>
+<span id="3265">3265</span>
+<span id="3266">3266</span>
+<span id="3267">3267</span>
+<span id="3268">3268</span>
+<span id="3269">3269</span>
+<span id="3270">3270</span>
+<span id="3271">3271</span>
+<span id="3272">3272</span>
+<span id="3273">3273</span>
+<span id="3274">3274</span>
+<span id="3275">3275</span>
+<span id="3276">3276</span>
+<span id="3277">3277</span>
+<span id="3278">3278</span>
+<span id="3279">3279</span>
+<span id="3280">3280</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas J. Otterson</span>
 <span class="comment">//</span>
@@ -3202,12 +3296,12 @@
 
 <span class="doccomment">/// Reciprocals of factorials, rendered as Quads. These are used in Taylor series</span>
 <span class="doccomment">/// calculations.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INV_FACTS</span>: [<span class="ident">Quad</span>; <span class="number">15</span>] <span class="op">=</span> [
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INV_FACTS</span>: [<span class="ident">Quad</span>; <span class="number">28</span>] <span class="op">=</span> [
     <span class="ident">Quad</span>(
         <span class="number">1.6666666666666666e-1</span>,
         <span class="number">9.25185853854297e-18</span>,
         <span class="number">5.135813185032629e-34</span>,
-        <span class="number">2.8509490240983423e-50</span>,
+        <span class="number">2.850949024098342e-50</span>,
     ),
     <span class="ident">Quad</span>(
         <span class="number">4.1666666666666664e-2</span>,
@@ -3219,7 +3313,7 @@
         <span class="number">8.333333333333333e-3</span>,
         <span class="number">1.1564823173178714e-19</span>,
         <span class="number">1.6049416203226965e-36</span>,
-        <span class="number">2.22730392507682e-53</span>,
+        <span class="number">2.2273039250768297e-53</span>,
     ),
     <span class="ident">Quad</span>(
         <span class="number">1.388888888888889e-3</span>,
@@ -3231,67 +3325,145 @@
         <span class="number">1.984126984126984e-4</span>,
         <span class="number">1.7209558293420705e-22</span>,
         <span class="number">1.4926912391394127e-40</span>,
-        <span class="number">1.2947032674766573e-58</span>,
+        <span class="number">1.2947032674600247e-58</span>,
     ),
     <span class="ident">Quad</span>(
         <span class="number">2.48015873015873e-5</span>,
         <span class="number">2.1511947866775882e-23</span>,
         <span class="number">1.865864048924266e-41</span>,
-        <span class="number">1.6183790843843425e-59</span>,
+        <span class="number">1.6183790843250309e-59</span>,
     ),
     <span class="ident">Quad</span>(
         <span class="number">2.7557319223985893e-6</span>,
         <span class="op">-</span><span class="number">1.858393274046472e-22</span>,
         <span class="number">8.491754604881993e-39</span>,
-        <span class="op">-</span><span class="number">5.726616407894298e-55</span>,
+        <span class="op">-</span><span class="number">5.726616407894296e-55</span>,
     ),
     <span class="ident">Quad</span>(
         <span class="number">2.755731922398589e-7</span>,
         <span class="number">2.3767714622250297e-23</span>,
         <span class="op">-</span><span class="number">3.263188903340883e-40</span>,
-        <span class="number">1.6143511186040432e-56</span>,
+        <span class="number">1.6143511186040442e-56</span>,
     ),
     <span class="ident">Quad</span>(
         <span class="number">2.505210838544172e-8</span>,
         <span class="op">-</span><span class="number">1.448814070935912e-24</span>,
         <span class="number">2.0426735146714455e-41</span>,
-        <span class="op">-</span><span class="number">8.49632672007163e-58</span>,
+        <span class="op">-</span><span class="number">8.496326720071632e-58</span>,
     ),
     <span class="ident">Quad</span>(
         <span class="number">2.08767569878681e-9</span>,
         <span class="op">-</span><span class="number">1.20734505911326e-25</span>,
         <span class="number">1.702227928892871e-42</span>,
-        <span class="number">1.4160953215039672e-58</span>,
+        <span class="number">1.416095321503967e-58</span>,
     ),
     <span class="ident">Quad</span>(
         <span class="number">1.6059043836821613e-10</span>,
         <span class="number">1.2585294588752098e-26</span>,
         <span class="op">-</span><span class="number">5.31334602762985e-43</span>,
-        <span class="number">3.540214725976055e-59</span>,
+        <span class="number">3.5402147259760553e-59</span>,
     ),
     <span class="ident">Quad</span>(
         <span class="number">1.1470745597729725e-11</span>,
         <span class="number">2.0655512752830745e-28</span>,
         <span class="number">6.889079232466646e-45</span>,
-        <span class="number">5.7292000265510916e-61</span>,
+        <span class="number">5.729200026551091e-61</span>,
     ),
     <span class="ident">Quad</span>(
         <span class="number">7.647163731819816e-13</span>,
         <span class="number">7.03872877733453e-30</span>,
         <span class="op">-</span><span class="number">7.827539277162583e-48</span>,
-        <span class="number">1.9213864944378356e-64</span>,
+        <span class="number">1.9213864944379024e-64</span>,
     ),
     <span class="ident">Quad</span>(
         <span class="number">4.779477332387385e-14</span>,
         <span class="number">4.399205485834081e-31</span>,
         <span class="op">-</span><span class="number">4.892212048226615e-49</span>,
-        <span class="number">1.2008665590236055e-65</span>,
+        <span class="number">1.200866559023689e-65</span>,
     ),
     <span class="ident">Quad</span>(
         <span class="number">2.8114572543455206e-15</span>,
         <span class="number">1.6508842730861433e-31</span>,
         <span class="op">-</span><span class="number">2.877771793074479e-50</span>,
-        <span class="number">4.271106892562081e-67</span>,
+        <span class="number">4.2711068925629355e-67</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">1.5619206968586225e-16</span>,
+        <span class="number">1.1910679660273754e-32</span>,
+        <span class="op">-</span><span class="number">4.577506059629983e-49</span>,
+        <span class="number">2.874941423408996e-67</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">8.22063524662433e-18</span>,
+        <span class="number">2.2141894119604265e-34</span>,
+        <span class="op">-</span><span class="number">1.508914023774199e-50</span>,
+        <span class="number">1.4007295151478155e-67</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">4.110317623312165e-19</span>,
+        <span class="number">1.4412973378659527e-36</span>,
+        <span class="op">-</span><span class="number">5.285627548789812e-53</span>,
+        <span class="op">-</span><span class="number">4.147647256357657e-70</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">1.9572941063391263e-20</span>,
+        <span class="op">-</span><span class="number">1.3643503830087908e-36</span>,
+        <span class="number">1.3392348251125064e-53</span>,
+        <span class="op">-</span><span class="number">6.821089424149331e-70</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">8.896791392450574e-22</span>,
+        <span class="op">-</span><span class="number">7.911402614872376e-38</span>,
+        <span class="op">-</span><span class="number">3.1877976790570933e-54</span>,
+        <span class="number">1.2705781017520566e-70</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">3.868170170630684e-23</span>,
+        <span class="op">-</span><span class="number">8.843177655482344e-40</span>,
+        <span class="number">3.8718157106173247e-56</span>,
+        <span class="op">-</span><span class="number">1.9565257531522557e-72</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">1.6117375710961184e-24</span>,
+        <span class="op">-</span><span class="number">3.6846573564509766e-41</span>,
+        <span class="number">1.613256546090552e-57</span>,
+        <span class="op">-</span><span class="number">8.1521906381344e-74</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">6.446950284384474e-26</span>,
+        <span class="op">-</span><span class="number">1.9330404233703465e-42</span>,
+        <span class="op">-</span><span class="number">1.5213023807039144e-58</span>,
+        <span class="number">6.643772737212958e-75</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">2.4795962632247976e-27</span>,
+        <span class="op">-</span><span class="number">1.2953730964765229e-43</span>,
+        <span class="number">6.403390159849962e-60</span>,
+        <span class="op">-</span><span class="number">8.460245627706746e-77</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">9.183689863795546e-29</span>,
+        <span class="number">1.4303150396787322e-45</span>,
+        <span class="op">-</span><span class="number">8.551226774650505e-62</span>,
+        <span class="number">8.381467100234538e-78</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">3.279889237069838e-30</span>,
+        <span class="number">1.5117542744029879e-46</span>,
+        <span class="number">8.058517719519716e-63</span>,
+        <span class="op">-</span><span class="number">9.096480530710929e-81</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">1.1309962886447716e-31</span>,
+        <span class="number">1.0498015412959506e-47</span>,
+        <span class="op">-</span><span class="number">4.346150929397795e-64</span>,
+        <span class="op">-</span><span class="number">4.966779800140056e-81</span>,
+    ),
+    <span class="ident">Quad</span>(
+        <span class="number">3.7699876288159054e-33</span>,
+        <span class="number">2.5870347832750324e-49</span>,
+        <span class="number">3.23789002742564e-66</span>,
+        <span class="number">2.5612859105788573e-82</span>,
     ),
 ];
 
@@ -6374,5 +6546,21 @@
         <span class="number">2.467773495734176e-50</span>,
     ),
 ];
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">just_the_inverse_facts_maam</span>() {
+        <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">3</span>..<span class="number">31</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fact</span> <span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>;
+            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">2</span>..<span class="op">=</span><span class="ident">n</span> {
+                <span class="ident">fact</span> <span class="kw-2">*</span><span class="op">=</span> <span class="macro">qd</span><span class="macro">!</span>(<span class="ident">i</span>);
+            }
+            <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    {:?},&quot;</span>, <span class="ident">fact</span>.<span class="ident">recip</span>());
+        }
+    }
+}
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "qd";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

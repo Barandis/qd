@@ -689,6 +689,26 @@
 <span id="686">686</span>
 <span id="687">687</span>
 <span id="688">688</span>
+<span id="689">689</span>
+<span id="690">690</span>
+<span id="691">691</span>
+<span id="692">692</span>
+<span id="693">693</span>
+<span id="694">694</span>
+<span id="695">695</span>
+<span id="696">696</span>
+<span id="697">697</span>
+<span id="698">698</span>
+<span id="699">699</span>
+<span id="700">700</span>
+<span id="701">701</span>
+<span id="702">702</span>
+<span id="703">703</span>
+<span id="704">704</span>
+<span id="705">705</span>
+<span id="706">706</span>
+<span id="707">707</span>
+<span id="708">708</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -698,7 +718,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">common</span> <span class="kw">as</span> <span class="ident">c</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 
-<span class="kw">const</span> <span class="ident">INV_K</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="number">1.52587890625e-05</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>); <span class="comment">//   1/65536, used for exp</span>
+<span class="kw">const</span> <span class="ident">FRAC_1_65536</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">1.52587890625e-05</span>; <span class="comment">//   1/65536, used for exp</span>
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
     <span class="doccomment">/// Computes the exponential function, *e*&lt;sup&gt;x&lt;/sup&gt;, where *x* is this `Quad`.</span>
@@ -732,86 +752,106 @@
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="comment">// Strategy:</span>
                 <span class="comment">//</span>
-                <span class="comment">// We first reduce the range of the argument to a convenient size to perform</span>
-                <span class="comment">// the calculation efficiently. This reduction takes advantage of the</span>
-                <span class="comment">// following identity.</span>
+                <span class="comment">// We use the Taylor series, which for e^x is defined as</span>
                 <span class="comment">//</span>
-                <span class="comment">//      exp(kx) = exp(x)^k</span>
+                <span class="comment">//      e^x = 1 + x + x^2/2! + x^3/3! + x^4/4! ...</span>
                 <span class="comment">//</span>
-                <span class="comment">// We in fact go a little further because it makes the reduction easier.</span>
+                <span class="comment">// This works well for the exponential function, as the factorials in the</span>
+                <span class="comment">// denominator mean the series converges relatively quickly.</span>
                 <span class="comment">//</span>
-                <span class="comment">//      exp(kx + m * ln(2)) = 2^m * exp(x)^k</span>
+                <span class="comment">// But it converges much *more* quickly for small numbers. We can use this,</span>
+                <span class="comment">// along with mathematical identities, to make the number we use to do the</span>
+                <span class="comment">// calculation much smaller.</span>
                 <span class="comment">//</span>
-                <span class="comment">// where m and k are arbitary integers. By choosing m appropriately we can</span>
-                <span class="comment">// make |kx| &lt;= ln(2) / 2 = 0.347. Then exp(x) is evaluated using a Taylor</span>
-                <span class="comment">// series, which for exp(x) is pleasantly easy:</span>
+                <span class="comment">//     (1) e^(a + b) = e^a · e^b</span>
                 <span class="comment">//</span>
-                <span class="comment">//      exp(x) = 1 + x + x^2/2! + x^3/3! + x^4/4! ...</span>
+                <span class="comment">// We can then choose a and b just so in order to make e^a very easy to</span>
+                <span class="comment">// calculate and to make b small.</span>
                 <span class="comment">//</span>
-                <span class="comment">// Reducing x substantially speeds up the convergence, so we have to use</span>
-                <span class="comment">// fewer terms to reach the required precision.</span>
+                <span class="comment">// In fact, it so happens that if we choose a = k ln 2 and b = r, then we</span>
+                <span class="comment">// have the following identities, based on (1) above.</span>
                 <span class="comment">//</span>
-                <span class="comment">// Once we have executed the Taylor series to produce an intermediate</span>
-                <span class="comment">// answer, we expand it to compensate for the earlier reduction.</span>
+                <span class="comment">//     (2) e^x = e^(k ln 2 + r) = e^(k ln 2) · e^r = 2^k · e^r</span>
+                <span class="comment">//</span>
+                <span class="comment">// This is one reason we made that particular choice of k ln 2; because</span>
+                <span class="comment">// raising e to that power results in 2^k, which is really easy to compute,</span>
+                <span class="comment">// especially when k is in integer. The other reason is that if we figure</span>
+                <span class="comment">// out the integer k that gets k ln 2 as close as possible to x, then |r| &lt;=</span>
+                <span class="comment">// (ln 2) / 2, which qualifies as a &quot;small number&quot; (it&#39;s &lt; 0.347).</span>
+                <span class="comment">//</span>
+                <span class="comment">// We can find k by ignoring r for the moment and solving x = k ln 2 for</span>
+                <span class="comment">// kbeing an integer by rounding:</span>
+                <span class="comment">//</span>
+                <span class="comment">//     (3) k = round(x / ln 2) = floor((x / ln 2) + 1/2)</span>
+                <span class="comment">//</span>
+                <span class="comment">// Then we can solve x = k ln 2 + r for r, using this now-known value for k.</span>
+                <span class="comment">//</span>
+                <span class="comment">//     (4) r = x - k ln 2</span>
+                <span class="comment">//</span>
+                <span class="comment">// We can now use the Taylor series to compute the much smaller (and faster)</span>
+                <span class="comment">// e^r, and after we have that answer, multiply it by 2^k (from (2) above)</span>
+                <span class="comment">// for the final answer.</span>
 
-                <span class="comment">// k = 65536 is chosen; INV_K is defined above as that reciprocal</span>
-                <span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">Quad</span>::<span class="ident">EPSILON</span>, <span class="ident">INV_K</span>.<span class="number">0</span>);
-                <span class="comment">// m doesn&#39;t need to be *that* accurate, so we calculate it with f64</span>
-                <span class="comment">// arithmetic instead of the more expensive Quad arithmetic</span>
-                <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> (<span class="self">self</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
+                <span class="comment">// The implementation of equation (3). Since k is going to be an integer</span>
+                <span class="comment">// anyway and doesn&#39;t therefore require Quad precision, we use regular f64</span>
+                <span class="comment">// arithmetic.</span>
+                <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> (<span class="self">self</span>.<span class="number">0</span> <span class="op">/</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0.5</span>).<span class="ident">floor</span>();
 
-                <span class="comment">// solving for x in exp(kx + m * ln(2)). INV_K is a power of 2 so we could</span>
-                <span class="comment">// use mul_exp2, but on larger numbers that causes a loss of precision when</span>
-                <span class="comment">// used with negative powers of two because bits are being shifted to the</span>
-                <span class="comment">// right without accounting for the ones that are lost off the right.</span>
-                <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> (<span class="self">self</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span> <span class="op">*</span> <span class="ident">Quad</span>(<span class="ident">m</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>)) <span class="op">*</span> <span class="ident">INV_K</span>;
+                <span class="comment">// The implementation of equation (4). We actually go further here by</span>
+                <span class="comment">// halving the answer 16 more times (FRAC_1_65536 is (1/2)^16), using the</span>
+                <span class="comment">// identity</span>
+                <span class="comment">//</span>
+                <span class="comment">//     (5) exp(2x) = exp(x)^2</span>
+                <span class="comment">//</span>
+                <span class="comment">// We&#39;ll expand this later.</span>
+                <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="self">self</span> <span class="op">-</span> <span class="ident">Quad</span>::<span class="ident">LN_2</span> <span class="op">*</span> <span class="ident">Quad</span>(<span class="ident">k</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>), <span class="ident">FRAC_1_65536</span>);
 
                 <span class="comment">// This is the &quot;x + x^2/2! + x^3/3!&quot; part of the Taylor series.</span>
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">sqr</span>();
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">+</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">p</span>, <span class="number">0.5</span>);
-                <span class="ident">p</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">x</span>;
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">+</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">p</span>, <span class="number">0.5</span>);
+                <span class="ident">p</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">r</span>;
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">p</span> <span class="op">*</span> <span class="ident">c</span>::<span class="ident">INV_FACTS</span>[<span class="number">0</span>];
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
 
                 <span class="comment">// This is the rest of the Taylor series. We perform it as many times as</span>
                 <span class="comment">// we need to reach our desired precision.</span>
                 <span class="kw">loop</span> {
-                    <span class="ident">r</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
-                    <span class="ident">p</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">x</span>;
+                    <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
+                    <span class="ident">p</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">r</span>;
                     <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                     <span class="ident">t</span> <span class="op">=</span> <span class="ident">p</span> <span class="op">*</span> <span class="ident">c</span>::<span class="ident">INV_FACTS</span>[<span class="ident">i</span>];
-                    <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">9</span> <span class="op">|</span><span class="op">|</span> <span class="ident">t</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">threshold</span> {
+                    <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">9</span> <span class="op">|</span><span class="op">|</span> <span class="ident">t</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">EPSILON</span> {
                         <span class="kw">break</span>;
                     }
                 }
+                <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
 
-                <span class="comment">// Add the Taylor series parts together, then expand by the same number of</span>
-                <span class="comment">// times that we reduced earlier.</span>
-                <span class="ident">r</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span>;
-
-                <span class="comment">// mul_pwr2 can be used here because multiplication doesn&#39;t lose precision</span>
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
-                <span class="ident">r</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">r</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">r</span>.<span class="ident">sqr</span>();
+                <span class="comment">// This is the expansion based on equation (5). We do it 16 times because</span>
+                <span class="comment">// halving was done 16 times (same as multiplying by (1/2)^16).</span>
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
+                <span class="ident">s</span> <span class="op">=</span> <span class="ident">c</span>::<span class="ident">mul_pwr2</span>(<span class="ident">s</span>, <span class="number">2.0</span>) <span class="op">+</span> <span class="ident">s</span>.<span class="ident">sqr</span>();
 
                 <span class="comment">// Finally, add the &quot;1 +&quot; part of the Taylor series.</span>
-                <span class="ident">r</span> <span class="op">+</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>;
+                <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">Quad</span>::<span class="ident">ONE</span>;
 
-                <span class="comment">// Final step of expansion, this is the &quot;* 2^m&quot; part</span>
-                <span class="ident">r</span>.<span class="ident">ldexp</span>(<span class="ident">m</span> <span class="kw">as</span> <span class="ident">i32</span>)
+                <span class="comment">// Multiply by 2^k. This is the implementation of the expansion in equation</span>
+                <span class="comment">// (2). The ldexp function is defined as multiplying the number (s in this</span>
+                <span class="comment">// case) by 2 raised to the power of its argument (k in this case).</span>
+                <span class="ident">s</span>.<span class="ident">ldexp</span>(<span class="ident">k</span> <span class="kw">as</span> <span class="ident">i32</span>)
             }
         }
     }
