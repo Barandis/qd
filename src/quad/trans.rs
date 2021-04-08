@@ -144,6 +144,142 @@ impl Quad {
         }
     }
 
+    /// Computes the exponential function minus 1, *e*<sup>x</sup> - 1, where *x* is this
+    /// `Quad`.
+    ///
+    /// While this function literally calculates the value returned by [`exp`] minus 1, it
+    /// does this directly (rather than computing [`exp`] directly and then subtracting 1
+    /// from the answer). This is useful in the not-infrequent case where *x* is very close
+    /// to 0 and you have to subtract something near 1 from the answer (another example is
+    /// `x.exp() - x.cos()` &mdash; for very small values of `x`, `x.cos()` is also very
+    /// near 1). Since `x.exp()` is very close to 1 when `x` is very close to 0, this is
+    /// subtracting something very close to 1 from something else very close to 1.
+    ///
+    /// When this happens, subtracting 1 from [`exp`] suffers from [catastrophic
+    /// cancellation], a condition in which subtracting two numbers that are very close to
+    /// each other can result in a huge loss of accuracy. Since `expm1` does not perform
+    /// this subtraction but instead computes *e*<sup>x</sup> - 1 directly, it does not
+    /// suffer from this phenomenon.
+    ///
+    /// This function will work over the same range as [`exp`], but `x.expm1() + 1` has no
+    /// advantage over `x.exp()`. It's for that one very particular purpose.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::{qd, Quad};
+    /// // A value very close to 0.
+    /// let v_small = qd!(1e-58);
+    /// // The actual value of exp(v_small) - 1. The last digit is on the order of 1e-125.
+    /// let expected =
+    ///     qd!("1.0000000000000000000000000000000000000000000000000000000000500000004e-58");
+    ///
+    /// // First with exp, subtracting one from the result. The resulting precision loses at
+    /// // least 14 digits.
+    /// let exp = v_small.exp() - Quad::ONE;
+    /// let eps = (exp - expected).abs();
+    /// assert!(eps > qd!(1e-108));
+    ///
+    /// // Next with expm1. Since this is calculated without subtracting one from anything,
+    /// // the catastrophic cancellation does not occur and full precision is maintained.
+    /// let expm1 = v_small.expm1();
+    /// let epsm1 = (expm1 - expected).abs();
+    /// assert!(epsm1 < qd!(1e-122));
+    /// ```
+    ///
+    /// [`exp`]: #method.exp
+    /// [catastrophic cancellation]: https://en.wikipedia.org/wiki/Catastrophic_cancellationQuad
+    pub fn expm1(self) -> Quad {
+        match self.pre_expm1() {
+            Some(r) => r,
+            None => {
+                // Strategy:
+                //
+                // Just like with exp(), we reduce, use the Taylor series, and then expand.
+                // The only difference is that the Taylor series itself and the expansion
+                // formula are slightly different because of the - 1. If the Taylor series
+                // for e^x is this
+                //
+                //     1 + x + x^2/2! + x^3/3! + x^4/4! ...
+                //
+                // then the Taylor series for e^x - 1 is
+                //
+                //     (1 + x + x^2/2! + x^3/3! + x^4/4! ...) - 1
+                //
+                // which is the same as
+                //
+                //     x + x^2/2! + x^3/3! + x^4/4! ...
+                //
+                // This would often be simplified to x(1 + x/2! + x^2/3! ...), but it works
+                // better for us to leave it as-is. This is the Taylor series that is
+                // computed by this function: exactly the same as in exp, but without adding
+                // the 1 at the end.
+                //
+                // The reduction is also done the same way, using the x = k ln 2 + r
+                // formula. However, that makes for a different expansion formula:
+                //
+                //     e^x - 1 = 2^k · e^r - 1 = 2^k · (e^r - 1) + 2^k - 1
+                //
+                // So the differences bewteen this function and exp are 1) Double::ONE is
+                // not added after the 1/512 expansion, and 2) the final expansion uses a
+                // different formula.
+                let k = (self.0 / Quad::LN_2.0 + 0.5).floor();
+                let r = c::mul_pwr2(self - Quad::LN_2 * Quad(k, 0.0, 0.0, 0.0), FRAC_1_65536);
+
+                let mut p = r.sqr();
+                let mut s = r + c::mul_pwr2(p, 0.5);
+                p *= r;
+                let mut t = p * c::INV_FACTS[0];
+                let mut i = 0;
+
+                loop {
+                    s += t;
+                    p *= r;
+                    i += 1;
+                    t = p * c::INV_FACTS[i];
+                    if i >= 9 || t.abs() <= Quad::EPSILON {
+                        break;
+                    }
+                }
+                s += t;
+
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+
+                // No `s += Quad::ONE` here
+
+                let ik = k as i32;
+
+                // THE PARENTHESES ARE IMPORTANT.
+                //
+                // Without them, we will basically be calculating exp in a fancier way and
+                // then subtracting 1 from it, which will give us the same catastrophic
+                // cancellation that we wrote this entire function to avoid. Calculating 2^k
+                // - 1 *first* and then adding it to the term coming out of the Taylor
+                // series is vital.
+                //
+                // In math with finite precision, sometimes addition is *not* associative.
+                // You can prove it by removing the parentheses and running the tests. I had
+                // to, even though I *knew* some tests would fail, just to prove it to
+                // myself.
+                s.ldexp(ik) + (Quad::ONE.ldexp(ik) - Quad::ONE)
+            }
+        }
+    }
+
     /// Calculates the natural logarithm, log<sub>*e*</sub>, of the `Quad`.
     ///
     /// This calculation relies upon the [`exp`] calculation, in the opposite direction. A
@@ -313,6 +449,21 @@ impl Quad {
     }
 
     #[inline]
+    fn pre_expm1(&self) -> Option<Quad> {
+        if self.0 < -80.0 {
+            Some(Quad::NEG_ONE)
+        } else if self.0 > 708.0 {
+            Some(Quad::INFINITY)
+        } else if self.is_nan() {
+            Some(Quad::NAN)
+        } else if self.is_zero() {
+            Some(*self)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
     fn pre_ln(&self) -> Option<Quad> {
         if self.is_nan() {
             Some(Quad::NAN)
@@ -461,6 +612,103 @@ mod tests {
         exp_nan:
             Quad::NAN,
             Quad::NAN.exp();
+    );
+
+    // expm1 tests
+    test_all_near!(
+        expm1_pi:
+            qd!("22.140692632779269005729086367948547380266106242600211993445046409512"),
+            Quad::PI.expm1();
+        expm1_e:
+            qd!("14.154262241479264189760430272629911905528548536856139769140746405908"),
+            Quad::E.expm1();
+        expm1_neg_pi:
+            qd!("-0.95678608173622775022558226282827198872427189018936691701928031259911"),
+            (-Quad::PI).expm1();
+        expm1_neg_e:
+            qd!("-0.93401196415468746292320981240315357506142295174720356359752645843312"),
+            (-Quad::E).expm1();
+        expm1_2_pi:
+            qd!("534.49165552476473650304932958904718147780579760329491550720525503625"),
+            Quad::TAU.expm1();
+        expm1_pi_2:
+            qd!("3.8104773809653516554730356667038331263901708746645349400208154892392"),
+            Quad::FRAC_PI_2.expm1();
+        expm1_sqrt_2:
+            qd!("3.1132503787829275171735818151403045024016639431511096100683647098487"),
+            Quad::SQRT_2.expm1();
+        expm1_1_sqrt_2:
+            qd!("1.0281149816474724511081261127463511751743250925426135206177759721242"),
+            Quad::FRAC_1_SQRT_2.expm1();
+        expm1_150:
+            qd!("139370958066637969731834193714145747747369006140218438233756444834.63"),
+            qd!(150).expm1();
+        expm1_neg_140:
+            qd!("-1.0"),
+            qd!(-140).expm1();
+        expm1_1p:
+            qd!("1.7182818284590452353602874713526624977572742765182441654193212305986"),
+            qd!("1.00000000000000000000000000000000000000001").expm1();
+        expm1_1m:
+            qd!("1.7182818284590452353602874713526624977572199108816749845146140248492"),
+            qd!("0.99999999999999999999999999999999999999999").expm1();
+        expm1_10:
+            qd!("22025.465794806716516957900645284244366353512618556781074235426355234"),
+            qd!(10).expm1();
+        expm1_neg_9:
+            qd!("-0.99987659019591332045050236330926996617392784716771106094746551795505"),
+            qd!(-9).expm1();
+        expm1_700:
+            qd!("1.0142320547350045094553295952312676152046795722430733487805362812495e+304"),
+            qd!(700).expm1();
+    );
+    test_all_prec!(
+        expm1_neg_limit:
+            qd!("-1.0"),
+            qd!(-450).expm1(),
+            60;
+        expm1_limit:
+            qd!("3.0233831442760550147756219850967309958990319946798820666918417985884e+307"),
+            qd!(708).expm1(),
+            61;
+    );
+    test_all_exact!(
+        expm1_below:
+            Quad::NEG_ONE,
+            qd!(-710).expm1();
+        expm1_above:
+            Quad::INFINITY,
+            qd!(710).expm1();
+        expm1_0:
+            Quad::ZERO,
+            Quad::ZERO.expm1();
+        expm1_neg_0:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.expm1();
+        expm1_inf:
+            Quad::INFINITY,
+            Quad::INFINITY.expm1();
+        expm1_neg_inf:
+            Quad::NEG_ONE,
+            Quad::NEG_INFINITY.expm1();
+        expm1_nan:
+            Quad::NAN,
+            Quad::NAN.expm1();
+    );
+
+    // tests for the relevant bits of the difference between exp and expm1.
+    //
+    // Because of catastrophic cancellation, this is the highest precision that exp() - 1
+    // will work for. expm1 on the same number retains full precision.
+    test_all_prec!(
+        exp_v_small:
+            qd!("1.0000000000000000000000000000000000000000000000000000000000500000004e-58"),
+            qd!("1e-58").exp() - Quad::ONE,
+            49;
+        expm1_v_small:
+            qd!("1.0000000000000000000000000000000000000000000000000000000000500000004e-58"),
+            qd!("1e-58").expm1(),
+            62;
     );
 
     // ln tests

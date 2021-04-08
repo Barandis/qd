@@ -136,6 +136,134 @@ impl Double {
         }
     }
 
+    /// Computes the exponential function minus 1, *e*<sup>x</sup> - 1, where *x* is this
+    /// `Double`.
+    ///
+    /// While this function literally calculates the value returned by [`exp`] minus 1, it
+    /// does this directly (rather than computing [`exp`] directly and then subtracting 1
+    /// from the answer). This is useful in the not-infrequent case where *x* is very close
+    /// to 0 and you have to subtract something near 1 from the answer (another example is
+    /// `x.exp() - x.cos()` &mdash; for very small values of `x`, `x.cos()` is also very
+    /// near 1). Since `x.exp()` is very close to 1 when `x` is very close to 0, this is
+    /// subtracting something very close to 1 from something else very close to 1.
+    ///
+    /// When this happens, subtracting 1 from [`exp`] suffers from [catastrophic
+    /// cancellation], a condition in which subtracting two numbers that are very close to
+    /// each other can result in a huge loss of accuracy. Since `expm1` does not perform
+    /// this subtraction but instead computes *e*<sup>x</sup> - 1 directly, it does not
+    /// suffer from this phenomenon.
+    ///
+    /// This function will work over the same range as [`exp`], but `x.expm1() + 1` has no
+    /// advantage over `x.exp()`. It's for that one very particular purpose.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::{dd, Double};
+    /// // A value very close to 0.
+    /// let v_small = dd!(1e-28);
+    /// // The actual value of exp(v_small) - 1. The last digit is on the order of 1e-62.
+    /// let expected = dd!("1.0000000000000000000000000000500003e-28");
+    ///
+    /// // First with exp, subtracting one from the result. The resulting precision loses at
+    /// // least 14 digits, making it no better than f64 precision.
+    /// let exp = v_small.exp() - Double::ONE;
+    /// let eps = (exp - expected).abs();
+    /// assert!(eps > dd!(1e-46));
+    ///
+    /// // Next with expm1. Since this is calculated without subtracting one from anything,
+    /// // the catastrophic cancellation does not occur and full precision is maintained.
+    /// let expm1 = v_small.expm1();
+    /// let epsm1 = (expm1 - expected).abs();
+    /// assert!(epsm1 < dd!(1e-60));
+    /// ```
+    ///
+    /// [`exp`]: #method.exp
+    /// [catastrophic cancellation]: https://en.wikipedia.org/wiki/Catastrophic_cancellation
+    pub fn expm1(self) -> Double {
+        match self.pre_expm1() {
+            Some(r) => r,
+            None => {
+                // Strategy:
+                //
+                // Just like with exp(), we reduce, use the Taylor series, and then expand.
+                // The only difference is that the Taylor series itself and the expansion
+                // formula are slightly different because of the - 1. If the Taylor series
+                // for e^x is this
+                //
+                //     1 + x + x^2/2! + x^3/3! + x^4/4! ...
+                //
+                // then the Taylor series for e^x - 1 is
+                //
+                //     (1 + x + x^2/2! + x^3/3! + x^4/4! ...) - 1
+                //
+                // which is the same as
+                //
+                //     x + x^2/2! + x^3/3! + x^4/4! ...
+                //
+                // This would often be simplified to x(1 + x/2! + x^2/3! ...), but it works
+                // better for us to leave it as-is. This is the Taylor series that is
+                // computed by this function: exactly the same as in exp, but without adding
+                // the 1 at the end.
+                //
+                // The reduction is also done the same way, using the x = k ln 2 + r
+                // formula. However, that makes for a different expansion formula:
+                //
+                //     e^x - 1 = 2^k · e^r - 1 = 2^k · (e^r - 1) + 2^k - 1
+                //
+                // So the differences bewteen this function and exp are 1) Double::ONE is
+                // not added after the 1/512 expansion, and 2) the final expansion uses a
+                // different formula.
+                let k = (self.0 / Double::LN_2.0 + 0.5).floor();
+                let r = c::mul_pwr2(self - Double(k, 0.0) * Double::LN_2, FRAC_1_512);
+
+                let mut p = r.sqr();
+                let mut s = r + c::mul_pwr2(p, 0.5);
+                p *= r;
+                let mut t = p * c::INV_FACTS[0];
+                let mut i = 0;
+
+                loop {
+                    s += t;
+                    p *= r;
+                    i += 1;
+                    t = p * c::INV_FACTS[i];
+                    if i >= 5 || t.abs() <= Double::EPSILON {
+                        break;
+                    }
+                }
+                s += t;
+
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+                s = c::mul_pwr2(s, 2.0) + s.sqr();
+
+                // No `s += Double::ONE` here
+
+                let ik = k as i32;
+
+                // THE PARENTHESES ARE IMPORTANT.
+                //
+                // Without them, we will basically be calculating exp in a fancier way and
+                // then subtracting 1 from it, which will give us the same catastrophic
+                // cancellation that we wrote this entire function to avoid. Calculating 2^k
+                // - 1 *first* and then adding it to the term coming out of the Taylor
+                // series is vital.
+                //
+                // In math with finite precision, sometimes addition is *not* associative.
+                // You can prove it by removing the parentheses and running the tests. I had
+                // to, even though I *knew* some tests would fail, just to prove it to
+                // myself.
+                s.ldexp(ik) + (Double::ONE.ldexp(ik) - Double::ONE)
+            }
+        }
+    }
+
     /// Calculates the natural logarithm, log<sub>*e*</sub>, of the `Double`.
     ///
     /// This calculation relies upon the [`exp`] calculation, in the opposite direction. A
@@ -305,6 +433,21 @@ impl Double {
     }
 
     #[inline]
+    fn pre_expm1(&self) -> Option<Double> {
+        if self.0 < -80.0 {
+            Some(Double::NEG_ONE)
+        } else if self.0 > 708.0 {
+            Some(Double::INFINITY)
+        } else if self.is_nan() {
+            Some(Double::NAN)
+        } else if self.is_zero() {
+            Some(*self)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
     fn pre_ln(&self) -> Option<Double> {
         if self.is_nan() {
             Some(Double::NAN)
@@ -457,6 +600,107 @@ mod tests {
         exp_nan:
             Double::NAN,
             Double::NAN.exp();
+    );
+
+    // expm1 tests
+    test_all_near!(
+        expm1_pi:
+            dd!("22.140692632779269005729086367948552"),
+            Double::PI.expm1();
+        expm1_e:
+            dd!("14.154262241479264189760430272629902"),
+            Double::E.expm1();
+        expm1_neg_pi:
+            dd!("-0.95678608173622775022558226282827218"),
+            (-Double::PI).expm1();
+        expm1_neg_e:
+            dd!("-0.93401196415468746292320981240315366"),
+            (-Double::E).expm1();
+        expm1_pi_2:
+            dd!("3.8104773809653516554730356667038329"),
+            Double::FRAC_PI_2.expm1();
+        expm1_sqrt_2:
+            dd!("3.113250378782927517173581815140309"),
+            Double::SQRT_2.expm1();
+        expm1_1_sqrt_2:
+            dd!("1.0281149816474724511081261127463503"),
+            Double::FRAC_1_SQRT_2.expm1();
+        expm1_1p:
+            dd!("1.7182818284590452353630057531811221"),
+            dd!("1.000000000000000000001").expm1();
+        expm1_1m:
+            dd!("1.7182818284590452353575691895242041"),
+            dd!("0.999999999999999999999").expm1();
+        expm1_10:
+            dd!("22025.465794806716516957900645284255"),
+            dd!(10).expm1();
+        expm1_neg_9:
+            dd!("-0.99987659019591332045050236330926973"),
+            dd!(-9).expm1();
+    );
+    test_all_prec!(
+        expm1_2_pi:
+            dd!("534.49165552476473650304932958904745"),
+            Double::TAU.expm1(),
+            30;
+        expm1_150:
+            dd!("1.3937095806663796973183419371414568e+65"),
+            dd!(150).expm1(),
+            30;
+        expm1_neg_140:
+            dd!("-1.0"),
+            dd!(-140).expm1(),
+            30;
+        expm1_neg_limit:
+            dd!("-1.0"),
+            dd!(-600).expm1(),
+            29;
+        expm1_700:
+            dd!("1.0142320547350045094553295952312673e+304"),
+            dd!(700).expm1(),
+            29;
+        expm1_limit:
+            dd!("3.0233831442760550147756219850967309e+307"),
+            dd!(708).expm1(),
+            29;
+    );
+    test_all_exact!(
+        expm1_below:
+            Double::NEG_ONE,
+            dd!(-710).expm1();
+        expm1_above:
+            Double::INFINITY,
+            dd!(710).expm1();
+        expm1_0:
+            Double::ZERO,
+            Double::ZERO.expm1();
+        expm1_neg_0:
+            Double::NEG_ZERO,
+            Double::NEG_ZERO.expm1();
+        expm1_inf:
+            Double::INFINITY,
+            Double::INFINITY.expm1();
+        expm1_neg_inf:
+            Double::NEG_ONE,
+            Double::NEG_INFINITY.expm1();
+        expm1_nan:
+            Double::NAN,
+            Double::NAN.expm1();
+    );
+
+    // tests for the relevant bits of the difference between exp and expm1.
+    //
+    // Because of catastrophic cancellation, this is the highest precision that exp() - 1
+    // will work for. expm1 on the same number retains full precision.
+    test_all_prec!(
+        exp_v_small:
+            dd!("1.0000000000000000000000000000500003e-28"),
+            dd!("1e-28").exp() - Double::ONE,
+            16;
+        expm1_v_small:
+            dd!("1.0000000000000000000000000000500003e-28"),
+            dd!("1e-28").expm1(),
+            31;
     );
 
     // ln tests
