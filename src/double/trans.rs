@@ -6,7 +6,8 @@
 use crate::double::common as c;
 use crate::double::Double;
 
-const FRAC_1_512: f64 = 0.001953125; //   1/512, used for exp
+// used for reduction in exp, expm1; value is 1/512
+const FRAC_1_512: f64 = 0.001953125;
 
 impl Double {
     /// Computes the exponential function, *e*<sup>x</sup>, where *x* is this `Double`.
@@ -39,16 +40,18 @@ impl Double {
             None => {
                 // Strategy:
                 //
-                // We use the Taylor series, which for e^x is defined as
+                // We use the Maclaurin series, which for e^x is defined as
                 //
                 //      e^x = 1 + x + x^2/2! + x^3/3! + x^4/4! ...
                 //
                 // This works well for the exponential function, as the factorials in the
                 // denominator mean the series converges relatively quickly.
                 //
-                // But it converges much *more* quickly for small numbers. We can use this,
-                // along with mathematical identities, to make the number we use to do the
-                // calculation much smaller.
+                // But it converges much *more* quickly for small numbers, as the Maclaurin
+                // series is the Taylor series cenetered on x = 0, which means that numbers
+                // close to zero will converge more quickly than larger ones. We can use
+                // this, along with mathematical identities, to make the number we use to do
+                // the calculation much smaller.
                 //
                 //     (1) e^(a + b) = e^a · e^b
                 //
@@ -75,9 +78,11 @@ impl Double {
                 //
                 //     (4) r = x - k ln 2
                 //
-                // We can now use the Taylor series to compute the much smaller (and faster)
-                // e^r, and after we have that answer, multiply it by 2^k (from (2) above)
-                // for the final answer.
+                // We can now use the Maclaurin series to compute the much smaller (and
+                // faster) e^r, and after we have that answer, multiply it by 2^k (from (2)
+                // above) for the final answer.
+
+                let eps = c::mul_pwr2(Double::EPSILON, FRAC_1_512);
 
                 // The implementation of equation (3). Since k is going to be an integer
                 // anyway and doesn't therefore require Double precision, we use regular f64
@@ -107,7 +112,7 @@ impl Double {
                     p *= r;
                     i += 1;
                     t = p * c::INV_FACTS[i];
-                    if i >= 5 || t.abs() <= Double::EPSILON {
+                    if i >= 5 || t.abs() <= eps {
                         break;
                     }
                 }
@@ -185,14 +190,14 @@ impl Double {
             None => {
                 // Strategy:
                 //
-                // Just like with exp(), we reduce, use the Taylor series, and then expand.
-                // The only difference is that the Taylor series itself and the expansion
-                // formula are slightly different because of the - 1. If the Taylor series
-                // for e^x is this
+                // Just like with exp(), we reduce, use the Maclaurin series, and then
+                // expand. The only difference is that the Maclaurin series itself and the
+                // expansion formula are slightly different because of the - 1. If the
+                // Taylor series for e^x is this
                 //
                 //     1 + x + x^2/2! + x^3/3! + x^4/4! ...
                 //
-                // then the Taylor series for e^x - 1 is
+                // then the Maclaurin series for e^x - 1 is
                 //
                 //     (1 + x + x^2/2! + x^3/3! + x^4/4! ...) - 1
                 //
@@ -213,6 +218,9 @@ impl Double {
                 // So the differences bewteen this function and exp are 1) Double::ONE is
                 // not added after the 1/512 expansion, and 2) the final expansion uses a
                 // different formula.
+
+                let eps = c::mul_pwr2(Double::EPSILON, FRAC_1_512);
+
                 let k = (self.0 / Double::LN_2.0 + 0.5).floor();
                 let r = c::mul_pwr2(self - Double(k, 0.0) * Double::LN_2, FRAC_1_512);
 
@@ -227,7 +235,7 @@ impl Double {
                     p *= r;
                     i += 1;
                     t = p * c::INV_FACTS[i];
-                    if i >= 5 || t.abs() <= Double::EPSILON {
+                    if i >= 5 || t.abs() <= eps {
                         break;
                     }
                 }
@@ -295,8 +303,8 @@ impl Double {
             None => {
                 // Strategy:
                 //
-                // The Taylor series for logarithms converges much more slowly than that of
-                // exp because of the lack of a factorial term in the denominator. Hence
+                // The Maclaurin series for logarithms converges much more slowly than that
+                // of exp because of the lack of a factorial term in the denominator. Hence
                 // this routine instead tries to determine the root of the function
                 //
                 //      f(x) = exp(x) - a
@@ -325,6 +333,57 @@ impl Double {
                     x = r;
                     i += 1;
                 }
+            }
+        }
+    }
+
+    pub fn ln1p(self) -> Double {
+        match self.pre_ln1p() {
+            Some(r) => r,
+            None => {
+                // Strategy
+                //
+                // Newton's method is not available for this function as the changes to the
+                // iterative equation still make it inaccurate near x = 0. Therefore, we use
+                // a Maclaurin series, which does not have this shortcoming.
+                //
+                // The Maclaurin series for ln(1 + x) is
+                //
+                //     x - x^2/2 + x^3/3 - x^4/4 + x^5/5 ...
+                //
+                // Since the terms of this series have linearly increasing denominators
+                // rather than the factorials in the series for exp(x), this series
+                // converges much more slowly. For that reason, this function only runs if x
+                // is small. The `ln` function is accurate down to at least |x| = (ln 2) /
+                // 64 (determined through testing), so if x is higher than that, `ln` is
+                // used instead (`pre_ln1p` handles this).
+                //
+                // Since x is already guaranteed to be no larger than ±~0.0054, we perform
+                // no reduction. Testing seems to indicate that in the worst case scenario,
+                // about 14 terms of the series are needed. This is much higher than for
+                // `exp` and `expm1` but isn't too unreasonable.
+
+                let k = self.0.abs().log2().floor() as i32;
+                let eps = c::mul_pwr2(Double::EPSILON, 2f64.powi(k + 2));
+
+                let mut p = self.sqr();
+                let mut s = self - c::mul_pwr2(p, 0.5);
+                p *= self;
+                let mut t = p * c::INV_INTS[0];
+                let mut i = 0;
+                let mut g = Double::ONE;
+
+                loop {
+                    s += t;
+                    p *= self;
+                    i += 1;
+                    g = -g;
+                    t = g * p * c::INV_INTS[i];
+                    if t.abs() <= eps {
+                        break;
+                    }
+                }
+                s + t
             }
         }
     }
@@ -459,6 +518,25 @@ impl Double {
             Some(Double::INFINITY)
         } else if *self == Double::ONE {
             Some(Double::ZERO)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn pre_ln1p(&self) -> Option<Double> {
+        if self.abs() > c::mul_pwr2(Double::LN_2, 0.015625) {
+            Some((self + Double::ONE).ln())
+        } else if self.is_nan() {
+            Some(Double::NAN)
+        } else if self.is_zero() {
+            Some(*self)
+        } else if *self == Double::NEG_ONE {
+            Some(Double::NEG_INFINITY)
+        } else if *self < Double::NEG_ONE {
+            Some(Double::NAN)
+        } else if self.is_infinite() {
+            Some(Double::INFINITY)
         } else {
             None
         }
@@ -703,64 +781,73 @@ mod tests {
             31;
     );
 
-    // ln tests
+    // ln1p tests
     test_all_near!(
-        ln_pi:
-            dd!("1.1447298858494001741434273513531"),
-            Double::PI.ln();
-        ln_e:
-            Double::ONE,
-            Double::E.ln();
-        ln_2_pi:
-            dd!("1.8378770664093454835606594728112"),
-            Double::TAU.ln();
-        ln_pi_2:
-            dd!("0.45158270528945486472619522989488"),
-            Double::FRAC_PI_2.ln();
-        ln_sqrt_2:
-            dd!("0.34657359027997265470861606072909"),
-            Double::SQRT_2.ln();
-        ln_1_sqrt_2:
-            dd!("-0.34657359027997265470861606072909"),
-            Double::FRAC_1_SQRT_2.ln();
-        ln_30:
-            dd!("69.077552789821370520539743640530881"),
-            dd!("1e30").ln();
-        ln_neg_30:
-            dd!("-69.077552789821370520539743640530881"),
-            dd!("1e-30").ln();
-        ln_250:
+        ln1p_pi:
+            dd!("1.4210804127942926330537721963337193"),
+            Double::PI.ln1p();
+        ln1p_e:
+            dd!("1.313261687518222834048995494967855"),
+            Double::E.ln1p();
+        ln1p_2_pi:
+            dd!("1.9855683087099188711207438626228625"),
+            Double::TAU.ln1p();
+        ln1p_pi_2:
+            dd!("0.94421570569605539179994435873482741"),
+            Double::FRAC_PI_2.ln1p();
+        ln1p_sqrt_2:
+            dd!("0.88137358701954302523260932497979278"),
+            Double::SQRT_2.ln1p();
+        ln1p_1_sqrt_2:
+            dd!("0.53479999673957037052399326425070401"),
+            Double::FRAC_1_SQRT_2.ln1p();
+        ln1p_30:
+            dd!("69.077552789821370520539743640531965"),
+            dd!("1e30").ln1p();
+        ln1p_neg_30:
+            dd!("9.9999999999999999999999999999950015e-31"),
+            dd!("1e-30").ln1p();
+        ln1p_250:
             dd!("575.64627324851142100449786367109143"),
-            dd!("1e250").ln();
-        ln_neg_290:
-            dd!("-667.7496769682732483652175218584658"),
-            dd!("1e-290").ln();
+            dd!("1e250").ln1p();
+        ln1p_neg_200:
+            dd!("1.0000000000000000000000000000000004e-200"),
+            dd!("1e-200").ln1p();
+        ln1p_ln2_4p:
+            dd!("0.011760992295371485613565186164441701"),
+            (c::mul_pwr2(Double::LN_2, 0.015625) + dd!(0.001)).ln1p();
+        ln1p_ln2_4m:
+            dd!("0.0097824204166523322944589663084310797"),
+            (c::mul_pwr2(Double::LN_2, 0.015625) - dd!(0.001)).ln1p();
+        ln1p_neg_ln2_4p:
+            dd!("-0.0098790623360408187905459542119004129"),
+            (c::mul_pwr2(-Double::LN_2, 0.015625) + dd!(0.001)).ln1p();
+        ln1p_neg_ln2_4m:
+            dd!("-0.01190096103903269725049897197179224"),
+            (c::mul_pwr2(-Double::LN_2, 0.015625) - dd!(0.001)).ln1p();
     );
     test_all_exact!(
-        ln_neg_pi:
+        ln1p_neg_pi:
             Double::NAN,
-            (-Double::PI).ln();
-        ln_neg_e:
+            (-Double::PI).ln1p();
+        ln1p_neg_e:
             Double::NAN,
-            (-Double::E).ln();
-        ln_1:
+            (-Double::E).ln1p();
+        ln1p_0:
             Double::ZERO,
-            Double::ONE.ln();
-        ln_0:
-            Double::NEG_INFINITY,
-            Double::ZERO.ln();
-        ln_neg_0:
-            Double::NAN,
-            Double::NEG_ZERO.ln();
-        ln_inf:
+            Double::ZERO.ln1p();
+        ln1p_neg_0:
+            Double::NEG_ZERO,
+            Double::NEG_ZERO.ln1p();
+        ln1p_inf:
             Double::INFINITY,
-            Double::INFINITY.ln();
-        ln_neg_inf:
+            Double::INFINITY.ln1p();
+        ln1p_neg_inf:
             Double::NAN,
-            Double::NEG_INFINITY.ln();
-        ln_nan:
+            Double::NEG_INFINITY.ln1p();
+        ln1p_nan:
             Double::NAN,
-            Double::NAN.ln();
+            Double::NAN.ln1p();
     );
 
     // log10 tests

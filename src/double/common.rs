@@ -12,8 +12,55 @@ pub fn mul_pwr2(a: Double, b: f64) -> Double {
     Double(a.0 * b, a.1 * b)
 }
 
+// pub fn agm(x: Double, y: Double, eps: Double) -> Double {
+//     let mut a = x;
+//     let mut g = y;
+
+//     while (a - g).abs() > eps {
+//         let an = mul_pwr2(a + g, 0.5); // arithmetic mean
+//         let gn = (a * g).sqrt(); //       geometric mean
+//         a = an;
+//         g = gn;
+//     }
+//     a
+// }
+
+/// Precomputed reciprocals of numbers up to 30. This starts with 1/3, as the reciprocals
+/// before that (1 and 1/2) are trivial. These are used in the Maclaurin series calculations
+/// for ln1p.
+pub const INV_INTS: [Double; 28] = [
+    Double(3.333333333333333e-1, 1.850371707708594e-17),
+    Double(2.5e-1, 0e0),
+    Double(2e-1, -1.1102230246251566e-17),
+    Double(1.6666666666666666e-1, 9.25185853854297e-18),
+    Double(1.4285714285714285e-1, 7.93016446160826e-18),
+    Double(1.25e-1, 0e0),
+    Double(1.111111111111111e-1, 6.1679056923619804e-18),
+    Double(1e-1, -5.551115123125783e-18),
+    Double(9.090909090909091e-2, -2.523234146875356e-18),
+    Double(8.333333333333333e-2, 4.625929269271485e-18),
+    Double(7.692307692307693e-2, -4.270088556250602e-18),
+    Double(7.142857142857142e-2, 3.96508223080413e-18),
+    Double(6.666666666666667e-2, 9.251858538542971e-19),
+    Double(6.25e-2, 0e0),
+    Double(5.8823529411764705e-2, 8.163404592832033e-19),
+    Double(5.555555555555555e-2, 3.0839528461809902e-18),
+    Double(5.263157894736842e-2, 2.921639538487254e-18),
+    Double(5e-2, -2.7755575615628915e-18),
+    Double(4.7619047619047616e-2, 2.64338815386942e-18),
+    Double(4.5454545454545456e-2, -1.261617073437678e-18),
+    Double(4.3478260869565216e-2, 1.206764157201257e-18),
+    Double(4.1666666666666664e-2, 2.3129646346357427e-18),
+    Double(4e-2, -8.326672684688674e-19),
+    Double(3.8461538461538464e-2, -2.135044278125301e-18),
+    Double(3.7037037037037035e-2, 2.05596856412066e-18),
+    Double(3.571428571428571e-2, 1.982541115402065e-18),
+    Double(3.4482758620689655e-2, 4.785444071660157e-19),
+    Double(3.333333333333333e-2, 4.625929269271486e-19),
+];
+
 /// Table of the reciprocals of factorials. This starts with 1/3!, as the inverse factorials
-/// before that are trivial (1/1! is 1 and 1/2! is 1/2). These are used in Taylor series
+/// before that are trivial (1/1! is 1 and 1/2! is 1/2). These are used in Maclaurin series
 /// calculations for exp, sin, and cos.
 pub const INV_FACTS: [Double; 28] = [
     Double(1.6666666666666666e-1, 9.25185853854297e-18),
