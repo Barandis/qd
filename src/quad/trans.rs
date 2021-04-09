@@ -8,6 +8,15 @@ use crate::quad::Quad;
 
 const FRAC_1_65536: f64 = 1.52587890625e-05; //   1/65536, used for exp
 
+// values with an absolute value higher than this will use ln instead of ln1p; the value
+// here is ln(2) / 256
+const LN1P_LIMIT: Quad = Quad(
+    2.7076061740622863e-3,
+    9.058776616587108e-20,
+    2.229573608756333e-36,
+    -1.3993875822663328e-52,
+);
+
 impl Quad {
     /// Computes the exponential function, *e*<sup>x</sup>, where *x* is this `Quad`.
     ///
@@ -345,6 +354,103 @@ impl Quad {
         }
     }
 
+    /// Calculates the natural logarithm of 1 + x, log<sub>*e*</sub> (1 + x), where *x* is
+    /// the `Quad`.
+    ///
+    /// This is the inverse of [`expm1`] and arises from the same sorts of concerns. It
+    /// isn't unusual to want to take logarithms of numbers very near 1, as the logarithm
+    /// approaches 0 at that point. However, with finite-precision mathematics, the `1`
+    /// itself severely limits the precision possible; the number `1.000000000000001` has 16
+    /// digits of precision, but most of them are taken up by placeholder zeros when we
+    /// would prefer to have that precision available after the final `1`.
+    ///
+    /// `ln1p` allows that by letting the user pass in a number near 0 and having the
+    /// algorithm add 1 to it internally, without causing the loss of precision. For
+    /// example, the same 16-digit number above could be passed into `ln1p` as
+    /// `0.000000000000001`, a number with *one* digit of precision, leaving 15 more digits
+    /// of precision availble after that final `1`.
+    ///
+    /// The algorithm for logarithms close to 1 is slower than that for the general
+    /// logarithm, so this function delegates to [`ln`] if it can be done without losing
+    /// precision. There is no advantage to using `ln1p` over [`ln`] except for computing
+    /// logarithms of numbers very close to 1.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::{qd, Quad};
+    /// // A very small number
+    /// let v_small = qd!(1e-150);
+    /// // The actual value for the base-e logarithm of 1 + 1e-150
+    /// let expected =
+    ///     qd!("9.9999999999999999999999999999999999999999999999999999999999999999996e-151");
+    ///
+    /// // First with ln, computing the logarithm of 1 + 1e-150. This loses at least 14
+    /// // digits of precision because of the precision-damping effect of adding the one
+    /// // before the computation.
+    /// let ln = (Quad::ONE + v_small).ln();
+    /// let lneps = (ln - expected).abs();
+    /// assert!(lneps > qd!(1e-200));
+    ///
+    /// // Now with ln1p, computing the same logarithm. This does not suffer from the same
+    /// // effect from the 1, and the answer retains full precision.
+    /// let ln1p = v_small.ln1p();
+    /// let ln1peps = (ln1p - expected).abs();
+    /// assert!(ln1peps < qd!(1e-214));
+    /// ```
+    ///
+    /// [`expm1`]: #method.expm1
+    /// [`ln`]: #method.ln
+    pub fn ln1p(self) -> Quad {
+        match self.pre_ln1p() {
+            Some(r) => r,
+            None => {
+                // Strategy
+                //
+                // Newton's method is not available for this function as the changes to the
+                // iterative equation still make it inaccurate near x = 0. Therefore, we use
+                // a Maclaurin series, which does not have this shortcoming.
+                //
+                // The Maclaurin series for ln(1 + x) is
+                //
+                //     x - x^2/2 + x^3/3 - x^4/4 + x^5/5 ...
+                //
+                // Since the terms of this series have linearly increasing denominators
+                // rather than the factorials in the series for exp(x), this series
+                // converges much more slowly. For that reason, this function only runs if x
+                // is small. The `ln` function is accurate down to at least |x| = (ln 2) /
+                // 64 (determined through testing), so if x is higher than that, `ln` is
+                // used instead (`pre_ln1p` handles this).
+                //
+                // Since x is already guaranteed to be no larger than ±~0.0054, we perform
+                // no reduction. Testing seems to indicate that in the worst case scenario,
+                // about 14 terms of the series are needed. This is much higher than for
+                // `exp` and `expm1` but isn't too unreasonable.
+
+                let k = self.0.abs().log2().floor() as i32;
+                let eps = c::mul_pwr2(Quad::EPSILON, 2f64.powi(k + 2));
+
+                let mut p = self.sqr();
+                let mut s = self - c::mul_pwr2(p, 0.5);
+                p *= self;
+                let mut t = p * c::INV_INTS[0];
+                let mut i = 0;
+                let mut g = Quad::ONE;
+
+                loop {
+                    s += t;
+                    p *= self;
+                    i += 1;
+                    g = -g;
+                    t = g * p * c::INV_INTS[i];
+                    if t.abs() <= eps {
+                        break;
+                    }
+                }
+                s + t
+            }
+        }
+    }
+
     /// Calculates the base-10 logarithm, log<sub>10</sub>, of the `Quad`.
     ///
     /// As with [`ln`], this has an upper usable range less than the size of the numbers
@@ -481,6 +587,25 @@ impl Quad {
     }
 
     #[inline]
+    fn pre_ln1p(&self) -> Option<Quad> {
+        if self.abs() > LN1P_LIMIT {
+            Some((self + Quad::ONE).ln())
+        } else if self.is_nan() {
+            Some(Quad::NAN)
+        } else if self.is_zero() {
+            Some(*self)
+        } else if *self == Quad::NEG_ONE {
+            Some(Quad::NEG_INFINITY)
+        } else if *self < Quad::NEG_ONE {
+            Some(Quad::NAN)
+        } else if self.is_infinite() {
+            Some(Quad::INFINITY)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
     fn pre_log(&self, b: &Quad) -> Option<Quad> {
         if self.is_nan() {
             Some(Quad::NAN)
@@ -495,6 +620,10 @@ impl Quad {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    test!(temp: {
+        println!("{:?}", c::mul_pwr2(Quad::LN_2, 0.00390625));
+    });
 
     // exp tests
     test_all_near!(
@@ -769,6 +898,85 @@ mod tests {
         ln_nan:
             Quad::NAN,
             Quad::NAN.ln();
+    );
+
+    // ln1p tests
+    test_all_near!(
+        ln1p_pi:
+            qd!("1.421080412794292633053772196333719458985758681678943714407925242254"),
+            Quad::PI.ln1p();
+        ln1p_e:
+            qd!("1.3132616875182228340489954949678556419152800856703483747190635148377"),
+            Quad::E.ln1p();
+        ln1p_2_pi:
+            qd!("1.9855683087099188711207438626228625913235123943706611263321188546628"),
+            Quad::TAU.ln1p();
+        ln1p_pi_2:
+            qd!("0.94421570569605539179994435873482739178843745708148261818520024463383"),
+            Quad::FRAC_PI_2.ln1p();
+        ln1p_sqrt_2:
+            qd!("0.88137358701954302523260932497979230902816032826163541075329560865327"),
+            Quad::SQRT_2.ln1p();
+        ln1p_1_sqrt_2:
+            qd!("0.53479999673957037052399326425070402499041026108150778369295560390708"),
+            Quad::FRAC_1_SQRT_2.ln1p();
+        ln1p_30:
+            qd!("69.077552789821370520539743640531926228033044658863189280999836529055"),
+            qd!("1e30").ln1p();
+        ln1p_neg_30:
+            qd!("9.9999999999999999999999999999950000000000000000000000000000033333305e-31"),
+            qd!("1e-30").ln1p();
+        ln1p_170:
+            qd!("391.4394658089877662830585472963419152921872530668914059256657431644"),
+            qd!("1e170").ln1p();
+        ln1p_neg_150:
+            qd!("9.9999999999999999999999999999999999999999999999999999999999999999996e-151"),
+            qd!("1e-150").ln1p();
+        ln1p_ln2_4p:
+            qd!("0.0037007499438665738329149753811790581765214837071483682579879963053088"),
+            (LN1P_LIMIT + qd!(0.001)).ln1p();
+        ln1p_ln2_4m:
+            qd!("0.0017061498722637005444507602402703685890503805070442394842025452241671"),
+            (LN1P_LIMIT - qd!(0.001)).ln1p();
+        ln1p_neg_ln2_4p:
+            qd!("-0.0017090657953606958055292807074248104103785485107703725274340422065084"),
+            (-LN1P_LIMIT + qd!(0.001)).ln1p();
+        ln1p_neg_ln2_4m:
+            qd!("-0.0037144963818903648586665299056610967801562670387024523438922147984751"),
+            (-LN1P_LIMIT - qd!(0.001)).ln1p();
+    );
+    test_all_exact!(
+        ln1p_neg_pi:
+            Quad::NAN,
+            (-Quad::PI).ln1p();
+        ln1p_neg_e:
+            Quad::NAN,
+            (-Quad::E).ln1p();
+        ln1p_0:
+            Quad::ZERO,
+            Quad::ZERO.ln1p();
+        ln1p_neg_0:
+            Quad::NEG_ZERO,
+            Quad::NEG_ZERO.ln1p();
+        ln1p_inf:
+            Quad::INFINITY,
+            Quad::INFINITY.ln1p();
+        ln1p_neg_inf:
+            Quad::NAN,
+            Quad::NEG_INFINITY.ln1p();
+        ln1p_nan:
+            Quad::NAN,
+            Quad::NAN.ln1p();
+    );
+    test_all_prec!(
+        ln_v_small:
+            qd!("9.9999999999999999999999999999999999999999999999999999999999999999996e-151"),
+            (qd!("1e-150") + Quad::ONE).ln(),
+            49;
+        ln1p_v_small:
+            qd!("9.9999999999999999999999999999999999999999999999999999999999999999996e-151"),
+            qd!("1e-150").ln1p(),
+            63;
     );
 
     // log10 tests

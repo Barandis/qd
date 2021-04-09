@@ -9,6 +9,10 @@ use crate::double::Double;
 // used for reduction in exp, expm1; value is 1/512
 const FRAC_1_512: f64 = 0.001953125;
 
+// values with an absolute value higher than this will use ln instead of ln1p; the value
+// here is ln(2) / 64
+const LN1P_LIMIT: Double = Double(1.0830424696249145e-2, 3.6235106466348455e-19);
+
 impl Double {
     /// Computes the exponential function, *e*<sup>x</sup>, where *x* is this `Double`.
     ///
@@ -337,6 +341,51 @@ impl Double {
         }
     }
 
+    /// Calculates the natural logarithm of 1 + x, log<sub>*e*</sub> (1 + x), where *x* is
+    /// the `Double`.
+    ///
+    /// This is the inverse of [`expm1`] and arises from the same sorts of concerns. It
+    /// isn't unusual to want to take logarithms of numbers very near 1, as the logarithm
+    /// approaches 0 at that point. However, with finite-precision mathematics, the `1`
+    /// itself severely limits the precision possible; the number `1.000000000000001` has 16
+    /// digits of precision, but most of them are taken up by placeholder zeros when we
+    /// would prefer to have that precision available after the final `1`.
+    ///
+    /// `ln1p` allows that by letting the user pass in a number near 0 and having the
+    /// algorithm add 1 to it internally, without causing the loss of precision. For
+    /// example, the same 16-digit number above could be passed into `ln1p` as
+    /// `0.000000000000001`, a number with *one* digit of precision, leaving 15 more digits
+    /// of precision availble after that final `1`.
+    ///
+    /// The algorithm for logarithms close to 1 is slower than that for the general
+    /// logarithm, so this function delegates to [`ln`] if it can be done without losing
+    /// precision. There is no advantage to using `ln1p` over [`ln`] except for computing
+    /// logarithms of numbers very close to 1.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::{dd, Double};
+    /// // A very small number
+    /// let v_small = dd!(1e-200);
+    /// // The actual value for the base-e logarithm of 1 + 1e-200
+    /// let expected = dd!("1.0000000000000000000000000000000004e-200");
+    ///
+    /// // First with ln, computing the logarithm of 1 + 1e-200. This loses at least 14
+    /// // digits of precision because of the precision-damping effect of adding the one
+    /// // before the computation.
+    /// let ln = (Double::ONE + v_small).ln();
+    /// let lneps = (ln - expected).abs();
+    /// assert!(lneps > dd!(1e-217));
+    ///
+    /// // Now with ln1p, computing the same logarithm. This does not suffer from the same
+    /// // effect from the 1, and the answer retains full precision.
+    /// let ln1p = v_small.ln1p();
+    /// let ln1peps = (ln1p - expected).abs();
+    /// assert!(ln1peps < dd!(1e-231));
+    /// ```
+    ///
+    /// [`expm1`]: #method.expm1
+    /// [`ln`]: #method.ln
     pub fn ln1p(self) -> Double {
         match self.pre_ln1p() {
             Some(r) => r,
@@ -525,7 +574,7 @@ impl Double {
 
     #[inline]
     fn pre_ln1p(&self) -> Option<Double> {
-        if self.abs() > c::mul_pwr2(Double::LN_2, 0.015625) {
+        if self.abs() > LN1P_LIMIT {
             Some((self + Double::ONE).ln())
         } else if self.is_nan() {
             Some(Double::NAN)
@@ -781,6 +830,66 @@ mod tests {
             31;
     );
 
+    // ln tests
+    test_all_near!(
+        ln_pi:
+            dd!("1.1447298858494001741434273513530587"),
+            Double::PI.ln();
+        ln_e:
+            Double::ONE,
+            Double::E.ln();
+        ln_2_pi:
+            dd!("1.837877066409345483560659472811235"),
+            Double::TAU.ln();
+        ln_pi_2:
+            dd!("0.4515827052894548647261952298948821"),
+            Double::FRAC_PI_2.ln();
+        ln_sqrt_2:
+            dd!("0.3465735902799726547086160607290883"),
+            Double::SQRT_2.ln();
+        ln_1_sqrt_2:
+            dd!("-0.3465735902799726547086160607290883"),
+            Double::FRAC_1_SQRT_2.ln();
+        ln_30:
+            dd!("69.07755278982137052053974364053093"),
+            dd!("1e30").ln();
+        ln_neg_30:
+            dd!("-69.07755278982137052053974364053093"),
+            dd!("1e-30").ln();
+        ln_170:
+            dd!("391.43946580898776628305854729634192"),
+            dd!("1e170").ln();
+        ln_neg_250:
+            dd!("-575.64627324851142100449786367109105"),
+            dd!("1e-250").ln();
+    );
+    test_all_exact!(
+        ln_neg_pi:
+            Double::NAN,
+            (-Double::PI).ln();
+        ln_neg_e:
+            Double::NAN,
+            (-Double::E).ln();
+        ln_1:
+            Double::ZERO,
+            Double::ONE.ln();
+        ln_0:
+            Double::NEG_INFINITY,
+            Double::ZERO.ln();
+        ln_neg_0:
+            Double::NAN,
+            Double::NEG_ZERO.ln();
+        ln_inf:
+            Double::INFINITY,
+            Double::INFINITY.ln();
+        ln_neg_inf:
+            Double::NAN,
+            Double::NEG_INFINITY.ln();
+        ln_nan:
+            Double::NAN,
+            Double::NAN.ln();
+    );
+
     // ln1p tests
     test_all_near!(
         ln1p_pi:
@@ -815,16 +924,16 @@ mod tests {
             dd!("1e-200").ln1p();
         ln1p_ln2_4p:
             dd!("0.011760992295371485613565186164441701"),
-            (c::mul_pwr2(Double::LN_2, 0.015625) + dd!(0.001)).ln1p();
+            (LN1P_LIMIT + dd!(0.001)).ln1p();
         ln1p_ln2_4m:
             dd!("0.0097824204166523322944589663084310797"),
-            (c::mul_pwr2(Double::LN_2, 0.015625) - dd!(0.001)).ln1p();
+            (LN1P_LIMIT - dd!(0.001)).ln1p();
         ln1p_neg_ln2_4p:
             dd!("-0.0098790623360408187905459542119004129"),
-            (c::mul_pwr2(-Double::LN_2, 0.015625) + dd!(0.001)).ln1p();
+            (-LN1P_LIMIT + dd!(0.001)).ln1p();
         ln1p_neg_ln2_4m:
             dd!("-0.01190096103903269725049897197179224"),
-            (c::mul_pwr2(-Double::LN_2, 0.015625) - dd!(0.001)).ln1p();
+            (-LN1P_LIMIT - dd!(0.001)).ln1p();
     );
     test_all_exact!(
         ln1p_neg_pi:
@@ -848,6 +957,16 @@ mod tests {
         ln1p_nan:
             Double::NAN,
             Double::NAN.ln1p();
+    );
+    test_all_prec!(
+        ln_v_small:
+            dd!("1.0000000000000000000000000000000004e-200"),
+            (dd!("1e-200") + Double::ONE).ln(),
+            16;
+        ln1p_v_small:
+            dd!("1.0000000000000000000000000000000004e-200"),
+            dd!("1e-200").ln1p(),
+            31;
     );
 
     // log10 tests

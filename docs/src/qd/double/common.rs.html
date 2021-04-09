@@ -1,69 +1,116 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/double/common.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>common.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
 <link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
-                <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
-<span id="2"> 2</span>
-<span id="3"> 3</span>
-<span id="4"> 4</span>
-<span id="5"> 5</span>
-<span id="6"> 6</span>
-<span id="7"> 7</span>
-<span id="8"> 8</span>
-<span id="9"> 9</span>
-<span id="10">10</span>
-<span id="11">11</span>
-<span id="12">12</span>
-<span id="13">13</span>
-<span id="14">14</span>
-<span id="15">15</span>
-<span id="16">16</span>
-<span id="17">17</span>
-<span id="18">18</span>
-<span id="19">19</span>
-<span id="20">20</span>
-<span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
-<span id="24">24</span>
-<span id="25">25</span>
-<span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
-<span id="40">40</span>
-<span id="41">41</span>
-<span id="42">42</span>
-<span id="43">43</span>
-<span id="44">44</span>
-<span id="45">45</span>
-<span id="46">46</span>
-<span id="47">47</span>
-<span id="48">48</span>
-<span id="49">49</span>
-<span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
-<span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
-<span id="57">57</span>
-<span id="58">58</span>
-<span id="59">59</span>
-<span id="60">60</span>
-<span id="61">61</span>
-<span id="62">62</span>
-<span id="63">63</span>
+                <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -79,8 +126,55 @@
     <span class="ident">Double</span>(<span class="ident">a</span>.<span class="number">0</span> <span class="op">*</span> <span class="ident">b</span>, <span class="ident">a</span>.<span class="number">1</span> <span class="op">*</span> <span class="ident">b</span>)
 }
 
+<span class="comment">// pub fn agm(x: Double, y: Double, eps: Double) -&gt; Double {</span>
+<span class="comment">//     let mut a = x;</span>
+<span class="comment">//     let mut g = y;</span>
+
+<span class="comment">//     while (a - g).abs() &gt; eps {</span>
+<span class="comment">//         let an = mul_pwr2(a + g, 0.5); // arithmetic mean</span>
+<span class="comment">//         let gn = (a * g).sqrt(); //       geometric mean</span>
+<span class="comment">//         a = an;</span>
+<span class="comment">//         g = gn;</span>
+<span class="comment">//     }</span>
+<span class="comment">//     a</span>
+<span class="comment">// }</span>
+
+<span class="doccomment">/// Precomputed reciprocals of numbers up to 30. This starts with 1/3, as the reciprocals</span>
+<span class="doccomment">/// before that (1 and 1/2) are trivial. These are used in the Maclaurin series calculations</span>
+<span class="doccomment">/// for ln1p.</span>
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INV_INTS</span>: [<span class="ident">Double</span>; <span class="number">28</span>] <span class="op">=</span> [
+    <span class="ident">Double</span>(<span class="number">3.333333333333333e-1</span>, <span class="number">1.850371707708594e-17</span>),
+    <span class="ident">Double</span>(<span class="number">2.5e-1</span>, <span class="number">0e0</span>),
+    <span class="ident">Double</span>(<span class="number">2e-1</span>, <span class="op">-</span><span class="number">1.1102230246251566e-17</span>),
+    <span class="ident">Double</span>(<span class="number">1.6666666666666666e-1</span>, <span class="number">9.25185853854297e-18</span>),
+    <span class="ident">Double</span>(<span class="number">1.4285714285714285e-1</span>, <span class="number">7.93016446160826e-18</span>),
+    <span class="ident">Double</span>(<span class="number">1.25e-1</span>, <span class="number">0e0</span>),
+    <span class="ident">Double</span>(<span class="number">1.111111111111111e-1</span>, <span class="number">6.1679056923619804e-18</span>),
+    <span class="ident">Double</span>(<span class="number">1e-1</span>, <span class="op">-</span><span class="number">5.551115123125783e-18</span>),
+    <span class="ident">Double</span>(<span class="number">9.090909090909091e-2</span>, <span class="op">-</span><span class="number">2.523234146875356e-18</span>),
+    <span class="ident">Double</span>(<span class="number">8.333333333333333e-2</span>, <span class="number">4.625929269271485e-18</span>),
+    <span class="ident">Double</span>(<span class="number">7.692307692307693e-2</span>, <span class="op">-</span><span class="number">4.270088556250602e-18</span>),
+    <span class="ident">Double</span>(<span class="number">7.142857142857142e-2</span>, <span class="number">3.96508223080413e-18</span>),
+    <span class="ident">Double</span>(<span class="number">6.666666666666667e-2</span>, <span class="number">9.251858538542971e-19</span>),
+    <span class="ident">Double</span>(<span class="number">6.25e-2</span>, <span class="number">0e0</span>),
+    <span class="ident">Double</span>(<span class="number">5.8823529411764705e-2</span>, <span class="number">8.163404592832033e-19</span>),
+    <span class="ident">Double</span>(<span class="number">5.555555555555555e-2</span>, <span class="number">3.0839528461809902e-18</span>),
+    <span class="ident">Double</span>(<span class="number">5.263157894736842e-2</span>, <span class="number">2.921639538487254e-18</span>),
+    <span class="ident">Double</span>(<span class="number">5e-2</span>, <span class="op">-</span><span class="number">2.7755575615628915e-18</span>),
+    <span class="ident">Double</span>(<span class="number">4.7619047619047616e-2</span>, <span class="number">2.64338815386942e-18</span>),
+    <span class="ident">Double</span>(<span class="number">4.5454545454545456e-2</span>, <span class="op">-</span><span class="number">1.261617073437678e-18</span>),
+    <span class="ident">Double</span>(<span class="number">4.3478260869565216e-2</span>, <span class="number">1.206764157201257e-18</span>),
+    <span class="ident">Double</span>(<span class="number">4.1666666666666664e-2</span>, <span class="number">2.3129646346357427e-18</span>),
+    <span class="ident">Double</span>(<span class="number">4e-2</span>, <span class="op">-</span><span class="number">8.326672684688674e-19</span>),
+    <span class="ident">Double</span>(<span class="number">3.8461538461538464e-2</span>, <span class="op">-</span><span class="number">2.135044278125301e-18</span>),
+    <span class="ident">Double</span>(<span class="number">3.7037037037037035e-2</span>, <span class="number">2.05596856412066e-18</span>),
+    <span class="ident">Double</span>(<span class="number">3.571428571428571e-2</span>, <span class="number">1.982541115402065e-18</span>),
+    <span class="ident">Double</span>(<span class="number">3.4482758620689655e-2</span>, <span class="number">4.785444071660157e-19</span>),
+    <span class="ident">Double</span>(<span class="number">3.333333333333333e-2</span>, <span class="number">4.625929269271486e-19</span>),
+];
+
 <span class="doccomment">/// Table of the reciprocals of factorials. This starts with 1/3!, as the inverse factorials</span>
-<span class="doccomment">/// before that are trivial (1/1! is 1 and 1/2! is 1/2). These are used in Taylor series</span>
+<span class="doccomment">/// before that are trivial (1/1! is 1 and 1/2! is 1/2). These are used in Maclaurin series</span>
 <span class="doccomment">/// calculations for exp, sin, and cos.</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INV_FACTS</span>: [<span class="ident">Double</span>; <span class="number">28</span>] <span class="op">=</span> [
     <span class="ident">Double</span>(<span class="number">1.6666666666666666e-1</span>, <span class="number">9.25185853854297e-18</span>),
