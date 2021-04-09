@@ -30,6 +30,62 @@ impl Double {
         Double(self.0 * factor, self.1 * factor)
     }
 
+    /// Calculates the arithmetic-geometric mean of $x$ and $y$ ($M(x, y)$ or $\text{agm}(x,
+    /// y)$), where $x$ and $y$ are this `Double` and the argument.
+    ///
+    /// The AGM is an iterative calculation. $x$ and $y$ are assigned as the two inputs to
+    /// the first iteration.
+    ///
+    /// $$a_0 = x \newline g_0 = y$$
+    ///
+    /// Then the iterations are performed as two interdependent sequences, one calculating
+    /// the arithmetic mean and one the geometric mean. The results from each iteration are
+    /// fed back into the next iteration as inputs.
+    ///
+    /// $$a_{n + 1} = \frac{a_n + g_n}{2}$$
+    /// $$g_{n + 1} = \sqrt{a_{n}g_{n}}$$
+    ///
+    /// These numbers both converge towards the same number, and once they reach that
+    /// number, it's returned as the AGM.
+    ///
+    /// These sequences converge very quickly, doubling the accuracy with each iteration.
+    /// The AGM can be used in fast algorithms for transcendental functions and for
+    /// computing some mathematical constants (most notably $\pi$). The speed advantage from
+    /// its fast convergence is realized at around 400 decimal digits, so it isn't currently
+    /// used for these purposes in this library.
+    ///
+    /// # Examples
+    /// ```
+    /// # use qd::{dd, Double};
+    /// let x = Double::E.agm(Double::PI);
+    /// let expected = dd!("2.9261085515723046966658957101705574");
+    ///
+    /// let delta = (x - expected).abs();
+    /// assert!(delta < dd!(1e-30));
+    /// ```
+    pub fn agm(self, other: Double) -> Double {
+        match self.pre_agm(&other) {
+            Some(r) => r,
+            None => {
+                let mut a = c::mul_pwr2(self + other, 0.5);
+                let mut g = (self * other).sqrt();
+
+                let k = a.0.log2().floor() as i32;
+                let eps = c::mul_pwr2(Double::EPSILON, 2f64.powi(k + 2));
+
+                println!("Eps: {}", eps);
+
+                while (a - g).abs() > eps {
+                    let am = c::mul_pwr2(a + g, 0.5);
+                    let gm = (a * g).sqrt();
+                    a = am;
+                    g = gm;
+                }
+                a
+            }
+        }
+    }
+
     /// Calculates the square of the `Double`.
     ///
     /// This method takes advantage of optimizations in multiplication that are available
@@ -248,6 +304,15 @@ impl Double {
     // rather than calculation.
 
     #[inline]
+    fn pre_agm(&self, other: &Double) -> Option<Double> {
+        if self.is_sign_negative() || other.is_sign_negative() {
+            Some(Double::NAN)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
     fn pre_sqr(&self) -> Option<Double> {
         if self.is_infinite() {
             Some(Double::INFINITY)
@@ -439,6 +504,48 @@ mod tests {
         ldexp_nan:
             Double::NAN,
             Double::NAN.ldexp(5);
+    );
+
+    // agm tests
+    test_all_near!(
+        agm_1_pi:
+            dd!("1.9187246659776345296603782507498161"),
+            Double::ONE.agm(Double::PI);
+        agm_pi_1:
+            dd!("1.9187246659776345296603782507498161"),
+            Double::PI.agm(Double::ONE);
+        agm_e:
+            dd!("1.7523515580810808267140866648393655"),
+            Double::ONE.agm(Double::E);
+        agm_pi_e:
+            dd!("2.9261085515723046966658957101705574"),
+            Double::PI.agm(Double::E);
+        agm_2_pi:
+            dd!("3.0476368527436049879565709261829655"),
+            Double::ONE.agm(Double::TAU);
+        agm_pi_2:
+            dd!("1.2693054634338164308347564505622511"),
+            Double::ONE.agm(Double::FRAC_PI_2);
+        agm_150:
+            dd!("36.832864037875317975522582670941527"),
+            Double::ONE.agm(dd!(150));
+        agm_1e150:
+            dd!("4.5297400112601563115809746712420527e+147"),
+            Double::ONE.agm(dd!(1e150));
+        agm_1e100_1e150:
+            dd!("1.3481430934587092639510559486907854e+148"),
+            dd!(1e100).agm(dd!(1e150));
+    );
+    test_all_exact!(
+        agm_neg_pos:
+            Double::NAN,
+            Double::NEG_ONE.agm(Double::ONE);
+        agm_pos_neg:
+            Double::NAN,
+            Double::ONE.agm(Double::NEG_ONE);
+        agm_neg_neg:
+            Double::NAN,
+            Double::NEG_ONE.agm(Double::NEG_ONE);
     );
 
     // sqr tests
