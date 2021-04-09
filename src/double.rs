@@ -40,6 +40,7 @@ mod test_macros;
 mod aconsts; // "a" for "associated", or maybe just to make it appear first in docs
 mod add;
 mod alg;
+mod arith;
 mod common;
 mod comp;
 mod display;

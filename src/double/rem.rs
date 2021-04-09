@@ -4,13 +4,16 @@
 // https://opensource.org/licenses/MIT
 
 use crate::double::Double;
-use std::ops::{Div, Rem, RemAssign};
+use std::ops::{Rem, RemAssign};
 
 impl Rem for Double {
     type Output = Double;
 
-    /// Divides this `Double` by another, producing a new `Double` of the remainder as a
-    /// result. This operation uses floored division.
+    /// Computes the remainder of $x \div y$, where $x$ is `self` and $y$ is the argument,
+    /// producing a new `Double` as the result.
+    ///
+    /// The result is given the same sign as the dividend (`self`), no matter the sign of
+    /// the divisor. This is consistent with the way `f64` behaves.
     ///
     /// This implements the `%` operator between two `Double`s.
     ///
@@ -18,29 +21,37 @@ impl Rem for Double {
     /// ```
     /// # use qd::{dd, Double};
     /// let x = Double::PI % Double::E;
-    /// let xpected = dd!("0.4233108251307480031023559119268");
+    /// let expected_x = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diffx = (x - xpected).abs();
-    /// assert!(diffx < dd!(1e-30));
+    /// let delta_x = (x - expected_x).abs();
+    /// assert!(delta_x < dd!(1e-30));
     ///
     /// let y = Double::PI % -Double::E;
-    /// let ypected = dd!("-2.2949710033282972322579315594258");
+    /// let expected_y = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diffy = (y - ypected).abs();
-    /// assert!(diffy < dd!(1e-30));
+    /// let delta_y = (y - expected_y).abs();
+    /// assert!(delta_y < dd!(1e-30));
+    ///
+    /// let z = -Double::PI % Double::E;
+    /// let expected_z = dd!("-0.4233108251307480031023559119268");
+    ///
+    /// let delta_z = (z - expected_z).abs();
+    /// assert!(delta_z < dd!(1e-30));
     /// ```
     #[inline]
     fn rem(self, other: Double) -> Double {
-        let n = self.div(other).floor();
-        self - other * n
+        self - other * (self / other).trunc()
     }
 }
 
 impl Rem for &Double {
     type Output = Double;
 
-    /// Divides a reference to this `Double` by another, producing a new `Double` of the
-    /// remainder as a result. This operation uses floored division.
+    /// Computes the remainder of $x \div y$, where $x$ is `self` and $y$ is the argument,
+    /// producing a new `Double` as the result.
+    ///
+    /// The result is given the same sign as the dividend (`self`), no matter the sign of
+    /// the divisor. This is consistent with the way `f64` behaves.
     ///
     /// This implements the `%` operator between two references to `Double`s.
     ///
@@ -48,29 +59,37 @@ impl Rem for &Double {
     /// ```
     /// # use qd::{dd, Double};
     /// let x = &Double::PI % &Double::E;
-    /// let xpected = dd!("0.4233108251307480031023559119268");
+    /// let expected_x = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diffx = (x - xpected).abs();
-    /// assert!(diffx < dd!(1e-30));
+    /// let delta_x = (x - expected_x).abs();
+    /// assert!(delta_x < dd!(1e-30));
     ///
-    /// let y = &Double::PI % -Double::E;
-    /// let ypected = dd!("-2.2949710033282972322579315594258");
+    /// let y = &Double::PI % -&Double::E;
+    /// let expected_y = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diffy = (y - ypected).abs();
-    /// assert!(diffy < dd!(1e-30));
+    /// let delta_y = (y - expected_y).abs();
+    /// assert!(delta_y < dd!(1e-30));
+    ///
+    /// let z = -&Double::PI % &Double::E;
+    /// let expected_z = dd!("-0.4233108251307480031023559119268");
+    ///
+    /// let delta_z = (z - expected_z).abs();
+    /// assert!(delta_z < dd!(1e-30));
     /// ```
     #[inline]
     fn rem(self, other: &Double) -> Double {
-        let n = self.div(*other).floor();
-        *self - *other * n
+        *self % *other
     }
 }
 
 impl Rem<&Double> for Double {
     type Output = Double;
 
-    /// Divides this `Double` by a reference to another, producing a new `Double` of the
-    /// remainder as a result. This operation uses floored division.
+    /// Computes the remainder of $x \div y$, where $x$ is `self` and $y$ is the argument,
+    /// producing a new `Double` as the result.
+    ///
+    /// The result is given the same sign as the dividend (`self`), no matter the sign of
+    /// the divisor. This is consistent with the way `f64` behaves.
     ///
     /// This implements the `%` operator between a `Double` and a reference to a `Double`.
     ///
@@ -78,29 +97,37 @@ impl Rem<&Double> for Double {
     /// ```
     /// # use qd::{dd, Double};
     /// let x = Double::PI % &Double::E;
-    /// let xpected = dd!("0.4233108251307480031023559119268");
+    /// let expected_x = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diffx = (x - xpected).abs();
-    /// assert!(diffx < dd!(1e-30));
+    /// let delta_x = (x - expected_x).abs();
+    /// assert!(delta_x < dd!(1e-30));
     ///
     /// let y = Double::PI % -&Double::E;
-    /// let ypected = dd!("-2.2949710033282972322579315594258");
+    /// let expected_y = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diffy = (y - ypected).abs();
-    /// assert!(diffy < dd!(1e-30));
+    /// let delta_y = (y - expected_y).abs();
+    /// assert!(delta_y < dd!(1e-30));
+    ///
+    /// let z = -Double::PI % &Double::E;
+    /// let expected_z = dd!("-0.4233108251307480031023559119268");
+    ///
+    /// let delta_z = (z - expected_z).abs();
+    /// assert!(delta_z < dd!(1e-30));
     /// ```
     #[inline]
     fn rem(self, other: &Double) -> Double {
-        let n = self.div(*other).floor();
-        self - *other * n
+        self % *other
     }
 }
 
 impl Rem<Double> for &Double {
     type Output = Double;
 
-    /// Divides a reference to this `Double` by another `Double`, producing a new `Double`
-    /// of the remainder as a result. This operation uses floored division.
+    /// Computes the remainder of $x \div y$, where $x$ is `self` and $y$ is the argument,
+    /// producing a new `Double` as the result.
+    ///
+    /// The result is given the same sign as the dividend (`self`), no matter the sign of
+    /// the divisor. This is consistent with the way `f64` behaves.
     ///
     /// This implements the `%` operator between a reference to a `Double`s and a `Double`.
     ///
@@ -108,27 +135,35 @@ impl Rem<Double> for &Double {
     /// ```
     /// # use qd::{dd, Double};
     /// let x = &Double::PI % Double::E;
-    /// let xpected = dd!("0.4233108251307480031023559119268");
+    /// let expected_x = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diffx = (x - xpected).abs();
-    /// assert!(diffx < dd!(1e-30));
+    /// let delta_x = (x - expected_x).abs();
+    /// assert!(delta_x < dd!(1e-30));
     ///
-    /// let y = &Double::PI % -&Double::E;
-    /// let ypected = dd!("-2.2949710033282972322579315594258");
+    /// let y = &Double::PI % -Double::E;
+    /// let expected_y = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diffy = (y - ypected).abs();
-    /// assert!(diffy < dd!(1e-30));
+    /// let delta_y = (y - expected_y).abs();
+    /// assert!(delta_y < dd!(1e-30));
+    ///
+    /// let z = -&Double::PI % Double::E;
+    /// let expected_z = dd!("-0.4233108251307480031023559119268");
+    ///
+    /// let delta_z = (z - expected_z).abs();
+    /// assert!(delta_z < dd!(1e-30));
     /// ```
     #[inline]
     fn rem(self, other: Double) -> Double {
-        let n = self.div(other).floor();
-        *self - other * n
+        *self % other
     }
 }
 
 impl RemAssign for Double {
-    /// Divides this `Double` by another, modifying this one to equal the remainder. This
-    /// operation uses floored division.
+    /// Computes the remainder of $x \div y$, where $x$ is `self` and $y$ is the argument,
+    /// assigning the result to `self`.
+    ///
+    /// The result is given the same sign as the dividend (`self`), no matter the sign of
+    /// the divisor. This is consistent with the way `f64` behaves.
     ///
     /// This implements the `%=` operator between two `Double`s.
     ///
@@ -137,29 +172,39 @@ impl RemAssign for Double {
     /// # use qd::{dd, Double};
     /// let mut x = Double::PI;
     /// x %= Double::E;
-    /// let xpected = dd!("0.4233108251307480031023559119268");
+    /// let expected_x = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diffx = (x - xpected).abs();
-    /// assert!(diffx < dd!(1e-30));
+    /// let delta_x = (x - expected_x).abs();
+    /// assert!(delta_x < dd!(1e-30));
     ///
     /// let mut y = Double::PI;
     /// y %= -Double::E;
-    /// let ypected = dd!("-2.2949710033282972322579315594258");
+    /// let expected_y = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diffy = (y - ypected).abs();
-    /// assert!(diffy < dd!(1e-30));
+    /// let delta_y = (y - expected_y).abs();
+    /// assert!(delta_y < dd!(1e-30));
+    ///
+    /// let mut z = -Double::PI;
+    /// z %= Double::E;
+    /// let expected_z = dd!("-0.4233108251307480031023559119268");
+    ///
+    /// let delta_z = (z - expected_z).abs();
+    /// assert!(delta_z < dd!(1e-30));
     /// ```
     #[inline]
     fn rem_assign(&mut self, other: Double) {
-        let r = self.rem(other);
+        let r = *self % other;
         self.0 = r.0;
         self.1 = r.1;
     }
 }
 
 impl RemAssign<&Double> for Double {
-    /// Divides this `Double` by a reference to another, modifying this one to equal the
-    /// remainder. This operation uses floored division.
+    /// Computes the remainder of $x \div y$, where $x$ is `self` and $y$ is the argument,
+    /// assigning the result to `self`.
+    ///
+    /// The result is given the same sign as the dividend (`self`), no matter the sign of
+    /// the divisor. This is consistent with the way `f64` behaves.
     ///
     /// This implements the `%=` operator between a `Double` and a reference to a `Double`.
     ///
@@ -168,21 +213,28 @@ impl RemAssign<&Double> for Double {
     /// # use qd::{dd, Double};
     /// let mut x = Double::PI;
     /// x %= &Double::E;
-    /// let xpected = dd!("0.4233108251307480031023559119268");
+    /// let expected_x = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diffx = (x - xpected).abs();
-    /// assert!(diffx < dd!(1e-30));
+    /// let delta_x = (x - expected_x).abs();
+    /// assert!(delta_x < dd!(1e-30));
     ///
     /// let mut y = Double::PI;
     /// y %= -&Double::E;
-    /// let ypected = dd!("-2.2949710033282972322579315594258");
+    /// let expected_y = dd!("0.4233108251307480031023559119268");
     ///
-    /// let diffy = (y - ypected).abs();
-    /// assert!(diffy < dd!(1e-30));
+    /// let delta_y = (y - expected_y).abs();
+    /// assert!(delta_y < dd!(1e-30));
+    ///
+    /// let mut z = -Double::PI;
+    /// z %= &Double::E;
+    /// let expected_z = dd!("-0.4233108251307480031023559119268");
+    ///
+    /// let delta_z = (z - expected_z).abs();
+    /// assert!(delta_z < dd!(1e-30));
     /// ```
     #[inline]
     fn rem_assign(&mut self, other: &Double) {
-        let r = self.rem(*other);
+        let r = *self % *other;
         self.0 = r.0;
         self.1 = r.1;
     }
@@ -207,17 +259,41 @@ mod tests {
             dd!("0.42331082513074800310235591192684125"),
             &Double::PI % &Double::E;
         num_neg_num:
-            dd!("-2.2949710033282972322579315594258203"),
+            dd!("0.42331082513074800310235591192684125"),
             Double::PI % -Double::E;
         num_neg_ref:
-            dd!("-2.2949710033282972322579315594258203"),
+            dd!("0.42331082513074800310235591192684125"),
             Double::PI % -&Double::E;
         ref_neg_num:
-            dd!("-2.2949710033282972322579315594258203"),
+            dd!("0.42331082513074800310235591192684125"),
             &Double::PI % -Double::E;
         ref_neg_ref:
-            dd!("-2.2949710033282972322579315594258203"),
+            dd!("0.42331082513074800310235591192684125"),
             &Double::PI % -&Double::E;
+        neg_num_num:
+            dd!("-0.42331082513074800310235591192684125"),
+            -Double::PI % Double::E;
+        neg_num_ref:
+            dd!("-0.42331082513074800310235591192684125"),
+            -Double::PI % &Double::E;
+        neg_ref_num:
+            dd!("-0.42331082513074800310235591192684125"),
+            -&Double::PI % Double::E;
+        neg_ref_ref:
+            dd!("-0.42331082513074800310235591192684125"),
+            -&Double::PI % &Double::E;
+        neg_num_neg_num:
+            dd!("-0.42331082513074800310235591192684125"),
+            -Double::PI % -Double::E;
+        neg_num_neg_ref:
+            dd!("-0.42331082513074800310235591192684125"),
+            -Double::PI % -&Double::E;
+        neg_ref_neg_num:
+            dd!("-0.42331082513074800310235591192684125"),
+            -&Double::PI % -Double::E;
+        neg_ref_neg_ref:
+            dd!("-0.42331082513074800310235591192684125"),
+            -&Double::PI % -&Double::E;
         num_id:
             dd!("0.1415926535897932384626433832795028"),
             Double::PI % Double::ONE;
