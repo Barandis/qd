@@ -14,16 +14,16 @@ const FRAC_1_512: f64 = 0.001953125;
 const LN1P_LIMIT: Double = Double(1.0830424696249145e-2, 3.6235106466348455e-19);
 
 impl Double {
-    /// Computes the exponential function, *e*<sup>x</sup>, where *x* is this `Double`.
+    /// Computes the exponential function, $e^x$, where $x$ is `self`.
     ///
-    /// The result of this function grows rapidly. Once *x* exceeds 708, the result is too
+    /// The result of this function grows rapidly. Once $x$ exceeds 708, the result is too
     /// large to represent with a `Double`; at that point the function begins to return
     /// [`INFINITY`]. The limit on the low end is less due to the fact that the second
     /// component needs to fit in an `f64` rather than the first, along with extra bits used
     /// in argument reduction; this function begins to return 0 at -600.
     ///
-    /// As *x* grows this function does lose a bit of precision. It's precise to at least 30
-    /// digits up to values of -140 <= x <= 150, and from then until the limits, it's
+    /// As $x$ grows this function does lose a bit of precision. It's precise to at least 30
+    /// digits up to values of $-140 \le x \le 150$, and from then until the limits, it's
     /// precise to at least 29 digits.
     ///
     /// # Examples
@@ -145,12 +145,11 @@ impl Double {
         }
     }
 
-    /// Computes the exponential function minus 1, *e*<sup>x</sup> - 1, where *x* is this
-    /// `Double`.
+    /// Computes the exponential function of $x$ minus 1, $e^x - 1$, where $x$ is `self`.
     ///
     /// While this function literally calculates the value returned by [`exp`] minus 1, it
     /// does this directly (rather than computing [`exp`] directly and then subtracting 1
-    /// from the answer). This is useful in the not-infrequent case where *x* is very close
+    /// from the answer). This is useful in the not-infrequent case where $x$ is very close
     /// to 0 and you have to subtract something near 1 from the answer (another example is
     /// `x.exp() - x.cos()` &mdash; for very small values of `x`, `x.cos()` is also very
     /// near 1). Since `x.exp()` is very close to 1 when `x` is very close to 0, this is
@@ -276,7 +275,8 @@ impl Double {
         }
     }
 
-    /// Calculates the natural logarithm, log<sub>*e*</sub>, of the `Double`.
+    /// Calculates the base-$e$ (natural) logarithm of $x$, $\ln x$ or $\log_e x$, where $x$
+    /// is `self`.
     ///
     /// This calculation relies upon the [`exp`] calculation, in the opposite direction. A
     /// large positive logarithm, for example, will require the calculation of a large
@@ -284,10 +284,10 @@ impl Double {
     ///
     /// For the same reasons that negative values of [`exp`] are limited to -600, the
     /// accurate results of this function are limited to the number whose logarithm is 600,
-    /// which is around 2.65 &times; 10<sup>261</sup>. Take care with this; unlike in
-    /// [`exp`], [`INFINITY`] is *not* returned. In that function, exceeding the maximum
-    /// refers to actually overflowing an `f64`, which is appropriate to call [`INFINITY`];
-    /// here, it means `601`.
+    /// which is around `2.65e261`. Take care with this; unlike in [`exp`], [`INFINITY`] is
+    /// *not* returned. In that function, exceeding the maximum refers to actually
+    /// overflowing an `f64`, which is appropriate to call [`INFINITY`]; here, it means
+    /// `601`.
     ///
     /// # Examples
     /// ```
@@ -341,8 +341,8 @@ impl Double {
         }
     }
 
-    /// Calculates the natural logarithm of 1 + x, log<sub>*e*</sub> (1 + x), where *x* is
-    /// the `Double`.
+    /// Calculates the base-$e$ (natural) logarithm of 1 plus $x$, $\ln (1 + x)$ or $\log_e
+    /// (1 + x)$, where $x$ is `self`.
     ///
     /// This is the inverse of [`expm1`] and arises from the same sorts of concerns. It
     /// isn't unusual to want to take logarithms of numbers very near 1, as the logarithm
@@ -437,12 +437,12 @@ impl Double {
         }
     }
 
-    /// Calculates the base-10 logarithm, log<sub>10</sub>, of the `Double`.
+    /// Calculates the base-10 logarithm of $x$, $\log_{10} x$, where $x$ is `self`.
     ///
     /// As with [`ln`], this has an upper usable range less than the size of the numbers
-    /// themselves. In this case, that upper limit is around 10<sup>261</sup>. Over this
-    /// number, the output is not reliable, but it does not return [`INFINITY`] because the
-    /// number 261 is so plainly not infinite.
+    /// themselves. In this case, that upper limit is around `1e261`. Over this number, the
+    /// output is not reliable, but it does not return [`INFINITY`] because the number 261
+    /// is so plainly not infinite.
     ///
     /// # Examples
     /// ```
@@ -461,11 +461,11 @@ impl Double {
         self.ln() / Double::LN_10
     }
 
-    /// Calculates the base-2 logarithm, log<sub>2</sub>, of the `Double`.
+    /// Calculates the base-2 logarithm of $x$, $\log_2 x$, where $x$ is `self`.
     ///
-    /// Since 2 is smaller than *e*, this function is constrained even more than [`ln`]. It
-    /// will start returning [`NEG_INFINITY`] at around 10<sup>-213</sup> and will start
-    /// to fail on the positive side at around 2.6 &times; 10<sup>180</sup>.
+    /// Since 2 is smaller than $e$, this function is constrained even more than [`ln`]. It
+    /// will start returning [`NEG_INFINITY`] at around `1e-213` and will start to fail on
+    /// the positive side at around `2.6e180`.
     ///
     /// # Examples
     /// ```
@@ -484,13 +484,14 @@ impl Double {
         self.ln() / Double::LN_2
     }
 
-    /// Calculates the base `b` logarithm (log<sub>`b`</sub>) of the `Double`.
+    /// Calculates the base-$b$ logarithm of $x$, $\log_b x$, where $x$ is `self` and $b$ is
+    /// the argument.
     ///
     /// This function will have limits at extreme arguments like the other logarithm
     /// functions. The difference is that those limits will depend on the base argument.
     ///
-    /// If the goal is to calculate the base *e*, base 2, or base 10 logarithms of `self`,
-    /// the specialized functions for those purposes([`ln`], [`log2`], and [`log10`]
+    /// If the goal is to calculate the base-$e$, base-2, or base-10 logarithms of $x$, the
+    /// specialized functions for those purposes ([`ln`], [`log2`], and [`log10`]
     /// respectively) will be more efficient.
     ///
     /// # Examples

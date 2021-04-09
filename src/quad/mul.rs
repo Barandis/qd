@@ -37,7 +37,8 @@ impl Mul for Quad {
     // Other terms, including the remaining O(ε⁴) terms and the low words of the O(ε⁴) that
     // are calculated, are not necessary to provide 212 bits of accuracy.
 
-    /// Multiplies this `Quad` by another, producing a new `Quad` as a result.
+    /// Computes $x \times y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Quad` as the result.
     ///
     /// This implements the `*` operator between two `Quad`s.
     ///
@@ -104,8 +105,8 @@ impl Mul for Quad {
 impl Mul for &Quad {
     type Output = Quad;
 
-    /// Multiplies a reference to this `Quad` by another, producing a new `Quad` as a
-    /// result.
+    /// Computes $x \times y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Quad` as the result.
     ///
     /// This implements the `*` operator between two references to `Quad`s.
     ///
@@ -127,8 +128,8 @@ impl Mul for &Quad {
 impl Mul<&Quad> for Quad {
     type Output = Quad;
 
-    /// Multiplies this `Quad` by a reference to another, producing a new `Quad` as a
-    /// result.
+    /// Computes $x \times y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Quad` as the result.
     ///
     /// This implements the `*` operator between a `Quad` and a reference to a `Quad`.
     ///
@@ -150,8 +151,8 @@ impl Mul<&Quad> for Quad {
 impl Mul<Quad> for &Quad {
     type Output = Quad;
 
-    /// Multiplies a reference to this `Quad` by another `Quad`, producing a new `Quad` as a
-    /// result.
+    /// Computes $x \times y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Quad` as the result.
     ///
     /// This implements the `*` operator between a reference to a `Quad` and a `Quad`.
     ///
@@ -171,7 +172,8 @@ impl Mul<Quad> for &Quad {
 }
 
 impl MulAssign for Quad {
-    /// Multiples this `Quad` by another one, modifying this one to equal the result.
+    /// Computes $x \times y$, where $x$ is `self` and $y$ is the argument, assigning the
+    /// result to `self`.
     ///
     /// This implements the `*=` operator between two `Quad`s.
     ///
@@ -196,8 +198,8 @@ impl MulAssign for Quad {
 }
 
 impl MulAssign<&Quad> for Quad {
-    /// Multiples this `Quad` by a reference to another one, modifying this one to equal the
-    /// result.
+    /// Computes $x \times y$, where $x$ is `self` and $y$ is the argument, assigning the
+    /// result to `self`.
     ///
     /// This implements the `*=` operator between a `Quad` and a reference to a `Quad`.
     ///

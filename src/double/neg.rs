@@ -9,7 +9,7 @@ use std::ops::Neg;
 impl Neg for Double {
     type Output = Double;
 
-    /// Negates this `Double`, producing a new `Double`.
+    /// Computes $-x$, where $x$ is `self`, producing a new `Double` as the result.
     ///
     /// This implements the unary `-` operator for `Double`s.
     ///
@@ -31,7 +31,7 @@ impl Neg for Double {
 impl Neg for &Double {
     type Output = Double;
 
-    /// Negates a reference to this `Double`, producing a new `Double`.
+    /// Computes $-x$, where $x$ is `self`, producing a new `Double` as the result.
     ///
     /// This implements the unary `-` operator for references to `Double`s.
     ///

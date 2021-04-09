@@ -1,6 +1,29 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/double/trans.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>trans.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css"
+      integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y"
+      crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js"
+        integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js"
+        integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe"
+        crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "$", right: "$", display: false },
+        { left: "\\[", right: "\\]", display: true }
+      ]
+    });
+  });
+</script>
+
+<style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1155,6 +1178,7 @@
 <span id="1152">1152</span>
 <span id="1153">1153</span>
 <span id="1154">1154</span>
+<span id="1155">1155</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -1172,16 +1196,16 @@
 <span class="kw">const</span> <span class="ident">LN1P_LIMIT</span>: <span class="ident">Double</span> <span class="op">=</span> <span class="ident">Double</span>(<span class="number">1.0830424696249145e-2</span>, <span class="number">3.6235106466348455e-19</span>);
 
 <span class="kw">impl</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Computes the exponential function, *e*&lt;sup&gt;x&lt;/sup&gt;, where *x* is this `Double`.</span>
+    <span class="doccomment">/// Computes the exponential function, $e^x$, where $x$ is `self`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// The result of this function grows rapidly. Once *x* exceeds 708, the result is too</span>
+    <span class="doccomment">/// The result of this function grows rapidly. Once $x$ exceeds 708, the result is too</span>
     <span class="doccomment">/// large to represent with a `Double`; at that point the function begins to return</span>
     <span class="doccomment">/// [`INFINITY`]. The limit on the low end is less due to the fact that the second</span>
     <span class="doccomment">/// component needs to fit in an `f64` rather than the first, along with extra bits used</span>
     <span class="doccomment">/// in argument reduction; this function begins to return 0 at -600.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// As *x* grows this function does lose a bit of precision. It&#39;s precise to at least 30</span>
-    <span class="doccomment">/// digits up to values of -140 &lt;= x &lt;= 150, and from then until the limits, it&#39;s</span>
+    <span class="doccomment">/// As $x$ grows this function does lose a bit of precision. It&#39;s precise to at least 30</span>
+    <span class="doccomment">/// digits up to values of $-140 \le x \le 150$, and from then until the limits, it&#39;s</span>
     <span class="doccomment">/// precise to at least 29 digits.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
@@ -1303,12 +1327,11 @@
         }
     }
 
-    <span class="doccomment">/// Computes the exponential function minus 1, *e*&lt;sup&gt;x&lt;/sup&gt; - 1, where *x* is this</span>
-    <span class="doccomment">/// `Double`.</span>
+    <span class="doccomment">/// Computes the exponential function of $x$ minus 1, $e^x - 1$, where $x$ is `self`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// While this function literally calculates the value returned by [`exp`] minus 1, it</span>
     <span class="doccomment">/// does this directly (rather than computing [`exp`] directly and then subtracting 1</span>
-    <span class="doccomment">/// from the answer). This is useful in the not-infrequent case where *x* is very close</span>
+    <span class="doccomment">/// from the answer). This is useful in the not-infrequent case where $x$ is very close</span>
     <span class="doccomment">/// to 0 and you have to subtract something near 1 from the answer (another example is</span>
     <span class="doccomment">/// `x.exp() - x.cos()` &amp;mdash; for very small values of `x`, `x.cos()` is also very</span>
     <span class="doccomment">/// near 1). Since `x.exp()` is very close to 1 when `x` is very close to 0, this is</span>
@@ -1434,7 +1457,8 @@
         }
     }
 
-    <span class="doccomment">/// Calculates the natural logarithm, log&lt;sub&gt;*e*&lt;/sub&gt;, of the `Double`.</span>
+    <span class="doccomment">/// Calculates the base-$e$ (natural) logarithm of $x$, $\ln x$ or $\log_e x$, where $x$</span>
+    <span class="doccomment">/// is `self`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This calculation relies upon the [`exp`] calculation, in the opposite direction. A</span>
     <span class="doccomment">/// large positive logarithm, for example, will require the calculation of a large</span>
@@ -1442,10 +1466,10 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// For the same reasons that negative values of [`exp`] are limited to -600, the</span>
     <span class="doccomment">/// accurate results of this function are limited to the number whose logarithm is 600,</span>
-    <span class="doccomment">/// which is around 2.65 &amp;times; 10&lt;sup&gt;261&lt;/sup&gt;. Take care with this; unlike in</span>
-    <span class="doccomment">/// [`exp`], [`INFINITY`] is *not* returned. In that function, exceeding the maximum</span>
-    <span class="doccomment">/// refers to actually overflowing an `f64`, which is appropriate to call [`INFINITY`];</span>
-    <span class="doccomment">/// here, it means `601`.</span>
+    <span class="doccomment">/// which is around `2.65e261`. Take care with this; unlike in [`exp`], [`INFINITY`] is</span>
+    <span class="doccomment">/// *not* returned. In that function, exceeding the maximum refers to actually</span>
+    <span class="doccomment">/// overflowing an `f64`, which is appropriate to call [`INFINITY`]; here, it means</span>
+    <span class="doccomment">/// `601`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1499,8 +1523,8 @@
         }
     }
 
-    <span class="doccomment">/// Calculates the natural logarithm of 1 + x, log&lt;sub&gt;*e*&lt;/sub&gt; (1 + x), where *x* is</span>
-    <span class="doccomment">/// the `Double`.</span>
+    <span class="doccomment">/// Calculates the base-$e$ (natural) logarithm of 1 plus $x$, $\ln (1 + x)$ or $\log_e</span>
+    <span class="doccomment">/// (1 + x)$, where $x$ is `self`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This is the inverse of [`expm1`] and arises from the same sorts of concerns. It</span>
     <span class="doccomment">/// isn&#39;t unusual to want to take logarithms of numbers very near 1, as the logarithm</span>
@@ -1595,12 +1619,12 @@
         }
     }
 
-    <span class="doccomment">/// Calculates the base-10 logarithm, log&lt;sub&gt;10&lt;/sub&gt;, of the `Double`.</span>
+    <span class="doccomment">/// Calculates the base-10 logarithm of $x$, $\log_{10} x$, where $x$ is `self`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// As with [`ln`], this has an upper usable range less than the size of the numbers</span>
-    <span class="doccomment">/// themselves. In this case, that upper limit is around 10&lt;sup&gt;261&lt;/sup&gt;. Over this</span>
-    <span class="doccomment">/// number, the output is not reliable, but it does not return [`INFINITY`] because the</span>
-    <span class="doccomment">/// number 261 is so plainly not infinite.</span>
+    <span class="doccomment">/// themselves. In this case, that upper limit is around `1e261`. Over this number, the</span>
+    <span class="doccomment">/// output is not reliable, but it does not return [`INFINITY`] because the number 261</span>
+    <span class="doccomment">/// is so plainly not infinite.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1619,11 +1643,11 @@
         <span class="self">self</span>.<span class="ident">ln</span>() <span class="op">/</span> <span class="ident">Double</span>::<span class="ident">LN_10</span>
     }
 
-    <span class="doccomment">/// Calculates the base-2 logarithm, log&lt;sub&gt;2&lt;/sub&gt;, of the `Double`.</span>
+    <span class="doccomment">/// Calculates the base-2 logarithm of $x$, $\log_2 x$, where $x$ is `self`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Since 2 is smaller than *e*, this function is constrained even more than [`ln`]. It</span>
-    <span class="doccomment">/// will start returning [`NEG_INFINITY`] at around 10&lt;sup&gt;-213&lt;/sup&gt; and will start</span>
-    <span class="doccomment">/// to fail on the positive side at around 2.6 &amp;times; 10&lt;sup&gt;180&lt;/sup&gt;.</span>
+    <span class="doccomment">/// Since 2 is smaller than $e$, this function is constrained even more than [`ln`]. It</span>
+    <span class="doccomment">/// will start returning [`NEG_INFINITY`] at around `1e-213` and will start to fail on</span>
+    <span class="doccomment">/// the positive side at around `2.6e180`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1642,13 +1666,14 @@
         <span class="self">self</span>.<span class="ident">ln</span>() <span class="op">/</span> <span class="ident">Double</span>::<span class="ident">LN_2</span>
     }
 
-    <span class="doccomment">/// Calculates the base `b` logarithm (log&lt;sub&gt;`b`&lt;/sub&gt;) of the `Double`.</span>
+    <span class="doccomment">/// Calculates the base-$b$ logarithm of $x$, $\log_b x$, where $x$ is `self` and $b$ is</span>
+    <span class="doccomment">/// the argument.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This function will have limits at extreme arguments like the other logarithm</span>
     <span class="doccomment">/// functions. The difference is that those limits will depend on the base argument.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// If the goal is to calculate the base *e*, base 2, or base 10 logarithms of `self`,</span>
-    <span class="doccomment">/// the specialized functions for those purposes([`ln`], [`log2`], and [`log10`]</span>
+    <span class="doccomment">/// If the goal is to calculate the base-$e$, base-2, or base-10 logarithms of $x$, the</span>
+    <span class="doccomment">/// specialized functions for those purposes ([`ln`], [`log2`], and [`log10`]</span>
     <span class="doccomment">/// respectively) will be more efficient.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>

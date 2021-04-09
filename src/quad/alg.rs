@@ -9,7 +9,7 @@ use crate::quad::common as c;
 use crate::quad::Quad;
 
 impl Quad {
-    /// Calculates x · 2<sup>n</sup>, where *x* is the `Quad` and *n* is an integer.
+    /// Calculates $x\sdot2^n$, where $x$ is `self` and $n$ is the argument.
     ///
     /// Though this is not an everyday operation, it is often used in more advanced
     /// mathematical calculations (including several within this library). Therefore an
@@ -35,7 +35,7 @@ impl Quad {
         )
     }
 
-    /// Calculates the square of the `Quad`.
+    /// Calculates the square of $x$, $x^2$, where $x$ is `self`.
     ///
     /// This method takes advantage of optimizations in multiplication that are available
     /// when the two numbers being multiplied are the same, so it is more efficient than
@@ -99,7 +99,7 @@ impl Quad {
         }
     }
 
-    /// Calculates the square root of the `Quad`.
+    /// Calculates the square root $x$, $\sqrt{x}$, where $x$ is `self`.
     ///
     /// # Examples
     /// ```
@@ -138,7 +138,8 @@ impl Quad {
         }
     }
 
-    /// Calculates the *n*th root of the `Quad`.
+    /// Calculates the $n$th root of $x$, $\sqrt\[n\]{x}$, where $x$ is `self` and $n$
+    /// is the argument.
     ///
     /// # Examples
     /// ```
@@ -182,7 +183,7 @@ impl Quad {
         }
     }
 
-    /// Calculates the cube root of the `Quad`.
+    /// Calculates the cube root of $x$, $\sqrt\[3\]{x}$, where $x$ is `self`.
     ///
     /// # Examples
     /// ```
@@ -197,16 +198,17 @@ impl Quad {
         self.nroot(3)
     }
 
-    /// Calculates the `Quad` raised to an integer power.
+    /// Calculates $x$ raised to the integer power $n$, $x^n$, where $x$ is `self` and
+    /// $n$ is the argument.
     ///
     /// This function correctly handles the special inputs defined in IEEE 754. In
     /// particular:
     ///
-    /// * `x.powi(0)` is 1 for any `x` (including 0, `NaN`, or infinity)
-    /// * `x.powi(n)` is ±∞ for `x` = ±0 and any odd negative `n`
-    /// * `x.powi(n)` is +∞ for `x` = ±0 and any even negative `n`
-    /// * `x.powi(n)` is ±0 for `x` = ±0 and any odd positive `n`
-    /// * `x.powi(n)` is +0 for `x` = ±0 and any even positive `n`
+    /// * `x.powi(0)` is $1$ for any `x` (including `0`, `NaN`, or `inf`)
+    /// * `x.powi(n)` is $\pm\infin$ for `x` = $\pm0$ and any odd negative `n`
+    /// * `x.powi(n)` is $+\infin$ for `x` = $\pm0$ and any even negative `n`
+    /// * `x.powi(n)` is $\pm0$ for `x` = $\pm0$ and any odd positive `n`
+    /// * `x.powi(n)` is $+0$ for `x` = $\pm0$ and any even positive `n`
     ///
     /// # Examples
     /// ```
@@ -245,19 +247,21 @@ impl Quad {
         }
     }
 
-    /// Calculates the `Quad` raised to a `Quad` power.
+    /// Calculates $x$ raised to the `Quad` power $n$, $x^n$, where $x$ is `self` and $n$ is
+    /// the argument.
     ///
-    /// In general, x<sup>n</sup> is equal to *e*<sup>n ln x</sup>. This precludes raising
-    /// a negative `Quad` to a fractional or irrational power because *ln x* is undefined
-    /// when *x* is negative. In that case, this function returns [`NAN`].
+    /// In general, $x^n$ is equal to $e^{n \ln x}$. This precludes raising a negative
+    /// `Double` to a fractional or irrational power because $\ln x$ is undefined when $x$
+    /// is negative. In that case, this function returns [`NAN`].
     ///
     /// It's actually more complex than that; if the exponent can be expressed as a fraction
-    /// with an odd denominator, then there is an answer (a cube root, which is defined for
-    /// negative numbers, is the same as a power of 1/3). Therefore, something like
+    /// with an odd denominator, then there is an answer ($\sqrt\[3\]{x}$, which is defined
+    /// for negative $x$, is the same as a $x^\frac{1}{3}$). Therefore, something like
     /// `qd!(-4).powf(qd!(0.2))` should work, as 0.2 is a fraction with an odd denominator
-    /// (1/5). However, it's impossible in general to tell whether a number is a fraction
-    /// while using floating-point numbers, so no attempt is made to make this work. If you
-    /// need a fifth root of -4, use `qd!(-4).nroot(5)`.
+    /// ($\frac{1}{5}$), and the entire expression is the same as $\sqrt\[5\]{-4}$, which is
+    /// a real thing. However, it's impossible in general to tell whether a number is a
+    /// fraction while using floating-point numbers, so no attempt is made to make this
+    /// work. If you need a fifth root of 4, use `qd!(-4).nroot(5)`.
     ///
     /// # Examples
     /// ```
@@ -278,7 +282,7 @@ impl Quad {
         }
     }
 
-    /// Calculates the reciprocal of the `Quad`.
+    /// Calculates the reciprocal of $x$, $\frac{1}{x}$, where $x$ is `self`.
     ///
     /// # Examples
     /// ```
@@ -294,7 +298,7 @@ impl Quad {
         Quad::ONE / self
     }
 
-    // PRecalc functions
+    // Precalc functions
     //
     // This series of functions returns `Some` with a value that is to be returned, if it
     // turns out that the function doesn't have to be calculated because a shortcut result

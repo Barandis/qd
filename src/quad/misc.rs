@@ -9,7 +9,9 @@ use std::f64;
 use std::num::FpCategory;
 
 impl Quad {
-    /// Calculates the absolute value of the `Quad`.
+    /// Calculates the absolute value of $x$, $|x|$, where $x$ is `self`. The absolute value
+    /// of $x$ is simply the same value as $x$, but with the opposite sign if $x$ is
+    /// negative.
     ///
     /// # Examples
     /// ```
@@ -26,7 +28,11 @@ impl Quad {
         }
     }
 
-    /// Returns the largest integer value less than or equal to the `Quad`.
+    /// Calculates the floor of $x$, $\lfloor{x}\rfloor$, where $x$ is `self`.\
+    ///
+    /// The floor of $x$ is the largest integer value less than or equal to $x$. This means
+    /// that the floor of a negative number will have an absolute value greater than that of
+    /// the number itself.
     ///
     /// # Examples
     /// ```
@@ -59,7 +65,11 @@ impl Quad {
         }
     }
 
-    /// Returns the smallest integer value greater than or equal to the `Quad`.
+    /// Calculates the ceiling of $x$, $\lceil{x}\rceil$, where $x$ is `self`.
+    ///
+    /// The ceiling of $x$ is the smallest integer value greater than or equal to $x$. This
+    /// means that the ceiling of a negative number will have an absolute value the same as
+    /// (not greater than) that of the number itself.
     ///
     /// # Examples
     /// ```
@@ -92,8 +102,11 @@ impl Quad {
         }
     }
 
-    /// Returns the nearest integer value to the `Double`. Half-way cases are rounded away
-    /// from `0.0`, per the behavior of `f64`'s `round` method.
+    /// Calculates the rounded value of $x$, where $x$ is `self`.
+    ///
+    /// The rounded value is the nearest integer to $x$. Halfway cases (i.e., numbers with a
+    /// fractional portion of `0.5`) are rounded away from `0`, per the behavior of `f64`'s
+    /// `round` function.
     ///
     /// # Examples
     /// ```
@@ -132,7 +145,8 @@ impl Quad {
         }
     }
 
-    /// Returns the integer part of the `Quad`.
+    /// Returns the integer part of `self`. This integer part will be of the same sign as
+    /// the original number.
     ///
     /// # Examples
     /// ```
@@ -152,7 +166,8 @@ impl Quad {
         }
     }
 
-    /// Returns the fractional part of the `Quad`.
+    /// Returns the fractional part of the `self`. This fractional part will be of the same
+    /// sign as the original number.
     ///
     /// # Examples
     /// ```
@@ -171,11 +186,11 @@ impl Quad {
         self - self.trunc()
     }
 
-    /// Returns a number that represents the sign of the `Quad`.
+    /// Returns a number that represents the sign of `self`.
     ///
-    /// * `1.0` if the number is positive, including `+0.0` and [`INFINITY`]
-    /// * `-1.0` if the number is negative, including `-0.0` and [`NEG_INFINITY`]
-    /// *  [`NAN`] if the number is [`NAN`]
+    /// * [`ONE`] if `self` is positive, including `+0.0` and [`INFINITY`]
+    /// * [`NEG_ONE`] if `self` is negative, including `-0.0` and [`NEG_INFINITY`]
+    /// * [`NAN`] if `self` is [`NAN`]
     ///
     /// # Examples
     /// ```
@@ -185,6 +200,8 @@ impl Quad {
     /// assert!(Quad::NAN.signum().is_nan());
     /// ```
     ///
+    /// [`ONE`]: #associatedconstant.ONE
+    /// [`NEG_ONE`]: #associatedconstant.NEG_ONE
     /// [`INFINITY`]: #associatedconstant.INFINITY
     /// [`NEG_INFINITY`]: #associatedconstant.NEG_INFINITY
     /// [`NAN`]: #associatedconstant.NAN
@@ -199,16 +216,20 @@ impl Quad {
         }
     }
 
-    /// Returns the floating point category of the `Quad`.
+    /// Returns `self`'s floating point category.
     ///
     /// The possible return values are the members of [`FpCategory`], as follows:
     ///
-    /// * `FpCategory::Zero` if the number is ±0;
-    /// * `FpCategory::Infinite` if the number is ±∞;
+    /// * `FpCategory::Zero` if the number is $\pm0$;
+    /// * `FpCategory::Infinite` if the number is $\pm\infin$;
     /// * `FpCategory::Nan` if the number is not a number;
-    /// * `FpCategory::Subnormal` if the number is ±[`MIN_POSITIVE`] (numbers this small can
-    ///     be represented, but they lose some accuracy);
+    /// * `FpCategory::Subnormal` if the number is $\pm$[`MIN_POSITIVE`] (numbers this small
+    ///     can be represented, but they lose some accuracy);
     /// * `FpCategory::Normal` if the number is anything else.
+    ///
+    /// A `Quad` can also register as `FpCategory::Subnormal` if it has a small enough
+    /// negative exponent that one of the other components of the number is a subnormal
+    /// number itself. This will typically happen around `1e-260` or so.
     ///
     /// # Examples
     /// ```
@@ -238,7 +259,7 @@ impl Quad {
         }
     }
 
-    /// Returns `true` if the `Quad` is neither zero, infinite, subnormal, or `NaN`.
+    /// Returns `true` if `self` is neither zero, infinite, subnormal, or `NaN`.
     ///
     /// # Examples
     /// ```
@@ -262,7 +283,7 @@ impl Quad {
         self.classify() == FpCategory::Normal
     }
 
-    /// Returns `true` if the `Quad` is either positive or negative zero.
+    /// Returns `true` if `self` is either positive or negative zero.
     ///
     /// # Examples
     /// ```
@@ -276,8 +297,8 @@ impl Quad {
         self.0 == 0.0
     }
 
-    /// Returns `true` if the `Quad` is negative, including negative zero, negative
-    /// infinity, and `NaN` with a negative sign bit.
+    /// Returns `true` if `self` is negative, including negative zero, negative infinity,
+    /// and `NaN` with a negative sign bit.
     ///
     /// # Examples
     /// ```
@@ -293,8 +314,8 @@ impl Quad {
         self.0.is_sign_negative()
     }
 
-    /// Returns `true` if the `Quad` is positive, including positive zero, positive infinity
-    /// and `NaN` with a positive sign bit.
+    /// Returns `true` if `self` is positive, including positive zero, positive infinity and
+    /// `NaN` with a positive sign bit.
     ///
     /// # Examples
     /// ```
@@ -310,7 +331,7 @@ impl Quad {
         self.0.is_sign_positive()
     }
 
-    /// Returns `true` if the `Quad` is `NaN`.
+    /// Returns `true` if `self` is `NaN`.
     ///
     /// This is the proper way to test for `NaN` because it cannot be done with an equality
     /// test (since `NaN` is not equal to itself).
@@ -326,7 +347,7 @@ impl Quad {
         self.0.is_nan()
     }
 
-    /// Returns `true` if the `Quad` is positive or negative infinity.
+    /// Returns `true` if `self` is positive or negative infinity.
     ///
     /// # Examples
     /// ```
@@ -341,7 +362,7 @@ impl Quad {
         self.0.is_infinite()
     }
 
-    /// Returns `true` if the `Quad` is neither infinite nor `NaN`..
+    /// Returns `true` if `self` is neither infinite nor `NaN`.
     ///
     /// # Examples
     /// ```
@@ -356,7 +377,7 @@ impl Quad {
         self.0.is_finite()
     }
 
-    /// Returns `true` if the `Quad` has an absolute value of less than [`MIN_POSITIVE`].
+    /// Returns `true` if `self` has an absolute value of less than [`MIN_POSITIVE`].
     ///
     /// Numbers this small can be represented by floating point numbers, but they are not as
     /// accurate. This inaccuracy is inherent in the IEEE-754 format for 64-bit numbers;

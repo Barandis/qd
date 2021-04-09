@@ -10,9 +10,5 @@ pub fn lntaylor(c: &mut Criterion) {
     c.bench_function("ln (Taylor)", |b| b.iter(|| Double::PI.ln()));
 }
 
-pub fn lnagm(c: &mut Criterion) {
-    c.bench_function("ln (AGM)", |b| b.iter(|| Double::PI.lnagm()));
-}
-
-criterion_group!(benches, lntaylor, lnagm);
+criterion_group!(benches, lntaylor);
 criterion_main!(benches);

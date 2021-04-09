@@ -1,6 +1,29 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/quad/div.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>div.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css"
+      integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y"
+      crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js"
+        integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js"
+        integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe"
+        crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "$", right: "$", display: false },
+        { left: "\\[", right: "\\]", display: true }
+      ]
+    });
+  });
+</script>
+
+<style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -374,6 +397,10 @@
 <span id="371">371</span>
 <span id="372">372</span>
 <span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -413,7 +440,8 @@
 <span class="kw">impl</span> <span class="ident">Div</span> <span class="kw">for</span> <span class="ident">Quad</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Quad</span>;
 
-    <span class="doccomment">/// Divides this `Quad` by another, producing a new `Quad` as a result.</span>
+    <span class="doccomment">/// Computes $x \div y$, where $x$ is `self` and $y$ is the argument, producing a new</span>
+    <span class="doccomment">/// `Quad` as the result.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the `/` operator between two `Quad`s.</span>
     <span class="doccomment">///</span>
@@ -459,22 +487,23 @@
     }
 }
 
-<span class="doccomment">/// Divides a reference to this `Quad` by another, producing a new `Quad` as a result.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// This implements the `/` operator between two references to `Quad`s.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Examples</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// # use qd::{qd, Quad};</span>
-<span class="doccomment">/// let x = &amp;Quad::E / &amp;Quad::PI;</span>
-<span class="doccomment">/// let expected = qd!(&quot;0.8652559794322650872177747896460896174287446239085155394543302889&quot;);</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// let diff = (x - expected).abs();</span>
-<span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
-<span class="doccomment">/// ```</span>
 <span class="kw">impl</span> <span class="ident">Div</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">Quad</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Quad</span>;
 
+    <span class="doccomment">/// Computes $x \div y$, where $x$ is `self` and $y$ is the argument, producing a new</span>
+    <span class="doccomment">/// `Quad` as the result.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This implements the `/` operator between two references to `Quad`s.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # use qd::{qd, Quad};</span>
+    <span class="doccomment">/// let x = &amp;Quad::E / &amp;Quad::PI;</span>
+    <span class="doccomment">/// let expected = qd!(&quot;0.8652559794322650872177747896460896174287446239085155394543302889&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let diff = (x - expected).abs();</span>
+    <span class="doccomment">/// assert!(diff &lt; qd!(1e-60));</span>
+    <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">div</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">Quad</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Quad</span> {
         (<span class="kw-2">*</span><span class="self">self</span>).<span class="ident">div</span>(<span class="kw-2">*</span><span class="ident">other</span>)
@@ -484,7 +513,8 @@
 <span class="kw">impl</span> <span class="ident">Div</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Quad</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Quad</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Quad</span>;
 
-    <span class="doccomment">/// Divides this `Quad` by a reference to another, producing a new `Quad` as a result.</span>
+    <span class="doccomment">/// Computes $x \div y$, where $x$ is `self` and $y$ is the argument, producing a new</span>
+    <span class="doccomment">/// `Quad` as the result.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the `/` operator between a `Quad` and a reference to a `Quad`.</span>
     <span class="doccomment">///</span>
@@ -506,8 +536,8 @@
 <span class="kw">impl</span> <span class="ident">Div</span><span class="op">&lt;</span><span class="ident">Quad</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">Quad</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Quad</span>;
 
-    <span class="doccomment">/// Divides a reference to this `Quad` by another `Quad`, producing a new `Quad` as a</span>
-    <span class="doccomment">/// result.</span>
+    <span class="doccomment">/// Computes $x \div y$, where $x$ is `self` and $y$ is the argument, producing a new</span>
+    <span class="doccomment">/// `Quad` as the result.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the `/` operator between a reference to a `Quad` and a `Quad`.</span>
     <span class="doccomment">///</span>
@@ -527,7 +557,8 @@
 }
 
 <span class="kw">impl</span> <span class="ident">DivAssign</span> <span class="kw">for</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Divides this `Quad` by another, modifying this one to equal the result.</span>
+    <span class="doccomment">/// Computes $x \div y$, where $x$ is `self` and $y$ is the argument, assigning the</span>
+    <span class="doccomment">/// result to `self`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the `/=` operator between two `Quad`s.</span>
     <span class="doccomment">///</span>
@@ -552,8 +583,8 @@
 }
 
 <span class="kw">impl</span> <span class="ident">DivAssign</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Quad</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Divides this `Quad` by a reference to another, modifying this one to equal the</span>
-    <span class="doccomment">/// result.</span>
+    <span class="doccomment">/// Computes $x \div y$, where $x$ is `self` and $y$ is the argument, assigning the</span>
+    <span class="doccomment">/// result to `self`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This implements the `/=` operator between two `Quad`s.</span>
     <span class="doccomment">///</span>

@@ -18,7 +18,7 @@ const LN1P_LIMIT: Quad = Quad(
 );
 
 impl Quad {
-    /// Computes the exponential function, *e*<sup>x</sup>, where *x* is this `Quad`.
+    /// Computes the exponential function, $e^x$, where $x$ is `self`.
     ///
     /// The result of this function grows rapidly. Once *x* exceeds 708, the result is too
     /// large to represent with a `Quad`; at that point the function begins to return
@@ -28,7 +28,7 @@ impl Quad {
     /// -460.
     ///
     /// As *x* grows this function does lose a bit of precision. It's precise to at least 60
-    /// digits up to values of -140 <= x <= 150, and from then until the limits, it's
+    /// digits up to values of $-140 \le x \le 150$, and from then until the limits, it's
     /// precise to at least 59 digits.
     ///
     /// # Examples
@@ -153,12 +153,11 @@ impl Quad {
         }
     }
 
-    /// Computes the exponential function minus 1, *e*<sup>x</sup> - 1, where *x* is this
-    /// `Quad`.
+    /// Computes the exponential function of $x$ minus 1, $e^x - 1$, where $x$ is `self`.
     ///
     /// While this function literally calculates the value returned by [`exp`] minus 1, it
     /// does this directly (rather than computing [`exp`] directly and then subtracting 1
-    /// from the answer). This is useful in the not-infrequent case where *x* is very close
+    /// from the answer). This is useful in the not-infrequent case where $x$ is very close
     /// to 0 and you have to subtract something near 1 from the answer (another example is
     /// `x.exp() - x.cos()` &mdash; for very small values of `x`, `x.cos()` is also very
     /// near 1). Since `x.exp()` is very close to 1 when `x` is very close to 0, this is
@@ -289,7 +288,8 @@ impl Quad {
         }
     }
 
-    /// Calculates the natural logarithm, log<sub>*e*</sub>, of the `Quad`.
+    /// Calculates the base-$e$ (natural) logarithm of $x$, $\ln x$ or $\log_e x$, where $x$
+    /// is `self`.
     ///
     /// This calculation relies upon the [`exp`] calculation, in the opposite direction. A
     /// large positive logarithm, for example, will require the calculation of a large
@@ -354,8 +354,8 @@ impl Quad {
         }
     }
 
-    /// Calculates the natural logarithm of 1 + x, log<sub>*e*</sub> (1 + x), where *x* is
-    /// the `Quad`.
+    /// Calculates the base-$e$ (natural) logarithm of 1 plus $x$, $\ln (1 + x)$ or $\log_e
+    /// (1 + x)$, where $x$ is `self`.
     ///
     /// This is the inverse of [`expm1`] and arises from the same sorts of concerns. It
     /// isn't unusual to want to take logarithms of numbers very near 1, as the logarithm
@@ -451,12 +451,12 @@ impl Quad {
         }
     }
 
-    /// Calculates the base-10 logarithm, log<sub>10</sub>, of the `Quad`.
+    /// Calculates the base-10 logarithm of $x$, $\log_{10} x$, where $x$ is `self`.
     ///
     /// As with [`ln`], this has an upper usable range less than the size of the numbers
-    /// themselves. In this case, that upper limit is around 10<sup>200</sup>. Over this
-    /// number, the output is not reliable, but it does not return [`INFINITY`] because the
-    /// number 200 is so plainly not infinite.
+    /// themselves. In this case, that upper limit is around `1e200. Over this number, the
+    /// output is not reliable, but it does not return [`INFINITY`] because the number 200
+    /// is so plainly not infinite.
     ///
     /// # Examples
     /// ```
@@ -475,11 +475,11 @@ impl Quad {
         self.ln() / Quad::LN_10
     }
 
-    /// Calculates the base-2 logarithm, log<sub>2</sub>, of the `Quad`.
+    /// Calculates the base-2 logarithm of $x$, $\log_2 x$, where $x$ is `self`.
     ///
-    /// Since 2 is smaller than *e*, this function is constrained even more than [`ln`]. It
-    /// will start returning [`NEG_INFINITY`] at around 10<sup>-213</sup> and will start
-    /// to fail on the positive side at around 2.6 &times; 10<sup>180</sup>.
+    /// Since 2 is smaller than $e$, this function is constrained even more than [`ln`]. It
+    /// will start returning [`NEG_INFINITY`] at around `1e-213` and will start to fail on
+    /// the positive side at around `2.6e180`.
     ///
     /// # Examples
     /// ```
@@ -498,13 +498,14 @@ impl Quad {
         self.ln() / Quad::LN_2
     }
 
-    /// Calculates the base `b` logarithm (log<sub>`b`</sub>) of the `Quad`.
+    /// Calculates the base-$b$ logarithm of $x$, $\log_b x$, where $x$ is `self` and $b$ is
+    /// the argument.
     ///
     /// This function will have limits at extreme arguments like the other logarithm
     /// functions. The difference is that those limits will depend on the base argument.
     ///
-    /// If the goal is to calculate the base *e*, base 2, or base 10 logarithms of `self`,
-    /// the specialized functions for those purposes([`ln`], [`log2`], and [`log10`]
+    /// If the goal is to calculate the base-$e$, base-2, or base-10 logarithms of $x$, the
+    /// specialized functions for those purposes ([`ln`], [`log2`], and [`log10`]
     /// respectively) will be more efficient.
     ///
     /// # Examples

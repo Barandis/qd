@@ -1,6 +1,29 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/quad/aconsts.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>aconsts.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css"
+      integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y"
+      crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js"
+        integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js"
+        integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe"
+        crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "$", right: "$", display: false },
+        { left: "\\[", right: "\\]", display: true }
+      ]
+    });
+  });
+</script>
+
+<style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -271,6 +294,30 @@
 <span id="268">268</span>
 <span id="269">269</span>
 <span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -281,8 +328,8 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">f64</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// The radix or base of the internal representation of `Double`. This is the same as</span>
-    <span class="doccomment">/// the representation in the underlying f64.</span>
+    <span class="doccomment">/// The radix or base of the internal representation of `Quad`. This is the same as the</span>
+    <span class="doccomment">/// representation in the underlying f64.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">RADIX</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
 
     <span class="doccomment">/// Number of significant digits in base 2.</span>
@@ -332,25 +379,26 @@
     <span class="doccomment">/// Not a Number (NaN).</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NAN</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="ident">f64</span>::<span class="ident">NAN</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 
-    <span class="doccomment">/// Infinity (∞).</span>
+    <span class="doccomment">/// Infinity ($\infin$).</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INFINITY</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="ident">f64</span>::<span class="ident">INFINITY</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 
-    <span class="doccomment">/// Negative infinity (-∞).</span>
+    <span class="doccomment">/// Negative infinity ($-\infin$).</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NEG_INFINITY</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="ident">f64</span>::<span class="ident">NEG_INFINITY</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 
-    <span class="doccomment">/// Zero (0)</span>
+    <span class="doccomment">/// Zero ($0$).</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ZERO</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 
-    <span class="doccomment">/// Negative zero (-0)</span>
+    <span class="doccomment">/// Negative zero ($-0$).</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NEG_ZERO</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="op">-</span><span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 
-    <span class="doccomment">/// One (1)</span>
+    <span class="doccomment">/// One ($1$).</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ONE</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 
-    <span class="doccomment">/// Negative one (-1)</span>
+    <span class="doccomment">/// Negative one ($-1$).</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NEG_ONE</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(<span class="op">-</span><span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 
-    <span class="doccomment">/// Archimedes&#39; constant (π)</span>
+    <span class="doccomment">/// Archimedes&#39; constant ($\pi$). The value of this constant is</span>
+    <span class="doccomment">/// 3.1415926535897932384626433832795028841971693993751058209749446.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PI</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">3.141592653589793e0</span>,
         <span class="number">1.2246467991473532e-16</span>,
@@ -358,7 +406,8 @@
         <span class="number">1.1124542208633655e-49</span>,
     );
 
-    <span class="doccomment">/// The full circle constant (τ), or 2π</span>
+    <span class="doccomment">/// The full circle constant ($\tau$), or $2\pi$. The value of this constant is</span>
+    <span class="doccomment">/// 6.2831853071795864769252867665590057683943387987502116419498892.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TAU</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">6.283185307179586e0</span>,
         <span class="number">2.4492935982947064e-16</span>,
@@ -366,7 +415,8 @@
         <span class="number">2.224908441726731e-49</span>,
     );
 
-    <span class="doccomment">/// π/2</span>
+    <span class="doccomment">/// The constant $\pi/2$. The value of this constant is</span>
+    <span class="doccomment">/// 1.5707963267948966192313216916397514420985846996875529104874723.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_PI_2</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">1.5707963267948966e0</span>,
         <span class="number">6.123233995736766e-17</span>,
@@ -374,7 +424,8 @@
         <span class="number">5.562271104316827e-50</span>,
     );
 
-    <span class="doccomment">/// π/3</span>
+    <span class="doccomment">/// The constant $\pi/3$. The value of this constant is</span>
+    <span class="doccomment">/// 1.0471975511965977461542144610931676280657231331250352736583149.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_PI_3</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">1.0471975511965979e0</span>,
         <span class="op">-</span><span class="number">1.072081766451091e-16</span>,
@@ -382,7 +433,8 @@
         <span class="op">-</span><span class="number">7.69561536018215e-50</span>,
     );
 
-    <span class="doccomment">/// π/4</span>
+    <span class="doccomment">/// The constant $\pi/4$. The value of this constant is</span>
+    <span class="doccomment">/// 0.78539816339744830961566084581987572104929234984377645524373615.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_PI_4</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">7.853981633974483e-1</span>,
         <span class="number">3.061616997868383e-17</span>,
@@ -390,7 +442,8 @@
         <span class="number">2.781135552158413e-50</span>,
     );
 
-    <span class="doccomment">/// π/6</span>
+    <span class="doccomment">/// The constant $\pi/6$. The value of this constant is</span>
+    <span class="doccomment">/// 0.52359877559829887307710723054658381403286156656251763682915743.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_PI_6</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">5.235987755982989e-1</span>,
         <span class="op">-</span><span class="number">5.360408832255455e-17</span>,
@@ -398,7 +451,8 @@
         <span class="op">-</span><span class="number">3.847807680091076e-50</span>,
     );
 
-    <span class="doccomment">/// π/8</span>
+    <span class="doccomment">/// The constant $\pi/8$. The value of this constant is</span>
+    <span class="doccomment">/// 0.39269908169872415480783042290993786052464617492188822762186807.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_PI_8</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">3.9269908169872414e-1</span>,
         <span class="number">1.5308084989341915e-17</span>,
@@ -406,7 +460,8 @@
         <span class="number">1.3905677760792066e-50</span>,
     );
 
-    <span class="doccomment">/// π/16</span>
+    <span class="doccomment">/// The constant $\pi/16$. The value of this constant is</span>
+    <span class="doccomment">/// 0.19634954084936207740391521145496893026232308746094411381093404.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_PI_16</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">1.9634954084936207e-1</span>,
         <span class="number">7.654042494670958e-18</span>,
@@ -414,7 +469,8 @@
         <span class="number">6.952838880396033e-51</span>,
     );
 
-    <span class="doccomment">/// 3π/2</span>
+    <span class="doccomment">/// The constant $3\pi/2$. The value of this constant is</span>
+    <span class="doccomment">/// 4.7123889803846898576939650749192543262957540990626587314624169.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_3_PI_2</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">4.71238898038469e0</span>,
         <span class="number">1.8369701987210297e-16</span>,
@@ -422,7 +478,8 @@
         <span class="op">-</span><span class="number">5.173596326540972e-49</span>,
     );
 
-    <span class="doccomment">/// 3π/4</span>
+    <span class="doccomment">/// The constant $3\pi/4$. The value of this constant is</span>
+    <span class="doccomment">/// 2.3561944901923449288469825374596271631478770495313293657312084.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_3_PI_4</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">2.356194490192345e0</span>,
         <span class="number">9.184850993605148e-17</span>,
@@ -430,7 +487,8 @@
         <span class="op">-</span><span class="number">2.586798163270486e-49</span>,
     );
 
-    <span class="doccomment">/// 5π/4</span>
+    <span class="doccomment">/// The constant $5\pi/4$. The value of this constant is</span>
+    <span class="doccomment">/// 3.9269908169872415480783042290993786052464617492188822762186807.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_5_PI_4</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">3.9269908169872414e0</span>,
         <span class="number">1.5308084989341916e-16</span>,
@@ -438,7 +496,8 @@
         <span class="number">4.811706604997218e-49</span>,
     );
 
-    <span class="doccomment">/// 7π/4</span>
+    <span class="doccomment">/// The constant $7\pi/4$. The value of this constant is</span>
+    <span class="doccomment">/// 5.4977871437821381673096259207391300473450464489064351867061530.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_7_PI_4</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">5.497787143782138e0</span>,
         <span class="number">2.143131898507868e-16</span>,
@@ -446,7 +505,8 @@
         <span class="number">2.3622547205188384e-50</span>,
     );
 
-    <span class="doccomment">/// 1/π</span>
+    <span class="doccomment">/// The constant $1/\pi$. The value of this constant is</span>
+    <span class="doccomment">/// 0.31830988618379067153776752674502872406891929148091289749533469.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_1_PI</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">3.183098861837907e-1</span>,
         <span class="op">-</span><span class="number">1.9678676675182486e-17</span>,
@@ -454,7 +514,8 @@
         <span class="number">8.053563926594112e-50</span>,
     );
 
-    <span class="doccomment">/// 2/π</span>
+    <span class="doccomment">/// The constant $2/\pi$. The value of this constant is</span>
+    <span class="doccomment">/// 0.63661977236758134307553505349005744813783858296182579499066938.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_2_PI</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">6.366197723675814e-1</span>,
         <span class="op">-</span><span class="number">3.935735335036497e-17</span>,
@@ -462,7 +523,8 @@
         <span class="number">1.6107127853188224e-49</span>,
     );
 
-    <span class="doccomment">/// 2/√π</span>
+    <span class="doccomment">/// The constant $2/\sqrt{\pi}$. The value of this constant is</span>
+    <span class="doccomment">/// 1.1283791670955125738961589031215451716881012586579977136881714.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_2_SQRT_PI</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">1.1283791670955126e0</span>,
         <span class="number">1.533545961316588e-17</span>,
@@ -470,7 +532,8 @@
         <span class="op">-</span><span class="number">2.0077946616552623e-50</span>,
     );
 
-    <span class="doccomment">/// √2</span>
+    <span class="doccomment">/// The constant $\sqrt{2}$. The value of this constant is</span>
+    <span class="doccomment">/// 1.4142135623730950488016887242096980785696718753769480731766797.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SQRT_2</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">1.4142135623730951e0</span>,
         <span class="op">-</span><span class="number">9.667293313452913e-17</span>,
@@ -478,7 +541,8 @@
         <span class="number">4.935546991468354e-50</span>,
     );
 
-    <span class="doccomment">/// 1/√2</span>
+    <span class="doccomment">/// The constant $1/\sqrt{2}$. The value of this constant is</span>
+    <span class="doccomment">/// 0.70710678118654752440084436210484903928483593768847403658833987.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FRAC_1_SQRT_2</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">7.071067811865476e-1</span>,
         <span class="op">-</span><span class="number">4.833646656726457e-17</span>,
@@ -486,7 +550,8 @@
         <span class="number">2.467773495734177e-50</span>,
     );
 
-    <span class="doccomment">/// Euler&#39;s number (*e*)</span>
+    <span class="doccomment">/// Euler&#39;s number ($e$). The value of this constant is</span>
+    <span class="doccomment">/// 2.7182818284590452353602874713526624977572470936999595749669676.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">E</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">2.718281828459045e0</span>,
         <span class="number">1.4456468917292502e-16</span>,
@@ -494,7 +559,8 @@
         <span class="number">1.5156301598412193e-49</span>,
     );
 
-    <span class="doccomment">/// log&lt;sub&gt;2&lt;/sub&gt; 10</span>
+    <span class="doccomment">/// The constant $\log_2 10$. The value of this constant is</span>
+    <span class="doccomment">/// 3.3219280948873623478703194294893901758648313930245806120547564.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LOG2_10</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">3.321928094887362e0</span>,
         <span class="number">1.661617516973592e-16</span>,
@@ -502,7 +568,8 @@
         <span class="number">5.95511897027825e-49</span>,
     );
 
-    <span class="doccomment">/// log&lt;sub&gt;2&lt;/sub&gt; *e*</span>
+    <span class="doccomment">/// The constant $\log_2 e$. The value of this constant is</span>
+    <span class="doccomment">/// 1.4426950408889634073599246810018921374266459541529859341354494.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LOG2_E</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">1.4426950408889634e0</span>,
         <span class="number">2.0355273740931033e-17</span>,
@@ -510,7 +577,8 @@
         <span class="op">-</span><span class="number">1.3836716780181397e-50</span>,
     );
 
-    <span class="doccomment">/// log&lt;sub&gt;10&lt;/sub&gt; 2</span>
+    <span class="doccomment">/// The constant $\log_{10} 2$. The value of this constant is</span>
+    <span class="doccomment">/// 0.30102999566398119521373889472449302676818988146210854131042746.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LOG10_2</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">3.010299956639812e-1</span>,
         <span class="op">-</span><span class="number">2.8037281277851704e-18</span>,
@@ -518,7 +586,8 @@
         <span class="number">5.105138983107093e-51</span>,
     );
 
-    <span class="doccomment">/// log&lt;sub&gt;10&lt;/sub&gt; *e*</span>
+    <span class="doccomment">/// The constant $\log_{10} e$. The value of this constant is</span>
+    <span class="doccomment">/// 0.43429448190325182765112891891660508229439700580366656611445378.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LOG10_E</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">4.342944819032518e-1</span>,
         <span class="number">1.098319650216765e-17</span>,
@@ -526,7 +595,8 @@
         <span class="number">7.73448434650429e-51</span>,
     );
 
-    <span class="doccomment">/// log&lt;sub&gt;*e*&lt;/sub&gt; 2</span>
+    <span class="doccomment">/// The constant $\ln 2$. The value of this constant is</span>
+    <span class="doccomment">/// 0.69314718055994530941723212145817656807550013436025525412068001.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LN_2</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">6.931471805599453e-1</span>,
         <span class="number">2.3190468138462996e-17</span>,
@@ -534,7 +604,8 @@
         <span class="op">-</span><span class="number">3.582432210601812e-50</span>,
     );
 
-    <span class="doccomment">/// log&lt;sub&gt;*e*&lt;/sub&gt; 10</span>
+    <span class="doccomment">/// The constant $\ln 10$. The value of this constant is</span>
+    <span class="doccomment">/// 2.3025850929940456840179914546843642076011014886287729760333279.</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LN_10</span>: <span class="ident">Quad</span> <span class="op">=</span> <span class="ident">Quad</span>(
         <span class="number">2.302585092994046e0</span>,
         <span class="op">-</span><span class="number">2.1707562233822494e-16</span>,

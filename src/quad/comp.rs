@@ -7,8 +7,9 @@ use crate::quad::Quad;
 use std::cmp::Ordering;
 
 impl PartialEq for Quad {
-    /// Implements the `==` and `!= operators, testing two `Quad`s for equality and
-    /// inequality.
+    /// Calculates whether `self` and the argument are equal to one another.
+    ///
+    /// This implements the `==` and `!=` operators between `Quad`s.
     ///
     /// Equality works exactly the same as it does for system floating-point numbers (`f64`,
     /// etc.), including zero equalling negative zero, `NaN` equalling nothing (including
@@ -31,7 +32,9 @@ impl PartialEq for Quad {
 }
 
 impl PartialOrd for Quad {
-    /// Implements the `<`, `>`, `<=`, and `>=` operators, testing two `Quad`s for ordering.
+    /// Calculates how `self` and the argument should be ordered.
+    ///
+    /// This implements the `<`, `>`, `<=`, and `>=` operators between two `Quad`s.
     ///
     /// Ordering works the same as it does for system floating-point numbers, including
     /// `NaN` returning false for any of these operators (including when comparing it to

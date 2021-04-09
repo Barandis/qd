@@ -51,7 +51,7 @@ impl Double {
     /// assert!((-x).div_euclid(-y) == dd!(6));
     /// ```
     ///
-    /// [`rem_euclid`]:
+    /// [`rem_euclid`]: #method.rem_euclid
     #[inline]
     pub fn div_euclid(self, rhs: Double) -> Double {
         let q = (self / rhs).trunc();

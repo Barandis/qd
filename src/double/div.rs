@@ -22,7 +22,8 @@ fn mul_f64(a: Double, b: f64) -> Double {
 impl Div for Double {
     type Output = Double;
 
-    /// Divides this `Double` by another, producing a new `Double` as a result.
+    /// Computes $x \div y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Double` as the result.
     ///
     /// This implements the `/` operator between two `Double`s.
     ///
@@ -57,7 +58,8 @@ impl Div for Double {
 impl Div for &Double {
     type Output = Double;
 
-    /// Divides a reference to this `Double` by another, producing a new `Double` as a result.
+    /// Computes $x \div y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Double` as the result.
     ///
     /// This implements the `/` operator between two references to `Double`s.
     ///
@@ -78,8 +80,8 @@ impl Div for &Double {
 impl Div<&Double> for Double {
     type Output = Double;
 
-    /// Divides this `Double` by a reference to another `Double`, producing a new `Double`
-    /// as a result.
+    /// Computes $x \div y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Double` as the result.
     ///
     /// This implements the `/` operator between a `Double` and a reference to a `Double`.
     ///
@@ -101,8 +103,8 @@ impl Div<&Double> for Double {
 impl Div<Double> for &Double {
     type Output = Double;
 
-    /// Divides a reference to this `Double` by another `Double`, producing a new `Double`
-    /// as a result.
+    /// Computes $x \div y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Double` as the result.
     ///
     /// This implements the `/` operator between a reference to a `Double` and a `Double`.
     ///
@@ -122,7 +124,8 @@ impl Div<Double> for &Double {
 }
 
 impl DivAssign for Double {
-    /// Divides this `Double` by another, modifying this one to equal the result.
+    /// Computes $x \div y$, where $x$ is `self` and $y$ is the argument, assigning the
+    /// result to `self`.
     ///
     /// This implements the `/=` operator between two `Double`s.
     ///
@@ -145,8 +148,8 @@ impl DivAssign for Double {
 }
 
 impl DivAssign<&Double> for Double {
-    /// Divides this `Double` by a reference to another, modifying this one to equal the
-    /// result.
+    /// Computes $x \div y$, where $x$ is `self` and $y$ is the argument, assigning the
+    /// result to `self`.
     ///
     /// This implements the `/=` operator between a `Double` and a reference to a `Double`.
     ///

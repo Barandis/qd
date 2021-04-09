@@ -7,9 +7,9 @@ use crate::quad::common as c;
 use crate::quad::Quad;
 
 impl Quad {
-    /// Simultaneously computes the sine (sin) and the cosine (cos) of the `Quad`. This is
-    /// more efficient than calling the separate [`sin`] and [`cos`] functions if you need
-    /// both numbers.
+    /// Simultaneously computes the sine and cosine of $x$, $\sin x$ and $\cos x$, where $x$
+    /// is `self`. This is more efficient than calling the separate [`sin`] and [`cos`]
+    /// functions if you need both numbers.
     ///
     /// # Examples
     /// ```
@@ -58,9 +58,9 @@ impl Quad {
         }
     }
 
-    /// Computes the sine (sin) of the `Quad`.
+    /// Computes the sine of $x$, $\sin x$, where $x$ is `self`.
     ///
-    /// The domain of this function is (-∞, ∞), and the range is [-1, 1].
+    /// The domain of this function is $(-\infin, \infin)$, and the range is $[-1, 1]$.
     ///
     /// # Examples
     /// ```
@@ -120,9 +120,9 @@ impl Quad {
         }
     }
 
-    /// Computes the cosine (cos) of the `Quad`.
+    /// Computes the cosine of $x$, $\cos x$, where $x$ is `self`.
     ///
-    /// The domain of this function is (-∞, ∞), and the range is [-1, 1].
+    /// The domain of this function is $(-\infin, \infin)$, and the range is $[-1, 1]$.
     ///
     /// # Examples
     /// ```
@@ -173,9 +173,9 @@ impl Quad {
         }
     }
 
-    /// Computes the tangent (tan) of the `Quad`.
+    /// Computes the tangent of $x$, $\tan x$, where $x$ is `self`.
     ///
-    /// The domain and range of this function are both (-∞, ∞).
+    /// The domain and range of this function are both $(-\infin, \infin)$.
     ///
     /// # Examples
     /// ```
@@ -191,23 +191,24 @@ impl Quad {
         s / c
     }
 
-    /// Computes the 2-argument inverse tangent (tan<sup>-1</sup>) of this `Quad` and
-    /// another `Quad`.
+    /// Computes the 2-argument inverse tangent of $x$ and $y$, $\arctan(y, x)$, where $x$
+    /// is the argument and $y$ is `self`.
     ///
     /// The single-argument [`atan`] function always returns values in either the first (0
-    /// to π/2) or fourth (0 to -π/2) quadrants. However, first-quadrant results repeat
-    /// themselves in the third quadrant, and fourth-quadrant results repeat themselves in
-    /// the second. For example, the tangent of π/4 is 1, but so is the tangent of -3π/4.
-    /// Single-argument [`atan`] cannot distinguish between these two possibilities, so it
-    /// always returns the one in the range [-π/2, π/2].
+    /// to $\pi$/2) or fourth (0 to $-\pi$/2) quadrants. However, first-quadrant results
+    /// repeat themselves in the third quadrant, and fourth-quadrant results repeat
+    /// themselves in the second. For example, $\tan \frac{\pi}{4}$ is 1, but so is $\tan
+    /// \frac{3\pi}{4}$. Single-argument [`atan`] cannot distinguish between these two
+    /// possibilities, so it always returns the one in the range $[-\frac{\pi}{2},
+    /// \frac{\pi}{2}]$.
     ///
     /// The double-argument `atan2` can return either, depending on the arguments. It
-    /// essentially returns the angle between the positive x-axis and the point (x, y),
-    /// where *y* is the `Quad` that `atan2` is called on and *x* is the argument. Therefore
-    /// `Quad::ONE.atan2(Quad::ONE)` is π/4 (first quadrant), but flipping both signs to
-    /// `(Quad::NEG_ONE).atan2(Quad::NEG_ONE)` gives the -3π/4 result (third quadrant).
+    /// essentially returns the angle between the positive x-axis and the point $(x, y)$,
+    /// where $y$ is `self` and $x$ is the argument. Therefore `dd!(1).atan2(dd!(1))`
+    /// returns $\frac{\pi}{4}$ (first quadrant), but flipping both signs to
+    /// `dd!(-1).atan2(dd!(-1))` gives the $-\frac{3\pi}{4}$ result (third quadrant).
     ///
-    /// This function extends the range of the result to [-π, π].
+    /// This function extends the range of the result to $[-\pi, \pi]$.
     ///
     /// Because this function deals with angles around the origin and Cartesian coordinates,
     /// it's very useful for converting between Cartesian and polar coordinates.
@@ -284,9 +285,10 @@ impl Quad {
         }
     }
 
-    /// Computes the inverse sine (sin<sup>-1</sup>) of the `Quad`. The domain of this
-    /// function is [-1, 1] while the range is [-π/2, π/2]. Arguments outside of this domain
-    /// will result in [`NAN`].
+    /// Computes the inverse sine of $x$, $\sin^{-1} x$, where $x$ is `self`.
+    ///
+    /// The domain of this function is $[-1, 1]$ while the range is $[-\frac{\pi}{2},
+    /// \frac{\pi}{2}]$. Arguments outside of this domain will result in [`NAN`].
     ///
     /// # Examples
     /// ```
@@ -306,9 +308,10 @@ impl Quad {
         }
     }
 
-    /// Computes the inverse cosine (cos<sup>-1</sup>) of the `Quad`. The domain of this
-    /// function is [-1, 1] and the range is [0, π]. Arguments outside of the domain will
-    /// result in [`NAN`].
+    /// Computes the inverse cosine of $x$, $\cos^{-1} x$, where $x$ is `self`.
+    ///
+    /// The domain of this function is $[-1, 1]$ and the range is $[0, \pi]$. Arguments
+    /// outside of the domain will result in [`NAN`].
     ///
     /// # Examples
     /// ```
@@ -328,8 +331,15 @@ impl Quad {
         }
     }
 
-    /// Computes the inverse tangent (tan<sup>-1</sup>) of the `Quad`. The domain of this
-    /// function is [-∞, ∞] and the range is [-π/2, π/2].
+    /// Computes the inverse tangent of $x$, $\tan^{-1} x$, where $x$ is `self`.
+    ///
+    /// This is the single-argument version of this function ([`atan2`] is the two-argument
+    /// inverse tangent). Though inverse tangents have multiple answers, this function will
+    /// always return the one with the lowest absolute value. `x.atan()` is the same as
+    /// `x.atan2(Quad::ONE)`.
+    ///
+    /// The domain of this function is $(-\infin, \infin)$ and the range is
+    /// $[-\frac{\pi}{2}, \frac{\pi}{2}]$.
     ///
     /// # Examples
     /// ```
@@ -340,6 +350,8 @@ impl Quad {
     /// let diff = (x - expected).abs();
     /// assert!(diff < qd!(1e-60));
     /// ```
+    ///
+    /// [`atan2`]: #method.atan2
     pub fn atan(self) -> Quad {
         self.atan2(Quad::ONE)
     }

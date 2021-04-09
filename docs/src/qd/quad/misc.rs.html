@@ -1,6 +1,29 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/quad/misc.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>misc.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css"
+      integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y"
+      crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js"
+        integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js"
+        integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe"
+        crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "$", right: "$", display: false },
+        { left: "\\[", right: "\\]", display: true }
+      ]
+    });
+  });
+</script>
+
+<style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -831,6 +854,27 @@
 <span id="828">828</span>
 <span id="829">829</span>
 <span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
+<span id="840">840</span>
+<span id="841">841</span>
+<span id="842">842</span>
+<span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+<span id="849">849</span>
+<span id="850">850</span>
+<span id="851">851</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -843,7 +887,9 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">num</span>::<span class="ident">FpCategory</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Calculates the absolute value of the `Quad`.</span>
+    <span class="doccomment">/// Calculates the absolute value of $x$, $|x|$, where $x$ is `self`. The absolute value</span>
+    <span class="doccomment">/// of $x$ is simply the same value as $x$, but with the opposite sign if $x$ is</span>
+    <span class="doccomment">/// negative.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -860,7 +906,11 @@
         }
     }
 
-    <span class="doccomment">/// Returns the largest integer value less than or equal to the `Quad`.</span>
+    <span class="doccomment">/// Calculates the floor of $x$, $\lfloor{x}\rfloor$, where $x$ is `self`.\</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The floor of $x$ is the largest integer value less than or equal to $x$. This means</span>
+    <span class="doccomment">/// that the floor of a negative number will have an absolute value greater than that of</span>
+    <span class="doccomment">/// the number itself.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -893,7 +943,11 @@
         }
     }
 
-    <span class="doccomment">/// Returns the smallest integer value greater than or equal to the `Quad`.</span>
+    <span class="doccomment">/// Calculates the ceiling of $x$, $\lceil{x}\rceil$, where $x$ is `self`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The ceiling of $x$ is the smallest integer value greater than or equal to $x$. This</span>
+    <span class="doccomment">/// means that the ceiling of a negative number will have an absolute value the same as</span>
+    <span class="doccomment">/// (not greater than) that of the number itself.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -926,8 +980,11 @@
         }
     }
 
-    <span class="doccomment">/// Returns the nearest integer value to the `Double`. Half-way cases are rounded away</span>
-    <span class="doccomment">/// from `0.0`, per the behavior of `f64`&#39;s `round` method.</span>
+    <span class="doccomment">/// Calculates the rounded value of $x$, where $x$ is `self`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The rounded value is the nearest integer to $x$. Halfway cases (i.e., numbers with a</span>
+    <span class="doccomment">/// fractional portion of `0.5`) are rounded away from `0`, per the behavior of `f64`&#39;s</span>
+    <span class="doccomment">/// `round` function.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -966,7 +1023,8 @@
         }
     }
 
-    <span class="doccomment">/// Returns the integer part of the `Quad`.</span>
+    <span class="doccomment">/// Returns the integer part of `self`. This integer part will be of the same sign as</span>
+    <span class="doccomment">/// the original number.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -986,7 +1044,8 @@
         }
     }
 
-    <span class="doccomment">/// Returns the fractional part of the `Quad`.</span>
+    <span class="doccomment">/// Returns the fractional part of the `self`. This fractional part will be of the same</span>
+    <span class="doccomment">/// sign as the original number.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1005,11 +1064,11 @@
         <span class="self">self</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">trunc</span>()
     }
 
-    <span class="doccomment">/// Returns a number that represents the sign of the `Quad`.</span>
+    <span class="doccomment">/// Returns a number that represents the sign of `self`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// * `1.0` if the number is positive, including `+0.0` and [`INFINITY`]</span>
-    <span class="doccomment">/// * `-1.0` if the number is negative, including `-0.0` and [`NEG_INFINITY`]</span>
-    <span class="doccomment">/// *  [`NAN`] if the number is [`NAN`]</span>
+    <span class="doccomment">/// * [`ONE`] if `self` is positive, including `+0.0` and [`INFINITY`]</span>
+    <span class="doccomment">/// * [`NEG_ONE`] if `self` is negative, including `-0.0` and [`NEG_INFINITY`]</span>
+    <span class="doccomment">/// * [`NAN`] if `self` is [`NAN`]</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1019,6 +1078,8 @@
     <span class="doccomment">/// assert!(Quad::NAN.signum().is_nan());</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
+    <span class="doccomment">/// [`ONE`]: #associatedconstant.ONE</span>
+    <span class="doccomment">/// [`NEG_ONE`]: #associatedconstant.NEG_ONE</span>
     <span class="doccomment">/// [`INFINITY`]: #associatedconstant.INFINITY</span>
     <span class="doccomment">/// [`NEG_INFINITY`]: #associatedconstant.NEG_INFINITY</span>
     <span class="doccomment">/// [`NAN`]: #associatedconstant.NAN</span>
@@ -1033,16 +1094,20 @@
         }
     }
 
-    <span class="doccomment">/// Returns the floating point category of the `Quad`.</span>
+    <span class="doccomment">/// Returns `self`&#39;s floating point category.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// The possible return values are the members of [`FpCategory`], as follows:</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// * `FpCategory::Zero` if the number is ±0;</span>
-    <span class="doccomment">/// * `FpCategory::Infinite` if the number is ±∞;</span>
+    <span class="doccomment">/// * `FpCategory::Zero` if the number is $\pm0$;</span>
+    <span class="doccomment">/// * `FpCategory::Infinite` if the number is $\pm\infin$;</span>
     <span class="doccomment">/// * `FpCategory::Nan` if the number is not a number;</span>
-    <span class="doccomment">/// * `FpCategory::Subnormal` if the number is ±[`MIN_POSITIVE`] (numbers this small can</span>
-    <span class="doccomment">///     be represented, but they lose some accuracy);</span>
+    <span class="doccomment">/// * `FpCategory::Subnormal` if the number is $\pm$[`MIN_POSITIVE`] (numbers this small</span>
+    <span class="doccomment">///     can be represented, but they lose some accuracy);</span>
     <span class="doccomment">/// * `FpCategory::Normal` if the number is anything else.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// A `Quad` can also register as `FpCategory::Subnormal` if it has a small enough</span>
+    <span class="doccomment">/// negative exponent that one of the other components of the number is a subnormal</span>
+    <span class="doccomment">/// number itself. This will typically happen around `1e-260` or so.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1072,7 +1137,7 @@
         }
     }
 
-    <span class="doccomment">/// Returns `true` if the `Quad` is neither zero, infinite, subnormal, or `NaN`.</span>
+    <span class="doccomment">/// Returns `true` if `self` is neither zero, infinite, subnormal, or `NaN`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1096,7 +1161,7 @@
         <span class="self">self</span>.<span class="ident">classify</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">FpCategory</span>::<span class="ident">Normal</span>
     }
 
-    <span class="doccomment">/// Returns `true` if the `Quad` is either positive or negative zero.</span>
+    <span class="doccomment">/// Returns `true` if `self` is either positive or negative zero.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1110,8 +1175,8 @@
         <span class="self">self</span>.<span class="number">0</span> <span class="op">=</span><span class="op">=</span> <span class="number">0.0</span>
     }
 
-    <span class="doccomment">/// Returns `true` if the `Quad` is negative, including negative zero, negative</span>
-    <span class="doccomment">/// infinity, and `NaN` with a negative sign bit.</span>
+    <span class="doccomment">/// Returns `true` if `self` is negative, including negative zero, negative infinity,</span>
+    <span class="doccomment">/// and `NaN` with a negative sign bit.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1127,8 +1192,8 @@
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">is_sign_negative</span>()
     }
 
-    <span class="doccomment">/// Returns `true` if the `Quad` is positive, including positive zero, positive infinity</span>
-    <span class="doccomment">/// and `NaN` with a positive sign bit.</span>
+    <span class="doccomment">/// Returns `true` if `self` is positive, including positive zero, positive infinity and</span>
+    <span class="doccomment">/// `NaN` with a positive sign bit.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1144,7 +1209,7 @@
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">is_sign_positive</span>()
     }
 
-    <span class="doccomment">/// Returns `true` if the `Quad` is `NaN`.</span>
+    <span class="doccomment">/// Returns `true` if `self` is `NaN`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This is the proper way to test for `NaN` because it cannot be done with an equality</span>
     <span class="doccomment">/// test (since `NaN` is not equal to itself).</span>
@@ -1160,7 +1225,7 @@
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">is_nan</span>()
     }
 
-    <span class="doccomment">/// Returns `true` if the `Quad` is positive or negative infinity.</span>
+    <span class="doccomment">/// Returns `true` if `self` is positive or negative infinity.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1175,7 +1240,7 @@
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">is_infinite</span>()
     }
 
-    <span class="doccomment">/// Returns `true` if the `Quad` is neither infinite nor `NaN`..</span>
+    <span class="doccomment">/// Returns `true` if `self` is neither infinite nor `NaN`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1190,7 +1255,7 @@
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">is_finite</span>()
     }
 
-    <span class="doccomment">/// Returns `true` if the `Quad` has an absolute value of less than [`MIN_POSITIVE`].</span>
+    <span class="doccomment">/// Returns `true` if `self` has an absolute value of less than [`MIN_POSITIVE`].</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Numbers this small can be represented by floating point numbers, but they are not as</span>
     <span class="doccomment">/// accurate. This inaccuracy is inherent in the IEEE-754 format for 64-bit numbers;</span>

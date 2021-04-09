@@ -1,6 +1,29 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/quad/alg.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>alg.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css"
+      integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y"
+      crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js"
+        integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js"
+        integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe"
+        crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "$", right: "$", display: false },
+        { left: "\\[", right: "\\]", display: true }
+      ]
+    });
+  });
+</script>
+
+<style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1031,6 +1054,10 @@
 <span id="1028">1028</span>
 <span id="1029">1029</span>
 <span id="1030">1030</span>
+<span id="1031">1031</span>
+<span id="1032">1032</span>
+<span id="1033">1033</span>
+<span id="1034">1034</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -1043,7 +1070,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">quad</span>::<span class="ident">Quad</span>;
 
 <span class="kw">impl</span> <span class="ident">Quad</span> {
-    <span class="doccomment">/// Calculates x · 2&lt;sup&gt;n&lt;/sup&gt;, where *x* is the `Quad` and *n* is an integer.</span>
+    <span class="doccomment">/// Calculates $x\sdot2^n$, where $x$ is `self` and $n$ is the argument.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Though this is not an everyday operation, it is often used in more advanced</span>
     <span class="doccomment">/// mathematical calculations (including several within this library). Therefore an</span>
@@ -1069,7 +1096,7 @@
         )
     }
 
-    <span class="doccomment">/// Calculates the square of the `Quad`.</span>
+    <span class="doccomment">/// Calculates the square of $x$, $x^2$, where $x$ is `self`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This method takes advantage of optimizations in multiplication that are available</span>
     <span class="doccomment">/// when the two numbers being multiplied are the same, so it is more efficient than</span>
@@ -1133,7 +1160,7 @@
         }
     }
 
-    <span class="doccomment">/// Calculates the square root of the `Quad`.</span>
+    <span class="doccomment">/// Calculates the square root $x$, $\sqrt{x}$, where $x$ is `self`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1172,7 +1199,8 @@
         }
     }
 
-    <span class="doccomment">/// Calculates the *n*th root of the `Quad`.</span>
+    <span class="doccomment">/// Calculates the $n$th root of $x$, $\sqrt\[n\]{x}$, where $x$ is `self` and $n$</span>
+    <span class="doccomment">/// is the argument.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1216,7 +1244,7 @@
         }
     }
 
-    <span class="doccomment">/// Calculates the cube root of the `Quad`.</span>
+    <span class="doccomment">/// Calculates the cube root of $x$, $\sqrt\[3\]{x}$, where $x$ is `self`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1231,16 +1259,17 @@
         <span class="self">self</span>.<span class="ident">nroot</span>(<span class="number">3</span>)
     }
 
-    <span class="doccomment">/// Calculates the `Quad` raised to an integer power.</span>
+    <span class="doccomment">/// Calculates $x$ raised to the integer power $n$, $x^n$, where $x$ is `self` and</span>
+    <span class="doccomment">/// $n$ is the argument.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This function correctly handles the special inputs defined in IEEE 754. In</span>
     <span class="doccomment">/// particular:</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// * `x.powi(0)` is 1 for any `x` (including 0, `NaN`, or infinity)</span>
-    <span class="doccomment">/// * `x.powi(n)` is ±∞ for `x` = ±0 and any odd negative `n`</span>
-    <span class="doccomment">/// * `x.powi(n)` is +∞ for `x` = ±0 and any even negative `n`</span>
-    <span class="doccomment">/// * `x.powi(n)` is ±0 for `x` = ±0 and any odd positive `n`</span>
-    <span class="doccomment">/// * `x.powi(n)` is +0 for `x` = ±0 and any even positive `n`</span>
+    <span class="doccomment">/// * `x.powi(0)` is $1$ for any `x` (including `0`, `NaN`, or `inf`)</span>
+    <span class="doccomment">/// * `x.powi(n)` is $\pm\infin$ for `x` = $\pm0$ and any odd negative `n`</span>
+    <span class="doccomment">/// * `x.powi(n)` is $+\infin$ for `x` = $\pm0$ and any even negative `n`</span>
+    <span class="doccomment">/// * `x.powi(n)` is $\pm0$ for `x` = $\pm0$ and any odd positive `n`</span>
+    <span class="doccomment">/// * `x.powi(n)` is $+0$ for `x` = $\pm0$ and any even positive `n`</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1279,19 +1308,21 @@
         }
     }
 
-    <span class="doccomment">/// Calculates the `Quad` raised to a `Quad` power.</span>
+    <span class="doccomment">/// Calculates $x$ raised to the `Quad` power $n$, $x^n$, where $x$ is `self` and $n$ is</span>
+    <span class="doccomment">/// the argument.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// In general, x&lt;sup&gt;n&lt;/sup&gt; is equal to *e*&lt;sup&gt;n ln x&lt;/sup&gt;. This precludes raising</span>
-    <span class="doccomment">/// a negative `Quad` to a fractional or irrational power because *ln x* is undefined</span>
-    <span class="doccomment">/// when *x* is negative. In that case, this function returns [`NAN`].</span>
+    <span class="doccomment">/// In general, $x^n$ is equal to $e^{n \ln x}$. This precludes raising a negative</span>
+    <span class="doccomment">/// `Double` to a fractional or irrational power because $\ln x$ is undefined when $x$</span>
+    <span class="doccomment">/// is negative. In that case, this function returns [`NAN`].</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// It&#39;s actually more complex than that; if the exponent can be expressed as a fraction</span>
-    <span class="doccomment">/// with an odd denominator, then there is an answer (a cube root, which is defined for</span>
-    <span class="doccomment">/// negative numbers, is the same as a power of 1/3). Therefore, something like</span>
+    <span class="doccomment">/// with an odd denominator, then there is an answer ($\sqrt\[3\]{x}$, which is defined</span>
+    <span class="doccomment">/// for negative $x$, is the same as a $x^\frac{1}{3}$). Therefore, something like</span>
     <span class="doccomment">/// `qd!(-4).powf(qd!(0.2))` should work, as 0.2 is a fraction with an odd denominator</span>
-    <span class="doccomment">/// (1/5). However, it&#39;s impossible in general to tell whether a number is a fraction</span>
-    <span class="doccomment">/// while using floating-point numbers, so no attempt is made to make this work. If you</span>
-    <span class="doccomment">/// need a fifth root of -4, use `qd!(-4).nroot(5)`.</span>
+    <span class="doccomment">/// ($\frac{1}{5}$), and the entire expression is the same as $\sqrt\[5\]{-4}$, which is</span>
+    <span class="doccomment">/// a real thing. However, it&#39;s impossible in general to tell whether a number is a</span>
+    <span class="doccomment">/// fraction while using floating-point numbers, so no attempt is made to make this</span>
+    <span class="doccomment">/// work. If you need a fifth root of 4, use `qd!(-4).nroot(5)`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1312,7 +1343,7 @@
         }
     }
 
-    <span class="doccomment">/// Calculates the reciprocal of the `Quad`.</span>
+    <span class="doccomment">/// Calculates the reciprocal of $x$, $\frac{1}{x}$, where $x$ is `self`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1328,7 +1359,7 @@
         <span class="ident">Quad</span>::<span class="ident">ONE</span> <span class="op">/</span> <span class="self">self</span>
     }
 
-    <span class="comment">// PRecalc functions</span>
+    <span class="comment">// Precalc functions</span>
     <span class="comment">//</span>
     <span class="comment">// This series of functions returns `Some` with a value that is to be returned, if it</span>
     <span class="comment">// turns out that the function doesn&#39;t have to be calculated because a shortcut result</span>

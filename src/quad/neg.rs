@@ -9,7 +9,7 @@ use std::ops::Neg;
 impl Neg for Quad {
     type Output = Quad;
 
-    /// Negates this `Quad`, producing a new `Quad`.
+    /// Computes $-x$, where $x$ is `self`, producing a new `Quad` as the result.
     ///
     /// This implements the unary `-` operator for `Quad`s.
     ///
@@ -31,7 +31,7 @@ impl Neg for Quad {
 impl Neg for &Quad {
     type Output = Quad;
 
-    /// Negates a reference to this `Quad`, producing a new `Quad`.
+    /// Computes $-x$, where $x$ is `self`, producing a new `Quad` as the result.
     ///
     /// This implements the unary `-` operator for references to `Quad`s.
     ///

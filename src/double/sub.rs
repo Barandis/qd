@@ -12,7 +12,8 @@ use std::ops::{Sub, SubAssign};
 impl Sub for Double {
     type Output = Double;
 
-    /// Subtracts another `Double` from this one, producing a new `Double` as a result.
+    /// Computes $x - y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Double` as the result.
     ///
     /// This implements the binary `-` operator between two `Double`s.
     ///
@@ -42,8 +43,8 @@ impl Sub for Double {
 impl Sub for &Double {
     type Output = Double;
 
-    /// Subtracts another reference to a `Double` from this one, producing a new `Double` as
-    /// a result.
+    /// Computes $x - y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Double` as the result.
     ///
     /// This implements the binary `-` operator between two references to `Double`s.
     ///
@@ -65,8 +66,8 @@ impl Sub for &Double {
 impl Sub<&Double> for Double {
     type Output = Double;
 
-    /// Subtracts another reference to a `Double` from this `Double`, producing a new
-    /// `Double` as a result.
+    /// Computes $x - y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Double` as the result.
     ///
     /// This implements the binary `-` operator between a `Double` and a reference to a
     /// `Double`.
@@ -89,8 +90,8 @@ impl Sub<&Double> for Double {
 impl Sub<Double> for &Double {
     type Output = Double;
 
-    /// Subtracts another `Double` from a reference to this one, producing a new `Double` as
-    /// a result.
+    /// Computes $x - y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Double` as the result.
     ///
     /// This implements the binary `-` operator between a reference to a `Double` and a
     /// `Double`.
@@ -111,7 +112,8 @@ impl Sub<Double> for &Double {
 }
 
 impl SubAssign for Double {
-    /// Subtracts another `Double` from this one, modifying this one to equal the result.
+    /// Computes $x - y$, where $x$ is `self` and $y$ is the argument, assigning the result
+    /// to `self`.
     ///
     /// This implements the `-=` operator between two `Double`s.
     ///
@@ -134,8 +136,8 @@ impl SubAssign for Double {
 }
 
 impl SubAssign<&Double> for Double {
-    /// Subtracts a reference to another `Double` from this one, modifying this one to equal
-    /// the result.
+    /// Computes $x - y$, where $x$ is `self` and $y$ is the argument, assigning the result
+    /// to `self`.
     ///
     /// This implements the `-=` operator between a `Double` and a reference to a `Double`.
     ///

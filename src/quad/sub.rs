@@ -9,7 +9,8 @@ use std::ops::{Add, Sub, SubAssign};
 impl Sub for Quad {
     type Output = Quad;
 
-    /// Subtracts another `Quad` from this one, producing a new `Quad` as a result.
+    /// Computes $x - y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Quad` as the result.
     ///
     /// This implements the binary `-` operator between two `Quad`s.
     ///
@@ -31,8 +32,8 @@ impl Sub for Quad {
 impl Sub for &Quad {
     type Output = Quad;
 
-    /// Subtracts a reference to another `Quad` from this one, producing a new `Quad` as a
-    /// result.
+    /// Computes $x - y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Quad` as the result.
     ///
     /// This implements the binary `-` operator between two references to `Quad`s.
     ///
@@ -54,8 +55,8 @@ impl Sub for &Quad {
 impl Sub<&Quad> for Quad {
     type Output = Quad;
 
-    /// Subtracts a reference to another `Quad` from this `Quad`, producing a new `Quad` as
-    /// a result.
+    /// Computes $x - y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Quad` as the result.
     ///
     /// This implements the binary `-` operator between a `Quad` and a reference to a
     /// `Quad`.
@@ -78,8 +79,8 @@ impl Sub<&Quad> for Quad {
 impl Sub<Quad> for &Quad {
     type Output = Quad;
 
-    /// Subtracts another `Quad` from a reference to this one, producing a new `Quad` as a
-    /// result.
+    /// Computes $x - y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Quad` as the result.
     ///
     /// This implements the binary `-` operator between a reference to a `Quad` and a
     /// `Quad`.
@@ -100,7 +101,8 @@ impl Sub<Quad> for &Quad {
 }
 
 impl SubAssign for Quad {
-    /// Subtracts another `Quad` from this one, modifying this one to equal the result.
+    /// Computes $x - y$, where $x$ is `self` and $y$ is the argument, assigning the result
+    /// to `self`.
     ///
     /// This implements the `-=` operator between two `Quad`s.
     ///
@@ -125,8 +127,8 @@ impl SubAssign for Quad {
 }
 
 impl SubAssign<&Quad> for Quad {
-    /// Subtracts a reference to another `Quad` from this `Quad`, modifying this one to
-    /// equal the result.
+    /// Computes $x - y$, where $x$ is `self` and $y$ is the argument, assigning the result
+    /// to `self`.
     ///
     /// This implements the `-=` operator between a `Quad` and a reference to a `Quad`.
     ///

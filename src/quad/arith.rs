@@ -51,7 +51,7 @@ impl Quad {
     /// assert!((-x).div_euclid(-y) == qd!(6));
     /// ```
     ///
-    /// [`rem_euclid`]:
+    /// [`rem_euclid`]: #method.rem_euclid
     #[inline]
     pub fn div_euclid(self, rhs: Quad) -> Quad {
         let q = (self / rhs).trunc();

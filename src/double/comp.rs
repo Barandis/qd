@@ -12,8 +12,9 @@ use crate::double::Double;
 use std::cmp::Ordering;
 
 impl PartialEq for Double {
-    /// Implements the `==` and `!= operators, testing two `Double`s for equality and
-    /// inequality.
+    /// Calculates whether `self` and the argument are equal to one another.
+    ///
+    /// This implements the `==` and `!=` operators between `Double`s.
     ///
     /// Equality works exactly the same as it does for system floating-point numbers (`f64`,
     /// etc.), including zero equalling negative zero, `NaN` equalling nothing (including
@@ -36,8 +37,9 @@ impl PartialEq for Double {
 }
 
 impl PartialOrd for Double {
-    /// Implements the `<`, `>`, `<=`, and `>=` operators, testing two `Double`s for
-    /// ordering.
+    /// Calculates how `self` and the argument should be ordered.
+    ///
+    /// This implements the `<`, `>`, `<=`, and `>=` operators between two `Double`s.
     ///
     /// Ordering works the same as it does for system floating-point numbers, including
     /// [`NAN`] returning false for any of these operators (including when comparing it to

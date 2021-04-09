@@ -12,7 +12,8 @@ use std::ops::{Mul, MulAssign};
 impl Mul for Double {
     type Output = Double;
 
-    /// Multiplies this `Double` by another, producing a new `Double` as a result.
+    /// Computes $x \times y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Double` as the result.
     ///
     /// This implements the `*` operator between two `Double`s.
     ///
@@ -40,8 +41,8 @@ impl Mul for Double {
 impl Mul for &Double {
     type Output = Double;
 
-    /// Multiplies a reference to this `Double` by another, producing a new `Double` as a
-    /// result.
+    /// Computes $x \times y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Double` as the result.
     ///
     /// This implements the `*` operator between two references to `Double`s.
     ///
@@ -63,8 +64,8 @@ impl Mul for &Double {
 impl Mul<&Double> for Double {
     type Output = Double;
 
-    /// Multiplies this `Double` by a reference to another, producing a new `Double` as a
-    /// result.
+    /// Computes $x \times y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Double` as the result.
     ///
     /// This implements the `*` operator between a `Double` and a reference to a `Double`.
     ///
@@ -86,8 +87,8 @@ impl Mul<&Double> for Double {
 impl Mul<Double> for &Double {
     type Output = Double;
 
-    /// Multiplies a reference to this `Double` by another `Double`, producing a new
-    /// `Double` as a result.
+    /// Computes $x \times y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Double` as the result.
     ///
     /// This implements the `*` operator between a reference to a `Double` and a `Double`.
     ///
@@ -107,7 +108,8 @@ impl Mul<Double> for &Double {
 }
 
 impl MulAssign for Double {
-    /// Multiples this `Double` by another one, modifying this one to equal the result.
+    /// Computes $x \times y$, where $x$ is `self` and $y$ is the argument, assigning the
+    /// result to `self`.
     ///
     /// This implements the `*=` operator between two `Double`s.
     ///
@@ -130,8 +132,8 @@ impl MulAssign for Double {
 }
 
 impl MulAssign<&Double> for Double {
-    /// Multiples this `Double` by a reference to another one, modifying this one to equal
-    /// the result.
+    /// Computes $x \times y$, where $x$ is `self` and $y$ is the argument, assigning the
+    /// result to `self`.
     ///
     /// This implements the `*=` operator between a `Double` and a reference to a `Double`.
     ///

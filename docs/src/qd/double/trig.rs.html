@@ -1,6 +1,29 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/double/trig.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>trig.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css"
+      integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y"
+      crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js"
+        integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js"
+        integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe"
+        crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "$", right: "$", display: false },
+        { left: "\\[", right: "\\]", display: true }
+      ]
+    });
+  });
+</script>
+
+<style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../qd/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1144,6 +1167,17 @@
 <span id="1141">1141</span>
 <span id="1142">1142</span>
 <span id="1143">1143</span>
+<span id="1144">1144</span>
+<span id="1145">1145</span>
+<span id="1146">1146</span>
+<span id="1147">1147</span>
+<span id="1148">1148</span>
+<span id="1149">1149</span>
+<span id="1150">1150</span>
+<span id="1151">1151</span>
+<span id="1152">1152</span>
+<span id="1153">1153</span>
+<span id="1154">1154</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright (c) 2021 Thomas Otterson</span>
 <span class="comment">//</span>
@@ -1154,9 +1188,9 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">double</span>::<span class="ident">Double</span>;
 
 <span class="kw">impl</span> <span class="ident">Double</span> {
-    <span class="doccomment">/// Simultaneously computes the sine (sin) and the cosine (cos) of the `Double`. This is</span>
-    <span class="doccomment">/// more efficient than calling the separate [`sin`] and [`cos`] functions if you need</span>
-    <span class="doccomment">/// both numbers.</span>
+    <span class="doccomment">/// Simultaneously computes the sine and cosine of $x$, $\sin x$ and $\cos x$, where $x$</span>
+    <span class="doccomment">/// is `self`. This is more efficient than calling the separate [`sin`] and [`cos`]</span>
+    <span class="doccomment">/// functions if you need both numbers.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1205,9 +1239,9 @@
         }
     }
 
-    <span class="doccomment">/// Computes the sine (sin) of the `Double`.</span>
+    <span class="doccomment">/// Computes the sine of $x$, $\sin x$, where $x$ is `self`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// The domain of this function is (-∞, ∞), and the range is [-1, 1].</span>
+    <span class="doccomment">/// The domain of this function is $(-\infin, \infin)$, and the range is $[-1, 1]$.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1267,9 +1301,9 @@
         }
     }
 
-    <span class="doccomment">/// Computes the cosine (cos) of the `Double`.</span>
+    <span class="doccomment">/// Computes the cosine of $x$, $\cos x$, where $x$ is `self`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// The domain of this function is (-∞, ∞), and the range is [-1, 1].</span>
+    <span class="doccomment">/// The domain of this function is $(-\infin, \infin)$, and the range is $[-1, 1]$.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1320,9 +1354,9 @@
         }
     }
 
-    <span class="doccomment">/// Computes the tangent (tan) of the `Double`.</span>
+    <span class="doccomment">/// Computes the tangent of $x$, $\tan x$, where $x$ is `self`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// The domain and range of this function are both (-∞, ∞).</span>
+    <span class="doccomment">/// The domain and range of this function are both $(-\infin, \infin)$.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1338,24 +1372,24 @@
         <span class="ident">s</span> <span class="op">/</span> <span class="ident">c</span>
     }
 
-    <span class="doccomment">/// Computes the 2-argument inverse tangent (tan&lt;sup&gt;-1&lt;/sup&gt;) of this `Double` and</span>
-    <span class="doccomment">/// another `Double`.</span>
+    <span class="doccomment">/// Computes the 2-argument inverse tangent of $x$ and $y$, $\arctan(y, x)$, where $x$</span>
+    <span class="doccomment">/// is the argument and $y$ is `self`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// The single-argument [`atan`] function always returns values in either the first (0</span>
-    <span class="doccomment">/// to π/2) or fourth (0 to -π/2) quadrants. However, first-quadrant results repeat</span>
-    <span class="doccomment">/// themselves in the third quadrant, and fourth-quadrant results repeat themselves in</span>
-    <span class="doccomment">/// the second. For example, the tangent of π/4 is 1, but so is the tangent of -3π/4.</span>
-    <span class="doccomment">/// Single-argument [`atan`] cannot distinguish between these two possibilities, so it</span>
-    <span class="doccomment">/// always returns the one in the range [-π/2, π/2].</span>
+    <span class="doccomment">/// to $\pi$/2) or fourth (0 to $-\pi$/2) quadrants. However, first-quadrant results</span>
+    <span class="doccomment">/// repeat themselves in the third quadrant, and fourth-quadrant results repeat</span>
+    <span class="doccomment">/// themselves in the second. For example, $\tan \frac{\pi}{4}$ is 1, but so is $\tan</span>
+    <span class="doccomment">/// \frac{3\pi}{4}$. Single-argument [`atan`] cannot distinguish between these two</span>
+    <span class="doccomment">/// possibilities, so it always returns the one in the range $[-\frac{\pi}{2},</span>
+    <span class="doccomment">/// \frac{\pi}{2}]$.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// The double-argument `atan2` can return either, depending on the arguments. It</span>
-    <span class="doccomment">/// essentially returns the angle between the positive x-axis and the point (x, y),</span>
-    <span class="doccomment">/// where *y* is the `Double` that `atan2` is called on and *x* is the argument.</span>
-    <span class="doccomment">/// Therefore `Double::ONE.atan2(Double::ONE)` is π/4 (first quadrant), but flipping</span>
-    <span class="doccomment">/// both signs to `(Double::NEG_ONE).atan2(Double::NEG_ONE)` gives the -3π/4 result</span>
-    <span class="doccomment">/// (third quadrant).</span>
+    <span class="doccomment">/// essentially returns the angle between the positive x-axis and the point $(x, y)$,</span>
+    <span class="doccomment">/// where $y$ is `self` and $x$ is the argument. Therefore `dd!(1).atan2(dd!(1))`</span>
+    <span class="doccomment">/// returns $\frac{\pi}{4}$ (first quadrant), but flipping both signs to</span>
+    <span class="doccomment">/// `dd!(-1).atan2(dd!(-1))` gives the $-\frac{3\pi}{4}$ result (third quadrant).</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// This function extends the range of the result to [-π, π].</span>
+    <span class="doccomment">/// This function extends the range of the result to $[-\pi, \pi]$.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Because this function deals with angles around the origin and Cartesian coordinates,</span>
     <span class="doccomment">/// it&#39;s very useful for converting between Cartesian and polar coordinates.</span>
@@ -1423,9 +1457,10 @@
         }
     }
 
-    <span class="doccomment">/// Computes the inverse sine (sin&lt;sup&gt;-1&lt;/sup&gt;) of the `Double`. The domain of this</span>
-    <span class="doccomment">/// function is [-1, 1] while the range is [-π/2, π/2]. Arguments outside of this domain</span>
-    <span class="doccomment">/// will result in [`NAN`].</span>
+    <span class="doccomment">/// Computes the inverse sine of $x$, $\sin^{-1} x$, where $x$ is `self`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The domain of this function is $[-1, 1]$ while the range is $[-\frac{\pi}{2},</span>
+    <span class="doccomment">/// \frac{\pi}{2}]$. Arguments outside of this domain will result in [`NAN`].</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1445,9 +1480,10 @@
         }
     }
 
-    <span class="doccomment">/// Computes the inverse cosine (cos&lt;sup&gt;-1&lt;/sup&gt;) of the `Double`. The domain of this</span>
-    <span class="doccomment">/// function is [-1, 1] and the range is [0, π]. Arguments outside of the domain will</span>
-    <span class="doccomment">/// result in [`NAN`].</span>
+    <span class="doccomment">/// Computes the inverse cosine of $x$, $\cos^{-1} x$, where $x$ is `self`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The domain of this function is $[-1, 1]$ and the range is $[0, \pi]$. Arguments</span>
+    <span class="doccomment">/// outside of the domain will result in [`NAN`].</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1467,8 +1503,15 @@
         }
     }
 
-    <span class="doccomment">/// Computes the inverse tangent (tan&lt;sup&gt;-1&lt;/sup&gt;) of the `Double`. The domain of this</span>
-    <span class="doccomment">/// function is [-∞, ∞] and the range is [-π/2, π/2].</span>
+    <span class="doccomment">/// Computes the inverse tangent of $x$, $\tan^{-1} x$, where $x$ is `self`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This is the single-argument version of this function ([`atan2`] is the two-argument</span>
+    <span class="doccomment">/// inverse tangent). Though inverse tangents have multiple answers, this function will</span>
+    <span class="doccomment">/// always return the one with the lowest absolute value. `x.atan()` is the same as</span>
+    <span class="doccomment">/// `x.atan2(Double::ONE)`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The domain of this function is $(-\infin, \infin)$ and the range is</span>
+    <span class="doccomment">/// $[-\frac{\pi}{2}, \frac{\pi}{2}]$.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Examples</span>
     <span class="doccomment">/// ```</span>
@@ -1479,6 +1522,8 @@
     <span class="doccomment">/// let diff = (x - expected).abs();</span>
     <span class="doccomment">/// assert!(diff &lt; dd!(1e-30));</span>
     <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`atan2`]: #method.atan2</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">atan</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Double</span> {
         <span class="self">self</span>.<span class="ident">atan2</span>(<span class="ident">Double</span>::<span class="ident">ONE</span>)
     }

@@ -23,7 +23,8 @@ impl Add for Quad {
     // where every component has a specific function and appears in a specific place in the
     // algorithm, addition is just a repeated iteration over each successive component.
 
-    /// Adds this `Quad` to another, producing a new `Quad` as a result.
+    /// Computes $x + y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Quad` as the result.
     ///
     /// This implements the `+` operator between two `Quad`s.
     ///
@@ -107,7 +108,8 @@ impl Add for Quad {
 impl Add for &Quad {
     type Output = Quad;
 
-    /// Adds a reference to this `Quad` to another, producing a new `Quad` as a result.
+    /// Computes $x + y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Quad` as the result.
     ///
     /// This implements the `+` operator between two references to `Quad`s.
     ///
@@ -129,7 +131,8 @@ impl Add for &Quad {
 impl Add<&Quad> for Quad {
     type Output = Quad;
 
-    /// Adds this `Quad` to a reference to another, producing a new `Quad` as a result.
+    /// Computes $x + y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Quad` as the result.
     ///
     /// This implements the `+` operator between a `Quad` and a reference to a `Quad`.
     ///
@@ -151,8 +154,8 @@ impl Add<&Quad> for Quad {
 impl Add<Quad> for &Quad {
     type Output = Quad;
 
-    /// Adds a reference to this `Quad` to another `Quad`, producing a new `Quad` as a
-    /// result.
+    /// Computes $x + y$, where $x$ is `self` and $y$ is the argument, producing a new
+    /// `Quad` as the result.
     ///
     /// This implements the `+` operator between a reference to a `Quad` and a `Quad`.
     ///
@@ -172,7 +175,8 @@ impl Add<Quad> for &Quad {
 }
 
 impl AddAssign for Quad {
-    /// Adds another `Quad` to this one, modifying this one to equal the result.
+    /// Computes $x + y$, where $x$ is `self` and $y$ is the argument, assigning the result
+    /// to `self`.
     ///
     /// This implements the `+=` operator between two `Quad`s.
     ///
@@ -197,8 +201,8 @@ impl AddAssign for Quad {
 }
 
 impl AddAssign<&Quad> for Quad {
-    /// Adds a reference to another `Quad` to this one, modifying this one to equal the
-    /// result.
+    /// Computes $x + y$, where $x$ is `self` and $y$ is the argument, assigning the result
+    /// to `self`.
     ///
     /// This implements the `+=` operator between a `Quad` and a reference to a `Quad`.
     ///
